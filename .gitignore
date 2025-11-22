@@ -1,0 +1,12 @@
+.gradle
+local.properties
+build/
+**/build
+**/*.db
+.idea
+*.iws
+*.iml
+*.ipr
+*.hprof
+out/
+.fleet/
