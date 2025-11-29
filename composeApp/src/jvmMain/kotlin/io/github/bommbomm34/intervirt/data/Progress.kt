@@ -12,3 +12,13 @@ data class Progress (
         fun success(message: String) = Progress(1f, message, true)
     }
 }
+
+data class ResultProgress <T> (
+    val percentage: Float,
+    val result: Result<T>? = null
+){
+    companion object {
+        fun <T> proceed(percentage: Float) = ResultProgress<T>(percentage)
+        fun <T> result(result: Result<T>) = ResultProgress<T>(1f, result)
+    }
+}

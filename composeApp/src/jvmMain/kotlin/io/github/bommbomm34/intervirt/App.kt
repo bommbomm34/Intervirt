@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.setup.Downloader
+import io.ktor.util.logging.Logger
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import java.io.File
 
 val dataDir = File("${System.getProperty("user.home")}/Intervirt").apply { mkdir() }

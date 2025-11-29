@@ -13,8 +13,8 @@ class Executor (val fileManagement: FileManagement) {
         logger.debug { "Running ${commands.joinToString(" ")}" }
         val process = builder.start()
         val reader = process.inputStream.bufferedReader()
-        while (true) {
-            val line = reader.readLine() ?: break
+        while (process.isAlive) {
+            val line = reader.readLine() ?: continue
             logger.debug { "Output: $line" }
             emit(line.toCommandStatus())
         }

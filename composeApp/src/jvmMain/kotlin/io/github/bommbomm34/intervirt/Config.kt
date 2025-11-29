@@ -9,4 +9,8 @@ import java.io.File
 val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
 val preferences = Preferences()
 val logger = KotlinLogging.logger {  }
-val client = HttpClient(CIO)
+val client = HttpClient(CIO) {
+    engine {
+        requestTimeout = 0
+    }
+}

@@ -1,10 +1,19 @@
 package io.github.bommbomm34.intervirt.data
 
+import intervirt.composeapp.generated.resources.Res
+import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.preferences
-import io.github.kdownloadfile.downloadFile
+import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.io.asSink
+import org.jetbrains.compose.resources.getString
 import java.io.File
 
 class FileManagement(val dataDir: File) {
@@ -25,33 +34,49 @@ class FileManagement(val dataDir: File) {
 
     fun getFile(name: String) = File(dataDir.absolutePath + File.separator + name)
 
-    suspend fun downloadFile(url: String, name: String, destination: File = getFile("cache")): Result<File> {
-        logger.debug { "Downloading file $url as $name" }
-        val pathRes = downloadFile(
-            url = url.getAbsoluteURL(),
-            fileName = name,
-            folderName = destination.absolutePath,
-        )
+    // Based on: https://ktor.io/docs/client-responses.html#streaming
+    fun downloadFile(url: String, name: String, destination: File = getFile("cache")): Flow<ResultProgress<File>> =
+        flow {
+            logger.debug { "Downloading file $url as $name" }
+            val bufferSize: Long = 1024 * 1024
+            val file = File(destination.absolutePath + "/" + name)
+            val stream = file.outputStream().asSink()
 
-        pathRes.fold(
-            onSuccess = {
-                logger.debug { "Downloaded file successfully at $it" }
-                return Result.success(File(it))
-            },
-            onFailure = {
-                logger.error { "Download failed: ${it.message}" }
-                return Result.failure(it)
+            client.prepareGet(url).execute { response ->
+                if (response.status != HttpStatusCode.OK) {
+                    emit(
+                        ResultProgress.result(
+                            Result.failure(
+                                Exception(
+                                    getString(Res.string.download_failed, response.status.description)
+                                )
+                            )
+                        )
+                    )
+                } else {
+                    val channel: ByteReadChannel = response.body()
+                    val totalBytes = response.headers["Content-Length"]!!.toLong()
+                    var count = 0L
+                    stream.use {
+                        while (!channel.exhausted()) {
+                            val chunk = channel.readRemaining(bufferSize)
+                            count += chunk.remaining
+
+                            chunk.transferTo(stream)
+                            logger.debug { "Downloaded $count bytes of $totalBytes bytes" }
+                            emit(ResultProgress.proceed(count.toFloat() / totalBytes))
+                        }
+                    }
+                    emit(ResultProgress.result(Result.success(file)))
+                }
             }
-        )
-    }
+        }
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {
     if (!isDirectory) error("File $absolutePath must be a directory!")
+    logger.debug { "Creating directory $name" }
     val file = File(absolutePath + File.separator + name)
     if (file.exists()) return file
     return file.apply { if (directory) mkdir() else createNewFile() }
 }
-
-// If Location Header is provided, this should be used instead as an absolute URL
-suspend fun String.getAbsoluteURL() = client.head(this).headers["Location"] ?: this
