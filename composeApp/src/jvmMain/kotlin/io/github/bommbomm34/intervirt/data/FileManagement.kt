@@ -67,10 +67,16 @@ class FileManagement(val dataDir: File) {
                             emit(ResultProgress.proceed(count.toFloat() / totalBytes))
                         }
                     }
+                    logger.debug { "Successfully downloaded $name" }
                     emit(ResultProgress.result(Result.success(file)))
                 }
             }
         }
+    fun getQEMUFile(): File {
+        val linuxFile = getFile("qemu/qemu-system")
+        val windowsFile = getFile("qemu/qemu-system.exe")
+        return if (linuxFile.exists()) linuxFile else windowsFile
+    }
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

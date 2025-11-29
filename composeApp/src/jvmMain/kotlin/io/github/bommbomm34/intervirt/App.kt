@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.setup.Downloader
+import io.github.bommbomm34.intervirt.setup.Tester
 import io.ktor.util.logging.Logger
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -23,7 +24,7 @@ import java.io.File
 val dataDir = File("${System.getProperty("user.home")}/Intervirt").apply { mkdir() }
 val fileManagement = FileManagement(dataDir)
 val executor = Executor(fileManagement)
-val downloader = Downloader(fileManagement, executor)
+val downloader = Downloader(fileManagement)
 
 @Composable
 @Preview
@@ -39,9 +40,20 @@ fun App() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onClick = {
-                scope.launch { downloader.downloadQEMU(true).collect { println(it) } }
+                scope.launch {
+                    downloader.downloadQEMU().collect { println(it) }
+                    downloader.downloadAlpineDisk().collect { println(it) }
+                }
             }) {
-                Text("Click me!")
+                Text("Download all")
+            }
+            Button(onClick = {
+                scope.launch {
+                    println(Tester(fileManagement, executor).testQEMUInstallation())
+                    println(Tester(fileManagement, executor).testAlpineLinuxBoot())
+                }
+            }) {
+                Text("Test all")
             }
         }
     }

@@ -2,7 +2,10 @@ package io.github.bommbomm34.intervirt.setup
 
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
-import io.github.bommbomm34.intervirt.data.*
+import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.Progress
+import io.github.bommbomm34.intervirt.data.getOS
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
 import io.github.bommbomm34.intervirt.logger
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +14,7 @@ import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.exception.ZipException
 import org.jetbrains.compose.resources.getString
 
-class Downloader(val fileManagement: FileManagement, val executor: Executor) {
+class Downloader(val fileManagement: FileManagement) {
     fun downloadQEMUWindows(update: Boolean = false): Flow<Progress> = flow {
         if (!fileManagement.getFile("qemu/qemu-system.exe").exists() || update) {
             // Wipe previous installation if available
@@ -27,17 +30,14 @@ class Downloader(val fileManagement: FileManagement, val executor: Executor) {
                             logger.debug { "Extracting ${zipFile.name}" }
                             zip.extractAll(fileManagement.getFile("qemu").absolutePath)
                             logger.debug { "Testing QEMU" }
-                            executor.runCommandOnHost("qemu", "./qemu-system.exe", "--version")
-                                .collect {
-                                    if (it.message != null) logger.debug { it.message } else emit(
-                                        Progress.success(
-                                            getString(
-                                                Res.string.download_succeeded,
-                                                "QEMU"
-                                            )
-                                        )
+                            emit(
+                                Progress.success(
+                                    getString(
+                                        Res.string.download_succeeded,
+                                        "QEMU"
                                     )
-                                }
+                                )
+                            )
                         } catch (e: ZipException) {
                             logger.error { "Error occurred while extracting ${zipFile.name}: ${e.message}" }
                             emit(
@@ -69,7 +69,7 @@ class Downloader(val fileManagement: FileManagement, val executor: Executor) {
             fileManagement.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
 //            val urlResult = getDownloadURL("http://localhost:3000/qemu-system-")
-            val urlResult = Result.success("https://cloud.perhof.org/s/dNjAo5C9XHJaJXJ/download")
+            val urlResult = getDownloadURL("http://localhost:3000/qemu-system-")
             urlResult.onSuccess { url ->
                 logger.debug { "Determined download URL $url" }
                 val file = fileManagement.downloadFile(url, "qemu-system", fileManagement.getFile("qemu"))
@@ -77,16 +77,13 @@ class Downloader(val fileManagement: FileManagement, val executor: Executor) {
                     if (it.result != null) {
                         it.result.onSuccess { executable ->
                             executable.setExecutable(true)
-                            executor.runCommandOnHost("qemu", "./qemu-system", "--version")
-                                .collect {
-                                    emit(
-                                        Progress(
-                                            1f,
-                                            it.message ?: getString(Res.string.download_succeeded),
-                                            true
-                                        )
-                                    )
-                                }
+                            emit(
+                                Progress(
+                                    1f,
+                                    getString(Res.string.download_succeeded, "QEMU"),
+                                    true
+                                )
+                            )
                         }.onFailure {
                             emit(Progress.error(getString(Res.string.download_failed, it.localizedMessage)))
                         }
@@ -105,17 +102,21 @@ class Downloader(val fileManagement: FileManagement, val executor: Executor) {
         }
     }
 
-    fun downloadQEMU(update: Boolean = false): Flow<Progress> = when (getOS()) {
-        OS.WINDOWS -> downloadQEMUWindows(update)
-        OS.LINUX -> downloadQEMULinux(update)
-        null -> flow {
-            emit(
-                Progress.error(getString(Res.string.os_is_not_supported, System.getProperty("os.name"), "QEMU"))
-            )
+    fun downloadQEMU(update: Boolean = false): Flow<Progress> {
+        logger.debug { "Downloading QEMU" }
+        return when (getOS()) {
+            OS.WINDOWS -> downloadQEMUWindows(update)
+            OS.LINUX -> downloadQEMULinux(update)
+            null -> flow {
+                emit(
+                    Progress.error(getString(Res.string.os_is_not_supported, System.getProperty("os.name"), "QEMU"))
+                )
+            }
         }
     }
 
     fun downloadAlpineDisk(): Flow<Progress> = flow {
+        logger.debug { "Downloading disk" }
         if (!fileManagement.getFile("disk/alpine-linux.qcow2").exists()) {
             val url = "http://localhost:3000/alpine-linux.qcow2"
             val file = fileManagement.downloadFile(url, "alpine-linux.qcow2", fileManagement.getFile("disk"))

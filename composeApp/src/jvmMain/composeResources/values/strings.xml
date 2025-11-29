@@ -6,4 +6,5 @@
     <string name="error_while_zip_extraction">An error occurred while extracting %s: %s</string>
     <string name="successful_installation">Installed %s successfully!</string>
     <string name="downloading">Downloading...</string>
+    <string name="not_found">%s not found.</string>
 </resources>

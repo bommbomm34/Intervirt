@@ -5,7 +5,7 @@ import androidx.compose.ui.window.application
 import org.slf4j.simple.SimpleLogger
 
 fun main() = application {
-    System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
+    if (DEBUG_ENABLED) System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
     Window(
         onCloseRequest = ::exitApplication,
         title = "Intervirt",
