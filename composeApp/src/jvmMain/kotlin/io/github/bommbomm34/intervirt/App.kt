@@ -10,13 +10,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.github.bommbomm34.intervirt.data.Executor
+import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.setup.Downloader
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import java.io.File
+
+val dataDir = File("${System.getProperty("user.home")}/Intervirt").apply { mkdir() }
+val fileManagement = FileManagement(dataDir)
+val executor = Executor(fileManagement)
+val downloader = Downloader(fileManagement, executor)
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
+        val scope = rememberCoroutineScope()
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
@@ -24,7 +35,9 @@ fun App() {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(onClick = { showContent = !showContent }) {
+            Button(onClick = {
+                scope.launch { downloader.downloadQEMU(true).collect { println(it) } }
+            }) {
                 Text("Click me!")
             }
         }
