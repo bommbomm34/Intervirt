@@ -50,7 +50,7 @@ fun App() {
             Button(onClick = {
                 scope.launch {
                     println(Tester(fileManagement, executor).testQEMUInstallation())
-                    println(Tester(fileManagement, executor).testAlpineLinuxBoot())
+                    println("Guest: " + Tester(fileManagement, executor).testAlpineLinuxBoot())
                 }
             }) {
                 Text("Test all")

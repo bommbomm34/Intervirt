@@ -73,8 +73,8 @@ class FileManagement(val dataDir: File) {
             }
         }
     fun getQEMUFile(): File {
-        val linuxFile = getFile("qemu/qemu-system")
-        val windowsFile = getFile("qemu/qemu-system.exe")
+        val linuxFile = getFile("qemu/qemu-system-x86_64")
+        val windowsFile = getFile("qemu/qemu-system-x86_64.exe")
         return if (linuxFile.exists()) linuxFile else windowsFile
     }
 }

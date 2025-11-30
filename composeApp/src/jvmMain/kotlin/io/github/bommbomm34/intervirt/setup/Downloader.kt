@@ -16,7 +16,7 @@ import org.jetbrains.compose.resources.getString
 
 class Downloader(val fileManagement: FileManagement) {
     fun downloadQEMUWindows(update: Boolean = false): Flow<Progress> = flow {
-        if (!fileManagement.getFile("qemu/qemu-system.exe").exists() || update) {
+        if (!fileManagement.getFile("qemu/qemu-system-x86_64.exe").exists() || update) {
             // Wipe previous installation if available
             fileManagement.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
@@ -64,7 +64,7 @@ class Downloader(val fileManagement: FileManagement) {
     }
 
     fun downloadQEMULinux(update: Boolean = false): Flow<Progress> = flow {
-        if (!fileManagement.getFile("qemu/qemu-system").exists() || update) {
+        if (!fileManagement.getFile("qemu/qemu-system-x86_64").exists() || update) {
             // Wipe previous installation if available
             fileManagement.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
@@ -72,7 +72,7 @@ class Downloader(val fileManagement: FileManagement) {
             val urlResult = getDownloadURL("http://localhost:3000/qemu-system-")
             urlResult.onSuccess { url ->
                 logger.debug { "Determined download URL $url" }
-                val file = fileManagement.downloadFile(url, "qemu-system", fileManagement.getFile("qemu"))
+                val file = fileManagement.downloadFile(url, "qemu-system-x86_64", fileManagement.getFile("qemu"))
                 file.collect {
                     if (it.result != null) {
                         it.result.onSuccess { executable ->
