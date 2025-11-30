@@ -22,10 +22,8 @@ class QEMUInterface(val fileManagement: FileManagement, val executor: Executor) 
         builder.redirectErrorStream(true)
         currentProcess = builder.start()
         BufferedReader(InputStreamReader(currentProcess!!.inputStream)).use { tempReader ->
-            logger.debug { "Started VM process at ${currentProcess!!.pid()}" }
+            logger.debug { "Started VM process" }
 //        logger.debug { "Output: " + currentProcess!!.inputStream.bufferedReader().readText() }
-            val output = tempReader.readText()
-            logger.debug { "Output of QEMU: $output" }
             if (currentProcess!!.isAlive) {
                 logger.debug { "Waiting for availability" }
                 val startTime = System.currentTimeMillis()
@@ -37,21 +35,19 @@ class QEMUInterface(val fileManagement: FileManagement, val executor: Executor) 
                 }
             }
             return if (currentProcess!!.isAlive) {
-                logger.debug { "Succeeded with output: $output" }
                 Result.success(true)
             } else {
-                logger.error { "Failed with output: $output" }
-                Result.failure(IllegalStateException(output))
+                Result.failure(IllegalStateException())
             }
         }
     }
 
-    fun shutdownAlpine(force: Boolean = false) {
-        logger.debug { "Closing QEMU socket" }
-        executor.closeGuestSession()
-        logger.debug { "Killing QEMU process ${if (force) "forcibly" else "gracefully"}" }
-        if (force) currentProcess?.destroyForcibly() else currentProcess?.destroy()
+    suspend fun shutdownAlpine() {
+        logger.debug { "Shutting down Alpine VM" }
+        executor.runCommandOnGuest("poweroff").collect {  }
+        logger.debug { "Waiting for Alpine VM to shutdown" }
         currentProcess?.waitFor()
+        currentProcess = null
     }
 }
 

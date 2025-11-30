@@ -58,10 +58,6 @@ class Executor(val fileManagement: FileManagement) {
         logger.debug { "Disconnecting channel" }
         channel.disconnect()
     }
-
-    fun closeGuestSession(){
-        if (guestSession.isConnected) guestSession.disconnect()
-    }
 }
 
 data class CommandStatus(

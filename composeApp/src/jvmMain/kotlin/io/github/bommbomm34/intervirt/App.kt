@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.github.bommbomm34.intervirt.api.QEMUInterface
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.setup.Downloader
@@ -25,6 +26,7 @@ val dataDir = File("${System.getProperty("user.home")}/Intervirt").apply { mkdir
 val fileManagement = FileManagement(dataDir)
 val executor = Executor(fileManagement)
 val downloader = Downloader(fileManagement)
+val qemu = QEMUInterface(fileManagement, executor)
 
 @Composable
 @Preview
