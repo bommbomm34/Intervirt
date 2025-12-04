@@ -1,8 +1,11 @@
 package io.github.bommbomm34.intervirt.data
 
+import com.jcraft.jsch.ChannelExec
+import com.jcraft.jsch.ChannelSftp
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
+import io.github.bommbomm34.intervirt.guestSession
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.preferences
 import io.ktor.client.call.*
@@ -14,7 +17,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.io.asSink
 import org.jetbrains.compose.resources.getString
+import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlin.sequences.forEach
 
 class FileManagement(val dataDir: File) {
     init {
@@ -76,6 +81,15 @@ class FileManagement(val dataDir: File) {
         val linuxFile = getFile("qemu/qemu-system-x86_64")
         val windowsFile = getFile("qemu/qemu-system-x86_64.exe")
         return if (linuxFile.exists()) linuxFile else windowsFile
+    }
+
+    fun sendFileToGuest(file: File, destinationFolder: String){
+        logger.info { "Sending file ${file.name} to guest" }
+        if (!guestSession.isConnected) guestSession.connect()
+        val channel = guestSession.openChannel("sftp") as ChannelSftp
+        channel.connect()
+        channel.put(file.absolutePath, destinationFolder, ChannelSftp.OVERWRITE)
+        channel.disconnect()
     }
 }
 

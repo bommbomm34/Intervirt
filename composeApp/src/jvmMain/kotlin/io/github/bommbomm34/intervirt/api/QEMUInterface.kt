@@ -1,8 +1,10 @@
 package io.github.bommbomm34.intervirt.api
 
+import com.jcraft.jsch.JSchException
 import io.github.bommbomm34.intervirt.SSH_PORT
 import io.github.bommbomm34.intervirt.SSH_TIMEOUT
 import io.github.bommbomm34.intervirt.START_ALPINE_VM_COMMANDS
+import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.logger
@@ -11,6 +13,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ConnectException
 import java.net.Socket
+import java.util.concurrent.TimeUnit
 
 class QEMUInterface(val fileManagement: FileManagement, val executor: Executor) {
     var currentProcess: Process? = null
@@ -43,10 +46,21 @@ class QEMUInterface(val fileManagement: FileManagement, val executor: Executor) 
     }
 
     suspend fun shutdownAlpine() {
-        logger.debug { "Shutting down Alpine VM" }
-        executor.runCommandOnGuest("poweroff").collect {  }
+        logger.info { "Shutting down Alpine VM" }
+        try {
+            executor.runCommandOnGuest("poweroff").collect { }
+        } catch (_: Exception) {
+            logger.debug { "SSH Connection isn't available, shutdown through process kill..." }
+            currentProcess?.destroy()
+        }
         logger.debug { "Waiting for Alpine VM to shutdown" }
-        currentProcess?.waitFor()
+        currentProcess?.waitFor(VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+        if (currentProcess?.isAlive ?: false){
+            logger.debug { "Timeout exceeded, forcing shutdown..." }
+            currentProcess?.destroyForcibly()
+            currentProcess?.waitFor()
+        }
+        logger.debug { "Alpine VM is now offline" }
         currentProcess = null
     }
 }

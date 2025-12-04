@@ -51,8 +51,10 @@ fun App() {
             }
             Button(onClick = {
                 scope.launch {
-                    println(Tester(fileManagement, executor).testQEMUInstallation())
-                    println("Guest: " + Tester(fileManagement, executor).testAlpineLinuxBoot())
+                    val tester = Tester(fileManagement, executor)
+                    println(tester.testQEMUInstallation())
+                    println("Guest: " + tester.testAlpineLinuxBoot())
+                    tester.testDocker()
                 }
             }) {
                 Text("Test all")
