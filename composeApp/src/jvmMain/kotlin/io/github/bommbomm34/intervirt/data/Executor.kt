@@ -24,12 +24,13 @@ class Executor(val fileManagement: FileManagement) {
             emit(process.exitValue().toCommandStatus())
         }
 
-    fun runCommandOnGuest(command: String): Flow<CommandStatus> = flow {
+    fun runCommandOnGuest(command: String, workingFolder: String? = null): Flow<CommandStatus> = flow {
         logger.info { "Running '$command' on guest" }
         if (!guestSession.isConnected) guestSession.connect()
         val channel = guestSession.openChannel("exec") as ChannelExec
         val errorStream = ByteArrayOutputStream()
-        channel.setCommand(command)
+        val fullCommand = workingFolder?.let { "cd $workingFolder && $command" } ?: command
+        channel.setCommand(fullCommand)
         channel.setErrStream(errorStream)
         channel.inputStream = null
         channel.connect()
@@ -51,3 +52,17 @@ data class CommandStatus(
 
 fun String.toCommandStatus() = CommandStatus(message = this)
 fun Int.toCommandStatus() = CommandStatus(statusCode = this)
+suspend fun Flow<CommandStatus>.getTotalCommandStatus(iterate: suspend (CommandStatus) -> Unit = {}): CommandStatus {
+    var statusCode: Int? = null
+    val totalOutput = StringBuilder()
+    collect {
+        if (it.statusCode == null) {
+            totalOutput.append(it.message)
+            iterate(it)
+        } else {
+            statusCode = it.statusCode
+            return@collect
+        }
+    }
+    return CommandStatus(totalOutput.toString(), statusCode)
+}

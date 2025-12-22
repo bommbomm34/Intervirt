@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.api
 
-import com.jcraft.jsch.JSchException
 import io.github.bommbomm34.intervirt.SSH_PORT
 import io.github.bommbomm34.intervirt.SSH_TIMEOUT
 import io.github.bommbomm34.intervirt.START_ALPINE_VM_COMMANDS

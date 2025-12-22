@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import org.slf4j.simple.SimpleLogger
 
 fun main() = application {
-    if (DEBUG_ENABLED) System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
+    System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
     val scope = rememberCoroutineScope()
     Window(
         onCloseRequest = {

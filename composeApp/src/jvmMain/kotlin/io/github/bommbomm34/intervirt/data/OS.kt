@@ -4,10 +4,6 @@ enum class OS {
     WINDOWS, LINUX
 }
 
-enum class Arch {
-    X86_64, ARM64
-}
-
 fun getOS(): OS? {
     val os = System.getProperty("os.name")
     val ref = os.lowercase()

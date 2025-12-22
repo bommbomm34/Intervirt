@@ -5,7 +5,6 @@ import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.qemu
 import kotlinx.coroutines.flow.toList
-import java.io.File
 
 // Tests installation
 class Tester(val fileManagement: FileManagement, val executor: Executor) {

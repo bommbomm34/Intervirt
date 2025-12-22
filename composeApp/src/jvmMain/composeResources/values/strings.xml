@@ -7,4 +7,6 @@
     <string name="successful_installation">Installed %s successfully!</string>
     <string name="downloading">Downloading...</string>
     <string name="not_found">%s not found.</string>
+    <string name="computer">Computer</string>
+    <string name="switch">Switch</string>
 </resources>

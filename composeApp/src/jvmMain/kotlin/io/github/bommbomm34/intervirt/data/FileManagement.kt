@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.data
 
-import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.ChannelSftp
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
@@ -15,11 +14,12 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.io.asSink
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.getString
-import java.io.ByteArrayOutputStream
 import java.io.File
-import kotlin.sequences.forEach
+import java.nio.file.Files
 
 class FileManagement(val dataDir: File) {
     init {
@@ -91,6 +91,8 @@ class FileManagement(val dataDir: File) {
         channel.put(file.absolutePath, destinationFolder, ChannelSftp.OVERWRITE)
         channel.disconnect()
     }
+
+    fun parseConfiguration(file: File) = Json.decodeFromString<Configuration>(Files.readString(file.toPath()))
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

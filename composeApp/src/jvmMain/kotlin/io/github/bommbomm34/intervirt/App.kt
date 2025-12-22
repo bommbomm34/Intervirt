@@ -6,20 +6,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.QEMUInterface
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.setup.Downloader
 import io.github.bommbomm34.intervirt.setup.Tester
-import io.ktor.util.logging.Logger
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
 import java.io.File
 
 val dataDir = File("${System.getProperty("user.home")}/Intervirt").apply { mkdir() }
@@ -34,6 +33,7 @@ fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
+        var content by remember { mutableStateOf("") }
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
@@ -58,6 +58,14 @@ fun App() {
                 }
             }) {
                 Text("Test all")
+            }
+            OutlinedTextField(value = content, onValueChange = { content = it })
+            Button(onClick = {
+                scope.launch {
+
+                }
+            }) {
+                Text("Send command")
             }
         }
     }
