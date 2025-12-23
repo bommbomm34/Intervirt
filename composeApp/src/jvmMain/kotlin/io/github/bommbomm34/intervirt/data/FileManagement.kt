@@ -14,7 +14,6 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
 import kotlinx.io.asSink
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.getString
@@ -92,7 +91,7 @@ class FileManagement(val dataDir: File) {
         channel.disconnect()
     }
 
-    fun parseConfiguration(file: File) = Json.decodeFromString<Configuration>(Files.readString(file.toPath()))
+    fun parseConfiguration(file: File) = Json.decodeFromString<IntervirtConfiguration>(Files.readString(file.toPath()))
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

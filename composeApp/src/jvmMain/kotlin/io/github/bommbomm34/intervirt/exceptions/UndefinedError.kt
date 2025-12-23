@@ -1,3 +1,3 @@
 package io.github.bommbomm34.intervirt.exceptions
 
-class UndefinedError() : Exception()
+class UndefinedError(error: String) : Exception(error)

@@ -3,12 +3,17 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.AddContainerBody
 import io.github.bommbomm34.intervirt.data.ConnectBody
+import io.github.bommbomm34.intervirt.data.ContainerInfo
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.data.ForwardPortBody
 import io.github.bommbomm34.intervirt.data.IDBody
 import io.github.bommbomm34.intervirt.data.IDWithNewIPBody
 import io.github.bommbomm34.intervirt.data.ResponseBody
 import io.github.bommbomm34.intervirt.data.SetInternetAccessBody
+import io.github.bommbomm34.intervirt.data.VersionResponseBody
+import io.github.bommbomm34.intervirt.exceptions.DeviceNotFoundException
+import io.github.bommbomm34.intervirt.exceptions.UndefinedError
+import io.github.bommbomm34.intervirt.result
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -102,6 +107,17 @@ class AgentInterface(val fileManagement: FileManagement) {
         return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
             Result.failure(response.body<ResponseBody>().exception())
     }
+
+    suspend fun listContainerInfos(): Result<List<ContainerInfo>> {
+        val response = get("containerInfos")
+        return when (response.status) {
+            HttpStatusCode.OK -> Result.success(response.body())
+            HttpStatusCode.NotFound -> DeviceNotFoundException().result()
+            else -> response.body<ResponseBody>().exception().result()
+        }
+    }
+
+    suspend fun getVersion(): String = get("version").body<VersionResponseBody>().version
 
     private suspend inline fun <reified T> put(endpoint: String, body: T): HttpResponse {
         return client.put("http://localhost:55436/$endpoint") {

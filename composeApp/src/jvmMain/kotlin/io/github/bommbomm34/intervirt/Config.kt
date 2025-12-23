@@ -36,3 +36,9 @@ val guestSession: Session = JSch()
     .apply { setConfig("StrictHostKeyChecking", "no") }
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name")
+
+fun String.versionCode() = replace(".", "").toInt()
+
+fun String.result() = Result.success(this)
+
+fun <T> Exception.result() = Result.failure<T>(this)

@@ -11,12 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.DeviceInterface
 import io.github.bommbomm34.intervirt.api.QEMUInterface
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
 import io.github.bommbomm34.intervirt.setup.Downloader
-import io.github.bommbomm34.intervirt.setup.Tester
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.io.File
@@ -51,10 +51,14 @@ fun App() {
             }
             Button(onClick = {
                 scope.launch {
-                    val tester = Tester(fileManagement, executor)
-                    println(tester.testQEMUInstallation())
-                    println("Guest: " + tester.testAlpineLinuxBoot())
-                    tester.testDocker()
+                    val deviceInterface = DeviceInterface(
+                        IntervirtConfiguration(
+                            author = "Hi",
+                            version = "alpha",
+                            devices = mutableListOf()
+                        ), fileManagement)
+                    println(deviceInterface.generateIPv4())
+                    println(deviceInterface.generateIPv6())
                 }
             }) {
                 Text("Test all")
