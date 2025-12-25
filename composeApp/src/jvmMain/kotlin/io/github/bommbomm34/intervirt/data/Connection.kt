@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.data
 
-import io.ktor.network.sockets.Connection
 import kotlinx.serialization.Serializable
 
 /**
@@ -50,10 +49,14 @@ sealed class DeviceConnection (
     fun containsDevice(device: Device) = device1 == device || device2 == device
 }
 
-infix fun Device.connect(otherDevice: Device) = when {
-    this is Device.Computer && otherDevice is Device.Computer -> DeviceConnection.Computer(this, otherDevice)
-    this is Device.Switch && otherDevice is Device.Switch -> DeviceConnection.Switch(this, otherDevice)
-    this is Device.Switch && otherDevice is Device.Computer -> DeviceConnection.SwitchComputer(this, otherDevice)
-    this is Device.Computer && otherDevice is Device.Switch -> DeviceConnection.SwitchComputer(otherDevice, this)
+/**
+ * @param otherDevice the device which should be connected with this device
+ * @return a ```DeviceConnection``` based on the types of the given devices
+ */
+infix fun Device.connect(otherDevice: Device) = when (this) {
+    is Device.Computer if otherDevice is Device.Computer -> DeviceConnection.Computer(this, otherDevice)
+    is Device.Switch if otherDevice is Device.Switch -> DeviceConnection.Switch(this, otherDevice)
+    is Device.Switch if otherDevice is Device.Computer -> DeviceConnection.SwitchComputer(this, otherDevice)
+    is Device.Computer if otherDevice is Device.Switch -> DeviceConnection.SwitchComputer(otherDevice, this)
     else -> error("Invalid connection of $this and $otherDevice")
 }

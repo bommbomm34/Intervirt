@@ -1,29 +1,46 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.*
-import io.github.bommbomm34.intervirt.exceptions.DeviceNotFoundException
+import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.data.RequestBody
+import io.github.bommbomm34.intervirt.data.ResponseBody
+import io.github.bommbomm34.intervirt.data.ResultProgress
+import io.github.bommbomm34.intervirt.data.VersionResponseBody
+import io.github.bommbomm34.intervirt.data.commandBody
+import io.github.bommbomm34.intervirt.data.idBody
 import io.github.bommbomm34.intervirt.result
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.websocket.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
 import java.io.File
 
 class AgentInterface(val fileManagement: FileManagement) {
 
-    suspend fun addContainer(id: String, initialIPv4: String, initialIPv6: String, internet: Boolean): Result<Unit> {
-        val response = put("container", AddContainerBody(id, initialIPv4, initialIPv6, internet))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit)
-        else Result.failure(response.body<ResponseBody>().exception())
+    var session: DefaultClientWebSocketSession? = null
+
+    suspend fun initConnection() {
+        session = client.webSocketSession(
+            method = HttpMethod.Get,
+            host = "localhost",
+            port = 55436,
+            path = "containerManagement"
+        )
     }
 
-    suspend fun removeContainer(id: String): Result<Unit> {
-        val response = delete("container?id=$id")
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit)
-        else Result.failure(response.body<ResponseBody>().exception())
-    }
+    suspend fun addContainer(
+        id: String,
+        initialIPv4: String,
+        initialIPv6: String,
+        internet: Boolean,
+        image: String
+    ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIPv4, initialIPv6, internet, image))
+
+    suspend fun removeContainer(id: String): Result<Unit> = justSend(id.idBody("removeContainer"))
 
     suspend fun getDisk(id: String): Result<File> {
         return fileManagement.downloadFile(
@@ -32,110 +49,56 @@ class AgentInterface(val fileManagement: FileManagement) {
         ).first { it.result != null }.result!!
     }
 
-    suspend fun setIPv4(id: String, newIP: String): Result<Unit> {
-        val response = post("ipv4", IDWithNewIPBody(id, newIP))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
+    suspend fun setIPv4(id: String, newIP: String): Result<Unit> = justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv4"))
+
+    suspend fun setIPv6(id: String, newIP: String): Result<Unit> = justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv6"))
+
+    suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2, "connect"))
+
+    suspend fun disconnect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2, "disconnect"))
+
+    suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> = justSend(RequestBody.SetInternetAccess(id, enabled))
+
+    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int): Result<Unit> = justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort))
+
+    suspend fun removePortForwarding(externalPort: Int): Result<Unit> = justSend(RequestBody.RemovePortForwarding(externalPort))
+
+    fun wipe(): Flow<ResultProgress<Unit>> = flowSend("wipe".commandBody())
+
+    fun update(): Flow<ResultProgress<Unit>> = flowSend("update".commandBody())
+
+    suspend fun shutdown(): Result<Unit> = justSend("shutdown".commandBody())
+
+    suspend fun reboot(): Result<Unit> = justSend("reboot".commandBody())
+
+    suspend fun getVersion(): String = send<VersionResponseBody>("version".commandBody()).first().version
+
+    fun runCommand(id: String, shellCommand: String): Flow<ResultProgress<Unit>> = flowSend(RequestBody.RunCommand(id, shellCommand))
+
+    suspend fun justSend(body: RequestBody): Result<Unit> {
+        val response = send<ResponseBody>(body).firstOrNull { it.code != 0 }
+        return response?.exception()?.result() ?: Result.success(Unit)
     }
 
-    suspend fun setIPv6(id: String, newIP: String): Result<Unit> {
-        val response = post("ipv6", IDWithNewIPBody(id, newIP))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun connect(id1: String, id2: String): Result<Unit> {
-        val response = post("connect", ConnectBody(id1, id2))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun disconnect(id1: String, id2: String): Result<Unit> {
-        val response = post("disconnect", ConnectBody(id1, id2))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> {
-        val response = post("setInternetAccess", SetInternetAccessBody(id, enabled))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun forwardPort(id: String, internalPort: Int, externalPort: Int): Result<Unit> {
-        val response = put("forwardPort", ForwardPortBody(id, internalPort, externalPort))
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun removeForwardPort(externalPort: Int): Result<Unit> {
-        val response = delete("forwardPort?externalPort=$externalPort")
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun wipe(): Result<Unit> {
-        val response = post("wipe")
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun update(): Result<Unit> {
-        val response = post("update")
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun shutdown(): Result<Unit> {
-        val response = post("shutdown")
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun reboot(): Result<Unit> {
-        val response = post("reboot")
-        return if (response.status == HttpStatusCode.OK) Result.success(Unit) else
-            Result.failure(response.body<ResponseBody>().exception())
-    }
-
-    suspend fun listContainerInfos(): Result<List<ContainerInfo>> {
-        val response = get("containerInfos")
-        return when (response.status) {
-            HttpStatusCode.OK -> Result.success(response.body())
-            HttpStatusCode.NotFound -> DeviceNotFoundException().result()
-            else -> response.body<ResponseBody>().exception().result()
+    fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
+        var failed = false
+        send<ResponseBody>(body).collect {
+            if (it.code != 0) {
+                failed = true
+                emit(ResultProgress.failure(it.exception()))
+            } else {
+                emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
+            }
         }
+        if (!failed) emit(ResultProgress.success(Unit))
     }
 
-    suspend fun getVersion(): String = get("version").body<VersionResponseBody>().version
-
-    suspend fun runCommand(id: String, command: String): Result<String> {
-        val response = get("runCommand")
-        val body = response.body<ResponseBody>()
-        return if (response.status == HttpStatusCode.OK) body.output!!.result() else body.exception().result()
-    }
-
-    private suspend inline fun <reified T> put(endpoint: String, body: T): HttpResponse {
-        return client.put("http://localhost:55436/$endpoint") {
-            setBody(body)
+    inline fun <reified T> send(body: RequestBody): Flow<T> = flow {
+        if (session == null) initConnection()
+        session!!.send(Frame.Text(Json.encodeToString(body)))
+        while (true) {
+            val message = (session!!.incoming.receive() as Frame.Text).readText()
+            if (message == "END") break else emit(Json.decodeFromString(message))
         }
-    }
-
-    private suspend inline fun <reified T> post(endpoint: String, body: T): HttpResponse {
-        return client.post("http://localhost:55436/$endpoint") {
-            setBody(body)
-        }
-    }
-
-    private suspend fun post(endpoint: String): HttpResponse {
-        return client.post("http://localhost:55436/$endpoint")
-    }
-
-    private suspend fun get(url: String): HttpResponse {
-        return client.get("http://localhost:55436/$url")
-    }
-
-    private suspend fun delete(url: String): HttpResponse {
-        return client.delete("http://localhost:55436/$url")
     }
 }

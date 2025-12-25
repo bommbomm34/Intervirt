@@ -3,10 +3,15 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.IncusImage
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.connect
+import io.github.bommbomm34.intervirt.logger
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import java.io.File
 import kotlin.random.Random
 
-class DeviceInterface (val configuration: IntervirtConfiguration, val agent: AgentInterface) {
+class DeviceManagement (val configuration: IntervirtConfiguration, val agent: AgentInterface) {
     suspend fun addComputer(name: String, x: Float, y: Float, image: IncusImage): Device {
         val device = Device.Computer(
             id = generateID("computer"),
@@ -19,8 +24,9 @@ class DeviceInterface (val configuration: IntervirtConfiguration, val agent: Age
             internetEnabled = false,
             portForwardings = mutableMapOf()
         )
+        logger.debug { "Adding device $device" }
         configuration.devices.add(device)
-        agent.addContainer(device.id, device.ipv4, device.ipv6, false)
+        agent.addContainer(device.id, device.ipv4, device.ipv6, false, image.fullName())
         return device
     }
 
@@ -31,17 +37,20 @@ class DeviceInterface (val configuration: IntervirtConfiguration, val agent: Age
             x = x,
             y = y
         )
+        logger.debug { "Adding device $device" }
         configuration.devices.add(device)
         return device
     }
 
     suspend fun removeDevice(device: Device){
+        logger.debug { "Removing device $device" }
         configuration.devices.remove(device)
         configuration.connections.removeIf { it.containsDevice(device) }
         agent.removeContainer(device.id)
     }
 
     suspend fun connectDevice(device1: Device, device2: Device){
+        logger.debug { "Connecting device $device1 to $device2" }
         configuration.connections.add(device1 connect device2)
         val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
         device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
@@ -50,6 +59,7 @@ class DeviceInterface (val configuration: IntervirtConfiguration, val agent: Age
     }
 
     suspend fun disconnectDevice(device1: Device, device2: Device){
+        logger.debug { "Disconnecting device $device1 to $device2" }
         configuration.connections.remove(device1 connect device2)
         val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
         device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
@@ -58,24 +68,33 @@ class DeviceInterface (val configuration: IntervirtConfiguration, val agent: Age
         
     }
 
-    suspend fun changeIPv4(device: Device.Computer, ipv4: String){
+    suspend fun setIPv4(device: Device.Computer, ipv4: String){
+        logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
         agent.setIPv4(device.id, ipv4)
     }
 
-    suspend fun changeIPv6(device: Device.Computer, ipv6: String){
+    suspend fun setIPv6(device: Device.Computer, ipv6: String){
+        logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
-        agent.setIPv4(device.id, ipv6)
+        agent.setIPv6(device.id, ipv6)
     }
+
+    fun exportComputer(computer: Device.Computer): Flow<ResultProgress<File>> = flow {
+        logger.debug { "Exporting disk of $computer" }
+        emit(ResultProgress.result(agent.getDisk(computer.id)))
+    }
+
+    fun runCommand(computer: Device.Computer, command: String) = agent.runCommand(computer.id, command)
 
     private fun generateID(prefix: String): String {
         while (true) {
-            val id = prefix + Random.nextInt(999999)
+            val id = prefix + "-" +  Random.nextInt(999999)
             if (configuration.devices.all { it.id != id }) return id
         }
     }
 
-    fun generateIPv4(): String {
+    private fun generateIPv4(): String {
         val rand = { Random.nextInt(256) }
         while (true){
             val ipv4 = "192.168.${rand()}.${rand()}"
@@ -83,7 +102,7 @@ class DeviceInterface (val configuration: IntervirtConfiguration, val agent: Age
         }
     }
 
-    fun generateIPv6(): String {
+    private fun generateIPv6(): String {
         val rand = { Random.nextInt(65536).toString(16) }
         val randFirst = { Random.nextInt(256).toString(16) }
         while (true){

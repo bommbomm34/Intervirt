@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
 
-// IntervirtConfiguration of an Intervirt project
+// Configuration of an Intervirt project
 @Serializable
 data class IntervirtConfiguration(
     val version: String,
@@ -32,11 +32,12 @@ data class IntervirtConfiguration(
                         id = device.id,
                         initialIPv4 = device.ipv4,
                         initialIPv6 = device.ipv6,
-                        internet = device.internetEnabled
+                        internet = device.internetEnabled,
+                        image = device.image
                     )
                     device.portForwardings.forEach { portForwarding ->
                         emit("Adding port forwarding ${portForwarding.key}:${portForwarding.value} to ${device.name}".result())
-                        agent.forwardPort(device.id, portForwarding.key, portForwarding.value)
+                        agent.addPortForwarding(device.id, portForwarding.key, portForwarding.value)
                     }
                 }
             }

@@ -19,11 +19,7 @@ sealed class Device(
         var ipv6: String,
         var internetEnabled: Boolean,
         val portForwardings: MutableMap<Int, Int> // internalPort:externalPort
-    ) : Device(id, name, x, y) {
-        suspend fun runCommand(command: String) {
-
-        }
-    }
+    ) : Device(id, name, x, y)
 
     data class Switch(
         override val id: String,

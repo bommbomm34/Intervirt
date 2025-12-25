@@ -11,11 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import io.github.bommbomm34.intervirt.api.DeviceInterface
+import io.github.bommbomm34.intervirt.api.AgentInterface
+import io.github.bommbomm34.intervirt.api.DeviceManagement
 import io.github.bommbomm34.intervirt.api.QEMUInterface
+import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.Executor
 import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.data.IncusImage
 import io.github.bommbomm34.intervirt.setup.Downloader
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -51,14 +54,14 @@ fun App() {
             }
             Button(onClick = {
                 scope.launch {
-                    val deviceInterface = DeviceInterface(
-                        IntervirtConfiguration(
-                            author = "Hi",
-                            version = "alpha",
-                            devices = mutableListOf()
-                        ), fileManagement)
-                    println(deviceInterface.generateIPv4())
-                    println(deviceInterface.generateIPv6())
+                    val conf = IntervirtConfiguration(
+                        author = "Max Mustermann",
+                        version = "6.7",
+                        devices = mutableListOf(),
+                        connections = mutableListOf()
+                    )
+                    val management = DeviceManagement(conf, AgentInterface(fileManagement))
+                    management.addComputer("John's Machine", 76f, 67f, IncusImage("debian", "12"))
                 }
             }) {
                 Text("Test all")
