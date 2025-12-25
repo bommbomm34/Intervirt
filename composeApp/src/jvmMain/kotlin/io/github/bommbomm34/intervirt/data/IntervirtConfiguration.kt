@@ -13,13 +13,14 @@ import kotlinx.serialization.Serializable
 data class IntervirtConfiguration(
     val version: String,
     val author: String,
-    val devices: MutableList<Device>
+    val devices: MutableList<Device>,
+    val connections: MutableList<DeviceConnection>
 ) {
     fun syncConfiguration(agent: AgentInterface): Flow<Result<String>> = flow {
         // Check version
-        if (agent.getVersion() != CURRENT_VERSION)
+        if (agent.getVersion() != CURRENT_VERSION) {
             emit(DeprecatedException().result())
-        else {
+        } else {
             emit("Starting synchronisation".result())
             emit("Wiping old data".result())
             agent.wipe()
@@ -40,10 +41,18 @@ data class IntervirtConfiguration(
                 }
             }
             emit("Connecting devices".result())
-            devices.forEach { device ->
-                device.connected.forEach { peerId ->
-                    emit("Conencting device ${device.name} to ${devices.getById(peerId).name}".result())
-                    agent.connect(device.id, peerId)
+
+            connections.forEach { conn ->
+                emit("Connecting device ${conn.device1.name} to ${conn.device2.name}".result())
+                when (conn) {
+                    is DeviceConnection.Computer -> agent.connect(conn.device1.id, conn.device2.id)
+                    is DeviceConnection.Switch -> {
+                        val switch1ConnectedComputers = conn.switch1.getConnectedComputers(connections)
+                        conn.switch2.getConnectedComputers(connections).forEach { computer1 ->
+                            switch1ConnectedComputers.forEach { computer2 -> agent.connect(computer1.id, computer2.id) }
+                        }
+                    }
+                    is DeviceConnection.SwitchComputer -> conn.switch.getConnectedComputers(connections).forEach { agent.connect(it.id, conn.computer.id) }
                 }
             }
             emit("Synchronisation successfully completed".result())

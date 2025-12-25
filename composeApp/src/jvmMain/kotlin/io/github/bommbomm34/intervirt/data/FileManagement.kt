@@ -82,15 +82,6 @@ class FileManagement(val dataDir: File) {
         return if (linuxFile.exists()) linuxFile else windowsFile
     }
 
-    fun sendFileToGuest(file: File, destinationFolder: String){
-        logger.info { "Sending file ${file.name} to guest" }
-        if (!guestSession.isConnected) guestSession.connect()
-        val channel = guestSession.openChannel("sftp") as ChannelSftp
-        channel.connect()
-        channel.put(file.absolutePath, destinationFolder, ChannelSftp.OVERWRITE)
-        channel.disconnect()
-    }
-
     fun parseConfiguration(file: File) = Json.decodeFromString<IntervirtConfiguration>(Files.readString(file.toPath()))
 }
 

@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
+import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.bommbomm34.intervirt.exceptions.OSError
 import io.github.bommbomm34.intervirt.exceptions.OperationAlreadyPerformedError
 import io.github.bommbomm34.intervirt.exceptions.UndefinedError
@@ -9,7 +10,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ResponseBody (
     val error: String,
-    val code: Int
+    val code: Int,
+    val output: String? = null
 ){
     fun exception(): Exception {
         return when (code) {
@@ -17,6 +19,7 @@ data class ResponseBody (
             2 -> UnknownError()
             3 -> OperationAlreadyPerformedError()
             4 -> OSError(error)
+            5 -> ContainerExecutionException(error)
             0 -> error("No exception available for successful status code 0")
             else -> error("Invalid status code $code")
         }
