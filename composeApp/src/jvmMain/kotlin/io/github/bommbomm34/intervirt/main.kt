@@ -3,7 +3,8 @@ package io.github.bommbomm34.intervirt
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import io.github.bommbomm34.intervirt.api.QEMUInterface
+import io.github.bommbomm34.intervirt.api.QEMUClient
+import io.github.bommbomm34.intervirt.gui.App
 import kotlinx.coroutines.launch
 import org.slf4j.simple.SimpleLogger
 
@@ -13,7 +14,7 @@ fun main() = application {
     Window(
         onCloseRequest = {
             scope.launch {
-                qemu.shutdownAlpine()
+                QEMUClient.shutdownAlpine()
                 exitApplication()
             }
         },

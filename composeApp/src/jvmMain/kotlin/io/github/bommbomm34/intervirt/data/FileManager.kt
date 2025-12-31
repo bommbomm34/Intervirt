@@ -1,10 +1,9 @@
 package io.github.bommbomm34.intervirt.data
 
-import com.jcraft.jsch.ChannelSftp
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.guestSession
+import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.preferences
 import io.ktor.client.call.*
@@ -20,7 +19,9 @@ import org.jetbrains.compose.resources.getString
 import java.io.File
 import java.nio.file.Files
 
-class FileManagement(val dataDir: File) {
+object FileManager {
+    val dataDir = File(env("DATA_DIR") ?: preferences.loadString("dataDir") ?: System.getProperty("user.home"))
+
     init {
         preferences.saveString("dataPath", dataDir.absolutePath + File.separator)
         dataDir.createFileInDirectory("qemu", true)

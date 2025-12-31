@@ -2,7 +2,7 @@ package io.github.bommbomm34.intervirt.setup
 
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
-import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.data.FileManager
 import io.github.bommbomm34.intervirt.data.OS
 import io.github.bommbomm34.intervirt.data.Progress
 import io.github.bommbomm34.intervirt.data.getOS
@@ -14,21 +14,21 @@ import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.exception.ZipException
 import org.jetbrains.compose.resources.getString
 
-class Downloader(val fileManagement: FileManagement) {
+class Downloader(val fileManager: FileManager) {
     fun downloadQEMUWindows(update: Boolean = false): Flow<Progress> = flow {
-        if (!fileManagement.getFile("qemu/qemu-system-x86_64.exe").exists() || update) {
+        if (!fileManager.getFile("qemu/qemu-system-x86_64.exe").exists() || update) {
             // Wipe previous installation if available
-            fileManagement.getFile("qemu").listFiles().forEach { it.delete() }
+            fileManager.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
             val url = "http://localhost:3000/qemu-portable.zip"
-            val file = fileManagement.downloadFile(url, "qemu-portable.zip")
+            val file = fileManager.downloadFile(url, "qemu-portable.zip")
             file.collect {
                 if (it.result != null) {
                     it.result.onSuccess { zipFile ->
                         val zip = ZipFile(zipFile)
                         try {
                             logger.debug { "Extracting ${zipFile.name}" }
-                            zip.extractAll(fileManagement.getFile("qemu").absolutePath)
+                            zip.extractAll(fileManager.getFile("qemu").absolutePath)
                             logger.debug { "Testing QEMU" }
                             emit(
                                 Progress.success(
@@ -64,15 +64,15 @@ class Downloader(val fileManagement: FileManagement) {
     }
 
     fun downloadQEMULinux(update: Boolean = false): Flow<Progress> = flow {
-        if (!fileManagement.getFile("qemu/qemu-system-x86_64").exists() || update) {
+        if (!fileManager.getFile("qemu/qemu-system-x86_64").exists() || update) {
             // Wipe previous installation if available
-            fileManagement.getFile("qemu").listFiles().forEach { it.delete() }
+            fileManager.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
 //            val urlResult = getDownloadURL("http://localhost:3000/qemu-system-")
             val urlResult = getDownloadURL("http://localhost:3000/qemu-system-")
             urlResult.onSuccess { url ->
                 logger.debug { "Determined download URL $url" }
-                val file = fileManagement.downloadFile(url, "qemu-system-x86_64", fileManagement.getFile("qemu"))
+                val file = fileManager.downloadFile(url, "qemu-system-x86_64", fileManager.getFile("qemu"))
                 file.collect {
                     if (it.result != null) {
                         it.result.onSuccess { executable ->
@@ -117,9 +117,9 @@ class Downloader(val fileManagement: FileManagement) {
 
     fun downloadAlpineDisk(): Flow<Progress> = flow {
         logger.debug { "Downloading disk" }
-        if (!fileManagement.getFile("disk/alpine-linux.qcow2").exists()) {
+        if (!fileManager.getFile("disk/alpine-linux.qcow2").exists()) {
             val url = "http://localhost:3000/alpine-linux.qcow2"
-            val file = fileManagement.downloadFile(url, "alpine-linux.qcow2", fileManagement.getFile("disk"))
+            val file = fileManager.downloadFile(url, "alpine-linux.qcow2", fileManager.getFile("disk"))
             file.collect {
                 if (it.result != null) {
                     it.result.onFailure {

@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 sealed class RequestBody (open val command: String) {
     data class AddContainer (
         val id: String,
-        val initialIPv4: String,
-        val initialIPv6: String,
+        val ipv4: String,
+        val ipv6: String,
         val internet: Boolean,
         val image: String,
         override val command: String = "addContainer",

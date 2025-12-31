@@ -4,8 +4,7 @@ import io.github.bommbomm34.intervirt.SSH_PORT
 import io.github.bommbomm34.intervirt.SSH_TIMEOUT
 import io.github.bommbomm34.intervirt.START_ALPINE_VM_COMMANDS
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
-import io.github.bommbomm34.intervirt.data.Executor
-import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.data.FileManager
 import io.github.bommbomm34.intervirt.logger
 import kotlinx.coroutines.delay
 import java.io.BufferedReader
@@ -14,13 +13,13 @@ import java.net.ConnectException
 import java.net.Socket
 import java.util.concurrent.TimeUnit
 
-class QEMUInterface(val fileManagement: FileManagement, val executor: Executor) {
+object QEMUClient {
     var currentProcess: Process? = null
 
     suspend fun bootAlpine(): Result<Boolean> {
         logger.debug { "Booting Alpine Linux" }
         val builder = ProcessBuilder(*START_ALPINE_VM_COMMANDS.toTypedArray())
-        builder.directory(fileManagement.getFile("qemu"))
+        builder.directory(FileManager.getFile("qemu"))
         builder.redirectErrorStream(true)
         currentProcess = builder.start()
         BufferedReader(InputStreamReader(currentProcess!!.inputStream)).use { tempReader ->
@@ -44,14 +43,9 @@ class QEMUInterface(val fileManagement: FileManagement, val executor: Executor) 
         }
     }
 
-    suspend fun shutdownAlpine() {
+    fun shutdownAlpine() {
         logger.info { "Shutting down Alpine VM" }
-        try {
-            executor.runCommandOnGuest("poweroff").collect { }
-        } catch (_: Exception) {
-            logger.debug { "SSH Connection isn't available, shutdown through process kill..." }
-            currentProcess?.destroy()
-        }
+        currentProcess?.destroy()
         logger.debug { "Waiting for Alpine VM to shutdown" }
         currentProcess?.waitFor(VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
         if (currentProcess?.isAlive ?: false){

@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt
 
-import com.jcraft.jsch.JSch
-import com.jcraft.jsch.Session
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -31,9 +30,7 @@ val client = HttpClient(CIO) {
     }
     install(WebSockets)
 }
-val guestSession: Session = JSch()
-    .getSession("root", "127.0.0.1", SSH_PORT)
-    .apply { setConfig("StrictHostKeyChecking", "no") }
+val configuration = IntervirtConfiguration(CURRENT_VERSION, "", mutableListOf(), mutableListOf())
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name")
 

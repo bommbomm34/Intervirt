@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -11,7 +10,7 @@ plugins {
 
 kotlin {
     jvm()
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -36,7 +35,9 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
             implementation(libs.zip4j)
-            implementation(libs.jsch)
+            implementation(libs.kuiver)
+            implementation(libs.compose.tabler.icons)
+            implementation(libs.calf.ui)
         }
     }
 }
@@ -47,7 +48,7 @@ compose.desktop {
         mainClass = "io.github.bommbomm34.intervirt.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage, TargetFormat.Pkg)
             packageName = "io.github.bommbomm34.intervirt"
             packageVersion = "1.0.0"
         }

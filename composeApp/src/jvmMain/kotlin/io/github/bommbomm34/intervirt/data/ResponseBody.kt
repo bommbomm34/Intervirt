@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ResponseBody(
     val error: String? = null,
-    val code: Int? = null,
+    val code: Int = 0,
     val progress: Float? = null,
     val output: String? = null
 ) {
@@ -17,6 +17,7 @@ data class ResponseBody(
             3 -> OperationAlreadyPerformedError()
             4 -> OSError(error!!)
             5 -> ContainerExecutionException(error!!)
+            6 -> NotFoundError(error!!)
             0 -> error("No exception available for successful status code 0")
             else -> error("Invalid status code $code")
         }

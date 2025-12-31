@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.FileManagement
+import io.github.bommbomm34.intervirt.data.FileManager
 import io.github.bommbomm34.intervirt.data.RequestBody
 import io.github.bommbomm34.intervirt.data.ResponseBody
 import io.github.bommbomm34.intervirt.data.ResultProgress
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import java.io.File
 
-class AgentInterface(val fileManagement: FileManagement) {
+object AgentClient {
 
     var session: DefaultClientWebSocketSession? = null
 
@@ -43,8 +43,8 @@ class AgentInterface(val fileManagement: FileManagement) {
     suspend fun removeContainer(id: String): Result<Unit> = justSend(id.idBody("removeContainer"))
 
     suspend fun getDisk(id: String): Result<File> {
-        return fileManagement.downloadFile(
-            "http://localhost:55436/disk",
+        return FileManager.downloadFile(
+            "http://localhost:55436/disk?id=$id",
             "disk-$id-${System.currentTimeMillis()}.tar.gz"
         ).first { it.result != null }.result!!
     }

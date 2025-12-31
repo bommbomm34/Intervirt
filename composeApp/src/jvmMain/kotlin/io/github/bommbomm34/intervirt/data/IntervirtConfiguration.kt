@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.data
 
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
-import io.github.bommbomm34.intervirt.api.AgentInterface
+import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.exceptions.DeprecatedException
 import io.github.bommbomm34.intervirt.result
 import kotlinx.coroutines.flow.Flow
@@ -12,18 +12,18 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IntervirtConfiguration(
     val version: String,
-    val author: String,
+    var author: String,
     val devices: MutableList<Device>,
     val connections: MutableList<DeviceConnection>
 ) {
-    fun syncConfiguration(agent: AgentInterface): Flow<Result<String>> = flow {
+    fun syncConfiguration(agent: AgentClient): Flow<Result<String>> = flow {
         // Check version
         if (agent.getVersion() != CURRENT_VERSION) {
             emit(DeprecatedException().result())
         } else {
             emit("Starting synchronisation".result())
             emit("Wiping old data".result())
-            agent.wipe()
+            agent.wipe().collect { emit((it.message ?: "").result()) }
             emit("Creating devices".result())
             devices.forEach { device ->
                 if (device is Device.Computer) {
