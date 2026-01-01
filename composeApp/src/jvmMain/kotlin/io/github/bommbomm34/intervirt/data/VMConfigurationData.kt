@@ -1,0 +1,7 @@
+package io.github.bommbomm34.intervirt.data
+
+data class VMConfigurationData(
+    val ram: Int, // RAM in MB
+    val cpu: Int,
+    val kvm: Boolean // Only available on Linux with root
+)

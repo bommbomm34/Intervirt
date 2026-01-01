@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 @Composable
 fun MultipleAnimatedVisibility(
     visible: Int,
-    scopes: List<@Composable (AnimatedVisibilityScope.() -> Unit)>
+    screens: List<@Composable (AnimatedVisibilityScope.() -> Unit)>
 ) {
-    scopes.forEachIndexed { i, it ->
+    screens.forEachIndexed { i, it ->
         AnimatedVisibility(
             visible = i == visible,
             content = it
