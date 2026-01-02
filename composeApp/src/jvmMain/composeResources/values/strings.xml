@@ -9,4 +9,12 @@
     <string name="not_found">%s not found.</string>
     <string name="computer">Computer</string>
     <string name="switch">Switch</string>
+    <string name="ram_in_mb">RAM in MB</string>
+    <string name="amount_of_cpu_cores">Amount of CPU cores</string>
+    <string name="enable_kvm">Enable KVM</string>
+    <string name="enable_kvm_tooltip">Requires Linux and a KVM group membership</string>
+    <string name="vm_setup_introduction">Intervirt needs to set up a virtual machine to run the container secure and rootless.</string>
+    <string name="vm_shutdown_timeout">VM Shutdown Timeout in ms</string>
+    <string name="intervirt_folder">Intervirt Folder Path</string>
+    <string name="agent_port">Agent Port</string>
 </resources>

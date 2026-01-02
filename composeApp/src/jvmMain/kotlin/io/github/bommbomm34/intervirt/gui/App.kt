@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.data.FileManager
@@ -44,22 +45,15 @@ fun App() {
                 .safeContentPadding()
                 .background(colors.background)
         ){
-            Column(
-                Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-            ) {
-                MultipleAnimatedVisibility(
-                    currentScreenIndex,
-                    listOf(
-                        { Setup() },
-                        { Home() },
-                        { OSInstaller() },
-                        { RegularSettings() },
-                        { AdvancedSettings() }
-                    )
+            MultipleAnimatedVisibility(
+                currentScreenIndex,
+                listOf(
+                    { Setup() },
+                    { Home() },
+                    { OSInstaller() },
+                    { Settings() }
                 )
-            }
+            )
         }
     }
 }
