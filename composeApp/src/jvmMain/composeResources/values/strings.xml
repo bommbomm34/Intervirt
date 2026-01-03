@@ -1,12 +1,12 @@
 <resources>
-    <string name="download_failed">Download failed: %s</string>
-    <string name="download_succeeded">Download of %s succeeded</string>
-    <string name="os_is_not_supported">Your OS %s is not supported by %s.</string>
-    <string name="arch_is_not_supported">Your architecture %s is not supported.</string>
-    <string name="error_while_zip_extraction">An error occurred while extracting %s: %s</string>
-    <string name="successful_installation">Installed %s successfully!</string>
+    <string name="download_failed">Download failed: %1$s</string>
+    <string name="download_succeeded">Download of %1$s succeeded</string>
+    <string name="os_is_not_supported">Your OS %1$s is not supported by %2$s.</string>
+    <string name="arch_is_not_supported">Your architecture %1$s is not supported.</string>
+    <string name="error_while_zip_extraction">An error occurred while extracting %1$s: %2$s</string>
+    <string name="successful_installation">Installed %1$s successfully!</string>
     <string name="downloading">Downloading...</string>
-    <string name="not_found">%s not found.</string>
+    <string name="not_found">%1$s not found.</string>
     <string name="computer">Computer</string>
     <string name="switch">Switch</string>
     <string name="ram_in_mb">RAM in MB</string>
@@ -17,4 +17,12 @@
     <string name="vm_shutdown_timeout">VM Shutdown Timeout in ms</string>
     <string name="intervirt_folder">Intervirt Folder Path</string>
     <string name="agent_port">Agent Port</string>
+    <string name="pick_file">Pick file</string>
+    <string name="pick_directory">Pick directory</string>
+    <string name="allow_to_install_intervirt">I allow to install Intervirt on my computer with the configuration I selected.</string>
+    <string name="creating_intervirt_folder">Creating Intervirt folder structure...</string>
+    <string name="applying_configuration">Applying configuration...</string>
+    <string name="show_logs">Show logs</string>
+    <string name="cancel_intervirt_installation">Cancel Intervirt Installation</string>
+    <string name="install_intervirt">Install Intervirt</string>
 </resources>

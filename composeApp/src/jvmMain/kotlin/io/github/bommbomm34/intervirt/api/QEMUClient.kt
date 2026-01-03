@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.SSH_PORT
+import io.github.bommbomm34.intervirt.AGENT_PORT
 import io.github.bommbomm34.intervirt.SSH_TIMEOUT
 import io.github.bommbomm34.intervirt.START_ALPINE_VM_COMMANDS
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
@@ -28,7 +28,7 @@ object QEMUClient {
             if (currentProcess!!.isAlive) {
                 logger.debug { "Waiting for availability" }
                 val startTime = System.currentTimeMillis()
-                while (!testSSHPort(SSH_PORT)) {
+                while (!testAgentPort()) {
                     if (System.currentTimeMillis() - startTime > SSH_TIMEOUT) {
                         return Result.failure(IllegalStateException("SSH isn't available"))
                     }
@@ -58,13 +58,9 @@ object QEMUClient {
     }
 }
 
-fun testSSHPort(port: Int): Boolean {
+fun testAgentPort(): Boolean {
     try {
-        Socket("127.0.0.1", port).use { socket ->
-            val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
-            val line = reader.readLine()
-            return line != null && line.startsWith("SSH")
-        }
+        Socket("127.0.0.1", AGENT_PORT).use { return true }
     } catch (_: ConnectException){
         return false
     }

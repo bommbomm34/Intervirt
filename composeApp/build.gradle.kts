@@ -23,6 +23,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.websockets)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -37,7 +39,6 @@ kotlin {
             implementation(libs.zip4j)
             implementation(libs.kuiver)
             implementation(libs.compose.tabler.icons)
-            implementation(libs.calf.ui)
         }
     }
 }

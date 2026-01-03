@@ -9,10 +9,10 @@ import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.AGENT_PORT
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.Screens
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.*
-import io.github.bommbomm34.intervirt.preferences
 import java.io.File
 
 @Composable
@@ -32,7 +32,7 @@ fun Setup() {
             AppConfigurationData(
                 vmShutdownTimeout = VM_SHUTDOWN_TIMEOUT.toInt(),
                 agentPort = AGENT_PORT,
-                intervirtFolder = preferences.loadString("dataDir")
+                intervirtFolder = Preferences.loadString("dataDir")
                     ?: (System.getProperty("user.home") + File.separator + "Intervirt")
             )
         )
@@ -40,7 +40,7 @@ fun Setup() {
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(vmConf) { vmConf = it } },
         { AppConfiguration(appConf) { appConf = it } },
-        { Installation() }
+        { Installation { applyConfiguration(vmConf, appConf) } }
     )
     AlignedBox(Alignment.TopCenter, 32.dp) {
         Text(
@@ -70,4 +70,13 @@ fun Setup() {
             currentSetupScreenIndex++
         }
     }
+}
+
+fun applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData){
+    Preferences.saveString("VM_RAM", vmConf.ram.toString())
+    Preferences.saveString("VM_CPU", vmConf.cpu.toString())
+    Preferences.saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
+    Preferences.saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
+    Preferences.saveString("AGENT_PORT", appConf.agentPort.toString())
+    Preferences.saveString("DATA_DIR", appConf.intervirtFolder)
 }

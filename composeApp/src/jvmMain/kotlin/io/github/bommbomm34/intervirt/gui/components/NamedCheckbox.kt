@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.bommbomm34.intervirt.TOOLTIP_FONT_SIZE
 
 @Composable
 fun NamedCheckbox(
@@ -26,7 +27,7 @@ fun NamedCheckbox(
         GeneralSpacer(2.dp)
         Column {
             Text(name)
-            tooltip?.let { Text(tooltip, fontSize = 12.sp, color = Color.Gray) }
+            tooltip?.let { Text(tooltip, fontSize = TOOLTIP_FONT_SIZE, color = Color.Gray) }
         }
     }
 }

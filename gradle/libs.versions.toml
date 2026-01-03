@@ -11,7 +11,7 @@ zip4j = "2.11.5"
 kuiver = "0.1.0"
 compose-tabler-icons = "1.1.1"
 kotlinx-serialization-json = "1.9.0"
-calf = "0.9.0"
+filekit = "0.12.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -26,8 +26,9 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 kuiver = { module = "io.github.justdeko:kuiver", version.ref = "kuiver" }
-calf-ui = { module = "com.mohamedrejeb.calf:calf-ui", version.ref = "calf" }
 compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-tabler-icons" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

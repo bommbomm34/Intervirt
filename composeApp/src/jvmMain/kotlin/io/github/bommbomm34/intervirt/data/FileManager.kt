@@ -2,10 +2,9 @@ package io.github.bommbomm34.intervirt.data
 
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
+import io.github.bommbomm34.intervirt.DATA_DIR
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.logger
-import io.github.bommbomm34.intervirt.preferences
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -20,24 +19,23 @@ import java.io.File
 import java.nio.file.Files
 
 object FileManager {
-    val dataDir = File(env("DATA_DIR") ?: preferences.loadString("dataDir") ?: System.getProperty("user.home"))
 
-    init {
-        preferences.saveString("dataPath", dataDir.absolutePath + File.separator)
-        dataDir.createFileInDirectory("qemu", true)
-        dataDir.createFileInDirectory("disk", true)
-        dataDir.createFileInDirectory("cache", true)
+    fun init() {
+        DATA_DIR.mkdir()
+        DATA_DIR.createFileInDirectory("qemu", true)
+        DATA_DIR.createFileInDirectory("disk", true)
+        DATA_DIR.createFileInDirectory("cache", true)
     }
 
-    fun newFile(path: String, directory: Boolean = false): File {
-        return dataDir.createFileInDirectory(path)
+    fun newFile(path: String): File {
+        return DATA_DIR.createFileInDirectory(path)
     }
 
     fun removeFile(path: String) {
-        dataDir.createFileInDirectory(path)
+        DATA_DIR.createFileInDirectory(path)
     }
 
-    fun getFile(name: String) = File(dataDir.absolutePath + File.separator + name)
+    fun getFile(name: String) = File(DATA_DIR.absolutePath + File.separator + name)
 
     // Based on: https://ktor.io/docs/client-responses.html#streaming
     fun downloadFile(url: String, name: String, destination: File = getFile("cache")): Flow<ResultProgress<File>> =
@@ -77,6 +75,7 @@ object FileManager {
                 }
             }
         }
+
     fun getQEMUFile(): File {
         val linuxFile = getFile("qemu/qemu-system-x86_64")
         val windowsFile = getFile("qemu/qemu-system-x86_64.exe")
