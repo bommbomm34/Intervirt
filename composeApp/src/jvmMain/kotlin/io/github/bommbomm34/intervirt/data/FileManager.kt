@@ -4,6 +4,7 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.DATA_DIR
 import io.github.bommbomm34.intervirt.client
+import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
 import io.github.bommbomm34.intervirt.logger
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -77,9 +78,11 @@ object FileManager {
         }
 
     fun getQEMUFile(): File {
-        val linuxFile = getFile("qemu/qemu-system-x86_64")
-        val windowsFile = getFile("qemu/qemu-system-x86_64.exe")
-        return if (linuxFile.exists()) linuxFile else windowsFile
+        return when (getOS()){
+            OS.WINDOWS -> getFile("qemu/qemu-system-x86_64")
+            OS.LINUX -> getFile("qemu/usr/local/bin/qemu-system-x86_64")
+            null -> throw UnsupportedOSException()
+        }
     }
 
     fun parseConfiguration(file: File) = Json.decodeFromString<IntervirtConfiguration>(Files.readString(file.toPath()))

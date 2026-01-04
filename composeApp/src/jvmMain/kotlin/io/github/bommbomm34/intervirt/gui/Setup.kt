@@ -12,11 +12,14 @@ import io.github.bommbomm34.intervirt.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.Screens
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
+import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.gui.components.*
 import java.io.File
 
 @Composable
-fun Setup() {
+fun Setup(
+    onFinish: () -> Unit
+) {
     var currentSetupScreenIndex by remember { mutableStateOf(Screens.Setup.VM_CONFIGURATION) }
     var vmConf by remember {
         mutableStateOf(
@@ -32,7 +35,7 @@ fun Setup() {
             AppConfigurationData(
                 vmShutdownTimeout = VM_SHUTDOWN_TIMEOUT.toInt(),
                 agentPort = AGENT_PORT,
-                intervirtFolder = Preferences.loadString("dataDir")
+                intervirtFolder = env("dataDir")
                     ?: (System.getProperty("user.home") + File.separator + "Intervirt")
             )
         )
@@ -40,9 +43,9 @@ fun Setup() {
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(vmConf) { vmConf = it } },
         { AppConfiguration(appConf) { appConf = it } },
-        { Installation { applyConfiguration(vmConf, appConf) } }
+        { Installation(onFinish) { applyConfiguration(vmConf, appConf) } }
     )
-    AlignedBox(Alignment.TopCenter, 32.dp) {
+    AlignedBox(Alignment.TopCenter) {
         Text(
             text = "Intervirt Setup",
             fontSize = 40.sp
@@ -54,18 +57,18 @@ fun Setup() {
             screens = setupScreens
         )
     }
-    AlignedBox(Alignment.BottomStart, 32.dp) {
+    AlignedBox(Alignment.BottomStart) {
         BackButton(currentSetupScreenIndex > 0) {
             currentSetupScreenIndex--
         }
     }
-    AlignedBox(Alignment.BottomCenter, 32.dp) {
+    AlignedBox(Alignment.BottomCenter) {
         Text(
             text = (currentSetupScreenIndex + 1).toString(),
             fontSize = 25.sp
         )
     }
-    AlignedBox(Alignment.BottomEnd, 32.dp) {
+    AlignedBox(Alignment.BottomEnd) {
         NextButton(currentSetupScreenIndex < setupScreens.size - 1) {
             currentSetupScreenIndex++
         }

@@ -1,11 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.AGENT_PORT
-import io.github.bommbomm34.intervirt.SSH_TIMEOUT
-import io.github.bommbomm34.intervirt.START_ALPINE_VM_COMMANDS
-import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
+import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.data.FileManager
-import io.github.bommbomm34.intervirt.logger
 import kotlinx.coroutines.delay
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -43,25 +39,32 @@ object QEMUClient {
         }
     }
 
-    fun shutdownAlpine() {
+    suspend fun shutdownAlpine() {
         logger.info { "Shutting down Alpine VM" }
-        currentProcess?.destroy()
-        logger.debug { "Waiting for Alpine VM to shutdown" }
-        currentProcess?.waitFor(VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
-        if (currentProcess?.isAlive ?: false){
-            logger.debug { "Timeout exceeded, forcing shutdown..." }
-            currentProcess?.destroyForcibly()
-            currentProcess?.waitFor()
-        }
+        AgentClient.shutdown()
+            .onFailure {
+                logger.error { "Shutdown attempt through agent failed: $it" }
+                logger.debug { "Shutdown through process termination" }
+                currentProcess?.destroy()
+                logger.debug { "Waiting for Alpine VM to shutdown" }
+                currentProcess?.waitFor(VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                if (currentProcess?.isAlive ?: false) {
+                    logger.debug { "Timeout exceeded, forcing shutdown..." }
+                    currentProcess?.destroyForcibly()
+                    currentProcess?.waitFor()
+                }
+            }
         logger.debug { "Alpine VM is now offline" }
         currentProcess = null
     }
+
+    fun isRunning() = currentProcess != null
 }
 
 fun testAgentPort(): Boolean {
     try {
         Socket("127.0.0.1", AGENT_PORT).use { return true }
-    } catch (_: ConnectException){
+    } catch (_: ConnectException) {
         return false
     }
 }

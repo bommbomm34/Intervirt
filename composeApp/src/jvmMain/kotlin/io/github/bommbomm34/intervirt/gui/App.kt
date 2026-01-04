@@ -1,10 +1,7 @@
 package io.github.bommbomm34.intervirt.gui
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.*
-import io.github.bommbomm34.intervirt.data.FileManager
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.gui.components.MultipleAnimatedVisibility
 
@@ -14,7 +11,7 @@ fun App() {
     MultipleAnimatedVisibility(
         visible = currentScreenIndex,
         screens = listOf(
-            { Setup() },
+            { Setup { currentScreenIndex = 1 } },
             { Home() },
             { OSInstaller() },
             { Settings() }
@@ -22,4 +19,4 @@ fun App() {
     )
 }
 
-fun checkSetupStatus() = FileManager.getFile("disk/alpine_linux.qcow2").exists()
+fun checkSetupStatus() = env("INSTALLED").toBoolean()

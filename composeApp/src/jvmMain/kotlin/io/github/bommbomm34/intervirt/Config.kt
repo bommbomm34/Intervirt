@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.data.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -18,6 +17,7 @@ import kotlin.math.round
 const val CURRENT_VERSION = "0.0.1"
 const val QEMU_WINDOWS_URL = "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.ziṕ"
 const val QEMU_LINUX_URL = "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
+const val ALPINE_DISK_URL = "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
 
 val DEBUG_ENABLED = env("DEBUG_ENABLED").toBoolean()
 val SSH_TIMEOUT = env("SSH_TIMEOUT")?.toLong() ?: 30000L
@@ -29,7 +29,7 @@ val VM_CPU = env("VM_CPU")?.toInt() ?: 1
 val VM_ENABLE_KVM = env("VM_ENABLE_KVM")?.toBoolean() ?: false
 val DATA_DIR = File(env("DATA_DIR") ?: (System.getProperty("user.home") + File.separator + "Intervirt"))
 val START_ALPINE_VM_COMMANDS = listOf(
-    "qemu-system-x86_64",
+    FileManager.getQEMUFile().absolutePath,
     if (VM_ENABLE_KVM) "-enable-kvm" else "",
     "-smp", VM_CPU.toString(),
     "-drive", "file=../disk/alpine-linux.qcow2,format=qcow2",
@@ -48,6 +48,7 @@ val client = HttpClient(CIO) {
 }
 val logs = mutableStateListOf<String>()
 var showLogs by mutableStateOf(false)
+var dialogState by mutableStateOf(DialogState.Default)
 val configuration = IntervirtConfiguration(CURRENT_VERSION, "", mutableListOf(), mutableListOf())
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
@@ -60,4 +61,17 @@ fun <T> Exception.result() = Result.failure<T>(this)
 fun Float.roundBy(num: Int = 2): Float {
     val factor = 10f.pow(num)
     return round(times(factor)) / factor
+}
+
+fun Float.readablePercentage() = "${(times(100f)).roundBy()}%"
+
+fun openDialog(
+    importance: Importance,
+    message: String
+) {
+    dialogState = DialogState(
+        importance = importance,
+        message = message,
+        visible = true
+    )
 }

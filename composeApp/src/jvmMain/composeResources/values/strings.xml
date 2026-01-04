@@ -5,7 +5,7 @@
     <string name="arch_is_not_supported">Your architecture %1$s is not supported.</string>
     <string name="error_while_zip_extraction">An error occurred while extracting %1$s: %2$s</string>
     <string name="successful_installation">Installed %1$s successfully!</string>
-    <string name="downloading">Downloading...</string>
+    <string name="downloading">Downloading %1$s...</string>
     <string name="not_found">%1$s not found.</string>
     <string name="computer">Computer</string>
     <string name="switch">Switch</string>
@@ -25,4 +25,24 @@
     <string name="show_logs">Show logs</string>
     <string name="cancel_intervirt_installation">Cancel Intervirt Installation</string>
     <string name="install_intervirt">Install Intervirt</string>
+    <string name="shutdown">Shutdown</string>
+    <string name="boot">Boot</string>
+    <string name="shutting_down">Shutting down...</string>
+    <string name="booting">Booting...</string>
+    <string name="reboot">Reboot</string>
+    <string name="rebooting">Rebooting...</string>
+    <string name="info">Info</string>
+    <string name="error">Error</string>
+    <string name="warning">Warning</string>
+    <string name="sync_guest">Sync guest with configuration</string>
+    <string name="syncing">Syncing...</string>
+    <string name="starting_synchronisation">Starting synchronisation...</string>
+    <string name="wiping_old_data">Wiping old data...</string>
+    <string name="creating_devices">Creating devices...</string>
+    <string name="creating_device">Creating device %1$s with id %2$s</string>
+    <string name="adding_port_forwarding">Adding port forwarding %1$s to %2$s</string>
+    <string name="connecting_devices">Connecting devices...</string>
+    <string name="connecting_device">Connecting device %1$s to %2$s</string>
+    <string name="synchronisation_successfully_completed">Synchronisation successfully completed</string>
+    <string name="sync_failed">Sync failed</string>
 </resources>

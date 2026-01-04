@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.github.bommbomm34.intervirt.readablePercentage
 import io.github.bommbomm34.intervirt.roundBy
 
 @Composable
@@ -25,6 +26,6 @@ fun ProgressView(
         GeneralSpacer(4.dp)
         LinearProgressIndicator(progress = progress)
         GeneralSpacer(4.dp)
-        Text("${(progress * 100f).roundBy()}%")
+        Text(progress.readablePercentage())
     }
 }

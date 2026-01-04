@@ -1,19 +1,12 @@
 package io.github.bommbomm34.intervirt.setup
 
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.QEMU_LINUX_URL
-import io.github.bommbomm34.intervirt.QEMU_WINDOWS_URL
-import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
-import io.github.bommbomm34.intervirt.data.FileManager
-import io.github.bommbomm34.intervirt.data.OS
-import io.github.bommbomm34.intervirt.data.Preferences
-import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.getOS
+import io.github.bommbomm34.intervirt.*
+import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
-import io.github.bommbomm34.intervirt.logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.lingala.zip4j.ZipFile
@@ -32,7 +25,7 @@ object Downloader {
     }
 
     fun downloadQEMUZIP(update: Boolean, url: String): Flow<ResultProgress<String>> = flow {
-        if (!Preferences.loadString("QEMU_INSTALLED").toBoolean() || update) {
+        if (!env("QEMU_INSTALLED").toBoolean() || update) {
             // Wipe previous installation if available
             FileManager.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
@@ -71,7 +64,7 @@ object Downloader {
                         emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
                     }
                 } else {
-                    emit(ResultProgress.proceed(resultProgress.percentage, resultProgress.message))
+                    emit(ResultProgress.proceed(resultProgress.percentage, getString(Res.string.downloading, "QEMU")))
                 }
             }
         } else {
@@ -93,25 +86,18 @@ object Downloader {
 
     fun downloadAlpineDisk(): Flow<ResultProgress<String>> = flow {
         logger.debug { "Downloading disk" }
-        if (!FileManager.getFile("disk/alpine-linux.qcow2").exists()) {
-            val url = "http://localhost:3000/alpine-linux.qcow2"
-            val file = FileManager.downloadFile(url, "alpine-linux.qcow2", FileManager.getFile("disk"))
+        if (!env("DISK_INSTALLED").toBoolean()) {
+            val file = FileManager.downloadFile(ALPINE_DISK_URL, "alpine-linux.qcow2", FileManager.getFile("disk"))
             file.collect { resultProgress ->
                 if (resultProgress.result != null) {
                     resultProgress.result.onFailure {
-                        emit(
-                            ResultProgress.failure(
-                                DownloadException(
-                                    getString(
-                                        Res.string.download_failed,
-                                        it.localizedMessage
-                                    )
-                                )
-                            )
-                        )
+                        emit(ResultProgress.failure(it))
+                    }.onSuccess {
+                        emit(ResultProgress.success(getString(Res.string.download_succeeded)))
+                        Preferences.saveString("DISK_INSTALLED", "true")
                     }
                 } else {
-                    emit(ResultProgress.proceed(resultProgress.percentage, getString(Res.string.downloading)))
+                    emit(ResultProgress.proceed(resultProgress.percentage, getString(Res.string.downloading, "VM")))
                 }
             }
         } else {

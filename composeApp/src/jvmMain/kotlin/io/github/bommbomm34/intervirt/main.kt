@@ -24,6 +24,7 @@ import androidx.compose.ui.window.rememberWindowState
 import io.github.bommbomm34.intervirt.api.QEMUClient
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
+import io.github.bommbomm34.intervirt.gui.components.Dialog
 import kotlinx.coroutines.launch
 import org.slf4j.simple.SimpleLogger
 import kotlin.random.Random
@@ -41,6 +42,7 @@ fun main() = application {
         title = "Intervirt",
     ) {
         DefaultWindowScope {
+            Dialog()
             App()
         }
     }
