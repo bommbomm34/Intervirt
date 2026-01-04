@@ -18,98 +18,103 @@ data class IntervirtConfiguration(
     val connections: MutableList<DeviceConnection>
 ) {
     fun syncConfiguration(): Flow<ResultProgress<Unit>> = flow {
-        // Check version
-        if (AgentClient.getVersion() != CURRENT_VERSION) {
-            emit(ResultProgress.failure(DeprecatedException()))
-        } else {
-            emit(
-                ResultProgress.proceed(
-                    percentage = 0f,
-                    message = getString(Res.string.starting_synchronisation)
-                )
-            )
-            emit(
-                ResultProgress.proceed(
-                    percentage = 0f,
-                    message = getString(Res.string.wiping_old_data)
-                )
-            )
-            AgentClient.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
-            emit(
-                ResultProgress.proceed(
-                    percentage = 0.2f,
-                    message = getString(Res.string.creating_devices)
-                )
-            )
-            devices.forEachIndexed { i, device ->
-                if (device is Device.Computer) {
-                    val progress = 0.2f + (i.toFloat() / devices.size) * 0.6f
+        AgentClient.getVersion()
+            .onSuccess { version ->
+                if (version != CURRENT_VERSION) {
+                    emit(ResultProgress.failure(DeprecatedException()))
+                } else {
                     emit(
                         ResultProgress.proceed(
-                            percentage = progress,
-                            message = getString(Res.string.creating_device, device.name, device.id)
+                            percentage = 0f,
+                            message = getString(Res.string.starting_synchronisation)
                         )
                     )
-                    AgentClient.addContainer(
-                        id = device.id,
-                        initialIPv4 = device.ipv4,
-                        initialIPv6 = device.ipv6,
-                        internet = device.internetEnabled,
-                        image = device.image
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = 0f,
+                            message = getString(Res.string.wiping_old_data)
+                        )
                     )
-                    device.portForwardings.forEach { portForwarding ->
-                        emit(
-                            ResultProgress.proceed(
-                                percentage = progress,
-                                message = getString(
-                                    Res.string.adding_port_forwarding,
-                                    "${portForwarding.key}:${portForwarding.value}",
-                                    device.name
+                    AgentClient.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = 0.2f,
+                            message = getString(Res.string.creating_devices)
+                        )
+                    )
+                    devices.forEachIndexed { i, device ->
+                        if (device is Device.Computer) {
+                            val progress = 0.2f + (i.toFloat() / devices.size) * 0.6f
+                            emit(
+                                ResultProgress.proceed(
+                                    percentage = progress,
+                                    message = getString(Res.string.creating_device, device.name, device.id)
                                 )
                             )
-                        )
-                        AgentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value)
-                    }
-                }
-            }
-            emit(
-                ResultProgress.proceed(
-                    percentage = 0.8f,
-                    message = getString(Res.string.connecting_devices)
-                )
-            )
-
-            connections.forEachIndexed { i, conn ->
-                emit(
-                    ResultProgress.proceed(
-                        percentage = 0.8f + (i.toFloat() / connections.size) * 0.2f,
-                        message = getString(Res.string.connecting_device, conn.device1.name, conn.device2.name)
-                    )
-                )
-                when (conn) {
-                    is DeviceConnection.Computer -> AgentClient.connect(conn.device1.id, conn.device2.id)
-                    is DeviceConnection.Switch -> {
-                        val switch1ConnectedComputers = conn.switch1.getConnectedComputers(connections)
-                        conn.switch2.getConnectedComputers(connections).forEach { computer1 ->
-                            switch1ConnectedComputers.forEach { computer2 ->
-                                AgentClient.connect(
-                                    computer1.id,
-                                    computer2.id
+                            AgentClient.addContainer(
+                                id = device.id,
+                                initialIPv4 = device.ipv4,
+                                initialIPv6 = device.ipv6,
+                                internet = device.internetEnabled,
+                                image = device.image
+                            )
+                            device.portForwardings.forEach { portForwarding ->
+                                emit(
+                                    ResultProgress.proceed(
+                                        percentage = progress,
+                                        message = getString(
+                                            Res.string.adding_port_forwarding,
+                                            "${portForwarding.key}:${portForwarding.value}",
+                                            device.name
+                                        )
+                                    )
                                 )
+                                AgentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value)
                             }
                         }
                     }
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = 0.8f,
+                            message = getString(Res.string.connecting_devices)
+                        )
+                    )
 
-                    is DeviceConnection.SwitchComputer -> conn.switch.getConnectedComputers(connections)
-                        .forEach { AgentClient.connect(it.id, conn.computer.id) }
+                    connections.forEachIndexed { i, conn ->
+                        emit(
+                            ResultProgress.proceed(
+                                percentage = 0.8f + (i.toFloat() / connections.size) * 0.2f,
+                                message = getString(Res.string.connecting_device, conn.device1.name, conn.device2.name)
+                            )
+                        )
+                        when (conn) {
+                            is DeviceConnection.Computer -> AgentClient.connect(conn.device1.id, conn.device2.id)
+                            is DeviceConnection.Switch -> {
+                                val switch1ConnectedComputers = conn.switch1.getConnectedComputers(connections)
+                                conn.switch2.getConnectedComputers(connections).forEach { computer1 ->
+                                    switch1ConnectedComputers.forEach { computer2 ->
+                                        AgentClient.connect(
+                                            computer1.id,
+                                            computer2.id
+                                        )
+                                    }
+                                }
+                            }
+
+                            is DeviceConnection.SwitchComputer -> conn.switch.getConnectedComputers(connections)
+                                .forEach { AgentClient.connect(it.id, conn.computer.id) }
+                        }
+                    }
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = 1f,
+                            message = getString(Res.string.synchronisation_successfully_completed)
+                        )
+                    )
                 }
             }
-            emit(
-                ResultProgress.proceed(
-                    percentage = 1f,
-                    message = getString(Res.string.synchronisation_successfully_completed)
-                )
-            )
-        }
+            .onFailure {
+                emit(ResultProgress.failure(it))
+            }
     }
 }

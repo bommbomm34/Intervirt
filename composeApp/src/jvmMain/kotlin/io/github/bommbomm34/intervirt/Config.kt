@@ -4,6 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.data.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -39,6 +44,9 @@ val START_ALPINE_VM_COMMANDS = listOf(
     "-nographic"
 )
 val TOOLTIP_FONT_SIZE = 12.sp
+val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 3f
+val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001100
+val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
 val logger = KotlinLogging.logger { }
 val client = HttpClient(CIO) {
     engine {
@@ -49,6 +57,7 @@ val client = HttpClient(CIO) {
 val logs = mutableStateListOf<String>()
 var showLogs by mutableStateOf(false)
 var dialogState by mutableStateOf(DialogState.Default)
+var devicesViewZoom by mutableStateOf(1f)
 val configuration = IntervirtConfiguration(CURRENT_VERSION, "", mutableListOf(), mutableListOf())
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
@@ -75,3 +84,5 @@ fun openDialog(
         visible = true
     )
 }
+
+fun KeyEvent.isKeyPressed(key: Key) = this.key == key && type == KeyEventType.KeyDown

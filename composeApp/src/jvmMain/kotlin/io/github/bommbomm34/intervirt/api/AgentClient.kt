@@ -1,13 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.FileManager
-import io.github.bommbomm34.intervirt.data.RequestBody
-import io.github.bommbomm34.intervirt.data.ResponseBody
-import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.VersionResponseBody
-import io.github.bommbomm34.intervirt.data.commandBody
-import io.github.bommbomm34.intervirt.data.idBody
+import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.result
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -23,13 +17,18 @@ object AgentClient {
 
     var session: DefaultClientWebSocketSession? = null
 
-    suspend fun initConnection() {
-        session = client.webSocketSession(
-            method = HttpMethod.Get,
-            host = "localhost",
-            port = 55436,
-            path = "containerManagement"
-        )
+    suspend fun initConnection(): Result<Unit> {
+        try {
+            session = client.webSocketSession(
+                method = HttpMethod.Get,
+                host = "localhost",
+                port = 55436,
+                path = "containerManagement"
+            )
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun addContainer(
@@ -49,19 +48,25 @@ object AgentClient {
         ).first { it.result != null }.result!!
     }
 
-    suspend fun setIPv4(id: String, newIP: String): Result<Unit> = justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv4"))
+    suspend fun setIPv4(id: String, newIP: String): Result<Unit> =
+        justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv4"))
 
-    suspend fun setIPv6(id: String, newIP: String): Result<Unit> = justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv6"))
+    suspend fun setIPv6(id: String, newIP: String): Result<Unit> =
+        justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv6"))
 
     suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2, "connect"))
 
-    suspend fun disconnect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2, "disconnect"))
+    suspend fun disconnect(id1: String, id2: String): Result<Unit> =
+        justSend(RequestBody.Connect(id1, id2, "disconnect"))
 
-    suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> = justSend(RequestBody.SetInternetAccess(id, enabled))
+    suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> =
+        justSend(RequestBody.SetInternetAccess(id, enabled))
 
-    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int): Result<Unit> = justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort))
+    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int): Result<Unit> =
+        justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort))
 
-    suspend fun removePortForwarding(externalPort: Int): Result<Unit> = justSend(RequestBody.RemovePortForwarding(externalPort))
+    suspend fun removePortForwarding(externalPort: Int): Result<Unit> =
+        justSend(RequestBody.RemovePortForwarding(externalPort))
 
     fun wipe(): Flow<ResultProgress<Unit>> = flowSend("wipe".commandBody())
 
@@ -71,34 +76,68 @@ object AgentClient {
 
     suspend fun reboot(): Result<Unit> = justSend("reboot".commandBody())
 
-    suspend fun getVersion(): String = send<VersionResponseBody>("version".commandBody()).first().version
+    suspend fun getVersion(): Result<String> {
+        val response = send<VersionResponseBody>("version".commandBody())
+        response
+            .onSuccess {
+                return Result.success(it.firstOrNull()!!.version)
+            }
+            .onFailure {
+                return Result.failure(it)
+            }
+        return Result.failure(UnknownError())
+    }
 
-    fun runCommand(id: String, shellCommand: String): Flow<ResultProgress<Unit>> = flowSend(RequestBody.RunCommand(id, shellCommand))
+    fun runCommand(id: String, shellCommand: String): Flow<ResultProgress<Unit>> =
+        flowSend(RequestBody.RunCommand(id, shellCommand))
 
     suspend fun justSend(body: RequestBody): Result<Unit> {
-        val response = send<ResponseBody>(body).firstOrNull { it.code != 0 }
-        return response?.exception()?.result() ?: Result.success(Unit)
+        val response = send<ResponseBody>(body)
+        response
+            .onSuccess {
+                return it.firstOrNull()?.exception()?.result() ?: Result.success(Unit)
+            }
+            .onFailure {
+                return Result.failure(it)
+            }
+        return Result.failure(UnknownError())
     }
 
     fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
         var failed = false
-        send<ResponseBody>(body).collect {
-            if (it.code != 0) {
-                failed = true
-                emit(ResultProgress.failure(it.exception()))
-            } else {
-                emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
+        send<ResponseBody>(body)
+            .onSuccess { flow ->
+                flow.collect {
+                    if (it.code != 0) {
+                        failed = true
+                        emit(ResultProgress.failure(it.exception()))
+                    } else {
+                        emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
+                    }
+                }
             }
-        }
+            .onFailure {
+                failed = true
+                emit(ResultProgress.failure(it))
+            }
         if (!failed) emit(ResultProgress.success(Unit))
     }
 
-    inline fun <reified T> send(body: RequestBody): Flow<T> = flow {
+    suspend inline fun <reified T> send(body: RequestBody): Result<Flow<T>> {
         if (session == null) initConnection()
-        session!!.send(Frame.Text(Json.encodeToString(body)))
-        while (true) {
-            val message = (session!!.incoming.receive() as Frame.Text).readText()
-            if (message == "END") break else emit(Json.decodeFromString(message))
-        }
+            .onSuccess {
+                return Result.success(flow {
+                    if (session == null) initConnection()
+                    session!!.send(Frame.Text(Json.encodeToString(body)))
+                    while (true) {
+                        val message = (session!!.incoming.receive() as Frame.Text).readText()
+                        if (message == "END") break else emit(Json.decodeFromString(message))
+                    }
+                })
+            }
+            .onFailure {
+                return Result.failure(it)
+            }
+        return Result.failure(UnknownError())
     }
 }

@@ -3,13 +3,7 @@ package io.github.bommbomm34.intervirt.gui.components
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Refresh
 import compose.icons.tablericons.RefreshAlert
@@ -26,11 +20,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SyncButton(){
+fun SyncButton() {
     val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
-    AlignedBox(Alignment.TopEnd){
+    if (QEMUClient.isRunning()){
         IconButton(
             onClick = {
                 scope.launch {
@@ -49,8 +43,8 @@ fun SyncButton(){
                     syncing = false
                 }
             },
-            enabled = QEMUClient.isRunning() && !syncing
-        ){
+            enabled = !syncing
+        ) {
             Icon(
                 imageVector = if (syncFailed) TablerIcons.RefreshAlert else TablerIcons.Refresh,
                 contentDescription = stringResource(if (syncing) Res.string.syncing else Res.string.sync_guest),

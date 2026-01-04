@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -37,6 +39,19 @@ fun main() = application {
             scope.launch {
                 QEMUClient.shutdownAlpine()
                 exitApplication()
+            }
+        },
+        onKeyEvent = {
+            when {
+                it.isCtrlPressed && it.isKeyPressed(Key.Plus) -> {
+                    devicesViewZoom += ZOOM_SPEED
+                    true
+                }
+                it.isCtrlPressed && it.isKeyPressed(Key.Minus) -> {
+                    if (devicesViewZoom - ZOOM_SPEED > 0) devicesViewZoom -= ZOOM_SPEED
+                    true
+                }
+                else -> false
             }
         },
         title = "Intervirt",
