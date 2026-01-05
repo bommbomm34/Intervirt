@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +11,12 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.rememberWindowState
 import io.github.bommbomm34.intervirt.data.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
@@ -48,6 +54,7 @@ val TOOLTIP_FONT_SIZE = 12.sp
 val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 3f
 val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001100
 val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
+val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 150.dp
 val logger = KotlinLogging.logger { }
 val client = HttpClient(CIO) {
     engine {
@@ -67,12 +74,13 @@ var configuration by mutableStateOf(IntervirtConfiguration(
         Device.Switch(
             id = "switch-88888",
             name = "My Switch",
-            x = 0f,
-            y = 0f
+            x = 300,
+            y = 300
         )
     ),
     connections = mutableListOf()
 ))
+var windowState = WindowState()
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
 fun String.versionCode() = replace(".", "").toInt()
@@ -98,3 +106,6 @@ fun openDialog(
         visible = true
     )
 }
+
+@Composable
+fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }

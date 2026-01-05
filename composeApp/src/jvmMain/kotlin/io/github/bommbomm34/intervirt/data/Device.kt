@@ -6,15 +6,15 @@ import kotlinx.serialization.Serializable
 sealed class Device(
     open val id: String,
     open val name: String,
-    open val x: Float,
-    open val y: Float
+    open var x: Int,
+    open var y: Int
 ) {
     data class Computer(
         override val id: String,
         val image: String,
         override val name: String,
-        override val x: Float,
-        override val y: Float,
+        override var x: Int,
+        override var y: Int,
         val ipv4: String,
         val ipv6: String,
         val internetEnabled: Boolean,
@@ -24,8 +24,8 @@ sealed class Device(
     data class Switch(
         override val id: String,
         override val name: String,
-        override val x: Float,
-        override val y: Float
+        override var x: Int,
+        override var y: Int
     ) : Device(id, name, x, y)
 
     fun getConnectedDevices(totalConnections: List<DeviceConnection>) =

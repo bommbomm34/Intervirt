@@ -45,6 +45,7 @@ fun main() = application {
             isCtrlPressed = it.isCtrlPressed
             false
         },
+        state = windowState,
         title = "Intervirt",
     ) {
         DefaultWindowScope {

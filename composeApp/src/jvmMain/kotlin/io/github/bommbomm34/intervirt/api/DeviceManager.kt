@@ -13,7 +13,7 @@ import java.io.File
 import kotlin.random.Random
 
 object DeviceManager {
-    suspend fun addComputer(name: String, x: Float, y: Float, image: IncusImage): Device {
+    suspend fun addComputer(name: String, x: Int, y: Int, image: IncusImage): Device {
         val device = Device.Computer(
             id = generateID("computer"),
             image = image.fullName(),
@@ -31,7 +31,7 @@ object DeviceManager {
         return device
     }
 
-    fun addSwitch(name: String, x: Float, y: Float): Device {
+    fun addSwitch(name: String, x: Int, y: Int): Device {
         val device = Device.Switch(
             id = generateID("switch"),
             name = name,
@@ -90,17 +90,6 @@ object DeviceManager {
     }
 
     fun runCommand(computer: Device.Computer, command: String) = AgentClient.runCommand(computer.id, command)
-
-    fun setPosition(device: Device, offset: Offset){
-        configuration = configuration.copy(devices = configuration.devices.map {
-            if (it == device){
-                when (it) {
-                    is Device.Computer -> it.copy(x = offset.x, y = offset.y)
-                    is Device.Switch -> it.copy(x = offset.x, y = offset.y)
-                }
-            } else it
-        })
-    }
 
     fun setName(device: Device, name: String){
         configuration = configuration.copy(devices = configuration.devices.map {
