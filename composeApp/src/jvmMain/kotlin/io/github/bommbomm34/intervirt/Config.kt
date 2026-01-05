@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
@@ -57,7 +58,8 @@ val client = HttpClient(CIO) {
 val logs = mutableStateListOf<String>()
 var showLogs by mutableStateOf(false)
 var dialogState by mutableStateOf(DialogState.Default)
-var devicesViewZoom by mutableStateOf(1f)
+var devicesViewZoom by  mutableStateOf(1f)
+var isCtrlPressed by mutableStateOf(false)
 val configuration = IntervirtConfiguration(CURRENT_VERSION, "", mutableListOf(), mutableListOf())
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
@@ -84,5 +86,3 @@ fun openDialog(
         visible = true
     )
 }
-
-fun KeyEvent.isKeyPressed(key: Key) = this.key == key && type == KeyEventType.KeyDown

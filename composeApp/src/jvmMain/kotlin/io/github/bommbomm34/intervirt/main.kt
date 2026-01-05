@@ -42,17 +42,8 @@ fun main() = application {
             }
         },
         onKeyEvent = {
-            when {
-                it.isCtrlPressed && it.isKeyPressed(Key.Plus) -> {
-                    devicesViewZoom += ZOOM_SPEED
-                    true
-                }
-                it.isCtrlPressed && it.isKeyPressed(Key.Minus) -> {
-                    if (devicesViewZoom - ZOOM_SPEED > 0) devicesViewZoom -= ZOOM_SPEED
-                    true
-                }
-                else -> false
-            }
+            isCtrlPressed = it.isCtrlPressed
+            false
         },
         title = "Intervirt",
     ) {
