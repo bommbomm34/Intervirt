@@ -13,9 +13,9 @@ import org.jetbrains.compose.resources.getString
 @Serializable
 data class IntervirtConfiguration(
     val version: String,
-    var author: String,
-    val devices: MutableList<Device>,
-    val connections: MutableList<DeviceConnection>
+    val author: String,
+    val devices: List<Device>,
+    val connections: List<DeviceConnection>
 ) {
     fun syncConfiguration(): Flow<ResultProgress<Unit>> = flow {
         AgentClient.getVersion()

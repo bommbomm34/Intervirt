@@ -60,7 +60,19 @@ var showLogs by mutableStateOf(false)
 var dialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by  mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
-val configuration = IntervirtConfiguration(CURRENT_VERSION, "", mutableListOf(), mutableListOf())
+var configuration by mutableStateOf(IntervirtConfiguration(
+    version = CURRENT_VERSION,
+    author = "",
+    devices = mutableListOf(
+        Device.Switch(
+            id = "switch-88888",
+            name = "My Switch",
+            x = 0f,
+            y = 0f
+        )
+    ),
+    connections = mutableListOf()
+))
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
 fun String.versionCode() = replace(".", "").toInt()

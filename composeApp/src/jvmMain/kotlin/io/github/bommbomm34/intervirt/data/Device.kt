@@ -5,27 +5,27 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Device(
     open val id: String,
-    open var name: String,
-    open var x: Float,
-    open var y: Float
+    open val name: String,
+    open val x: Float,
+    open val y: Float
 ) {
     data class Computer(
         override val id: String,
         val image: String,
-        override var name: String,
-        override var x: Float,
-        override var y: Float,
-        var ipv4: String,
-        var ipv6: String,
-        var internetEnabled: Boolean,
-        val portForwardings: MutableMap<Int, Int> // internalPort:externalPort
+        override val name: String,
+        override val x: Float,
+        override val y: Float,
+        val ipv4: String,
+        val ipv6: String,
+        val internetEnabled: Boolean,
+        val portForwardings: Map<Int, Int> // internalPort:externalPort
     ) : Device(id, name, x, y)
 
     data class Switch(
         override val id: String,
-        override var name: String,
-        override var x: Float,
-        override var y: Float
+        override val name: String,
+        override val x: Float,
+        override val y: Float
     ) : Device(id, name, x, y)
 
     fun getConnectedDevices(totalConnections: List<DeviceConnection>) =
