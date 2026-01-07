@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.gui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
@@ -25,7 +26,7 @@ import io.github.bommbomm34.intervirt.dialogState
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun Dialog() {
+fun Dialog(customContent: (@Composable ColumnScope.() -> Unit)? = null) {
     AnimatedVisibility(dialogState.visible) {
         Surface(
             modifier = Modifier
@@ -41,25 +42,27 @@ fun Dialog() {
                     color = MaterialTheme.colors.secondary
                 ) {
                     CenterColumn {
-                        Text(
-                            text = when (dialogState.importance) {
-                                Importance.INFO -> stringResource(Res.string.info)
-                                Importance.ERROR -> stringResource(Res.string.error)
-                                Importance.WARNING -> stringResource(Res.string.warning)
-                            },
-                            color = when (dialogState.importance) {
-                                Importance.INFO -> MaterialTheme.colors.onSecondary
-                                Importance.ERROR -> MaterialTheme.colors.error
-                                Importance.WARNING -> Color.Yellow
+                        if (customContent != null) customContent() else {
+                            Text(
+                                text = when (dialogState.importance) {
+                                    Importance.INFO -> stringResource(Res.string.info)
+                                    Importance.ERROR -> stringResource(Res.string.error)
+                                    Importance.WARNING -> stringResource(Res.string.warning)
+                                },
+                                color = when (dialogState.importance) {
+                                    Importance.INFO -> MaterialTheme.colors.onSecondary
+                                    Importance.ERROR -> MaterialTheme.colors.error
+                                    Importance.WARNING -> Color.Yellow
+                                }
+                            )
+                            GeneralSpacer()
+                            Text(dialogState.message)
+                            GeneralSpacer()
+                            Button(
+                                onClick = { dialogState = dialogState.copy(visible = false) }
+                            ){
+                                Text("OK")
                             }
-                        )
-                        GeneralSpacer()
-                        Text(dialogState.message)
-                        GeneralSpacer()
-                        Button(
-                            onClick = { dialogState = dialogState.copy(visible = false) }
-                        ){
-                            Text("OK")
                         }
                     }
                 }

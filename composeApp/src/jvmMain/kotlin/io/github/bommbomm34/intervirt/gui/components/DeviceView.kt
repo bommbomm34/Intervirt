@@ -35,7 +35,6 @@ fun DeviceView(
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
     val deviceSizePx = dpToPx(DEVICE_SIZE)
-    println(deviceSizePx)
     Icon(
         imageVector = getVector(device),
         contentDescription = device.name,
@@ -49,7 +48,11 @@ fun DeviceView(
                 onDragEnd = { overlay = false }
             ) {
                 val newOffset = offset + it
-                if (newOffset.isOn(windowState.size, deviceSizePx)) {
+                if (newOffset.isOn(
+                        dpSize = windowState.size,
+                        imageSize = Offset(deviceSizePx, deviceSizePx),
+                        minimumPadding = 140f
+                )) {
                     offset = newOffset
                     device.x += it.x.toInt()
                     device.y += it.y.toInt()
@@ -58,9 +61,8 @@ fun DeviceView(
     )
 }
 
-fun Offset.isOn(dpSize: DpSize, minimumPadding: Float): Boolean {
+fun Offset.isOn(dpSize: DpSize, imageSize: Offset, minimumPadding: Float): Boolean {
     val offsetSize = Offset(dpSize.width.value, dpSize.height.value)
-    println("(${offsetSize.x + x})(${offsetSize.y + y})")
-    return offsetSize.x - x >= minimumPadding && offsetSize.y - y >= minimumPadding &&
+    return x <= offsetSize.x - imageSize.x - minimumPadding && y < offsetSize.y - imageSize.y - minimumPadding &&
             x >= minimumPadding && y >= minimumPadding
 }

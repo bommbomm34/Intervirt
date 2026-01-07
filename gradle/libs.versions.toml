@@ -12,6 +12,7 @@ kuiver = "0.1.0"
 compose-tabler-icons = "1.1.1"
 kotlinx-serialization-json = "1.9.0"
 filekit = "0.12.0"
+commons-validator = "1.10.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -29,6 +30,7 @@ kuiver = { module = "io.github.justdeko:kuiver", version.ref = "kuiver" }
 compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-tabler-icons" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
+commons-validator = { module = "commons-validator:commons-validator", version.ref = "commons-validator" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

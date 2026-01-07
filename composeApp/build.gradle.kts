@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.zip4j)
             implementation(libs.kuiver)
             implementation(libs.compose.tabler.icons)
+            implementation(libs.commons.validator)
         }
     }
 }

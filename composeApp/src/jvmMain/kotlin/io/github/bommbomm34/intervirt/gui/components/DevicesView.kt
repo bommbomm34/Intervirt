@@ -60,11 +60,14 @@ fun DevicesView() {
         )
     }
     AnimatedVisibility(selectedDevice != null){
-        Column (horizontalAlignment = Alignment.End) {
-            DeviceSettings(
-                device = selectedDevice!!
-            ){ selectedDevice = null }
+        selectedDevice?.let {
+            Column (horizontalAlignment = Alignment.End) {
+                DeviceSettings(
+                    device = it
+                ){ selectedDevice = null }
+            }
         }
+
     }
 }
 

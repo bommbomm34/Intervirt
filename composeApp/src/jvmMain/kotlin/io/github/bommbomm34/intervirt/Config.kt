@@ -12,6 +12,9 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +26,8 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import java.io.File
+import java.net.InetAddress
+import java.net.ServerSocket
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -54,7 +59,7 @@ val TOOLTIP_FONT_SIZE = 12.sp
 val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 3f
 val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001100
 val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
-val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 150.dp
+val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
 val logger = KotlinLogging.logger { }
 val client = HttpClient(CIO) {
     engine {
@@ -109,3 +114,33 @@ fun openDialog(
 
 @Composable
 fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
+
+fun Int.isValidPort() = this in 1..65535
+
+fun Int.canPortBind(): Result<Unit> {
+    try {
+        ServerSocket(this).use {
+            return Result.success(Unit)
+        }
+    } catch (e: Exception) {
+        return Result.failure(e)
+    }
+}
+
+fun String.toReadableImage() = when {
+    startsWith("debian/") -> "Debian"
+    startsWith("ubuntu/") -> "Ubuntu"
+    startsWith("intervirtos/") -> "IntervirtOS"
+    startsWith("almalinux/") -> "AlmaLinux"
+    startsWith("alpine/") -> "Alpine Linux"
+    startsWith("archlinux/") -> "Arch Linux"
+    startsWith("centos/") -> "CentOS"
+    startsWith("fedora/") -> "Fedora"
+    startsWith("gentoo/") -> "Gentoo"
+    startsWith("kali/") -> "Kali Linux"
+    startsWith("mint/") -> "Linux Mint"
+    startsWith("nixos/") -> "NixOS"
+    startsWith("opensuse/") -> "openSUSE"
+    startsWith("voidlinux/") -> "Void Linux"
+    else -> substringBefore("/")
+} + " ${substringAfter("/")}"

@@ -45,4 +45,22 @@
     <string name="connecting_device">Connecting device %1$s to %2$s</string>
     <string name="synchronisation_successfully_completed">Synchronisation successfully completed</string>
     <string name="sync_failed">Sync failed</string>
+    <string name="close">Close</string>
+    <string name="name">Name</string>
+    <string name="os">Operating system</string>
+    <string name="install_new_os">Install new OS</string>
+    <string name="ipv4_address">IPv4 address</string>
+    <string name="ipv6_address">IPv6 address</string>
+    <string name="invalid_ipv4_address">Invalid IPv4 address</string>
+    <string name="invalid_ipv6_address">Invalid IPv6 address</string>
+    <string name="internet_access">Internet Access</string>
+    <string name="show_port_forwardings">Show port forwardings</string>
+    <string name="hide_port_forwardings">Hide port forwardings</string>
+    <string name="delete">Delete</string>
+    <string name="add">Add</string>
+    <string name="internal_port">Internal port</string>
+    <string name="external_port">External port</string>
+    <string name="add_port_forwarding">Add port forwarding</string>
+    <string name="internal_port_already_exposed">Internal port already exposed</string>
+    <string name="external_port_already_bound">External port already bound by another computer</string>
 </resources>
