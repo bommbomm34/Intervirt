@@ -7,10 +7,12 @@ import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.onClick
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -34,11 +36,13 @@ import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.DeviceConnection
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DevicesView() {
-    var selectedDevice: Device? by remember { mutableStateOf(null) }
+    var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
+    var deviceSettingsVisible by remember { mutableStateOf(false) }
     AlignedBox(Alignment.Center) {
         Canvas(
             Modifier
@@ -49,33 +53,34 @@ fun DevicesView() {
                 }
         ) {
             scale(devicesViewZoom) {
-                configuration.connections.forEach { drawConnection(it) }
+                statefulConf.connections.forEach { drawConnection(it) }
             }
         }
     }
-    configuration.devices.forEach { device ->
+    statefulConf.devices.forEach { device ->
         DeviceView(
             device = device,
-            onSelectDevice = { selectedDevice = it }
+            onSelectDevice = {
+                selectedDevice = it
+                deviceSettingsVisible = true
+            }
         )
     }
-    AnimatedVisibility(selectedDevice != null){
+    AnimatedVisibility(deviceSettingsVisible){
         selectedDevice?.let {
-            Column (horizontalAlignment = Alignment.End) {
+            Column (
+                Modifier.padding(16.dp)
+            ){
                 DeviceSettings(
                     device = it
-                ){ selectedDevice = null }
+                ){ deviceSettingsVisible = false }
             }
         }
 
     }
-}
-
-fun DrawScope.drawDevice(device: Device, image: ImageBitmap) {
-    drawImage(
-        image = image,
-        topLeft = Offset(device.x.toFloat(), device.y.toFloat())
-    )
+    AlignedBox(Alignment.BottomEnd){
+        AddDeviceButton()
+    }
 }
 
 fun DrawScope.drawConnection(connection: DeviceConnection) {

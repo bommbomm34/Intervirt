@@ -16,20 +16,24 @@ import intervirt.composeapp.generated.resources.ipv4_address
 import intervirt.composeapp.generated.resources.ipv6_address
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import kotlinx.coroutines.launch
 import org.apache.commons.validator.routines.InetAddressValidator
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun IPv6TextField(device: Device.Computer){
+fun IPv6TextField(device: ViewDevice.Computer){
     var validIPv6 by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     OutlinedTextField(
-        value = device.ipv4,
+        value = device.ipv6,
         onValueChange = {
             scope.launch {
                 validIPv6 = InetAddressValidator.getInstance().isValidInet6Address(it)
-                if (validIPv6) DeviceManager.setIPv6(device, it)
+                if (validIPv6) {
+                    device.ipv6 = it
+                    DeviceManager.setIPv6(device.toDevice(), it)
+                }
             }
         },
         label = {

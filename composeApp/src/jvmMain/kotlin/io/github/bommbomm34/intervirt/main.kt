@@ -49,8 +49,8 @@ fun main() = application {
         title = "Intervirt",
     ) {
         DefaultWindowScope {
-            Dialog()
             App()
+            Dialog()
         }
     }
     Window(

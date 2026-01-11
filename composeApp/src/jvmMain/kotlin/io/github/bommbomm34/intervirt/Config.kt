@@ -1,11 +1,16 @@
 package io.github.bommbomm34.intervirt
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -16,11 +21,13 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
 import io.github.bommbomm34.intervirt.data.*
+import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -69,10 +76,10 @@ val client = HttpClient(CIO) {
 }
 val logs = mutableStateListOf<String>()
 var showLogs by mutableStateOf(false)
-var dialogState by mutableStateOf(DialogState.Default)
+var dialogState: DialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by  mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
-var configuration by mutableStateOf(IntervirtConfiguration(
+val configuration = IntervirtConfiguration(
     version = CURRENT_VERSION,
     author = "",
     devices = mutableListOf(
@@ -81,11 +88,25 @@ var configuration by mutableStateOf(IntervirtConfiguration(
             name = "My Switch",
             x = 300,
             y = 300
+        ),
+        Device.Computer(
+            id = "computer-67676",
+            image = "debian/13",
+            name = "My Debian",
+            x = 500,
+            y = 500,
+            ipv4 = "192.168.0.20",
+            ipv6 = "fd00:6767:6767:6767:0808:abcd:abcd:aaaa",
+            internetEnabled = false,
+            portForwardings = mutableMapOf(
+                67 to 25565
+            )
         )
     ),
     connections = mutableListOf()
-))
-var windowState = WindowState()
+)
+val statefulConf = ViewConfiguration(configuration)
+var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
 
 fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
 fun String.versionCode() = replace(".", "").toInt()
@@ -105,11 +126,22 @@ fun openDialog(
     importance: Importance,
     message: String
 ) {
-    dialogState = DialogState(
+    dialogState = DialogState.Regular(
         importance = importance,
         message = message,
         visible = true
     )
+}
+
+fun openDialog(customContent: @Composable ColumnScope.() -> Unit){
+    dialogState = DialogState.Custom(customContent, true)
+}
+
+fun closeDialog(){
+    dialogState = when (dialogState){
+        is DialogState.Custom -> (dialogState as DialogState.Custom).copy(visible = false)
+        is DialogState.Regular -> (dialogState as DialogState.Regular).copy(visible = false)
+    }
 }
 
 @Composable

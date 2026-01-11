@@ -15,21 +15,23 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
+import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.DEVICE_SIZE
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.windowState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DeviceView(
-    device: Device,
-    onSelectDevice: (Device) -> Unit
+    device: ViewDevice,
+    onSelectDevice: (ViewDevice) -> Unit
 ) {
-    val getVector: (Device) -> ImageVector = {
+    val getVector: (ViewDevice) -> ImageVector = {
         when (it) {
-            is Device.Switch -> TablerIcons.DevicesPc
-            is Device.Computer -> TablerIcons.DevicesPc
+            is ViewDevice.Switch -> TablerIcons.Switch
+            is ViewDevice.Computer -> TablerIcons.DevicesPc
         }
     }
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }

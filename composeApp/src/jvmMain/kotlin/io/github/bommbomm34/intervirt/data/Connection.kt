@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
+import io.ktor.network.sockets.Connection
 import kotlinx.serialization.Serializable
 
 /**
@@ -47,6 +48,20 @@ sealed class DeviceConnection (
      * @return ```true``` if device is in the connection and ```false``` otherwise
      */
     fun containsDevice(device: Device) = device1 == device || device2 == device
+
+    override fun equals(other: Any?): Boolean {
+        return other is DeviceConnection && ((device1 == other.device1 && device2 == other.device2) ||
+                (device1 == other.device2 && device2 == other.device1))
+    }
+
+    override fun hashCode(): Int {
+        val (firstDevice, secondDevice) = if (device1.hashCode() > device2.hashCode()) device1 to device2 else device2 to device1
+        var result = firstDevice.hashCode()
+        result = 31 * result + secondDevice.hashCode()
+        return result
+    }
+
+
 }
 
 /**

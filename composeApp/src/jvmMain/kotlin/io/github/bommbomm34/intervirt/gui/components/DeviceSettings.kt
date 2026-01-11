@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.gui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
@@ -13,11 +14,12 @@ import intervirt.composeapp.generated.resources.close
 import intervirt.composeapp.generated.resources.hide_port_forwardings
 import intervirt.composeapp.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DeviceSettings(
-    device: Device,
+    device: ViewDevice,
     onClose: () -> Unit
 ) {
     var showPortForwardings by remember { mutableStateOf(false) }
@@ -25,10 +27,7 @@ fun DeviceSettings(
         // Device settings
         Column {
             // Close button
-            IconButton(
-                onClick = onClose,
-                modifier = Modifier.background(Color.Red)
-            ) {
+            IconButton(onClick = onClose) {
                 Icon(
                     imageVector = TablerIcons.X,
                     contentDescription = stringResource(Res.string.close),
@@ -36,33 +35,32 @@ fun DeviceSettings(
                 )
             }
             GeneralSpacer()
-            GeneralDeviceSettings(device)
+            GeneralDeviceSettings(device){ onClose() }
             GeneralSpacer()
-            if (device is Device.Computer) {
-                MultipleAnimatedVisibility(
-                    visible = if (showPortForwardings) 1 else 0,
-                    screens = listOf(
-                        {
-                            // All other device settings except port forwardings
-                            // Device settings specific for computers
-                            OSField(device)
-                            GeneralSpacer()
-                            IPv4TextField(device)
-                            GeneralSpacer()
-                            IPv6TextField(device)
-                            GeneralSpacer()
-                            InternetEnabledOption(device)
-                            GeneralSpacer()
-                            // Show/Hide port forwardings
-                            Button(
-                                onClick = { showPortForwardings = !showPortForwardings }
-                            ) {
-                                Text(stringResource(if (showPortForwardings) Res.string.show_port_forwardings else Res.string.hide_port_forwardings))
-                            }
-                        },
-                        { PortForwardingSettings(device) }
-                    )
-                )
+            if (device is ViewDevice.Computer) {
+                // All other device settings except port forwardings
+                // Device settings specific for computers
+                AnimatedVisibility(!showPortForwardings){
+                    Column {
+                        OSField(device)
+                        GeneralSpacer()
+                        IPv4TextField(device)
+                        GeneralSpacer()
+                        IPv6TextField(device)
+                        GeneralSpacer()
+                        InternetEnabledOption(device)
+                        GeneralSpacer()
+                    }
+                }
+                AnimatedVisibility(showPortForwardings){
+                    PortForwardingSettings(device)
+                }
+                // Show/Hide port forwardings
+                Button(
+                    onClick = { showPortForwardings = !showPortForwardings }
+                ) {
+                    Text(stringResource(if (showPortForwardings) Res.string.hide_port_forwardings else Res.string.show_port_forwardings))
+                }
             }
         }
     }

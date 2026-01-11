@@ -14,12 +14,14 @@ import intervirt.composeapp.generated.resources.invalid_ipv4_address
 import intervirt.composeapp.generated.resources.ipv4_address
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.statefulConf
 import kotlinx.coroutines.launch
 import org.apache.commons.validator.routines.InetAddressValidator
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun IPv4TextField(device: Device.Computer){
+fun IPv4TextField(device: ViewDevice.Computer){
     var validIPv4 by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     OutlinedTextField(
@@ -27,7 +29,10 @@ fun IPv4TextField(device: Device.Computer){
         onValueChange = {
             scope.launch {
                 validIPv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
-                if (validIPv4) DeviceManager.setIPv4(device, it)
+                if (validIPv4) {
+                    device.ipv4 = it
+                    DeviceManager.setIPv4(device.toDevice(), it)
+                }
             }
         },
         label = {

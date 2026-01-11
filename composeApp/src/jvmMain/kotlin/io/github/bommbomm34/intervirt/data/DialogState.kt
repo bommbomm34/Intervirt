@@ -1,17 +1,29 @@
 package io.github.bommbomm34.intervirt.data
 
-data class DialogState (
-    val importance: Importance,
-    val message: String,
-    val visible: Boolean
-){
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.runtime.Composable
+
+sealed class DialogState(
+    open val visible: Boolean
+) {
     companion object {
-        val Default = DialogState(
+        val Default = Regular(
             importance = Importance.INFO,
             message = "",
             visible = false
         )
     }
+
+    data class Regular(
+        val importance: Importance,
+        val message: String,
+        override val visible: Boolean
+    ) : DialogState(visible)
+
+    data class Custom(
+        val customContent: @Composable ColumnScope.() -> Unit,
+        override val visible: Boolean
+    ) : DialogState(visible)
 }
 
 enum class Importance {

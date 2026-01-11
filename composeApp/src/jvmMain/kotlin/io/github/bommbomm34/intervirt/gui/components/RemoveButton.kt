@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.gui.components
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Trash
 import intervirt.composeapp.generated.resources.Res
@@ -16,7 +17,8 @@ fun RemoveButton(
     IconButton(onClick = onClick) {
         Icon(
             imageVector = TablerIcons.Trash,
-            contentDescription = stringResource(Res.string.delete)
+            contentDescription = stringResource(Res.string.delete),
+            tint = Color.Red
         )
     }
 }

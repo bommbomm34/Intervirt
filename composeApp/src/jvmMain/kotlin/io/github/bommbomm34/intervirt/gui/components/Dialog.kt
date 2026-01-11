@@ -1,8 +1,6 @@
 package io.github.bommbomm34.intervirt.gui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,44 +24,45 @@ import io.github.bommbomm34.intervirt.dialogState
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun Dialog(customContent: (@Composable ColumnScope.() -> Unit)? = null) {
+fun Dialog() {
     AnimatedVisibility(dialogState.visible) {
         Surface(
-            modifier = Modifier
-                .safeContentPadding()
-                .fillMaxSize(),
+            modifier = Modifier.safeContentPadding(),
             color = Color.Black.copy(alpha = 0.5f)
         ) {
             AlignedBox(Alignment.Center) {
                 Surface(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(16.dp)),
-                    color = MaterialTheme.colors.secondary
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+                    color = MaterialTheme.colors.background.copy(blue = 0.05f)
                 ) {
-                    CenterColumn {
-                        if (customContent != null) customContent() else {
-                            Text(
-                                text = when (dialogState.importance) {
-                                    Importance.INFO -> stringResource(Res.string.info)
-                                    Importance.ERROR -> stringResource(Res.string.error)
-                                    Importance.WARNING -> stringResource(Res.string.warning)
-                                },
-                                color = when (dialogState.importance) {
-                                    Importance.INFO -> MaterialTheme.colors.onSecondary
-                                    Importance.ERROR -> MaterialTheme.colors.error
-                                    Importance.WARNING -> Color.Yellow
+                    CenterColumn (Modifier.padding(16.dp)) {
+                        when (dialogState){
+                            is DialogState.Custom -> (dialogState as DialogState.Custom).customContent(this)
+                            is DialogState.Regular -> {
+                                val state = dialogState as DialogState.Regular
+                                Text(
+                                    text = when (state.importance) {
+                                        Importance.INFO -> stringResource(Res.string.info)
+                                        Importance.ERROR -> stringResource(Res.string.error)
+                                        Importance.WARNING -> stringResource(Res.string.warning)
+                                    },
+                                    color = when (state.importance) {
+                                        Importance.INFO -> MaterialTheme.colors.onSecondary
+                                        Importance.ERROR -> MaterialTheme.colors.error
+                                        Importance.WARNING -> Color.Yellow
+                                    }
+                                )
+                                GeneralSpacer()
+                                Text(state.message)
+                                GeneralSpacer()
+                                Button(
+                                    onClick = { dialogState = state.copy(visible = false) }
+                                ) {
+                                    Text("OK")
                                 }
-                            )
-                            GeneralSpacer()
-                            Text(dialogState.message)
-                            GeneralSpacer()
-                            Button(
-                                onClick = { dialogState = dialogState.copy(visible = false) }
-                            ){
-                                Text("OK")
                             }
                         }
+
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.api
 
-import androidx.compose.ui.geometry.Offset
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.IncusImage
@@ -26,7 +25,7 @@ object DeviceManager {
             portForwardings = mutableMapOf()
         )
         logger.debug { "Adding device $device" }
-        configuration = configuration.copy(devices = configuration.devices + device)
+        configuration.devices.add(device)
         AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image.fullName())
         return device
     }
@@ -39,23 +38,20 @@ object DeviceManager {
             y = y
         )
         logger.debug { "Adding device $device" }
-        configuration = configuration.copy(devices = configuration.devices + device)
+        configuration.devices.add(device)
         return device
     }
 
     suspend fun removeDevice(device: Device) {
         logger.debug { "Removing device $device" }
-        configuration = configuration.copy(devices = configuration.devices - device)
-        configuration = configuration.copy(connections = configuration.connections - configuration.connections.filter {
-            it.containsDevice(device)
-        }
-            .toSet())
+        configuration.devices.remove(device)
+        configuration.connections.removeIf { it.containsDevice(device) }
         AgentClient.removeContainer(device.id)
     }
 
     suspend fun connectDevice(device1: Device, device2: Device) {
         logger.debug { "Connecting device $device1 to $device2" }
-        configuration = configuration.copy(connections = configuration.connections + (device1 connect device2))
+        configuration.connections.add(device1 connect device2)
         val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
         device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
             device1ConnectedComputers.forEach { computer2 -> AgentClient.connect(computer1.id, computer2.id) }
@@ -64,7 +60,7 @@ object DeviceManager {
 
     suspend fun disconnectDevice(device1: Device, device2: Device) {
         logger.debug { "Disconnecting device $device1 to $device2" }
-        configuration = configuration.copy(connections = configuration.connections - (device1 connect device2))
+        configuration.connections.removeIf { it == device1 connect device2 }
         val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
         device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
             device1ConnectedComputers.forEach { computer2 -> AgentClient.disconnect(computer1.id, computer2.id) }
@@ -74,13 +70,13 @@ object DeviceManager {
 
     suspend fun setIPv4(device: Device.Computer, ipv4: String) {
         logger.debug { "Setting $ipv4 of $device" }
-        configuration = configuration.copy(devices = configuration.devices.map { if (it == device) device.copy(ipv4 = ipv4) else it })
+        device.ipv4 = ipv4
         AgentClient.setIPv4(device.id, ipv4)
     }
 
     suspend fun setIPv6(device: Device.Computer, ipv6: String) {
         logger.debug { "Setting $ipv6 of $device" }
-        configuration = configuration.copy(devices = configuration.devices.map { if (it == device && it is Device.Computer) it.copy(ipv6 = ipv6) else it })
+        device.ipv6 = ipv6
         AgentClient.setIPv6(device.id, ipv6)
     }
 
@@ -91,36 +87,32 @@ object DeviceManager {
 
     fun runCommand(computer: Device.Computer, command: String) = AgentClient.runCommand(computer.id, command)
 
-    fun setName(device: Device, name: String){
-        configuration = configuration.copy(devices = configuration.devices.map {
-            if (it == device){
-                when (it) {
-                    is Device.Computer -> it.copy(name = name)
-                    is Device.Switch -> it.copy(name = name)
-                }
-            } else it
-        })
+    fun setName(device: Device, name: String) {
+        device.name = name
     }
 
-    fun setImage(device: Device.Computer, image: IncusImage){
-        configuration = configuration.copy(devices = configuration.devices.map { if (it == device && it is Device.Computer) it.copy(image = image.fullName()) else it })
+    fun setImage(device: Device.Computer, image: IncusImage) {
+        device.image = image.fullName()
     }
 
-    suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean){
+    suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean) {
         logger.debug { "Set internet enabled of ${device.id} to $enabled" }
-        configuration = configuration.copy(devices = configuration.devices.map { if (it == device && it is Device.Computer) it.copy(internetEnabled = enabled) else it })
+        device.internetEnabled = enabled
         AgentClient.setInternetAccess(device.id, enabled)
     }
 
-    suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int){
+    suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int) {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
-        configuration = configuration.copy(devices = configuration.devices.map { if (it == device && it is Device.Computer) it.copy(portForwardings = it.portForwardings + (internalPort to externalPort)) else it })
+        device.portForwardings[internalPort] = externalPort
         AgentClient.addPortForwarding(device.id, internalPort, externalPort)
     }
 
-    suspend fun removePortForwarding(externalPort: Int){
+    suspend fun removePortForwarding(externalPort: Int) {
         logger.debug { "Remove port forwarding of $externalPort" }
-        configuration = configuration.copy(devices = configuration.devices.map { if (it is Device.Computer && it.portForwardings.values.contains(externalPort)) it.copy(portForwardings = it.portForwardings.filter { it.value != externalPort }) else it })
+        configuration.devices.forEach { device ->
+            if (device is Device.Computer)
+                device.portForwardings.entries.removeIf { it.value == externalPort }
+        }
         AgentClient.removePortForwarding(externalPort)
     }
 

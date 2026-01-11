@@ -63,4 +63,7 @@
     <string name="add_port_forwarding">Add port forwarding</string>
     <string name="internal_port_already_exposed">Internal port already exposed</string>
     <string name="external_port_already_bound">External port already bound by another computer</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_to_remove_device">Are you sure to remove device %1$s?</string>
 </resources>

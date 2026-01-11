@@ -10,11 +10,12 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.install_new_os
 import intervirt.composeapp.generated.resources.os
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.toReadableImage
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun OSField(device: Device.Computer){
+fun OSField(device: ViewDevice.Computer){
     Row(verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             value = device.image.toReadableImage(),

@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.gui.components
 
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Plus
@@ -18,7 +19,8 @@ fun AddButton(
     IconButton(onClick = onClick) {
         Icon(
             imageVector = TablerIcons.Plus,
-            contentDescription = stringResource(Res.string.add)
+            contentDescription = stringResource(Res.string.add),
+            tint = MaterialTheme.colors.onBackground
         )
     }
 }
