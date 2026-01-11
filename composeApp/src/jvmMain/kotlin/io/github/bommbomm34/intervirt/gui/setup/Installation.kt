@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.setup
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material.Button
@@ -11,6 +11,10 @@ import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.data.FileManager
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
+import io.github.bommbomm34.intervirt.gui.components.FlowProgressView
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.logs
 import io.github.bommbomm34.intervirt.setup.Downloader

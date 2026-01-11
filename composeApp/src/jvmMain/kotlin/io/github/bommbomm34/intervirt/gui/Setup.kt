@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.AGENT_PORT
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
@@ -14,6 +13,11 @@ import io.github.bommbomm34.intervirt.data.Screens
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.gui.components.*
+import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
+import io.github.bommbomm34.intervirt.gui.components.buttons.NextButton
+import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfiguration
+import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
+import io.github.bommbomm34.intervirt.gui.setup.Installation
 import java.io.File
 
 @Composable

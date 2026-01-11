@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.device.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +12,8 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dialogState
+import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
+import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.openDialog
 import kotlinx.coroutines.launch
 

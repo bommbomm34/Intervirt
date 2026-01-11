@@ -1,8 +1,7 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.device.settings
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -15,7 +14,8 @@ import io.github.bommbomm34.intervirt.canPortBind
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import io.github.bommbomm34.intervirt.dialogState
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.IntegerTextField
 import io.github.bommbomm34.intervirt.isValidPort
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString

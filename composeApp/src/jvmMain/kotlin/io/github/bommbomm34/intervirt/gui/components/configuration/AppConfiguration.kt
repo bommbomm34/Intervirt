@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.configuration
 
 import androidx.compose.runtime.Composable
 import intervirt.composeapp.generated.resources.Res
@@ -7,8 +7,11 @@ import intervirt.composeapp.generated.resources.intervirt_folder
 import intervirt.composeapp.generated.resources.vm_shutdown_timeout
 import io.github.bommbomm34.intervirt.DATA_DIR
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
+import io.github.bommbomm34.intervirt.gui.components.FilePicker
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.IntegerTextField
 import io.github.vinceglb.filekit.absolutePath
-import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.device.settings
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Button
@@ -9,8 +9,8 @@ import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.install_new_os
 import intervirt.composeapp.generated.resources.os
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.toReadableImage
 import org.jetbrains.compose.resources.stringResource
 

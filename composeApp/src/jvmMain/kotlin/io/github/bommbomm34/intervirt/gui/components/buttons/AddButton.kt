@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.buttons
 
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -6,10 +6,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Plus
-import compose.icons.tablericons.Trash
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.add
-import intervirt.composeapp.generated.resources.delete
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

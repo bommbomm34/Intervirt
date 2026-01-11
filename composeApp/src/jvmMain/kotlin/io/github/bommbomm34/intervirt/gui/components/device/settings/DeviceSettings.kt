@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.device.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -13,8 +13,8 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.close
 import intervirt.composeapp.generated.resources.hide_port_forwardings
 import intervirt.composeapp.generated.resources.show_port_forwardings
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -35,7 +35,7 @@ fun DeviceSettings(
                 )
             }
             GeneralSpacer()
-            GeneralDeviceSettings(device){ onClose() }
+            GeneralDeviceSettings(device) { onClose() }
             GeneralSpacer()
             if (device is ViewDevice.Computer) {
                 // All other device settings except port forwardings

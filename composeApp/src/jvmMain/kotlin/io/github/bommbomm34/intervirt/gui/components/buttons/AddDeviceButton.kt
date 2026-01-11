@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.buttons
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
@@ -10,6 +10,7 @@ import compose.icons.tablericons.Switch
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.computer
 import intervirt.composeapp.generated.resources.switch
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

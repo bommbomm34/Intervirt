@@ -1,7 +1,6 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.device.settings
 
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -13,10 +12,9 @@ import intervirt.composeapp.generated.resources.are_you_sure_to_remove_device
 import intervirt.composeapp.generated.resources.delete
 import intervirt.composeapp.generated.resources.name
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.configuration
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import io.github.bommbomm34.intervirt.logger
+import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.openDialog
 import io.github.bommbomm34.intervirt.statefulConf
 import kotlinx.coroutines.launch
