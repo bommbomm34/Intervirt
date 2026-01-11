@@ -17,7 +17,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.logs
-import io.github.bommbomm34.intervirt.setup.Downloader
+import io.github.bommbomm34.intervirt.api.Downloader
 import io.github.bommbomm34.intervirt.showLogs
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow

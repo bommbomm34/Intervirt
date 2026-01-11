@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.IncusImage
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.bommbomm34.intervirt.logger
@@ -12,10 +11,10 @@ import java.io.File
 import kotlin.random.Random
 
 object DeviceManager {
-    suspend fun addComputer(name: String, x: Int, y: Int, image: IncusImage): Device {
+    suspend fun addComputer(name: String, x: Int, y: Int, image: String): Device {
         val device = Device.Computer(
             id = generateID("computer"),
-            image = image.fullName(),
+            image = image,
             name = name,
             x = x,
             y = y,
@@ -26,7 +25,7 @@ object DeviceManager {
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
-        AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image.fullName())
+        AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image)
         return device
     }
 
@@ -91,8 +90,8 @@ object DeviceManager {
         device.name = name
     }
 
-    fun setImage(device: Device.Computer, image: IncusImage) {
-        device.image = image.fullName()
+    fun setImage(device: Device.Computer, image: String) {
+        device.image = image
     }
 
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean) {

@@ -66,4 +66,12 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="are_you_sure_to_remove_device">Are you sure to remove device %1$s?</string>
+    <!-- Image descriptions -->
+    <string name="debian_description">Debian is a free and open source Linux distribution, developed by the Debian Project, which was established by Ian Murdock in August 1993. Debian is one of the oldest operating systems based on the Linux kernel, and is the basis of many other Linux distributions. Source: Wikipedia (description), Debian Project (logo)</string>
+    <string name="fedora_description">Fedora Linux is a free and open-source Linux distribution developed by the Fedora Project. It was originally developed in 2003 as a continuation of the Red Hat Linux project. It contains software distributed under various free and open-source licenses and aims to be on the leading edge of open-source technologies. It is now the upstream source for CentOS Stream and Red Hat Enterprise Linux. Source: Wikipedia (description), Red Hat (logo)</string>
+    <string name="archlinux_description">Arch Linux is an open source, rolling release Linux distribution. Arch Linux is kept up-to-date by regularly updating the individual pieces of software that it comprises. It provides monthly "snapshots" which are used as installation media. Arch Linux is intentionally minimal, and is meant to be configured by the user during installation so they may add only what they require. Source: Wikipedia (description), Judd Vinet, Aaron Griffin and Levente Polyák (logo)</string>
+    <string name="os_is_needed">An OS is required to create a computer</string>
+
+    <string name="default_computer_name">My Computer</string>
+    <string name="default_switch_name">My Switch</string>
 </resources>

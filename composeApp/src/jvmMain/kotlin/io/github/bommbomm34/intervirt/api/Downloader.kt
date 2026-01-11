@@ -1,12 +1,25 @@
-package io.github.bommbomm34.intervirt.setup
+package io.github.bommbomm34.intervirt.api
 
-import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.*
-import io.github.bommbomm34.intervirt.data.*
+import intervirt.composeapp.generated.resources.Res
+import intervirt.composeapp.generated.resources.download_succeeded
+import intervirt.composeapp.generated.resources.downloading
+import intervirt.composeapp.generated.resources.error_while_zip_extraction
+import intervirt.composeapp.generated.resources.successful_installation
+import io.github.bommbomm34.intervirt.ALPINE_DISK_URL
+import io.github.bommbomm34.intervirt.QEMU_LINUX_URL
+import io.github.bommbomm34.intervirt.QEMU_WINDOWS_URL
+import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
+import io.github.bommbomm34.intervirt.data.FileManager
+import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.data.ResultProgress
+import io.github.bommbomm34.intervirt.data.getOS
+import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
+import io.github.bommbomm34.intervirt.logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.lingala.zip4j.ZipFile
@@ -39,7 +52,7 @@ object Downloader {
                             zip.extractAll(FileManager.getFile("qemu").absolutePath)
                             Preferences.saveString("QEMU_INSTALLED", "true")
                             emit(
-                                ResultProgress.success(
+                                ResultProgress.Companion.success(
                                     getString(
                                         Res.string.download_succeeded,
                                         "QEMU"
@@ -49,7 +62,7 @@ object Downloader {
                         } catch (e: ZipException) {
                             logger.error { "Error occurred while extracting ${zipFile.name}: ${e.message}" }
                             emit(
-                                ResultProgress.failure(
+                                ResultProgress.Companion.failure(
                                     ZipExtractionException(
                                         getString(
                                             Res.string.error_while_zip_extraction,
@@ -61,15 +74,20 @@ object Downloader {
                             )
                         }
                     }.onFailure {
-                        emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
+                        emit(ResultProgress.Companion.failure(DownloadException(it.localizedMessage)))
                     }
                 } else {
-                    emit(ResultProgress.proceed(resultProgress.percentage, getString(Res.string.downloading, "QEMU")))
+                    emit(
+                        ResultProgress.Companion.proceed(
+                            resultProgress.percentage,
+                            getString(Res.string.downloading, "QEMU")
+                        )
+                    )
                 }
             }
         } else {
             logger.debug { "Already installed QEMU" }
-            emit(ResultProgress.success(getString(Res.string.successful_installation, "QEMU")))
+            emit(ResultProgress.Companion.success(getString(Res.string.successful_installation, "QEMU")))
         }
     }
 
@@ -79,7 +97,7 @@ object Downloader {
             OS.WINDOWS -> downloadQEMUWindows(update)
             OS.LINUX -> downloadQEMULinux(update)
             null -> flow {
-                emit(ResultProgress.failure(UnsupportedOSException()))
+                emit(ResultProgress.Companion.failure(UnsupportedOSException()))
             }
         }
     }
@@ -91,18 +109,23 @@ object Downloader {
             file.collect { resultProgress ->
                 if (resultProgress.result != null) {
                     resultProgress.result.onFailure {
-                        emit(ResultProgress.failure(it))
+                        emit(ResultProgress.Companion.failure(it))
                     }.onSuccess {
-                        emit(ResultProgress.success(getString(Res.string.download_succeeded)))
+                        emit(ResultProgress.Companion.success(getString(Res.string.download_succeeded)))
                         Preferences.saveString("DISK_INSTALLED", "true")
                     }
                 } else {
-                    emit(ResultProgress.proceed(resultProgress.percentage, getString(Res.string.downloading, "VM")))
+                    emit(
+                        ResultProgress.Companion.proceed(
+                            resultProgress.percentage,
+                            getString(Res.string.downloading, "VM")
+                        )
+                    )
                 }
             }
         } else {
             logger.debug { "Already installed disk" }
-            emit(ResultProgress.success(getString(Res.string.successful_installation, "VM")))
+            emit(ResultProgress.Companion.success(getString(Res.string.successful_installation, "VM")))
         }
     }
 

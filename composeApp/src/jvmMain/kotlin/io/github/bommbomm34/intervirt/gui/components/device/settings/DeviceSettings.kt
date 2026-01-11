@@ -15,6 +15,7 @@ import intervirt.composeapp.generated.resources.hide_port_forwardings
 import intervirt.composeapp.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -26,14 +27,7 @@ fun DeviceSettings(
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
         // Device settings
         Column {
-            // Close button
-            IconButton(onClick = onClose) {
-                Icon(
-                    imageVector = TablerIcons.X,
-                    contentDescription = stringResource(Res.string.close),
-                    tint = Color.White
-                )
-            }
+            CloseButton(onClose)
             GeneralSpacer()
             GeneralDeviceSettings(device) { onClose() }
             GeneralSpacer()
