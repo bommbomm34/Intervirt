@@ -26,19 +26,16 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun Dialog() {
     AnimatedVisibility(dialogState.visible) {
-        Surface(
-            modifier = Modifier.safeContentPadding(),
-            color = Color.Black.copy(alpha = 0.5f)
-        ) {
+        Overlay {
             AlignedBox(Alignment.Center) {
                 Surface(
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)),
                     color = MaterialTheme.colors.background.copy(blue = 0.05f)
                 ) {
-                    CenterColumn (Modifier.padding(16.dp)) {
-                        when (dialogState){
-                            is DialogState.Custom -> (dialogState as DialogState.Custom).customContent(this)
-                            is DialogState.Regular -> {
+                    when (dialogState) {
+                        is DialogState.Custom -> (dialogState as DialogState.Custom).customContent()
+                        is DialogState.Regular -> {
+                            CenterColumn (Modifier.padding(16.dp)) {
                                 val state = dialogState as DialogState.Regular
                                 Text(
                                     text = when (state.importance) {
@@ -62,7 +59,6 @@ fun Dialog() {
                                 }
                             }
                         }
-
                     }
                 }
             }

@@ -16,21 +16,23 @@ fun AcceptDialog(
     onCancel: () -> Unit = {},
     onAccept: () -> Unit,
 ){
-    Text(message)
-    GeneralSpacer()
-    Row {
-        Button(onClick = {
-            closeDialog()
-            onAccept()
-        }){
-            Text(stringResource(Res.string.yes))
-        }
+    CenterColumn {
+        Text(message)
         GeneralSpacer()
-        Button(onClick = {
-            closeDialog()
-            onCancel()
-        }){
-            Text(stringResource(Res.string.no))
+        Row {
+            Button(onClick = {
+                closeDialog()
+                onAccept()
+            }){
+                Text(stringResource(Res.string.yes))
+            }
+            GeneralSpacer()
+            Button(onClick = {
+                closeDialog()
+                onCancel()
+            }){
+                Text(stringResource(Res.string.no))
+            }
         }
     }
 }

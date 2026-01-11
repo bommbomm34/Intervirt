@@ -14,6 +14,7 @@ import io.github.bommbomm34.intervirt.canPortBind
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.IntegerTextField
 import io.github.bommbomm34.intervirt.isValidPort
@@ -26,64 +27,65 @@ fun AddPortForwardingDialog(
     device: ViewDevice.Computer,
     onCancel: () -> Unit
 ) {
-    var internalPort by remember { mutableStateOf(1) }
-    var externalPort by remember { mutableStateOf(1) }
-    var result by remember { mutableStateOf(Result.success(Unit)) }
-    val scope = rememberCoroutineScope()
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IntegerTextField(
-            value = internalPort,
-            onValueChange = { if (it.isValidPort()) internalPort = it },
-            label = stringResource(Res.string.internal_port)
-        )
-        Text(
-            text = ":",
-            fontWeight = FontWeight.ExtraBold
-        )
-        IntegerTextField(
-            value = externalPort,
-            onValueChange = { if (it.isValidPort()) externalPort = it },
-            label = stringResource(Res.string.external_port)
-        )
-    }
-    LaunchedEffect(internalPort, externalPort) {
-        result = lint(device, internalPort, externalPort)
-    }
-    if (result.isFailure) {
-        result.exceptionOrNull()?.let { exp ->
-            GeneralSpacer()
+    CenterColumn {
+        var internalPort by remember { mutableStateOf(1) }
+        var externalPort by remember { mutableStateOf(1) }
+        var result by remember { mutableStateOf(Result.success(Unit)) }
+        val scope = rememberCoroutineScope()
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IntegerTextField(
+                value = internalPort,
+                onValueChange = { if (it.isValidPort()) internalPort = it },
+                label = stringResource(Res.string.internal_port)
+            )
             Text(
-                text = exp.localizedMessage,
-                color = Color.Red
+                text = ":",
+                fontWeight = FontWeight.ExtraBold
+            )
+            IntegerTextField(
+                value = externalPort,
+                onValueChange = { if (it.isValidPort()) externalPort = it },
+                label = stringResource(Res.string.external_port)
             )
         }
-    }
-    GeneralSpacer()
-    Row {
-        Button(
-            onClick = onCancel,
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
-        ){
-            Text(
-                text = "Cancel",
-                color = Color.White
-            )
+        LaunchedEffect(internalPort, externalPort) {
+            result = lint(device, internalPort, externalPort)
+        }
+        if (result.isFailure) {
+            result.exceptionOrNull()?.let { exp ->
+                GeneralSpacer()
+                Text(
+                    text = exp.localizedMessage,
+                    color = Color.Red
+                )
+            }
         }
         GeneralSpacer()
-        Button(
-            onClick = {
-                scope.launch {
-                    device.portForwardings[internalPort] = externalPort
-                    DeviceManager.addPortForwarding(device.toDevice(), internalPort, externalPort)
-                    onCancel()
-                }
-            },
-            enabled = result.isSuccess
-        ) {
-            Text(stringResource(Res.string.add_port_forwarding))
+        Row {
+            Button(
+                onClick = onCancel,
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+            ){
+                Text(
+                    text = "Cancel",
+                    color = Color.White
+                )
+            }
+            GeneralSpacer()
+            Button(
+                onClick = {
+                    scope.launch {
+                        device.portForwardings[internalPort] = externalPort
+                        DeviceManager.addPortForwarding(device.toDevice(), internalPort, externalPort)
+                        onCancel()
+                    }
+                },
+                enabled = result.isSuccess
+            ) {
+                Text(stringResource(Res.string.add_port_forwarding))
+            }
         }
     }
-
 }
 
 suspend fun lint(

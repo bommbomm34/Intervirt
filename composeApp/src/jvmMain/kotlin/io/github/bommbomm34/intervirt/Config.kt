@@ -67,6 +67,7 @@ val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 3f
 val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001100
 val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
 val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
+val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
 val logger = KotlinLogging.logger { }
 val client = HttpClient(CIO) {
     engine {
@@ -133,7 +134,7 @@ fun openDialog(
     )
 }
 
-fun openDialog(customContent: @Composable ColumnScope.() -> Unit){
+fun openDialog(customContent: @Composable () -> Unit){
     dialogState = DialogState.Custom(customContent, true)
 }
 
@@ -158,21 +159,3 @@ fun Int.canPortBind(): Result<Unit> {
         return Result.failure(e)
     }
 }
-
-fun String.toReadableImage() = when {
-    startsWith("debian/") -> "Debian"
-    startsWith("ubuntu/") -> "Ubuntu"
-    startsWith("intervirtos/") -> "IntervirtOS"
-    startsWith("almalinux/") -> "AlmaLinux"
-    startsWith("alpine/") -> "Alpine Linux"
-    startsWith("archlinux/") -> "Arch Linux"
-    startsWith("centos/") -> "CentOS"
-    startsWith("fedora/") -> "Fedora"
-    startsWith("gentoo/") -> "Gentoo"
-    startsWith("kali/") -> "Kali Linux"
-    startsWith("mint/") -> "Linux Mint"
-    startsWith("nixos/") -> "NixOS"
-    startsWith("opensuse/") -> "openSUSE"
-    startsWith("voidlinux/") -> "Void Linux"
-    else -> substringBefore("/")
-} + " ${substringAfter("/")}"

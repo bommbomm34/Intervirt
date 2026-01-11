@@ -21,7 +21,7 @@ sealed class DialogState(
     ) : DialogState(visible)
 
     data class Custom(
-        val customContent: @Composable ColumnScope.() -> Unit,
+        val customContent: @Composable () -> Unit,
         override val visible: Boolean
     ) : DialogState(visible)
 }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import io.github.bommbomm34.intervirt.OS_ICON_SIZE
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
@@ -32,13 +33,15 @@ fun ImagePicker(
         images.clear()
         images.addAll(Image.getImages())
     }
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 128.dp)
-    ){
-        items(images){ image -> // Incus Image, not a photo :)
-            ImageItem(image){
-                showImageInfo = true
-                selectedImage = image
+    AlignedBox(Alignment.Center, 64.dp){
+        LazyVerticalGrid(
+            columns = GridCells.FixedSize(OS_ICON_SIZE * 1.2f)
+        ){
+            items(images){ image -> // Incus Image, not a photo :)
+                ImageItem(image){
+                    showImageInfo = true
+                    selectedImage = image
+                }
             }
         }
     }

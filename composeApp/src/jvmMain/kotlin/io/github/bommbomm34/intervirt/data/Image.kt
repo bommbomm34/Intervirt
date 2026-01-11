@@ -11,7 +11,9 @@ data class Image(
     val description: String,
     val icon: DrawableResource
 ) {
-    fun fullName() = "$name/$tag"
+    val fullName = "$name/$tag"
+
+    fun toReadableName() = fullName.toReadableImage()
 
     companion object {
         suspend fun getImages() = listOf(
@@ -21,4 +23,22 @@ data class Image(
             // Other images are coming soon!
         )
     }
+}
+
+fun String.toReadableImage() = when {
+    startsWith("debian/") -> "Debian"
+    startsWith("ubuntu/") -> "Ubuntu"
+    startsWith("intervirtos/") -> "IntervirtOS"
+    startsWith("almalinux/") -> "AlmaLinux"
+    startsWith("alpine/") -> "Alpine Linux"
+    startsWith("archlinux/") -> "Arch Linux"
+    startsWith("centos/") -> "CentOS"
+    startsWith("fedora/") -> "Fedora"
+    startsWith("gentoo/") -> "Gentoo"
+    startsWith("kali/") -> "Kali Linux"
+    startsWith("mint/") -> "Linux Mint"
+    startsWith("nixos/") -> "NixOS"
+    startsWith("opensuse/") -> "openSUSE"
+    startsWith("voidlinux/") -> "Void Linux"
+    else -> substringBefore("/")
 }

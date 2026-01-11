@@ -25,7 +25,7 @@ object DeviceManager {
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
-        AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image)
+//        AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image)
         return device
     }
 
@@ -45,7 +45,7 @@ object DeviceManager {
         logger.debug { "Removing device $device" }
         configuration.devices.remove(device)
         configuration.connections.removeIf { it.containsDevice(device) }
-        AgentClient.removeContainer(device.id)
+//        AgentClient.removeContainer(device.id)
     }
 
     suspend fun connectDevice(device1: Device, device2: Device) {
@@ -70,13 +70,13 @@ object DeviceManager {
     suspend fun setIPv4(device: Device.Computer, ipv4: String) {
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
-        AgentClient.setIPv4(device.id, ipv4)
+//        AgentClient.setIPv4(device.id, ipv4)
     }
 
     suspend fun setIPv6(device: Device.Computer, ipv6: String) {
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
-        AgentClient.setIPv6(device.id, ipv6)
+//        AgentClient.setIPv6(device.id, ipv6)
     }
 
     fun exportComputer(computer: Device.Computer): Flow<ResultProgress<File>> = flow {
@@ -97,13 +97,13 @@ object DeviceManager {
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean) {
         logger.debug { "Set internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled
-        AgentClient.setInternetAccess(device.id, enabled)
+//        AgentClient.setInternetAccess(device.id, enabled)
     }
 
     suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int) {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings[internalPort] = externalPort
-        AgentClient.addPortForwarding(device.id, internalPort, externalPort)
+//        AgentClient.addPortForwarding(device.id, internalPort, externalPort)
     }
 
     suspend fun removePortForwarding(externalPort: Int) {
@@ -112,7 +112,7 @@ object DeviceManager {
             if (device is Device.Computer)
                 device.portForwardings.entries.removeIf { it.value == externalPort }
         }
-        AgentClient.removePortForwarding(externalPort)
+//        AgentClient.removePortForwarding(externalPort)
     }
 
     private fun generateID(prefix: String): String {
@@ -126,7 +126,7 @@ object DeviceManager {
         val rand = { Random.nextInt(256) }
         while (true) {
             val ipv4 = "192.168.${rand()}.${rand()}"
-            if (configuration.devices.all { if (it is Device.Computer) it.ipv4 == ipv4 else true }) return ipv4
+            if (configuration.devices.all { if (it is Device.Computer) it.ipv4 != ipv4 else true }) return ipv4
         }
     }
 
@@ -135,7 +135,7 @@ object DeviceManager {
         val randFirst = { Random.nextInt(256).toString(16) }
         while (true) {
             val ipv6 = "fd${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
-            if (configuration.devices.all { if (it is Device.Computer) it.ipv6 == ipv6 else true }) return ipv6
+            if (configuration.devices.all { if (it is Device.Computer) it.ipv6 != ipv6 else true }) return ipv6
         }
     }
 }

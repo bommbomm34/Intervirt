@@ -56,9 +56,10 @@ fun AddDeviceButton() {
                                         name = getString(Res.string.default_computer_name),
                                         x = 300,
                                         y = 300,
-                                        image = it.fullName()
+                                        image = it.fullName
                                     )
                                     statefulConf.devices.add(device.toViewDevice())
+                                    closeDialog()
                                 }
                             }
                         )
