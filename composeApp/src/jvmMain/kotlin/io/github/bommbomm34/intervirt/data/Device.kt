@@ -12,7 +12,7 @@ sealed class Device(
 ) {
     data class Computer(
         override val id: String,
-        var image: String,
+        val image: String,
         override var name: String,
         override var x: Int,
         override var y: Int,

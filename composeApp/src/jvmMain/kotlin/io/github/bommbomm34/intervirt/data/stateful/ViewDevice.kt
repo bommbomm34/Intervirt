@@ -14,7 +14,7 @@ sealed class ViewDevice(val device: Device) {
     var y by mutableStateOf(device.y)
 
     data class Computer(val computer: Device.Computer) : ViewDevice(computer) {
-        var image by mutableStateOf(computer.image)
+        val image by mutableStateOf(computer.image)
         var ipv4 by mutableStateOf(computer.ipv4)
         var ipv6 by mutableStateOf(computer.ipv6)
         var internetEnabled by mutableStateOf(computer.internetEnabled)

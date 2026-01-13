@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.install_new_os
 import intervirt.composeapp.generated.resources.install_os
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox

@@ -7,7 +7,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.install_new_os
 import intervirt.composeapp.generated.resources.os
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -22,13 +21,5 @@ fun OSField(device: ViewDevice.Computer){
             label = { Text(stringResource(Res.string.os)) },
             enabled = false
         )
-        GeneralSpacer()
-        Button(
-            onClick = {
-                // TODO: Install new OS
-            },
-        ) {
-            Text(stringResource(Res.string.install_new_os))
-        }
     }
 }

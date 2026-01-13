@@ -90,10 +90,6 @@ object DeviceManager {
         device.name = name
     }
 
-    fun setImage(device: Device.Computer, image: String) {
-        device.image = image
-    }
-
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean) {
         logger.debug { "Set internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled

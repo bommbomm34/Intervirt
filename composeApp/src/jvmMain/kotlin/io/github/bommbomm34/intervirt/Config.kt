@@ -80,6 +80,7 @@ var showLogs by mutableStateOf(false)
 var dialogState: DialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by  mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
+var showSettings by mutableStateOf(false)
 val configuration = IntervirtConfiguration(
     version = CURRENT_VERSION,
     author = "",
