@@ -48,9 +48,11 @@ fun DevicesView() {
     statefulConf.devices.forEach { device ->
         DeviceView(
             device = device,
-            onSelectDevice = {
-                selectedDevice = it
-                deviceSettingsVisible = true
+            onClickDevice = {
+                if (selectedDevice != it || !deviceSettingsVisible) {
+                    selectedDevice = it
+                    deviceSettingsVisible = true
+                } else deviceSettingsVisible = false
             }
         )
     }

@@ -30,7 +30,7 @@ import io.github.bommbomm34.intervirt.windowState
 @Composable
 fun DeviceView(
     device: ViewDevice,
-    onSelectDevice: (ViewDevice) -> Unit
+    onClickDevice: (ViewDevice) -> Unit
 ) {
     val getVector: (ViewDevice) -> ImageVector = {
         when (it) {
@@ -45,7 +45,7 @@ fun DeviceView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .offset { IntOffset(offset.x.toInt(), offset.y.toInt()) }
-            .onClick { onSelectDevice(device) }
+            .onClick { onClickDevice(device) }
             .onDrag(
                 onDragStart = { overlay = true },
                 onDragEnd = { overlay = false }
