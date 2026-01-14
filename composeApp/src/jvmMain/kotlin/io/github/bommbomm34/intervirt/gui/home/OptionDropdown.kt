@@ -3,19 +3,15 @@ package io.github.bommbomm34.intervirt.gui.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 import compose.icons.TablerIcons
 import compose.icons.tablericons.InfoCircle
 import compose.icons.tablericons.Settings
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.about
 import intervirt.composeapp.generated.resources.settings
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.currentScreenIndex
 import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
-import io.github.bommbomm34.intervirt.showSettings
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -29,7 +25,7 @@ fun OptionDropdown(
             onDismissRequest = onDismiss
         ){
             DropdownMenuItem(
-                onClick = { showSettings = true }
+                onClick = { currentScreenIndex = 3 }
             ){
                 IconText(
                     imageVector = TablerIcons.Settings,
@@ -37,9 +33,7 @@ fun OptionDropdown(
                 )
             }
             DropdownMenuItem(
-                onClick = {
-                    // TODO: Show About window
-                }
+                onClick = { currentScreenIndex = 4 }
             ){
                 IconText(
                     imageVector = TablerIcons.InfoCircle,

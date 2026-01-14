@@ -78,4 +78,6 @@
     <string name="intervirt_settings">Intervirt Settings</string>
     <string name="settings">Settings</string>
     <string name="about">About</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="restart_necessary_to_apply_changes">Intervirt needs to be restarted to apply the new changes</string>
 </resources>

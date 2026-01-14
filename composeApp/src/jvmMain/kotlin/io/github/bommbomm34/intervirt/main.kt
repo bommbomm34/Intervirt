@@ -39,6 +39,7 @@ import kotlin.random.Random
 fun main() = application {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
     val scope = rememberCoroutineScope()
+    // Main Window
     Window(
         onCloseRequest = {
             scope.launch {
@@ -58,6 +59,7 @@ fun main() = application {
             Dialog()
         }
     }
+    // Logs Window
     Window(
         onCloseRequest = { showLogs = false },
         visible = showLogs,
@@ -66,16 +68,6 @@ fun main() = application {
     ){
         DefaultWindowScope {
             LogsView(logs)
-        }
-    }
-    Window(
-        onCloseRequest = { showSettings = false },
-        visible = showSettings,
-        title = stringResource(Res.string.intervirt_settings),
-        state = rememberWindowState(position = WindowPosition.Aligned(Alignment.CenterEnd))
-    ){
-        DefaultWindowScope {
-            Settings()
         }
     }
 }

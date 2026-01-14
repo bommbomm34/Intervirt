@@ -1,39 +1,20 @@
 package io.github.bommbomm34.intervirt
 
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.type
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowState
-import androidx.compose.ui.window.rememberWindowState
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
+import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import java.io.File
-import java.net.InetAddress
 import java.net.ServerSocket
 import kotlin.math.pow
 import kotlin.math.round
@@ -80,7 +61,7 @@ var showLogs by mutableStateOf(false)
 var dialogState: DialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by  mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
-var showSettings by mutableStateOf(false)
+var currentScreenIndex by mutableStateOf(if (checkSetupStatus()) 1 else 0)
 val configuration = IntervirtConfiguration(
     version = CURRENT_VERSION,
     author = "",
@@ -159,4 +140,15 @@ fun Int.canPortBind(): Result<Unit> {
     } catch (e: Exception) {
         return Result.failure(e)
     }
+}
+
+fun checkSetupStatus() = env("INSTALLED").toBoolean()
+
+fun applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData){
+    Preferences.saveString("VM_RAM", vmConf.ram.toString())
+    Preferences.saveString("VM_CPU", vmConf.cpu.toString())
+    Preferences.saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
+    Preferences.saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
+    Preferences.saveString("AGENT_PORT", appConf.agentPort.toString())
+    Preferences.saveString("DATA_DIR", appConf.intervirtFolder)
 }

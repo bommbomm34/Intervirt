@@ -1,6 +1,8 @@
 package io.github.bommbomm34.intervirt.gui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,30 +34,32 @@ fun Dialog() {
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)),
                     color = MaterialTheme.colors.background.copy(blue = 0.05f)
                 ) {
-                    when (dialogState) {
-                        is DialogState.Custom -> (dialogState as DialogState.Custom).customContent()
-                        is DialogState.Regular -> {
-                            CenterColumn (Modifier.padding(16.dp)) {
-                                val state = dialogState as DialogState.Regular
-                                Text(
-                                    text = when (state.importance) {
-                                        Importance.INFO -> stringResource(Res.string.info)
-                                        Importance.ERROR -> stringResource(Res.string.error)
-                                        Importance.WARNING -> stringResource(Res.string.warning)
-                                    },
-                                    color = when (state.importance) {
-                                        Importance.INFO -> MaterialTheme.colors.onSecondary
-                                        Importance.ERROR -> MaterialTheme.colors.error
-                                        Importance.WARNING -> Color.Yellow
+                    Box(Modifier.padding(16.dp)){
+                        when (dialogState) {
+                            is DialogState.Custom -> (dialogState as DialogState.Custom).customContent()
+                            is DialogState.Regular -> {
+                                CenterColumn (Modifier.padding(16.dp)) {
+                                    val state = dialogState as DialogState.Regular
+                                    Text(
+                                        text = when (state.importance) {
+                                            Importance.INFO -> stringResource(Res.string.info)
+                                            Importance.ERROR -> stringResource(Res.string.error)
+                                            Importance.WARNING -> stringResource(Res.string.warning)
+                                        },
+                                        color = when (state.importance) {
+                                            Importance.INFO -> MaterialTheme.colors.onSecondary
+                                            Importance.ERROR -> MaterialTheme.colors.error
+                                            Importance.WARNING -> Color.Yellow
+                                        }
+                                    )
+                                    GeneralSpacer()
+                                    Text(state.message)
+                                    GeneralSpacer()
+                                    Button(
+                                        onClick = { dialogState = state.copy(visible = false) }
+                                    ) {
+                                        Text("OK")
                                     }
-                                )
-                                GeneralSpacer()
-                                Text(state.message)
-                                GeneralSpacer()
-                                Button(
-                                    onClick = { dialogState = state.copy(visible = false) }
-                                ) {
-                                    Text("OK")
                                 }
                             }
                         }

@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.AGENT_PORT
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
+import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.Screens
@@ -21,9 +22,7 @@ import io.github.bommbomm34.intervirt.gui.setup.Installation
 import java.io.File
 
 @Composable
-fun Setup(
-    onFinish: () -> Unit
-) {
+fun Setup() {
     var currentSetupScreenIndex by remember { mutableStateOf(Screens.Setup.VM_CONFIGURATION) }
     var vmConf by remember {
         mutableStateOf(
@@ -47,7 +46,7 @@ fun Setup(
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(vmConf) { vmConf = it } },
         { AppConfiguration(appConf) { appConf = it } },
-        { Installation(onFinish) { applyConfiguration(vmConf, appConf) } }
+        { Installation { applyConfiguration(vmConf, appConf) } }
     )
     AlignedBox(Alignment.TopCenter) {
         Text(
@@ -77,13 +76,4 @@ fun Setup(
             currentSetupScreenIndex++
         }
     }
-}
-
-fun applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData){
-    Preferences.saveString("VM_RAM", vmConf.ram.toString())
-    Preferences.saveString("VM_CPU", vmConf.cpu.toString())
-    Preferences.saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
-    Preferences.saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
-    Preferences.saveString("AGENT_PORT", appConf.agentPort.toString())
-    Preferences.saveString("DATA_DIR", appConf.intervirtFolder)
 }

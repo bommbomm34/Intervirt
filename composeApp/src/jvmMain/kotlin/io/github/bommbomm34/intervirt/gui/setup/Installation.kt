@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.logs
 import io.github.bommbomm34.intervirt.api.Downloader
+import io.github.bommbomm34.intervirt.currentScreenIndex
 import io.github.bommbomm34.intervirt.showLogs
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Installation(
-    onFinish: () -> Unit,
     applyConfiguration: () -> Unit
 ) {
     var allowInstallation by remember { mutableStateOf(false) }
@@ -76,7 +76,7 @@ fun Installation(
                             if (it.result?.isFailure ?: false) job!!.cancel()
                         }
                         Preferences.saveString("INTERVIRT_INSTALLED", "true")
-                        onFinish()
+                        currentScreenIndex = 1
                     }
                 }
             },
