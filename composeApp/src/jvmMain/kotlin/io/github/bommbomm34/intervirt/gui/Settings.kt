@@ -14,12 +14,15 @@ import io.github.bommbomm34.intervirt.VM_ENABLE_KVM
 import io.github.bommbomm34.intervirt.VM_RAM
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
 import io.github.bommbomm34.intervirt.applyConfiguration
+import io.github.bommbomm34.intervirt.currentScreenIndex
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
+import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.openDialog
@@ -48,6 +51,9 @@ fun Settings() {
         )
     }
     val confHash = remember { Objects.hash(appConf, vmConf) }
+    AlignedBox(Alignment.TopStart){
+        BackButton { currentScreenIndex = 1 }
+    }
     AlignedBox(Alignment.Center){
         CenterColumn {
             AppConfiguration(appConf){ appConf = it }

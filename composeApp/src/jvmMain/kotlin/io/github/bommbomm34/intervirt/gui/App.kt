@@ -13,7 +13,6 @@ fun App() {
         screens = listOf(
             { Setup() },
             { Home() },
-            { OSInstaller() },
             { Settings() },
             { About() }
         )

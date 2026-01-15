@@ -9,7 +9,7 @@ import compose.icons.tablericons.ArrowLeft
 
 @Composable
 fun BackButton(
-    visible: Boolean,
+    visible: Boolean = true,
     onClick: () -> Unit
 ) {
     if (visible){

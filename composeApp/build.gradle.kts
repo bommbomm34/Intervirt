@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.aboutLibraries)
 }
 
 kotlin {
@@ -25,6 +26,8 @@ kotlin {
             implementation(libs.ktor.client.websockets)
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
+            implementation(libs.aboutlibraries.core)
+            implementation(libs.aboutlibraries.compose.m3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
