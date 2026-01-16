@@ -82,4 +82,5 @@
     <string name="restart_necessary_to_apply_changes">Intervirt needs to be restarted to apply the new changes</string>
     <string name="save">Save</string>
     <string name="save_as">Save As</string>
+    <string name="open">Open</string>
 </resources>

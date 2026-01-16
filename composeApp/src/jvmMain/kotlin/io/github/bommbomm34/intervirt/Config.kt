@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -49,6 +50,7 @@ val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001
 val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
 val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
 val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
+val SUGGESTED_FILENAME = env("SUGGESTED_FILENAME") ?: "MyIntervirtProject"
 val logger = KotlinLogging.logger { }
 val client = HttpClient(CIO) {
     engine {
@@ -61,6 +63,7 @@ var showLogs by mutableStateOf(false)
 var dialogState: DialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by  mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
+val CURRENT_FILE: PlatformFile? by mutableStateOf(null)
 var currentScreenIndex by mutableStateOf(if (checkSetupStatus()) 1 else 0)
 val configuration = IntervirtConfiguration(
     version = CURRENT_VERSION,

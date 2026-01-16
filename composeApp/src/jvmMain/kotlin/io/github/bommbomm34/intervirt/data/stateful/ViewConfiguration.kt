@@ -16,4 +16,12 @@ data class ViewConfiguration(
     val devices =
         mutableStateListOf<ViewDevice>().apply { intervirtConfiguration.devices.forEach { add(it.toViewDevice()) } }
     val connections = mutableStateListOf<DeviceConnection>().apply { addAll(intervirtConfiguration.connections) }
+
+    fun update(configuration: ViewConfiguration){
+        author = configuration.author
+        devices.clear()
+        devices.addAll(configuration.devices)
+        connections.clear()
+        connections.addAll(configuration.connections)
+    }
 }

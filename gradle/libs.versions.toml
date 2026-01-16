@@ -8,7 +8,6 @@ slf4j = "2.0.3"
 kotlin-logging = "7.0.3"
 ktor = "3.3.3"
 zip4j = "2.11.5"
-kuiver = "0.1.0"
 compose-tabler-icons = "1.1.1"
 kotlinx-serialization-json = "1.9.0"
 filekit = "0.12.0"
@@ -27,7 +26,6 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-kuiver = { module = "io.github.justdeko:kuiver", version.ref = "kuiver" }
 compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-tabler-icons" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }

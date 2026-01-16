@@ -31,6 +31,7 @@ import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.Settings
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
+import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.slf4j.simple.SimpleLogger
@@ -38,6 +39,7 @@ import kotlin.random.Random
 
 fun main() = application {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
+    FileKit.init("intervirt")
     val scope = rememberCoroutineScope()
     // Main Window
     Window(

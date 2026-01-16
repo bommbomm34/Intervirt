@@ -1,9 +1,7 @@
 package io.github.bommbomm34.intervirt.gui
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import io.github.bommbomm34.intervirt.currentScreenIndex
-import io.github.bommbomm34.intervirt.data.Preferences
-import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.gui.components.MultipleAnimatedVisibility
 
 @Composable

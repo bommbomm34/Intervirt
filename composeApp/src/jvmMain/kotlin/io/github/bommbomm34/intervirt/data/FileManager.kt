@@ -84,8 +84,6 @@ object FileManager {
             null -> throw UnsupportedOSException()
         }
     }
-
-    fun parseConfiguration(file: File) = Json.decodeFromString<IntervirtConfiguration>(Files.readString(file.toPath()))
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

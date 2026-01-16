@@ -1,15 +1,18 @@
 package io.github.bommbomm34.intervirt.data
 
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class Device(
-    open val id: String,
-    open var name: String,
-    open var x: Int,
-    open var y: Int
-) {
+sealed class Device {
+
+    abstract val id: String
+    abstract var name: String
+    abstract var x: Int
+    abstract var y: Int
+
+    @Serializable
     data class Computer(
         override val id: String,
         val image: String,
@@ -20,14 +23,15 @@ sealed class Device(
         var ipv6: String,
         var internetEnabled: Boolean,
         val portForwardings: MutableMap<Int, Int> // internalPort:externalPort
-    ) : Device(id, name, x, y)
+    ) : Device()
 
+    @Serializable
     data class Switch(
         override val id: String,
         override var name: String,
         override var x: Int,
         override var y: Int
-    ) : Device(id, name, x, y)
+    ) : Device()
 
     fun getConnectedDevices(totalConnections: List<DeviceConnection>) =
         totalConnections.mapNotNull { if (it.device1 == this) it.device2 else if (it.device2 == this) it.device1 else null }

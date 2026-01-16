@@ -4,16 +4,18 @@ import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.exceptions.DeprecatedException
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
+import java.io.File
 
 // Configuration of an Intervirt project
 @Serializable
 data class IntervirtConfiguration(
     val version: String,
-    val author: String,
+    var author: String,
     val devices: MutableList<Device>,
     val connections: MutableList<DeviceConnection>
 ) {
@@ -116,5 +118,13 @@ data class IntervirtConfiguration(
             .onFailure {
                 emit(ResultProgress.failure(it))
             }
+    }
+
+    fun update(configuration: IntervirtConfiguration){
+        author = configuration.author
+        devices.clear()
+        devices.addAll(configuration.devices)
+        connections.clear()
+        connections.addAll(configuration.connections)
     }
 }
