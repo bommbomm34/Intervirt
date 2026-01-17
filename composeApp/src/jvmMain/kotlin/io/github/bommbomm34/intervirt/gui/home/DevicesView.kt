@@ -5,7 +5,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -17,31 +16,55 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.*
+import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.DeviceConnection
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddDeviceButton
 import io.github.bommbomm34.intervirt.gui.components.device.settings.DeviceSettings
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
     var deviceSettingsVisible by remember { mutableStateOf(false) }
+    var drawingConnectionSource: ViewDevice? by remember { mutableStateOf(null) }
+    var mousePosition by remember { mutableStateOf(Offset.Zero) }
+    val scope = rememberCoroutineScope()
     AlignedBox(Alignment.Center) {
         Canvas(
             Modifier
-                .fillMaxSize(0.5f)
+                .fillMaxSize()
                 .onPointerEvent(PointerEventType.Scroll) {
                     val delta = it.changes.first().scrollDelta.y * -ZOOM_SPEED
                     if (isCtrlPressed && devicesViewZoom + delta > 0.1f) devicesViewZoom += delta
                 }
+                .onPointerEvent(PointerEventType.Press) {
+                    mousePosition = it.changes.first().position
+                }
         ) {
             scale(devicesViewZoom) {
-                statefulConf.connections.forEach { drawConnection(it) }
+//                drawingConnectionSource?.let {
+//                    drawConnection(
+//                        offset1 = it.offset,
+//                        offset2 = mousePosition
+//                    )
+//                }
+                statefulConf.connections.forEach {
+                    drawConnection(
+                        offset1 = it.device1.fittingOffset(),
+                        offset2 = it.device2.fittingOffset()
+                    )
+                }
+//                drawLine(
+//                    start = statefulConf.connections[0].device1.fittingOffset(),
+//                    end = statefulConf.connections[0].device2.fittingOffset(),
+//                    color = Color.Blue,
+//                    strokeWidth = CONNECTION_STROKE_WIDTH
+//                )
             }
         }
     }
@@ -53,17 +76,25 @@ fun DevicesView() {
                     selectedDevice = it
                     deviceSettingsVisible = true
                 } else deviceSettingsVisible = false
+            },
+            onSecondaryClick = {
+                val copy = drawingConnectionSource
+                if (copy != null) {
+                    statefulConf.connections.add(copy connect it)
+//                    scope.launch { DeviceManager.connectDevice(copy.toDevice(), it.toDevice()) }
+                    drawingConnectionSource = null
+                } else drawingConnectionSource = it
             }
         )
     }
-    AnimatedVisibility(deviceSettingsVisible){
+    AnimatedVisibility(deviceSettingsVisible) {
         selectedDevice?.let {
-            Column (
-                Modifier.padding(16.dp)
-            ){
-                DeviceSettings(
-                    device = it
-                ) { deviceSettingsVisible = false }
+            AlignedBox(Alignment.BottomStart) {
+                Column {
+                    DeviceSettings(
+                        device = it
+                    ) { deviceSettingsVisible = false }
+                }
             }
         }
 
@@ -73,14 +104,21 @@ fun DevicesView() {
     }
 }
 
-fun DrawScope.drawConnection(connection: DeviceConnection) {
+fun DrawScope.drawConnection(offset1: Offset, offset2: Offset) {
     drawLine(
-        start = Offset(connection.device1.x.toFloat(), connection.device1.y.toFloat()),
-        end = Offset(connection.device2.x.toFloat(), connection.device2.y.toFloat()),
+        start = offset1,
+        end = offset2,
         color = Color(DEVICE_CONNECTION_COLOR),
         strokeWidth = CONNECTION_STROKE_WIDTH
     )
 }
 
-fun Offset.isOn(device: Device, image: ImageBitmap): Boolean = x in device.x.toFloat()..(device.x.toFloat() + image.width) &&
-        y in device.y.toFloat()..(device.y.toFloat() + image.height)
+fun Offset.isOn(device: Device, image: ImageBitmap): Boolean =
+    x in device.x.toFloat()..(device.x.toFloat() + image.width) &&
+            y in device.y.toFloat()..(device.y.toFloat() + image.height)
+
+fun ViewDevice.fittingOffset(): Offset {
+    val width = (getVector().defaultWidth * devicesViewZoom).toPx()
+    val height = (getVector().defaultHeight * devicesViewZoom).toPx()
+    return offset + Offset(width, height)
+}

@@ -4,9 +4,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,8 +56,8 @@ val AVAILABLE_LANGUAGES = listOf(
     Locale.US
 )
 val TOOLTIP_FONT_SIZE = 12.sp
-val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 3f
-val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001100
+val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 5f
+val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toLong(16) ?: 0xFF9CCC65
 val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
 val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
 val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
@@ -72,6 +75,7 @@ var showLogs by mutableStateOf(false)
 var dialogState: DialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
+lateinit var density: Density
 val CURRENT_FILE: PlatformFile? by mutableStateOf(null)
 var currentScreenIndex by mutableStateOf(if (checkSetupStatus()) 1 else 0)
 val configuration = IntervirtConfiguration(
@@ -99,7 +103,7 @@ val configuration = IntervirtConfiguration(
         )
     ),
     connections = mutableListOf()
-)
+).apply { connections.add(DeviceConnection.SwitchComputer(devices[0] as Device.Switch, devices[1] as Device.Computer)) }
 val statefulConf = ViewConfiguration(configuration)
 var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
 
@@ -172,3 +176,5 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
 @Composable fun isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
+
+fun Dp.toPx() = density.run { toPx() }

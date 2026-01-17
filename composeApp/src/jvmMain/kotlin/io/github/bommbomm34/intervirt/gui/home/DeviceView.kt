@@ -34,14 +34,9 @@ import io.github.bommbomm34.intervirt.windowState
 @Composable
 fun DeviceView(
     device: ViewDevice,
-    onClickDevice: (ViewDevice) -> Unit
+    onClickDevice: (ViewDevice) -> Unit,
+    onSecondaryClick: (ViewDevice) -> Unit
 ) {
-    val getVector: (ViewDevice) -> ImageVector = {
-        when (it) {
-            is ViewDevice.Switch -> TablerIcons.Switch
-            is ViewDevice.Computer -> TablerIcons.DevicesPc
-        }
-    }
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
     val deviceSizePx = dpToPx(DEVICE_SIZE)
@@ -49,7 +44,9 @@ fun DeviceView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .offset { IntOffset(offset.x.toInt(), offset.y.toInt()) }
-            .onClick { onClickDevice(device) }
+            .onClick(
+                matcher = PointerMatcher.Primary
+            ) { onClickDevice(device) }
             .onDrag(
                 matcher = PointerMatcher.Primary,
                 onDragStart = { overlay = true },
@@ -67,9 +64,13 @@ fun DeviceView(
                     device.y += it.y.toInt()
                 }
             }
+            .onClick(
+                matcher = PointerMatcher.Secondary,
+                onClick = { onSecondaryClick(device) }
+            )
     ) {
         Icon(
-            imageVector = getVector(device),
+            imageVector = device.getVector(),
             contentDescription = device.name,
             modifier = Modifier.size(DEVICE_SIZE, DEVICE_SIZE),
             tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f)

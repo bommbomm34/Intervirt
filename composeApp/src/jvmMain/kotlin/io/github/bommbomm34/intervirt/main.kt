@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -21,6 +22,7 @@ fun main() = application {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
     FileKit.init("intervirt")
     Locale.setDefault(LANGUAGE)
+    density = LocalDensity.current
     val scope = rememberCoroutineScope()
     // Main Window
     Window(

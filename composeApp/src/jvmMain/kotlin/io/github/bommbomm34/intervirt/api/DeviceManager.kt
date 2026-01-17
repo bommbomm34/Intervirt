@@ -64,7 +64,6 @@ object DeviceManager {
         device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
             device1ConnectedComputers.forEach { computer2 -> AgentClient.disconnect(computer1.id, computer2.id) }
         }
-
     }
 
     suspend fun setIPv4(device: Device.Computer, ipv4: String) {

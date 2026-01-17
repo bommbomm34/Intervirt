@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
+import androidx.compose.ui.geometry.Offset
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -13,9 +13,9 @@ import io.github.bommbomm34.intervirt.roundBy
 
 @Composable
 fun Home() {
-    VMManagerView()
     DevicesView()
-    AlignedBox(Alignment.BottomStart) {
+    VMManagerView()
+    AlignedBox(Alignment.BottomCenter) {
         Text("${devicesViewZoom.roundBy(1)}x")
     }
     AlignedBox(Alignment.TopEnd) {
