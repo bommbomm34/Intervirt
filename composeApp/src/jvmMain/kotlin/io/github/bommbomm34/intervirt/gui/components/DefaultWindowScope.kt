@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.gui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +11,11 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.bommbomm34.intervirt.env
+import io.github.bommbomm34.intervirt.isDarkMode
 
 @Composable
 fun DefaultWindowScope(content: @Composable BoxScope.() -> Unit){
-    val colors = if (env("DARK_THEME")?.toBoolean() ?: isSystemInDarkTheme()) darkColors() else lightColors()
+    val colors = if (isDarkMode()) darkColors() else lightColors()
     MaterialTheme(
         colors = colors,
         typography = MaterialTheme.typography.copy(

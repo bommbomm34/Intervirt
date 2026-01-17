@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.gui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -21,6 +23,8 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.DEVICE_SIZE
+import io.github.bommbomm34.intervirt.Secondary
+import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -47,6 +51,7 @@ fun DeviceView(
             .offset { IntOffset(offset.x.toInt(), offset.y.toInt()) }
             .onClick { onClickDevice(device) }
             .onDrag(
+                matcher = PointerMatcher.Primary,
                 onDragStart = { overlay = true },
                 onDragEnd = { overlay = false }
             ) {

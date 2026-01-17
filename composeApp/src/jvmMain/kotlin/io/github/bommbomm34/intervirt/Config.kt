@@ -1,6 +1,10 @@
 package io.github.bommbomm34.intervirt
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.PointerMatcher
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -9,7 +13,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowState
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
-import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
@@ -17,6 +20,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import java.io.File
 import java.net.ServerSocket
+import java.util.*
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -34,6 +38,7 @@ val VM_RAM = env("VM_RAM")?.toInt() ?: 2048
 val VM_CPU = env("VM_CPU")?.toInt() ?: 1
 val VM_ENABLE_KVM = env("VM_ENABLE_KVM")?.toBoolean() ?: false
 val DATA_DIR = File(env("DATA_DIR") ?: (System.getProperty("user.home") + File.separator + "Intervirt"))
+val DARK_MODE = env("DARK_MODE")?.toBoolean()
 val START_ALPINE_VM_COMMANDS = listOf(
     FileManager.getQEMUFile().absolutePath,
     if (VM_ENABLE_KVM) "-enable-kvm" else "",
@@ -44,6 +49,9 @@ val START_ALPINE_VM_COMMANDS = listOf(
     "-device", "e1000,netdev=net0",
     "-nographic"
 )
+val AVAILABLE_LANGUAGES = listOf(
+    Locale.US
+)
 val TOOLTIP_FONT_SIZE = 12.sp
 val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 3f
 val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toInt(16) ?: 0x001100
@@ -51,6 +59,7 @@ val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
 val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
 val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
 val SUGGESTED_FILENAME = env("SUGGESTED_FILENAME") ?: "MyIntervirtProject"
+val LANGUAGE: Locale = env("LANGUAGE")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault() ?: Locale.US
 val logger = KotlinLogging.logger { }
 val client = HttpClient(CIO) {
     engine {
@@ -61,7 +70,7 @@ val client = HttpClient(CIO) {
 val logs = mutableStateListOf<String>()
 var showLogs by mutableStateOf(false)
 var dialogState: DialogState by mutableStateOf(DialogState.Default)
-var devicesViewZoom by  mutableStateOf(1f)
+var devicesViewZoom by mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
 val CURRENT_FILE: PlatformFile? by mutableStateOf(null)
 var currentScreenIndex by mutableStateOf(if (checkSetupStatus()) 1 else 0)
@@ -119,12 +128,12 @@ fun openDialog(
     )
 }
 
-fun openDialog(customContent: @Composable () -> Unit){
+fun openDialog(customContent: @Composable () -> Unit) {
     dialogState = DialogState.Custom(customContent, true)
 }
 
-fun closeDialog(){
-    dialogState = when (dialogState){
+fun closeDialog() {
+    dialogState = when (dialogState) {
         is DialogState.Custom -> (dialogState as DialogState.Custom).copy(visible = false)
         is DialogState.Regular -> (dialogState as DialogState.Regular).copy(visible = false)
     }
@@ -147,11 +156,19 @@ fun Int.canPortBind(): Result<Unit> {
 
 fun checkSetupStatus() = env("INSTALLED").toBoolean()
 
-fun applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData){
+fun applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
     Preferences.saveString("VM_RAM", vmConf.ram.toString())
     Preferences.saveString("VM_CPU", vmConf.cpu.toString())
     Preferences.saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
     Preferences.saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
     Preferences.saveString("AGENT_PORT", appConf.agentPort.toString())
     Preferences.saveString("DATA_DIR", appConf.intervirtFolder)
+    Preferences.saveString("DARK_MODE", appConf.darkMode.toString())
+    Preferences.saveString("LANGUAGE", appConf.language)
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+val PointerMatcher.Companion.Secondary: PointerMatcher
+    get() = PointerMatcher.mouse(PointerButton.Secondary)
+
+@Composable fun isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()

@@ -6,6 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.AGENT_PORT
+import io.github.bommbomm34.intervirt.DARK_MODE
+import io.github.bommbomm34.intervirt.LANGUAGE
 import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
 import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
@@ -19,10 +21,12 @@ import io.github.bommbomm34.intervirt.gui.components.buttons.NextButton
 import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.gui.setup.Installation
+import io.github.bommbomm34.intervirt.isDarkMode
 import java.io.File
 
 @Composable
 fun Setup() {
+    val isDarkMode = isDarkMode()
     var currentSetupScreenIndex by remember { mutableStateOf(Screens.Setup.VM_CONFIGURATION) }
     var vmConf by remember {
         mutableStateOf(
@@ -39,7 +43,9 @@ fun Setup() {
                 vmShutdownTimeout = VM_SHUTDOWN_TIMEOUT.toInt(),
                 agentPort = AGENT_PORT,
                 intervirtFolder = env("dataDir")
-                    ?: (System.getProperty("user.home") + File.separator + "Intervirt")
+                    ?: (System.getProperty("user.home") + File.separator + "Intervirt"),
+                darkMode = isDarkMode,
+                language = LANGUAGE.toLanguageTag()
             )
         )
     }

@@ -1,0 +1,54 @@
+image:
+  distribution: debian
+  release: trixie
+  architecture: amd64
+  description: Intervirt OS is an user-friendly, Debian-based distro which integrates seamless with Intervirt and has some useful network tools preinstalled.
+
+source:
+  downloader: debootstrap
+  url: http://deb.debian.org/debian
+  keyserver: keyserver.ubuntu.com
+  same_as: gutsy
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+        - ca-certificates
+        - curl
+        - openssh-server
+        - sudo
+        - systemd
+        - inetutils-telnet
+        - inetutils-ping
+        - arping
+        - dnsutils
+        - tcpdump
+        - traceroute
+        - docker.io
+        - docker-compose
+      action: install
+
+files:
+  - path: /etc/docker/daemon.json
+    generator: dump
+    content: |
+      {
+        "ipv6": true,
+        "fixed-cidr-v6": "2001:db8:1::/64"
+      }
+  - path: /etc/ssh/sshd_config.d/incus.conf
+    generator: dump
+    content: |
+      PermitRootLogin yes
+      PasswordAuthentication yes
+      PermitEmptyPasswords yes
+
+actions:
+  - trigger: post-packages
+    action: |
+      systemctl enable ssh
+      systemctl enable docker
+

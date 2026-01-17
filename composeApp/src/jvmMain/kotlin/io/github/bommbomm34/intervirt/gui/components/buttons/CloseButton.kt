@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.gui.components.buttons
 
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import compose.icons.TablerIcons
@@ -16,7 +17,7 @@ fun CloseButton(onClose: () -> Unit){
         Icon(
             imageVector = TablerIcons.X,
             contentDescription = stringResource(Res.string.close),
-            tint = Color.White
+            tint = MaterialTheme.colors.onBackground
         )
     }
 }
