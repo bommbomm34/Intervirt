@@ -2,16 +2,21 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.connect
+import io.github.bommbomm34.intervirt.data.toReadableImage
 import io.github.bommbomm34.intervirt.logger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.any
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import java.io.File
 import kotlin.random.Random
 
 object DeviceManager {
-    suspend fun addComputer(name: String, x: Int, y: Int, image: String): Device {
+    suspend fun addComputer(name: String, x: Int, y: Int, image: String): Device.Computer {
         val device = Device.Computer(
             id = generateID("computer"),
             image = image,
@@ -29,7 +34,7 @@ object DeviceManager {
         return device
     }
 
-    fun addSwitch(name: String, x: Int, y: Int): Device {
+    fun addSwitch(name: String, x: Int, y: Int): Device.Switch {
         val device = Device.Switch(
             id = generateID("switch"),
             name = name,
@@ -108,6 +113,74 @@ object DeviceManager {
                 device.portForwardings.entries.removeIf { it.value == externalPort }
         }
 //        AgentClient.removePortForwarding(externalPort)
+    }
+
+    // DEBUGGING ONLY method which tests and debugs the Agent
+    suspend fun debug(){
+        // Create test computers
+        logger.debug { "----- START INTERVIRT AGENT DEBUGGING -----" }
+        val computer1 = addComputer(
+            name = "My First Computer",
+            x = 120,
+            y = 240,
+            image = "debian/13"
+        )
+        val computer2 = addComputer(
+            name = "My Second Computer",
+            x = 120,
+            y = 240,
+            image = "debian/13"
+        )
+        val computer3 = addComputer(
+            name = "My Third Computer",
+            x = 120,
+            y = 240,
+            image = "debian/13"
+        )
+        val computer4 = addComputer(
+            name = "My Fourth Computer",
+            x = 120,
+            y = 240,
+            image = "debian/13"
+        )
+        val computer5 = addComputer(
+            name = "My Fifth Computer",
+            x = 120,
+            y = 240,
+            image = "debian/13"
+        )
+        val switch = addSwitch(
+            name = "My Switch",
+            x = 140,
+            y = 270
+        )
+        logger.debug { "PASSED DEVICE CREATION TEST" }
+        removeDevice(computer5)
+        logger.debug { "PASSED DEVICE REMOVAL TEST" }
+        connectDevice(computer3, computer4)
+        logger.debug { "PASSED COMPUTER CONNECTION TEST" }
+        connectDevice(computer1, switch)
+        connectDevice(computer2, switch)
+        logger.debug { "PASSED SWITCH CONNECTION TEST" }
+        val testPing: suspend () -> List<ResultProgress<Unit>> = { runCommand(computer1, "ping -c 4 8.8.8.8").toList() }
+        setInternetEnabled(computer1, true)
+        val res1 = testPing()
+        if (!res1.any { it.message?.contains("0% packet loss") ?: false }) error("PING FAILED: \n${res1.joinToString { it.message ?: it.result?.exceptionOrNull()?.message ?: "" }}")
+        logger.debug { "INTERNET ENABLE TEST PASSED" }
+        setInternetEnabled(computer1, false)
+        val res2 = testPing()
+        if (!res2.any { it.message?.contains("Network is unreachable") ?: false }) error("PING MIGHT BE SUCCEEDED: \n${res1.joinToString { it.message ?: it.result?.exceptionOrNull()?.message ?: "" }}")
+        logger.debug { "INTERNET DISABLE TEST PASSED" }
+        setIPv4(computer3, "192.168.9.8")
+        setIPv4(computer4, "192.168.9.67")
+        setIPv6(computer3, generateIPv6())
+        setIPv6(computer4, generateIPv6())
+        logger.debug { "SET IP ADDRESSES PASSED" }
+        disconnectDevice(computer1, switch)
+        logger.debug { "PASSED SWITCH DISCONNECTION" }
+        AgentClient.wipe().collect { logger.debug { "WIPE: ${it.message}" } }
+        logger.debug { "PASSED WIPE" }
+        logger.debug { "----- CONGRATULATIONS: ALL TESTS PASSED SUCCESSFULLY. -----" }
     }
 
     private fun generateID(prefix: String): String {

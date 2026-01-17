@@ -1,3 +1,5 @@
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -7,4 +9,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.aboutLibraries) apply false
+    alias(libs.plugins.versionCatalogUpdate)
+}
+
+versionCatalogUpdate {
+    versionSelector(VersionSelectors.STABLE)
 }

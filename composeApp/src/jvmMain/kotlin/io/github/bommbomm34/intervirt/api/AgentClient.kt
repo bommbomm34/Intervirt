@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import java.io.File
 
 object AgentClient {
 
     var session: DefaultClientWebSocketSession? = null
+    var sessionLock = Mutex()
 
     suspend fun initConnection(): Result<Unit> {
         try {
@@ -124,20 +127,23 @@ object AgentClient {
     }
 
     suspend inline fun <reified T> send(body: RequestBody): Result<Flow<T>> {
-        if (session == null) initConnection()
-            .onSuccess {
-                return Result.success(flow {
-                    if (session == null) initConnection()
-                    session!!.send(Frame.Text(Json.encodeToString(body)))
-                    while (true) {
-                        val message = (session!!.incoming.receive() as Frame.Text).readText()
-                        if (message == "END") break else emit(Json.decodeFromString(message))
-                    }
-                })
+        val flow = flow<T> {
+            if (session == null) initConnection()
+            session!!.send(Frame.Text(Json.encodeToString(body)))
+            while (true) {
+                val message = (session!!.incoming.receive() as Frame.Text).readText()
+                if (message == "END") break else emit(Json.decodeFromString(message))
             }
-            .onFailure {
-                return Result.failure(it)
-            }
-        return Result.failure(UnknownError())
+        }
+        sessionLock.withLock {
+            if (session == null) initConnection()
+                .onSuccess {
+                    return Result.success(flow)
+                }
+                .onFailure {
+                    return Result.failure(it)
+                } else Result.success(flow)
+            return Result.failure(UnknownError())
+        }
     }
 }

@@ -10,6 +10,7 @@ import intervirt.composeapp.generated.resources.save_changes
 import io.github.bommbomm34.intervirt.AGENT_PORT
 import io.github.bommbomm34.intervirt.DARK_MODE
 import io.github.bommbomm34.intervirt.DATA_DIR
+import io.github.bommbomm34.intervirt.DEBUG_ENABLED
 import io.github.bommbomm34.intervirt.LANGUAGE
 import io.github.bommbomm34.intervirt.VM_CPU
 import io.github.bommbomm34.intervirt.VM_ENABLE_KVM
@@ -26,6 +27,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfiguration
+import io.github.bommbomm34.intervirt.gui.components.configuration.DebugOptions
 import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.isDarkMode
 import io.github.bommbomm34.intervirt.openDialog
@@ -81,6 +83,8 @@ fun Settings() {
             ){
                 Text(stringResource(Res.string.save_changes))
             }
+            GeneralSpacer()
+            if (DEBUG_ENABLED) DebugOptions()
         }
     }
 }
