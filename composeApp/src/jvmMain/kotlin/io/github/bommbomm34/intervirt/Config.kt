@@ -31,6 +31,7 @@ const val CURRENT_VERSION = "0.0.1"
 const val QEMU_WINDOWS_URL = "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.ziṕ"
 const val QEMU_LINUX_URL = "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
 const val ALPINE_DISK_URL = "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
+const val HELP_URL = "https://docs.perhof.org/intervirt"
 
 val DEBUG_ENABLED = env("DEBUG_ENABLED").toBoolean()
 val SSH_TIMEOUT = env("SSH_TIMEOUT")?.toLong() ?: 30000L

@@ -84,4 +84,5 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="are_you_sure_to_remove_connection">Are you sure to remove the connection between %1$s and %2$s?</string>
     <string name="too_many_devices_connected">You cannot connect a computer with more than one device.</string>
+    <string name="help">Help</string>
 </resources>

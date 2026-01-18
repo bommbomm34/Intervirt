@@ -8,10 +8,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DeviceFloppy
 import compose.icons.tablericons.Folder
+import compose.icons.tablericons.Help
 import compose.icons.tablericons.InfoCircle
 import compose.icons.tablericons.Settings
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.CURRENT_FILE
+import io.github.bommbomm34.intervirt.HELP_URL
 import io.github.bommbomm34.intervirt.SUGGESTED_FILENAME
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.currentScreenIndex
@@ -34,6 +36,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
+import java.awt.Desktop
+import java.net.URI
 
 @Composable
 fun OptionDropdown(
@@ -126,6 +130,18 @@ fun OptionDropdown(
                 IconText(
                     imageVector = TablerIcons.InfoCircle,
                     text = stringResource(Res.string.about)
+                )
+            }
+            // Help
+            DropdownMenuItem(
+                onClick = {
+                    Desktop.getDesktop().browse(URI(HELP_URL))
+                    onDismiss()
+                }
+            ){
+                IconText(
+                    imageVector = TablerIcons.Help,
+                    text = stringResource(Res.string.help)
                 )
             }
         }
