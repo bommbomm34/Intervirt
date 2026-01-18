@@ -29,6 +29,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.readString
 import io.github.vinceglb.filekit.writeString
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -56,6 +57,7 @@ fun OptionDropdown(
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
+//                configuration.syncConfiguration().collect()
                 statefulConf.update(ViewConfiguration(newConfiguration))
             }
         }

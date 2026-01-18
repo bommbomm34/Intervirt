@@ -104,7 +104,7 @@ val configuration = IntervirtConfiguration(
         )
     ),
     connections = mutableListOf()
-).apply { connections.add(DeviceConnection.SwitchComputer(devices[0] as Device.Switch, devices[1] as Device.Computer)) }
+).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id)) }
 val statefulConf = ViewConfiguration(configuration)
 var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
 

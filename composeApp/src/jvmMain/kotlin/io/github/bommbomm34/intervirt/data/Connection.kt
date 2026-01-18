@@ -1,7 +1,9 @@
 package io.github.bommbomm34.intervirt.data
 
 import io.ktor.network.sockets.Connection
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * A connection
@@ -14,33 +16,54 @@ import kotlinx.serialization.Serializable
  * @constructor Creates a connection
  */
 @Serializable
-sealed class DeviceConnection (
-    val device1: Device,
+sealed class DeviceConnection {
+    abstract val id1: String
+    abstract val id2: String
+    val device1: Device
+        get() = id1.toDevice()
     val device2: Device
-) {
+        get() = id2.toDevice()
     /**
      * Connection between two switches
      */
+    @Serializable
     data class Switch(
-        val switch1: Device.Switch,
-        val switch2: Device.Switch
-    ): DeviceConnection(switch1, switch2)
+        override val id1: String,
+        override val id2: String
+    ): DeviceConnection() {
+        val switch1
+            get() = id1.toDevice() as Device.Switch
+        val switch2
+            get() = id2.toDevice() as Device.Switch
+    }
 
     /**
      * Connection between two computers
      */
+    @Serializable
     data class Computer(
-        val computer1: Device.Computer,
-        val computer2: Device.Computer
-    ): DeviceConnection(computer1, computer2)
+        override val id1: String,
+        override val id2: String
+    ): DeviceConnection() {
+        val computer1
+            get() = id1.toDevice() as Device.Computer
+        val computer2
+            get() = id2.toDevice() as Device.Computer
+    }
 
     /**
      * Connection between a switch and a computer
      */
+    @Serializable
     data class SwitchComputer(
-        val switch: Device.Switch,
-        val computer: Device.Computer
-    ): DeviceConnection(switch, computer)
+        override val id1: String, // Switch
+        override val id2: String // Computer
+    ): DeviceConnection() {
+        val switch
+            get() = id1.toDevice() as Device.Switch
+        val computer
+            get () = id2.toDevice() as Device.Computer
+    }
 
     /**
      * Checks if device is in the connection
@@ -60,8 +83,6 @@ sealed class DeviceConnection (
         result = 31 * result + secondDevice.hashCode()
         return result
     }
-
-
 }
 
 /**
@@ -69,9 +90,9 @@ sealed class DeviceConnection (
  * @return a ```DeviceConnection``` based on the types of the given devices
  */
 infix fun Device.connect(otherDevice: Device) = when (this) {
-    is Device.Computer if otherDevice is Device.Computer -> DeviceConnection.Computer(this, otherDevice)
-    is Device.Switch if otherDevice is Device.Switch -> DeviceConnection.Switch(this, otherDevice)
-    is Device.Switch if otherDevice is Device.Computer -> DeviceConnection.SwitchComputer(this, otherDevice)
-    is Device.Computer if otherDevice is Device.Switch -> DeviceConnection.SwitchComputer(otherDevice, this)
+    is Device.Computer if otherDevice is Device.Computer -> DeviceConnection.Computer(this.id, otherDevice.id)
+    is Device.Switch if otherDevice is Device.Switch -> DeviceConnection.Switch(this.id, otherDevice.id)
+    is Device.Switch if otherDevice is Device.Computer -> DeviceConnection.SwitchComputer(this.id, otherDevice.id)
+    is Device.Computer if otherDevice is Device.Switch -> DeviceConnection.SwitchComputer(otherDevice.id, this.id)
     else -> error("Invalid connection of $this and $otherDevice")
 }

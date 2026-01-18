@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.data
 
 import androidx.compose.ui.geometry.Offset
+import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -52,3 +53,5 @@ sealed class Device {
 
     override fun hashCode(): Int = id.hashCode()
 }
+
+fun String.toDevice() = configuration.devices.first { it.id == this }
