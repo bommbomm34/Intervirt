@@ -91,8 +91,8 @@ object AgentClient {
         return Result.failure(UnknownError())
     }
 
-    fun runCommand(id: String, shellCommand: String): Flow<ResultProgress<Unit>> =
-        flowSend(RequestBody.RunCommand(id, shellCommand))
+    fun runCommand(id: String, shellCommand: String, stateless: Boolean = true): Flow<ResultProgress<Unit>> =
+        flowSend(RequestBody.RunCommand(id, shellCommand, stateless))
 
     suspend fun justSend(body: RequestBody): Result<Unit> {
         val response = send<ResponseBody>(body)

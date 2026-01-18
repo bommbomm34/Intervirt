@@ -34,17 +34,20 @@ sealed class ViewDevice(val device: Device) {
 
         override fun toDevice() = configuration.devices.first { this.id == it.id } as Device.Computer
         override fun getVector() = TablerIcons.DevicesPc
+        override fun canConnect() = configuration.connections.count { it.containsDevice(toDevice()) } == 0
     }
 
     data class Switch(val switch: Device.Switch) : ViewDevice(switch) {
         override fun toDevice() = configuration.devices.first { this.id == it.id } as Device.Switch
         override fun getVector() = TablerIcons.Switch
+        override fun canConnect() = true
     }
 
     open fun toDevice() = configuration.devices.first { this.id == it.id }
 
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
+    abstract fun canConnect(): Boolean
 }
 
 fun Device.toViewDevice() = when (this) {

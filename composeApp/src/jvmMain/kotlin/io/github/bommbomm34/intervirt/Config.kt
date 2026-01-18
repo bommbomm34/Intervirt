@@ -75,6 +75,7 @@ var showLogs by mutableStateOf(false)
 var dialogState: DialogState by mutableStateOf(DialogState.Default)
 var devicesViewZoom by mutableStateOf(1f)
 var isCtrlPressed by mutableStateOf(false)
+var mousePosition by mutableStateOf(Offset.Zero)
 lateinit var density: Density
 val CURRENT_FILE: PlatformFile? by mutableStateOf(null)
 var currentScreenIndex by mutableStateOf(if (checkSetupStatus()) 1 else 0)

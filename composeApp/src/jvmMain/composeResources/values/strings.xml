@@ -71,8 +71,6 @@
     <string name="archlinux_description">Arch Linux is an open source, rolling release Linux distribution. Arch Linux is kept up-to-date by regularly updating the individual pieces of software that it comprises. It provides monthly "snapshots" which are used as installation media. Arch Linux is intentionally minimal, and is meant to be configured by the user during installation so they may add only what they require. Source: Wikipedia (description), Judd Vinet, Aaron Griffin and Levente Polyák (logo)</string>
 
     <string name="os_is_needed">An OS is required to create a computer</string>
-    <string name="default_computer_name">My Computer</string>
-    <string name="default_switch_name">My Switch</string>
     <string name="install_os">Install OS</string>
     <string name="options">Options</string>
     <string name="intervirt_settings">Intervirt Settings</string>
@@ -84,4 +82,6 @@
     <string name="save_as">Save As</string>
     <string name="open">Open</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="are_you_sure_to_remove_connection">Are you sure to remove the connection between %1$s and %2$s?</string>
+    <string name="too_many_devices_connected">You cannot connect a computer with more than one device.</string>
 </resources>

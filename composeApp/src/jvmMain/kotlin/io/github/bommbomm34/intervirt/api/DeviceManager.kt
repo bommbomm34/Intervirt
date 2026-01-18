@@ -16,11 +16,12 @@ import java.io.File
 import kotlin.random.Random
 
 object DeviceManager {
-    suspend fun addComputer(name: String, x: Int, y: Int, image: String): Device.Computer {
+    suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Device.Computer {
+        val id = generateID("computer")
         val device = Device.Computer(
-            id = generateID("computer"),
+            id = id,
             image = image,
-            name = name,
+            name = name ?: id,
             x = x,
             y = y,
             ipv4 = generateIPv4(),
@@ -34,10 +35,11 @@ object DeviceManager {
         return device
     }
 
-    fun addSwitch(name: String, x: Int, y: Int): Device.Switch {
+    fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
+        val id = generateID("switch")
         val device = Device.Switch(
-            id = generateID("switch"),
-            name = name,
+            id = id,
+            name = name ?: id,
             x = x,
             y = y
         )
@@ -56,19 +58,19 @@ object DeviceManager {
     suspend fun connectDevice(device1: Device, device2: Device) {
         logger.debug { "Connecting device $device1 to $device2" }
         configuration.connections.add(device1 connect device2)
-        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
-            device1ConnectedComputers.forEach { computer2 -> AgentClient.connect(computer1.id, computer2.id) }
-        }
+//        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
+//        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+//            device1ConnectedComputers.forEach { computer2 -> AgentClient.connect(computer1.id, computer2.id) }
+//        }
     }
 
     suspend fun disconnectDevice(device1: Device, device2: Device) {
         logger.debug { "Disconnecting device $device1 to $device2" }
         configuration.connections.removeIf { it == device1 connect device2 }
-        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
-            device1ConnectedComputers.forEach { computer2 -> AgentClient.disconnect(computer1.id, computer2.id) }
-        }
+//        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
+//        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+//            device1ConnectedComputers.forEach { computer2 -> AgentClient.disconnect(computer1.id, computer2.id) }
+//        }
     }
 
     suspend fun setIPv4(device: Device.Computer, ipv4: String) {

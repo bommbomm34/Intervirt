@@ -55,6 +55,7 @@ sealed class RequestBody (open val command: String) {
     data class RunCommand(
         val id: String,
         val shellCommand: String,
+        val stateless: Boolean,
         override val command: String = "runCommand"
     ) : RequestBody(command)
 }

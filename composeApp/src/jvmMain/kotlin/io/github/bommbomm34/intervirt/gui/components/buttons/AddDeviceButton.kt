@@ -9,8 +9,6 @@ import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.computer
-import intervirt.composeapp.generated.resources.default_computer_name
-import intervirt.composeapp.generated.resources.default_switch_name
 import intervirt.composeapp.generated.resources.os_is_needed
 import intervirt.composeapp.generated.resources.switch
 import io.github.bommbomm34.intervirt.api.DeviceManager
@@ -27,6 +25,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import kotlin.random.Random
 
 @Composable
 fun AddDeviceButton() {
@@ -53,9 +52,8 @@ fun AddDeviceButton() {
                             onInstall = {
                                 scope.launch {
                                     val device = DeviceManager.addComputer(
-                                        name = getString(Res.string.default_computer_name),
-                                        x = 300,
-                                        y = 300,
+                                        x = Random.nextInt(300, 600),
+                                        y = Random.nextInt(300, 600),
                                         image = it.fullName
                                     )
                                     statefulConf.devices.add(device.toViewDevice())
@@ -79,9 +77,8 @@ fun AddDeviceButton() {
                     // Add switch
                     scope.launch {
                         val device = DeviceManager.addSwitch(
-                            name = getString(Res.string.default_switch_name),
-                            x = 300,
-                            y = 300
+                            x = Random.nextInt(300, 600),
+                            y = Random.nextInt(300, 600)
                         )
                         statefulConf.devices.add(device.toViewDevice())
                     }

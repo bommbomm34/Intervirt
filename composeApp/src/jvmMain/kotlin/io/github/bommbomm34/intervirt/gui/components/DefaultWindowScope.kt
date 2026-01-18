@@ -9,12 +9,23 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.isDarkMode
+import io.github.bommbomm34.intervirt.mousePosition
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DefaultWindowScope(content: @Composable BoxScope.() -> Unit){
+fun DefaultWindowScope(
+    onPointerEvent: AwaitPointerEventScope.(PointerEvent) -> Unit = {},
+    content: @Composable BoxScope.() -> Unit
+){
     val colors = if (isDarkMode()) darkColors() else lightColors()
     MaterialTheme(
         colors = colors,
@@ -38,7 +49,11 @@ fun DefaultWindowScope(content: @Composable BoxScope.() -> Unit){
             modifier = Modifier
                 .fillMaxSize()
                 .safeContentPadding()
-                .background(colors.background),
+                .background(colors.background)
+                .onPointerEvent(
+                    eventType = PointerEventType.Move,
+                    onEvent = onPointerEvent
+                ),
             content = content
         )
     }
