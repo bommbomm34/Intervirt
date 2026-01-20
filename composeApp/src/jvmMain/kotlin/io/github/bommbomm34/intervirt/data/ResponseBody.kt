@@ -10,7 +10,7 @@ data class ResponseBody(
     val progress: Float? = null,
     val output: String? = null
 ) {
-    fun exception(): Exception {
+    fun exception(): Exception? {
         return when (code) {
             1 -> UndefinedError(error!!)
             2 -> UnknownError()
@@ -18,7 +18,7 @@ data class ResponseBody(
             4 -> OSError(error!!)
             5 -> ContainerExecutionException(error!!)
             6 -> NotFoundError(error!!)
-            0 -> error("No exception available for successful status code 0")
+            0 -> null
             else -> error("Invalid status code $code")
         }
     }

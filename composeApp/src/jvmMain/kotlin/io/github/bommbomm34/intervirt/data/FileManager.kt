@@ -7,17 +7,19 @@ import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
 import io.github.bommbomm34.intervirt.logger
 import io.ktor.client.call.*
+import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
+import io.ktor.utils.io.streams.asInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.io.asSink
-import kotlinx.serialization.json.Json
+import kotlinx.io.buffered
 import org.jetbrains.compose.resources.getString
 import java.io.File
-import java.nio.file.Files
 
 object FileManager {
 
@@ -77,8 +79,28 @@ object FileManager {
             }
         }
 
+    fun uploadFile(url: String, file: File): Flow<ResultProgress<Unit>> = flow {
+        client.post(url) {
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append(
+                            "file",
+                            InputProvider { file.inputStream().asInput().buffered() },
+                        )
+                    },
+                    boundary = "FileUploadBoundary"
+                )
+            )
+            onUpload { bytesSentTotal, contentLength ->
+                val progress = contentLength?.let { bytesSentTotal / it.toFloat() }
+                emit(ResultProgress.proceed(progress ?: 0f))
+            }
+        }
+    }
+
     fun getQEMUFile(): File {
-        return when (getOS()){
+        return when (getOS()) {
             OS.WINDOWS -> getFile("qemu/qemu-system-x86_64")
             OS.LINUX -> getFile("qemu/usr/local/bin/qemu-system-x86_64")
             null -> throw UnsupportedOSException()

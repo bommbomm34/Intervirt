@@ -51,6 +51,28 @@ object AgentClient {
         ).first { it.result != null }.result!!
     }
 
+    fun uploadDisk(id: String, file: File): Flow<ResultProgress<Unit>> {
+        return FileManager.uploadFile(
+            "http://localhost:55436/disk?id=$id",
+            file
+        )
+    }
+
+    suspend fun downloadFile(id: String, path: String): Result<File> {
+        val fileExtension = path.substringAfterLast(".", "")
+        return FileManager.downloadFile(
+            "http://localhost:55436/file?id=$id&$path",
+            "file-$id-${System.currentTimeMillis()}${if (fileExtension.isBlank()) "" else ".$fileExtension"}"
+        ).first { it.result != null }.result!!
+    }
+
+    fun uploadFile(id: String, file: File, path: String): Flow<ResultProgress<Unit>> {
+        return FileManager.uploadFile(
+            "http://localhost:55436/file?id=$id&path=$path",
+            file
+        )
+    }
+
     suspend fun setIPv4(id: String, newIP: String): Result<Unit> =
         justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv4"))
 
@@ -113,7 +135,7 @@ object AgentClient {
                 flow.collect {
                     if (it.code != 0) {
                         failed = true
-                        emit(ResultProgress.failure(it.exception()))
+                        emit(ResultProgress.failure(it.exception()!!))
                     } else {
                         emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
                     }
