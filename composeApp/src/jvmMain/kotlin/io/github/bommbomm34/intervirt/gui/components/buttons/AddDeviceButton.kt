@@ -1,27 +1,24 @@
 package io.github.bommbomm34.intervirt.gui.components.buttons
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
-import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.computer
-import intervirt.composeapp.generated.resources.os_is_needed
-import intervirt.composeapp.generated.resources.switch
+import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.closeDialog
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.toViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.imagepicker.ImageIcon
 import io.github.bommbomm34.intervirt.gui.imagepicker.ImagePicker
 import io.github.bommbomm34.intervirt.openDialog
 import io.github.bommbomm34.intervirt.statefulConf
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -49,15 +46,26 @@ fun AddDeviceButton() {
                                     importance = Importance.ERROR
                                 )
                             },
-                            onInstall = {
+                            onInstall = { image ->
                                 scope.launch {
-                                    val device = DeviceManager.addComputer(
+                                    DeviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
-                                        image = it.fullName
+                                        image = image.fullName
                                     )
-                                    statefulConf.devices.add(device.toViewDevice())
-                                    closeDialog()
+                                        .onSuccess {
+                                            statefulConf.devices.add(it.toViewDevice())
+                                            closeDialog()
+                                        }
+                                        .onFailure {
+                                            openDialog(
+                                                importance = Importance.ERROR,
+                                                message = getString(
+                                                    Res.string.error_during_device_creation,
+                                                    it.localizedMessage
+                                                )
+                                            )
+                                        }
                                 }
                             }
                         )
