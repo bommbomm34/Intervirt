@@ -39,9 +39,10 @@ object AgentClient {
         id: String,
         initialIPv4: String,
         initialIPv6: String,
+        mac: String,
         internet: Boolean,
         image: String
-    ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIPv4, initialIPv6, internet, image))
+    ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIPv4, initialIPv6, mac, internet, image))
 
     suspend fun removeContainer(id: String): Result<Unit> = justSend(id.idBody("removeContainer"))
 

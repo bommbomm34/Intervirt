@@ -10,6 +10,7 @@ sealed class RequestBody {
         val id: String,
         val ipv4: String,
         val ipv6: String,
+        val mac: String,
         val internet: Boolean,
         val image: String,
         override val command: String = "addContainer",

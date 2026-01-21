@@ -50,6 +50,7 @@
     <string name="os">Operating system</string>
     <string name="ipv4_address">IPv4 address</string>
     <string name="ipv6_address">IPv6 address</string>
+    <string name="mac_address">MAC address</string>
     <string name="invalid_ipv4_address">Invalid IPv4 address</string>
     <string name="invalid_ipv6_address">Invalid IPv6 address</string>
     <string name="internet_access">Internet Access</string>

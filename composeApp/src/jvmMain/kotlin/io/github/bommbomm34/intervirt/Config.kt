@@ -9,14 +9,13 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowState
+import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -64,7 +63,7 @@ val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
 val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
 val SUGGESTED_FILENAME = env("SUGGESTED_FILENAME") ?: "MyIntervirtProject"
 val LANGUAGE: Locale = env("LANGUAGE")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault() ?: Locale.US
-val ENABLE_AGENT = env("ENABLE_AGENT")?.toBoolean() ?: true
+val ENABLE_AGENT = env("ENABLE_AGENT")?.toBooleanStrictOrNull() ?: true
 val client = HttpClient(CIO) {
     engine {
         requestTimeout = 0
@@ -98,6 +97,7 @@ val configuration = IntervirtConfiguration(
             y = 500,
             ipv4 = "192.168.0.20",
             ipv6 = "fd00:6767:6767:6767:0808:abcd:abcd:aaaa",
+            mac = "fd:67:67:67:67:67",
             internetEnabled = false,
             portForwardings = mutableMapOf(
                 67 to 25565

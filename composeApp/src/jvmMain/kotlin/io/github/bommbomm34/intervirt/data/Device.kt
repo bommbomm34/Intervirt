@@ -23,6 +23,7 @@ sealed class Device {
         override var y: Int,
         var ipv4: String,
         var ipv6: String,
+        val mac: String,
         var internetEnabled: Boolean,
         val portForwardings: MutableMap<Int, Int> // internalPort:externalPort
     ) : Device()

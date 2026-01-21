@@ -42,6 +42,8 @@ fun DeviceSettings(
                         GeneralSpacer()
                         IPv6TextField(device)
                         GeneralSpacer()
+                        MACTextField(device)
+                        GeneralSpacer()
                         InternetEnabledOption(device)
                         GeneralSpacer()
                     }

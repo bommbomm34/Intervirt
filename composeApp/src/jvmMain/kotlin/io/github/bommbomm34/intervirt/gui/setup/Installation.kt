@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.data.FileManager
+import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn

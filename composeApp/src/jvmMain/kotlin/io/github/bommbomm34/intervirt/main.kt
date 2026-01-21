@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.launch
 import org.slf4j.simple.SimpleLogger

@@ -1,11 +1,16 @@
-package io.github.bommbomm34.intervirt.data
+package io.github.bommbomm34.intervirt.api
 
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.DATA_DIR
 import io.github.bommbomm34.intervirt.client
+import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.ResultProgress
+import io.github.bommbomm34.intervirt.data.getOS
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.call.*
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.*
@@ -14,12 +19,16 @@ import io.ktor.http.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import io.ktor.utils.io.streams.asInput
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
+import kotlinx.io.IOException
 import kotlinx.io.asSink
 import kotlinx.io.buffered
 import org.jetbrains.compose.resources.getString
 import java.io.File
+import java.nio.file.Files
 
 object FileManager {
     val logger = KotlinLogging.logger {  }
@@ -52,7 +61,7 @@ object FileManager {
             client.prepareGet(url).execute { response ->
                 if (response.status != HttpStatusCode.OK) {
                     emit(
-                        ResultProgress.result(
+                        ResultProgress.Companion.result(
                             Result.failure(
                                 Exception(
                                     getString(Res.string.download_failed, response.status.description)
@@ -71,11 +80,11 @@ object FileManager {
 
                             chunk.transferTo(stream)
                             logger.debug { "Downloaded $count bytes of $totalBytes bytes" }
-                            emit(ResultProgress.proceed(count.toFloat() / totalBytes))
+                            emit(ResultProgress.Companion.proceed(count.toFloat() / totalBytes))
                         }
                     }
                     logger.debug { "Successfully downloaded $name" }
-                    emit(ResultProgress.result(Result.success(file)))
+                    emit(ResultProgress.Companion.result(Result.success(file)))
                 }
             }
         }
@@ -95,7 +104,7 @@ object FileManager {
             )
             onUpload { bytesSentTotal, contentLength ->
                 val progress = contentLength?.let { bytesSentTotal / it.toFloat() }
-                emit(ResultProgress.proceed(progress ?: 0f))
+                emit(ResultProgress.Companion.proceed(progress ?: 0f))
             }
         }
     }
@@ -107,6 +116,21 @@ object FileManager {
             null -> throw UnsupportedOSException()
         }
     }
+
+    suspend fun Device.Computer.pullFile(path: String, destFile: PlatformFile): Result<Unit> {
+        val res = AgentClient.downloadFile(id, path)
+        val file = res.getOrElse { return Result.failure(it) }
+        return withContext(Dispatchers.IO) {
+            try {
+                Files.move(file.toPath(), destFile.file.toPath())
+                return@withContext Result.success(Unit)
+            } catch (e: IOException){
+                return@withContext Result.failure(e)
+            }
+        }
+    }
+
+    fun Device.Computer.pushFile(path: String, platformFile: PlatformFile) = AgentClient.uploadFile(id, platformFile.file, path)
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

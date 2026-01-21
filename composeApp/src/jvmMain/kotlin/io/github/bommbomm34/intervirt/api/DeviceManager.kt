@@ -3,11 +3,8 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.ENABLE_AGENT
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.io.File
 import kotlin.random.Random
 
@@ -24,13 +21,14 @@ object DeviceManager {
             y = y,
             ipv4 = generateIPv4(),
             ipv6 = generateIPv6(),
+            mac = generateMAC(),
             internetEnabled = false,
             portForwardings = mutableMapOf()
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
         return if (ENABLE_AGENT) {
-            val res = AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image)
+            val res = AgentClient.addContainer(device.id, device.ipv4, device.ipv6, device.mac, false, image)
             res.check(device)
         } else Result.success(device)
     }
@@ -91,7 +89,7 @@ object DeviceManager {
     suspend fun setIPv4(device: Device.Computer, ipv4: String): Result<Unit> {
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
-        return if (ENABLE_AGENT){
+        return if (ENABLE_AGENT) {
             val res = AgentClient.setIPv4(device.id, ipv4)
             res.check(Unit)
         } else Result.success(Unit)
@@ -100,7 +98,7 @@ object DeviceManager {
     suspend fun setIPv6(device: Device.Computer, ipv6: String): Result<Unit> {
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
-        return if (ENABLE_AGENT){
+        return if (ENABLE_AGENT) {
             val res = AgentClient.setIPv6(device.id, ipv6)
             res.check(Unit)
         } else Result.success(Unit)
@@ -110,6 +108,7 @@ object DeviceManager {
         logger.debug { "Exporting $computer" }
         return AgentClient.getDisk(computer.id)
     }
+
     fun runCommand(computer: Device.Computer, command: String) = AgentClient.runCommand(computer.id, command)
 
     fun setName(device: Device, name: String) {
@@ -128,7 +127,7 @@ object DeviceManager {
     suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings[internalPort] = externalPort
-        return if (ENABLE_AGENT){
+        return if (ENABLE_AGENT) {
             val res = AgentClient.addPortForwarding(device.id, internalPort, externalPort)
             res.check(Unit)
         } else Result.success(Unit)
@@ -150,6 +149,14 @@ object DeviceManager {
         while (true) {
             val id = prefix + "-" + Random.nextInt(999999)
             if (configuration.devices.all { it.id != id }) return id
+        }
+    }
+
+    private fun generateMAC(): String {
+        val rand = { Random.nextInt(256).toString(16) }
+        while (true) {
+            val mac = "${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
+            if (configuration.devices.all { if (it is Device.Computer) it.mac != mac else true }) return mac
         }
     }
 

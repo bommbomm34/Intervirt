@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.*
-import io.github.bommbomm34.intervirt.data.FileManager
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import java.io.BufferedReader

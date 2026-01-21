@@ -28,6 +28,7 @@ sealed class ViewDevice(val device: Device) {
         val image by mutableStateOf(computer.image)
         var ipv4 by mutableStateOf(computer.ipv4)
         var ipv6 by mutableStateOf(computer.ipv6)
+        val mac = computer.mac
         var internetEnabled by mutableStateOf(computer.internetEnabled)
         val portForwardings =
             mutableStateMapOf<Int, Int>().apply { putAll(computer.portForwardings) } // internalPort:externalPort

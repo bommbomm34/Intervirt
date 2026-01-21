@@ -9,7 +9,6 @@ import io.github.bommbomm34.intervirt.ALPINE_DISK_URL
 import io.github.bommbomm34.intervirt.QEMU_LINUX_URL
 import io.github.bommbomm34.intervirt.QEMU_WINDOWS_URL
 import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
-import io.github.bommbomm34.intervirt.data.FileManager
 import io.github.bommbomm34.intervirt.data.OS
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
