@@ -19,7 +19,7 @@ import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
-import io.github.bommbomm34.intervirt.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.lingala.zip4j.ZipFile
@@ -27,6 +27,8 @@ import net.lingala.zip4j.exception.ZipException
 import org.jetbrains.compose.resources.getString
 
 object Downloader {
+    val logger = KotlinLogging.logger {  }
+
     fun downloadQEMUWindows(update: Boolean = false): Flow<ResultProgress<String>> = flow {
         logger.debug { "Installing QEMU on Windows..." }
         downloadQEMUZIP(update, QEMU_WINDOWS_URL).collect { emit(it) }

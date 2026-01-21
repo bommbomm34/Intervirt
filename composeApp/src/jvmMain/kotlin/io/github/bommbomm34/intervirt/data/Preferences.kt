@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
-import io.github.bommbomm34.intervirt.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Files
@@ -8,6 +8,7 @@ import java.nio.file.Path
 import kotlin.io.path.exists
 
 object Preferences {
+    val logger = KotlinLogging.logger {  }
     val data = mutableMapOf<String, String>()
     val dataFile: Path = File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
 

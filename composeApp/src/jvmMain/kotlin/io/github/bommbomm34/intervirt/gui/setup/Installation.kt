@@ -15,11 +15,11 @@ import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.FlowProgressView
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.logger
 import io.github.bommbomm34.intervirt.logs
 import io.github.bommbomm34.intervirt.api.Downloader
 import io.github.bommbomm34.intervirt.currentScreenIndex
 import io.github.bommbomm34.intervirt.showLogs
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,6 +31,7 @@ import org.jetbrains.compose.resources.stringResource
 fun Installation(
     applyConfiguration: () -> Unit
 ) {
+    val logger = KotlinLogging.logger {  }
     var allowInstallation by remember { mutableStateOf(false) }
     var flow: Flow<ResultProgress<String>>? by remember { mutableStateOf(null) }
     var job: Job? by remember { mutableStateOf(null) }

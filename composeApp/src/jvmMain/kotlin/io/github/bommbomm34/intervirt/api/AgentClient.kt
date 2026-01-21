@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.result
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
@@ -16,7 +17,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 object AgentClient {
-
+    val logger = KotlinLogging.logger {  }
     var session: DefaultClientWebSocketSession? = null
     var sessionLock = Mutex()
 
@@ -150,21 +151,32 @@ object AgentClient {
 
     suspend inline fun <reified T> send(body: RequestBody): Result<Flow<T>> {
         val flow = flow<T> {
-            if (session == null) initConnection()
-            session!!.send(Frame.Text(Json.encodeToString(body)))
+            val requestMessage = Json.encodeToString(body)
+            logger.debug { "CLIENT: $requestMessage" }
+            session!!.send(Frame.Text(requestMessage))
             while (true) {
-                val message = (session!!.incoming.receive() as Frame.Text).readText()
-                if (message == "END") break else emit(Json.decodeFromString(message))
+                val responseMessage = (session!!.incoming.receive() as Frame.Text).readText()
+                logger.debug { "AGENT: $responseMessage" }
+                if (responseMessage == "END") {
+                    logger.debug { "AGENT END" }
+                    break
+                } else emit(Json.decodeFromString(responseMessage))
             }
         }
         sessionLock.withLock {
-            if (session == null) initConnection()
-                .onSuccess {
-                    return Result.success(flow)
-                }
-                .onFailure {
-                    return Result.failure(it)
-                } else Result.success(flow)
+            logger.debug { "Checking connection with agent" }
+            if (session == null) {
+                logger.debug { "No connection available, initiating new one..." }
+                initConnection()
+                    .onSuccess {
+                        logger.debug { "Initiated connection successfully" }
+                        return Result.success(flow)
+                    }
+                    .onFailure {
+                        logger.debug { "Connection initialization failed: $it" }
+                        return Result.failure(it)
+                    }
+            } else Result.success(flow)
             return Result.failure(UnknownError())
         }
     }

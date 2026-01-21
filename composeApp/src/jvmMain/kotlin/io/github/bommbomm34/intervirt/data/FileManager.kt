@@ -5,7 +5,7 @@ import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.DATA_DIR
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
-import io.github.bommbomm34.intervirt.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.call.*
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.*
@@ -22,6 +22,7 @@ import org.jetbrains.compose.resources.getString
 import java.io.File
 
 object FileManager {
+    val logger = KotlinLogging.logger {  }
 
     fun init() {
         DATA_DIR.mkdir()
@@ -110,7 +111,6 @@ object FileManager {
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {
     if (!isDirectory) error("File $absolutePath must be a directory!")
-    logger.debug { "Creating directory $name" }
     val file = File(absolutePath + File.separator + name)
     if (file.exists()) return file
     return file.apply { if (directory) mkdir() else createNewFile() }

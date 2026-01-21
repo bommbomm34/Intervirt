@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.data.FileManager
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -10,6 +11,7 @@ import java.net.Socket
 import java.util.concurrent.TimeUnit
 
 object QEMUClient {
+    val logger = KotlinLogging.logger {  }
     var currentProcess: Process? = null
 
     suspend fun bootAlpine(): Result<Boolean> {
