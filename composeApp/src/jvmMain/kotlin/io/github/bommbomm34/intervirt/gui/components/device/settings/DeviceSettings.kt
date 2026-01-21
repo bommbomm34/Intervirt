@@ -38,6 +38,8 @@ fun DeviceSettings(
                     Column {
                         OSField(device)
                         GeneralSpacer()
+                        FileTransferOptions(device)
+                        GeneralSpacer()
                         IPv4TextField(device)
                         GeneralSpacer()
                         IPv6TextField(device)

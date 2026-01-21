@@ -87,4 +87,6 @@
     <string name="too_many_devices_connected">You cannot connect a computer with more than one device.</string>
     <string name="help">Help</string>
     <string name="error_during_device_creation">Error during device creation: %1$s</string>
+    <string name="upload_file">Upload file</string>
+    <string name="download_file">Download file</string>
 </resources>
