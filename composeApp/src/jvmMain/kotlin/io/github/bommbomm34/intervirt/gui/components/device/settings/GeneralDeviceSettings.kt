@@ -19,12 +19,14 @@ import io.github.bommbomm34.intervirt.openDialog
 import io.github.bommbomm34.intervirt.statefulConf
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun GeneralDeviceSettings(
     device: ViewDevice,
     onClose: () -> Unit
 ) {
+    val deviceManager = koinInject<DeviceManager>()
     val scope = rememberCoroutineScope()
     OutlinedTextField(
         value = device.id,
@@ -37,7 +39,7 @@ fun GeneralDeviceSettings(
         value = device.name,
         onValueChange = { newName ->
             device.name = newName
-            DeviceManager.setName(device.toDevice(), newName)
+            deviceManager.setName(device.toDevice(), newName)
         },
         label = { Text(stringResource(Res.string.name)) }
     )
@@ -51,7 +53,7 @@ fun GeneralDeviceSettings(
                     scope.launch {
                         onClose()
                         statefulConf.devices.remove(device)
-                        DeviceManager.removeDevice(device.toDevice())
+                        deviceManager.removeDevice(device.toDevice())
                     }
                 }
             }

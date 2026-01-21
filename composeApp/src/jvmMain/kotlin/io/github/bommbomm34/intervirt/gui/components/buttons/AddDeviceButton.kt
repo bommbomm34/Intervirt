@@ -22,6 +22,7 @@ import io.github.bommbomm34.intervirt.statefulConf
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import kotlin.random.Random
 
 @Composable
@@ -29,6 +30,7 @@ fun AddDeviceButton() {
     var dropdownExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val osIsNeededText = stringResource(Res.string.os_is_needed)
+    val deviceManager = koinInject<DeviceManager>()
     Column {
         DropdownMenu(
             expanded = dropdownExpanded,
@@ -48,7 +50,7 @@ fun AddDeviceButton() {
                             },
                             onInstall = { image ->
                                 scope.launch {
-                                    DeviceManager.addComputer(
+                                    deviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName
@@ -84,7 +86,7 @@ fun AddDeviceButton() {
                     dropdownExpanded = false
                     // Add switch
                     scope.launch {
-                        val device = DeviceManager.addSwitch(
+                        val device = deviceManager.addSwitch(
                             x = Random.nextInt(300, 600),
                             y = Random.nextInt(300, 600)
                         )

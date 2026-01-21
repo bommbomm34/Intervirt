@@ -6,10 +6,11 @@ compose-tabler-icons = "1.1.1"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.0"
 filekit = "0.12.0"
+koin = "4.1.1"
 kotlin = "2.3.0"
 kotlin-logging = "7.0.14"
 kotlinx-coroutines = "1.10.2"
-kotlinx-serialization-json = "1.9.0"
+kotlinx-serialization-json = "1.10.0"
 ktor = "3.3.3"
 slf4j = "2.0.17"
 version-catalog-update = "1.0.1"
@@ -24,6 +25,9 @@ commons-validator = { module = "commons-validator:commons-validator", version.re
 compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-tabler-icons" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }

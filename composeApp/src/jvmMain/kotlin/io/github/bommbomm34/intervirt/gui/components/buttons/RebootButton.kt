@@ -17,9 +17,12 @@ import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.openDialog
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun RebootButton(){
+    val agentClient = koinInject<AgentClient>()
+    val qemuClient = koinInject<QEMUClient>()
     val scope = rememberCoroutineScope()
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)
@@ -28,7 +31,7 @@ fun RebootButton(){
         onClick = {
             scope.launch {
                 rebootButtonText = rebootingText
-                AgentClient.reboot()
+                agentClient.reboot()
                     .onFailure {
                         openDialog(
                             importance = Importance.ERROR,
@@ -38,7 +41,7 @@ fun RebootButton(){
                 rebootButtonText = rebootText
             }
         },
-        enabled = QEMUClient.isRunning()
+        enabled = qemuClient.isRunning()
     ){
         Text(rebootButtonText)
     }

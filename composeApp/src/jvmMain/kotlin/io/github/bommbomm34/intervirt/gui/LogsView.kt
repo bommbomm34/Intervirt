@@ -14,12 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.TOOLTIP_FONT_SIZE
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import org.koin.compose.koinInject
 
 @Composable
 fun LogsView(logs: List<String>){
+    val preferences = koinInject<Preferences>()
     CenterColumn {
         Text(
             text = "Logs",
@@ -32,7 +34,7 @@ fun LogsView(logs: List<String>){
                     Text(
                         text = it,
                         color = Color.Gray,
-                        fontSize = TOOLTIP_FONT_SIZE
+                        fontSize = preferences.TOOLTIP_FONT_SIZE
                     )
                     HorizontalDivider()
                 }

@@ -13,7 +13,6 @@ import io.github.bommbomm34.intervirt.data.OS
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.getOS
-import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
@@ -25,7 +24,10 @@ import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.exception.ZipException
 import org.jetbrains.compose.resources.getString
 
-object Downloader {
+class Downloader(
+    val preferences: Preferences,
+    val fileManager: FileManager
+) {
     val logger = KotlinLogging.logger {  }
 
     fun downloadQEMUWindows(update: Boolean = false): Flow<ResultProgress<String>> = flow {
@@ -39,19 +41,19 @@ object Downloader {
     }
 
     fun downloadQEMUZIP(update: Boolean, url: String): Flow<ResultProgress<String>> = flow {
-        if (!env("QEMU_INSTALLED").toBoolean() || update) {
+        if (!preferences.env("QEMU_INSTALLED").toBoolean() || update) {
             // Wipe previous installation if available
-            FileManager.getFile("qemu").listFiles().forEach { it.delete() }
+            fileManager.getFile("qemu").listFiles().forEach { it.delete() }
             // Install fresh QEMU
-            val file = FileManager.downloadFile(url, "qemu-portable.zip")
+            val file = fileManager.downloadFile(url, "qemu-portable.zip")
             file.collect { resultProgress ->
                 if (resultProgress.result != null) {
                     resultProgress.result.onSuccess { zipFile ->
                         val zip = ZipFile(zipFile)
                         try {
                             logger.debug { "Extracting ${zipFile.name}" }
-                            zip.extractAll(FileManager.getFile("qemu").absolutePath)
-                            Preferences.saveString("QEMU_INSTALLED", "true")
+                            zip.extractAll(fileManager.getFile("qemu").absolutePath)
+                            preferences.saveString("QEMU_INSTALLED", "true")
                             emit(
                                 ResultProgress.Companion.success(
                                     getString(
@@ -105,15 +107,15 @@ object Downloader {
 
     fun downloadAlpineDisk(): Flow<ResultProgress<String>> = flow {
         logger.debug { "Downloading disk" }
-        if (!env("DISK_INSTALLED").toBoolean()) {
-            val file = FileManager.downloadFile(ALPINE_DISK_URL, "alpine-linux.qcow2", FileManager.getFile("disk"))
+        if (!preferences.env("DISK_INSTALLED").toBoolean()) {
+            val file = fileManager.downloadFile(ALPINE_DISK_URL, "alpine-linux.qcow2", fileManager.getFile("disk"))
             file.collect { resultProgress ->
                 if (resultProgress.result != null) {
                     resultProgress.result.onFailure {
                         emit(ResultProgress.Companion.failure(it))
                     }.onSuccess {
                         emit(ResultProgress.Companion.success(getString(Res.string.download_succeeded)))
-                        Preferences.saveString("DISK_INSTALLED", "true")
+                        preferences.saveString("DISK_INSTALLED", "true")
                     }
                 } else {
                     emit(

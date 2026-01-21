@@ -10,6 +10,7 @@ import compose.icons.tablericons.RefreshAlert
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.sync_guest
 import intervirt.composeapp.generated.resources.syncing
+import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.api.QEMUClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Importance
@@ -18,18 +19,21 @@ import io.github.bommbomm34.intervirt.openDialog
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun SyncButton() {
     val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
-    if (QEMUClient.isRunning()){
+    val qemuClient = koinInject<QEMUClient>()
+    val agentClient = koinInject<AgentClient>()
+    if (qemuClient.isRunning()){
         IconButton(
             onClick = {
                 scope.launch {
                     syncing = true
-                    configuration.syncConfiguration().collect {
+                    configuration.syncConfiguration(agentClient).collect {
                         syncFailed = it.result?.isFailure ?: false
                         logs.add(it.log())
                         if (syncFailed) {

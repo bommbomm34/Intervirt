@@ -9,16 +9,18 @@ import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun InternetEnabledOption(device: ViewDevice.Computer){
     val scope = rememberCoroutineScope()
+    val deviceManager = koinInject<DeviceManager>()
     NamedCheckbox(
         checked = device.internetEnabled,
         onCheckedChange = {
             scope.launch {
                 device.internetEnabled = it
-                DeviceManager.setInternetEnabled(device.toDevice(), it)
+                deviceManager.setInternetEnabled(device.toDevice(), it)
             }
         },
         name = stringResource(Res.string.internet_access)

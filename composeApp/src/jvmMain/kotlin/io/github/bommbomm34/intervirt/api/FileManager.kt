@@ -2,10 +2,10 @@ package io.github.bommbomm34.intervirt.api
 
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
-import io.github.bommbomm34.intervirt.DATA_DIR
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.getOS
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
@@ -30,25 +30,29 @@ import org.jetbrains.compose.resources.getString
 import java.io.File
 import java.nio.file.Files
 
-object FileManager {
+class FileManager(
+    val agentClient: AgentClient,
+    val preferences: Preferences
+) {
     val logger = KotlinLogging.logger {  }
+    val dataDir = preferences.DATA_DIR
 
     fun init() {
-        DATA_DIR.mkdir()
-        DATA_DIR.createFileInDirectory("qemu", true)
-        DATA_DIR.createFileInDirectory("disk", true)
-        DATA_DIR.createFileInDirectory("cache", true)
+        dataDir.mkdir()
+        dataDir.createFileInDirectory("qemu", true)
+        dataDir.createFileInDirectory("disk", true)
+        dataDir.createFileInDirectory("cache", true)
     }
 
     fun newFile(path: String): File {
-        return DATA_DIR.createFileInDirectory(path)
+        return dataDir.createFileInDirectory(path)
     }
 
     fun removeFile(path: String) {
-        DATA_DIR.createFileInDirectory(path)
+        dataDir.createFileInDirectory(path)
     }
 
-    fun getFile(name: String) = File(DATA_DIR.absolutePath + File.separator + name)
+    fun getFile(name: String) = File(dataDir.absolutePath + File.separator + name)
 
     // Based on: https://ktor.io/docs/client-responses.html#streaming
     fun downloadFile(url: String, name: String, destination: File = getFile("cache")): Flow<ResultProgress<File>> =
@@ -117,8 +121,8 @@ object FileManager {
         }
     }
 
-    suspend fun Device.Computer.pullFile(path: String, destFile: PlatformFile): Result<Unit> {
-        val res = AgentClient.downloadFile(id, path)
+    suspend fun pullFile(device: Device.Computer, path: String, destFile: PlatformFile): Result<Unit> {
+        val res = agentClient.downloadFile(device.id, path, this)
         val file = res.getOrElse { return Result.failure(it) }
         return withContext(Dispatchers.IO) {
             try {
@@ -130,7 +134,7 @@ object FileManager {
         }
     }
 
-    fun Device.Computer.pushFile(path: String, platformFile: PlatformFile) = AgentClient.uploadFile(id, platformFile.file, path)
+    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile) = agentClient.uploadFile(device.id, platformFile.file, path, this)
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

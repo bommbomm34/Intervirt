@@ -13,13 +13,20 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowState
+import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.Downloader
+import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.FileManager
+import io.github.bommbomm34.intervirt.api.QEMUClient
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 import java.io.File
 import java.net.ServerSocket
 import java.util.*
@@ -32,38 +39,19 @@ const val QEMU_LINUX_URL = "https://cdn.perhof.org/bommbomm34/qemu/linux-portabl
 const val ALPINE_DISK_URL = "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
 const val HELP_URL = "https://docs.perhof.org/intervirt"
 
-val DEBUG_ENABLED = env("DEBUG_ENABLED").toBoolean()
-val SSH_TIMEOUT = env("SSH_TIMEOUT")?.toLong() ?: 30000L
-val AGENT_PORT = env("AGENT_PORT")?.toInt() ?: 55436
-val VM_SHUTDOWN_TIMEOUT = env("VM_SHUTDOWN_TIMEOUT")?.toLong() ?: 30000L
-val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
-val VM_RAM = env("VM_RAM")?.toInt() ?: 2048
-val VM_CPU = env("VM_CPU")?.toInt() ?: 1
-val VM_ENABLE_KVM = env("VM_ENABLE_KVM")?.toBoolean() ?: false
-val DATA_DIR = File(env("DATA_DIR") ?: (System.getProperty("user.home") + File.separator + "Intervirt"))
-val DARK_MODE = env("DARK_MODE")?.toBoolean()
-val START_ALPINE_VM_COMMANDS = listOf(
-    FileManager.getQEMUFile().absolutePath,
-    if (VM_ENABLE_KVM) "-enable-kvm" else "",
-    "-smp", VM_CPU.toString(),
-    "-drive", "file=../disk/alpine-linux.qcow2,format=qcow2",
-    "-m", VM_RAM.toString(),
-    "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:$AGENT_PORT-:55436,dns=9.9.9.9",
-    "-device", "e1000,netdev=net0",
-    "-nographic"
-)
+val mainModule = module {
+    singleOf(::Executor)
+    singleOf(::Downloader)
+    singleOf(::AgentClient)
+    singleOf(::DeviceManager)
+    singleOf(::FileManager)
+    singleOf(::Preferences)
+    singleOf(::QEMUClient)
+}
 val AVAILABLE_LANGUAGES = listOf(
     Locale.US
 )
-val TOOLTIP_FONT_SIZE = 12.sp
-val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 5f
-val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toLong(16) ?: 0xFF9CCC65
-val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
-val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
-val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
-val SUGGESTED_FILENAME = env("SUGGESTED_FILENAME") ?: "MyIntervirtProject"
-val LANGUAGE: Locale = env("LANGUAGE")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault() ?: Locale.US
-val ENABLE_AGENT = env("ENABLE_AGENT")?.toBooleanStrictOrNull() ?: true
+val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
 val client = HttpClient(CIO) {
     engine {
         requestTimeout = 0
@@ -78,7 +66,7 @@ var isCtrlPressed by mutableStateOf(false)
 var mousePosition by mutableStateOf(Offset.Zero)
 lateinit var density: Density
 val CURRENT_FILE: PlatformFile? by mutableStateOf(null)
-var currentScreenIndex by mutableStateOf(if (checkSetupStatus()) 1 else 0)
+var currentScreenIndex by mutableStateOf(0)
 val configuration = IntervirtConfiguration(
     version = CURRENT_VERSION,
     author = "",
@@ -108,8 +96,6 @@ val configuration = IntervirtConfiguration(
 ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id)) }
 val statefulConf = ViewConfiguration(configuration)
 var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
-
-fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: Preferences.loadString(name)
 fun String.versionCode() = replace(".", "").toInt()
 
 fun String.result() = Result.success(this)
@@ -160,23 +146,23 @@ fun Int.canPortBind(): Result<Unit> {
     }
 }
 
-fun checkSetupStatus() = env("INSTALLED").toBoolean()
+fun Preferences.checkSetupStatus() = env("INSTALLED").toBoolean()
 
-fun applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
-    Preferences.saveString("VM_RAM", vmConf.ram.toString())
-    Preferences.saveString("VM_CPU", vmConf.cpu.toString())
-    Preferences.saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
-    Preferences.saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
-    Preferences.saveString("AGENT_PORT", appConf.agentPort.toString())
-    Preferences.saveString("DATA_DIR", appConf.intervirtFolder)
-    Preferences.saveString("DARK_MODE", appConf.darkMode.toString())
-    Preferences.saveString("LANGUAGE", appConf.language)
+fun Preferences.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
+    saveString("VM_RAM", vmConf.ram.toString())
+    saveString("VM_CPU", vmConf.cpu.toString())
+    saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
+    saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
+    saveString("AGENT_PORT", appConf.agentPort.toString())
+    saveString("DATA_DIR", appConf.intervirtFolder)
+    saveString("DARK_MODE", appConf.darkMode.toString())
+    saveString("LANGUAGE", appConf.language)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
-@Composable fun isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
+@Composable fun Preferences.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }

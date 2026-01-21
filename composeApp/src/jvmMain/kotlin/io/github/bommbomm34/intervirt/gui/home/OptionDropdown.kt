@@ -14,10 +14,10 @@ import compose.icons.tablericons.Settings
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.CURRENT_FILE
 import io.github.bommbomm34.intervirt.HELP_URL
-import io.github.bommbomm34.intervirt.SUGGESTED_FILENAME
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.currentScreenIndex
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
 import io.github.bommbomm34.intervirt.statefulConf
@@ -30,6 +30,7 @@ import io.github.vinceglb.filekit.writeString
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import java.awt.Desktop
 import java.net.URI
 
@@ -38,6 +39,7 @@ fun OptionDropdown(
     expanded: Boolean,
     onDismiss: () -> Unit
 ) {
+    val preferences = koinInject<Preferences>()
     val scope = rememberCoroutineScope()
     val writeConf: (PlatformFile) -> Unit = { file ->
         scope.launch {
@@ -82,7 +84,7 @@ fun OptionDropdown(
                 onClick = {
                     val file = CURRENT_FILE // Copy delegated state variable
                     if (file != null) writeConf(file) else fileSaverLauncher.launch(
-                        suggestedName = SUGGESTED_FILENAME,
+                        suggestedName = preferences.SUGGESTED_FILENAME,
                         extension = "ivrt"
                     )
                     onDismiss()
@@ -97,7 +99,7 @@ fun OptionDropdown(
             DropdownMenuItem(
                 onClick = {
                     fileSaverLauncher.launch(
-                        suggestedName = SUGGESTED_FILENAME,
+                        suggestedName = preferences.SUGGESTED_FILENAME,
                         extension = "ivrt"
                     )
                     onDismiss()

@@ -13,16 +13,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.OS_ICON_SIZE
 import io.github.bommbomm34.intervirt.data.Image
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
+import org.koin.compose.koinInject
 
 @Composable
 fun ImagePicker(
     onDismiss: () -> Unit,
     onInstall: (Image) -> Unit
 ) {
+    val preferences = koinInject<Preferences>()
     val images = remember { mutableStateListOf<Image>() }
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
@@ -35,7 +37,7 @@ fun ImagePicker(
     }
     AlignedBox(Alignment.Center, 64.dp){
         LazyVerticalGrid(
-            columns = GridCells.FixedSize(OS_ICON_SIZE * 1.2f)
+            columns = GridCells.FixedSize(preferences.OS_ICON_SIZE * 1.2f)
         ){
             items(images){ image -> // Incus Image, not a photo :)
                 ImageItem(image){

@@ -22,13 +22,14 @@ import androidx.compose.ui.unit.dp
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
-import io.github.bommbomm34.intervirt.DEVICE_SIZE
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.windowState
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -37,9 +38,10 @@ fun DeviceView(
     onClickDevice: (ViewDevice) -> Unit,
     onSecondaryClick: (ViewDevice) -> Unit
 ) {
+    val preferences = koinInject<Preferences>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceSizePx = dpToPx(DEVICE_SIZE)
+    val deviceSizePx = dpToPx(preferences.DEVICE_SIZE)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -72,7 +74,7 @@ fun DeviceView(
         Icon(
             imageVector = device.getVector(),
             contentDescription = device.name,
-            modifier = Modifier.size(DEVICE_SIZE, DEVICE_SIZE),
+            modifier = Modifier.size(preferences.DEVICE_SIZE, preferences.DEVICE_SIZE),
             tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f)
         )
         GeneralSpacer(2.dp)

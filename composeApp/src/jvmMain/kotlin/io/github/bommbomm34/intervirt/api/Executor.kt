@@ -3,14 +3,15 @@ package io.github.bommbomm34.intervirt.api
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.File
 
-object Executor {
+class Executor {
     val logger = KotlinLogging.logger {  }
 
-    fun runCommandOnHost(workingFolder: String, vararg commands: String): Flow<CommandStatus> =
+    fun runCommandOnHost(workingFolder: File, vararg commands: String): Flow<CommandStatus> =
         flow {
             val builder = ProcessBuilder(*commands)
-            builder.directory(FileManager.getFile(workingFolder))
+            builder.directory(workingFolder)
             builder.redirectErrorStream()
             logger.info { "Running '${commands.joinToString(" ")}' on host" }
             val process = builder.start()

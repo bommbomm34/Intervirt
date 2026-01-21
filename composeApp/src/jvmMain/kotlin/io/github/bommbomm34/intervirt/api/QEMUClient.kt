@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.*
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import java.io.BufferedReader
@@ -9,14 +10,28 @@ import java.net.ConnectException
 import java.net.Socket
 import java.util.concurrent.TimeUnit
 
-object QEMUClient {
+class QEMUClient(
+    val fileManager: FileManager,
+    val agentClient: AgentClient,
+    val preferences: Preferences
+) {
     val logger = KotlinLogging.logger {  }
     var currentProcess: Process? = null
+    val startAlpineVmCommands = listOf(
+        fileManager.getQEMUFile().absolutePath,
+        if (preferences.VM_ENABLE_KVM) "-enable-kvm" else "",
+        "-smp", preferences.VM_CPU.toString(),
+        "-drive", "file=../disk/alpine-linux.qcow2,format=qcow2",
+        "-m", preferences.VM_RAM.toString(),
+        "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${preferences.AGENT_PORT}-:55436,dns=9.9.9.9",
+        "-device", "e1000,netdev=net0",
+        "-nographic"
+    )
 
     suspend fun bootAlpine(): Result<Boolean> {
         logger.debug { "Booting Alpine Linux" }
-        val builder = ProcessBuilder(*START_ALPINE_VM_COMMANDS.toTypedArray())
-        builder.directory(FileManager.getFile("qemu"))
+        val builder = ProcessBuilder(*startAlpineVmCommands.toTypedArray())
+        builder.directory(fileManager.getFile("qemu"))
         builder.redirectErrorStream(true)
         currentProcess = builder.start()
         BufferedReader(InputStreamReader(currentProcess!!.inputStream)).use { tempReader ->
@@ -25,8 +40,8 @@ object QEMUClient {
             if (currentProcess!!.isAlive) {
                 logger.debug { "Waiting for availability" }
                 val startTime = System.currentTimeMillis()
-                while (!testAgentPort()) {
-                    if (System.currentTimeMillis() - startTime > SSH_TIMEOUT) {
+                while (!testAgentPort(preferences.AGENT_PORT)) {
+                    if (System.currentTimeMillis() - startTime > preferences.SSH_TIMEOUT) {
                         return Result.failure(IllegalStateException("SSH isn't available"))
                     }
                     delay(500)
@@ -42,13 +57,13 @@ object QEMUClient {
 
     suspend fun shutdownAlpine() {
         logger.info { "Shutting down Alpine VM" }
-        AgentClient.shutdown()
+        agentClient.shutdown()
             .onFailure {
                 logger.error { "Shutdown attempt through agent failed: $it" }
                 logger.debug { "Shutdown through process termination" }
                 currentProcess?.destroy()
                 logger.debug { "Waiting for Alpine VM to shutdown" }
-                currentProcess?.waitFor(VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                currentProcess?.waitFor(preferences.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
                 if (currentProcess?.isAlive ?: false) {
                     logger.debug { "Timeout exceeded, forcing shutdown..." }
                     currentProcess?.destroyForcibly()
@@ -62,9 +77,9 @@ object QEMUClient {
     fun isRunning() = currentProcess != null
 }
 
-fun testAgentPort(): Boolean {
+fun testAgentPort(agentPort: Int): Boolean {
     try {
-        Socket("127.0.0.1", AGENT_PORT).use { return true }
+        Socket("127.0.0.1", agentPort).use { return true }
     } catch (_: ConnectException) {
         return false
     }

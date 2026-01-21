@@ -29,6 +29,7 @@ import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
@@ -37,6 +38,7 @@ import io.github.bommbomm34.intervirt.gui.components.device.settings.DeviceSetti
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import kotlin.math.sqrt
 
 var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
@@ -47,12 +49,14 @@ fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
     var deviceSettingsVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val deviceManager = koinInject<DeviceManager>()
+    val preferences = koinInject<Preferences>()
     AlignedBox(Alignment.Center) {
         Canvas(
             Modifier
                 .fillMaxSize()
                 .onPointerEvent(PointerEventType.Scroll) {
-                    val delta = it.changes.first().scrollDelta.y * -ZOOM_SPEED
+                    val delta = it.changes.first().scrollDelta.y * -preferences.ZOOM_SPEED
                     if (isCtrlPressed && devicesViewZoom + delta > 0.1f) devicesViewZoom += delta
                 }
                 .onClick(
@@ -68,7 +72,7 @@ fun DevicesView() {
                                 point = position,
                                 start = device1.fittingOffset(),
                                 end = device2.fittingOffset(),
-                                strokeWidth = CONNECTION_STROKE_WIDTH
+                                strokeWidth = preferences.CONNECTION_STROKE_WIDTH
                             )
                         }?.let {
                             openDialog {
@@ -81,7 +85,7 @@ fun DevicesView() {
                                 ) {
                                     statefulConf.connections.remove(it)
                                     scope.launch {
-                                        DeviceManager.disconnectDevice(
+                                        deviceManager.disconnectDevice(
                                             it.device1.toDevice(),
                                             it.device2.toDevice()
                                         )
@@ -102,13 +106,17 @@ fun DevicesView() {
                 drawingConnectionSource?.let {
                     drawConnection(
                         offset1 = it.fittingOffset(),
-                        offset2 = mousePosition
+                        offset2 = mousePosition,
+                        deviceConnectionColor = preferences.DEVICE_CONNECTION_COLOR,
+                        connectionStrokeWidth = preferences.CONNECTION_STROKE_WIDTH
                     )
                 }
                 statefulConf.connections.forEach {
                     drawConnection(
                         offset1 = it.device1.fittingOffset(),
-                        offset2 = it.device2.fittingOffset()
+                        offset2 = it.device2.fittingOffset(),
+                        deviceConnectionColor = preferences.DEVICE_CONNECTION_COLOR,
+                        connectionStrokeWidth = preferences.CONNECTION_STROKE_WIDTH
                     )
                 }
             }
@@ -130,7 +138,7 @@ fun DevicesView() {
                         scope.launch {
                             if (copy.canConnect() && it.canConnect()) {
                                 statefulConf.connections.add(copy connect it)
-                                DeviceManager.connectDevice(copy.toDevice(), it.toDevice())
+                                deviceManager.connectDevice(copy.toDevice(), it.toDevice())
                             } else openDialog(
                                 importance = Importance.WARNING,
                                 message = getString(Res.string.too_many_devices_connected)
@@ -159,12 +167,17 @@ fun DevicesView() {
     }
 }
 
-fun DrawScope.drawConnection(offset1: Offset, offset2: Offset) {
+fun DrawScope.drawConnection(
+    offset1: Offset,
+    offset2: Offset,
+    deviceConnectionColor: Long,
+    connectionStrokeWidth: Float
+) {
     drawLine(
         start = offset1,
         end = offset2,
-        color = Color(DEVICE_CONNECTION_COLOR),
-        strokeWidth = CONNECTION_STROKE_WIDTH
+        color = Color(deviceConnectionColor),
+        strokeWidth = connectionStrokeWidth
     )
 }
 

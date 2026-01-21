@@ -16,6 +16,7 @@ import intervirt.composeapp.generated.resources.shutting_down
 import io.github.bommbomm34.intervirt.api.QEMUClient
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun ShutdownButton(){
@@ -24,17 +25,18 @@ fun ShutdownButton(){
     val shutdownText = stringResource(Res.string.shutdown)
     val shuttingDownText = stringResource(Res.string.shutting_down)
     val bootingText = stringResource(Res.string.booting)
-    var powerButtonText by remember { mutableStateOf(if (QEMUClient.isRunning()) shutdownText else bootText) }
+    val qemuClient = koinInject<QEMUClient>()
+    var powerButtonText by remember { mutableStateOf(if (qemuClient.isRunning()) shutdownText else bootText) }
     Button(
         onClick = {
             scope.launch {
-                if (QEMUClient.isRunning()) {
+                if (qemuClient.isRunning()) {
                     powerButtonText = shuttingDownText
-                    QEMUClient.shutdownAlpine()
+                    qemuClient.shutdownAlpine()
                     powerButtonText = bootText
                 } else {
                     powerButtonText = bootingText
-                    QEMUClient.bootAlpine()
+                    qemuClient.bootAlpine()
                     powerButtonText = shutdownText
                 }
             }

@@ -21,6 +21,7 @@ import io.github.bommbomm34.intervirt.isValidPort
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun AddPortForwardingDialog(
@@ -32,6 +33,7 @@ fun AddPortForwardingDialog(
         var externalPort by remember { mutableStateOf(1) }
         var result by remember { mutableStateOf(Result.success(Unit)) }
         val scope = rememberCoroutineScope()
+        val deviceManager = koinInject<DeviceManager>()
         Row(verticalAlignment = Alignment.CenterVertically) {
             IntegerTextField(
                 value = internalPort,
@@ -76,7 +78,7 @@ fun AddPortForwardingDialog(
                 onClick = {
                     scope.launch {
                         device.portForwardings[internalPort] = externalPort
-                        DeviceManager.addPortForwarding(device.toDevice(), internalPort, externalPort)
+                        deviceManager.addPortForwarding(device.toDevice(), internalPort, externalPort)
                         onCancel()
                     }
                 },

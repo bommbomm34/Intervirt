@@ -16,9 +16,10 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import io.github.bommbomm34.intervirt.env
+import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.isDarkMode
 import io.github.bommbomm34.intervirt.mousePosition
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -26,7 +27,8 @@ fun DefaultWindowScope(
     onPointerEvent: AwaitPointerEventScope.(PointerEvent) -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ){
-    val colors = if (isDarkMode()) darkColors() else lightColors()
+    val preferences = koinInject<Preferences>()
+    val colors = if (preferences.isDarkMode()) darkColors() else lightColors()
     MaterialTheme(
         colors = colors,
         typography = MaterialTheme.typography.copy(

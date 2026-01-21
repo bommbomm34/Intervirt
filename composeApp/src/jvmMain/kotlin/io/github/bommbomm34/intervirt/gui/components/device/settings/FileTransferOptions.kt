@@ -18,8 +18,6 @@ import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.upload_file
 import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.api.FileManager
-import io.github.bommbomm34.intervirt.api.FileManager.pullFile
-import io.github.bommbomm34.intervirt.api.FileManager.pushFile
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.ContainerFilePicker
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
@@ -29,16 +27,19 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun FileTransferOptions(device: ViewDevice.Computer){
     val scope = rememberCoroutineScope()
+    val fileManager = koinInject<FileManager>()
     var containerFilePath by remember { mutableStateOf("") }
     val fileSaverLauncher = rememberFileSaverLauncher { file ->
         file?.let {
             scope.launch {
                 // containerFilePath must be valid if this launcher is called
-                device.toDevice().pullFile(
+                fileManager.pullFile(
+                    device = device.toDevice(),
                     path = containerFilePath,
                     destFile = it
                 )
@@ -51,7 +52,8 @@ fun FileTransferOptions(device: ViewDevice.Computer){
                 ContainerFilePicker(device){ path ->
                     path?.let { _ ->
                         scope.launch {
-                            device.toDevice().pushFile(
+                            fileManager.pushFile(
+                                device = device.toDevice(),
                                 path = path,
                                 platformFile = file
                             ).collect {

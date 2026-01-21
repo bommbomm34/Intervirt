@@ -16,7 +16,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import java.io.File
 
-object AgentClient {
+class AgentClient {
     val logger = KotlinLogging.logger {  }
     var session: DefaultClientWebSocketSession? = null
     var sessionLock = Mutex()
@@ -46,30 +46,30 @@ object AgentClient {
 
     suspend fun removeContainer(id: String): Result<Unit> = justSend(id.idBody("removeContainer"))
 
-    suspend fun getDisk(id: String): Result<File> {
-        return FileManager.downloadFile(
+    suspend fun getDisk(id: String, fileManager: FileManager): Result<File> {
+        return fileManager.downloadFile(
             "http://localhost:55436/disk?id=$id",
             "disk-$id-${System.currentTimeMillis()}.tar.gz"
         ).first { it.result != null }.result!!
     }
 
-    fun uploadDisk(id: String, file: File): Flow<ResultProgress<Unit>> {
-        return FileManager.uploadFile(
+    fun uploadDisk(id: String, file: File, fileManager: FileManager): Flow<ResultProgress<Unit>> {
+        return fileManager.uploadFile(
             "http://localhost:55436/disk?id=$id",
             file
         )
     }
 
-    suspend fun downloadFile(id: String, path: String): Result<File> {
+    suspend fun downloadFile(id: String, path: String, fileManager: FileManager): Result<File> {
         val fileExtension = path.substringAfterLast(".", "")
-        return FileManager.downloadFile(
+        return fileManager.downloadFile(
             "http://localhost:55436/file?id=$id&$path",
             "file-$id-${System.currentTimeMillis()}${if (fileExtension.isBlank()) "" else ".$fileExtension"}"
         ).first { it.result != null }.result!!
     }
 
-    fun uploadFile(id: String, file: File, path: String): Flow<ResultProgress<Unit>> {
-        return FileManager.uploadFile(
+    fun uploadFile(id: String, file: File, path: String, fileManager: FileManager): Flow<ResultProgress<Unit>> {
+        return fileManager.uploadFile(
             "http://localhost:55436/file?id=$id&path=$path",
             file
         )

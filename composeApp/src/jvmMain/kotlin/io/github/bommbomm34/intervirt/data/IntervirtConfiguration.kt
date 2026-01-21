@@ -19,8 +19,8 @@ data class IntervirtConfiguration(
     val devices: MutableList<Device>,
     val connections: MutableList<DeviceConnection>
 ) {
-    fun syncConfiguration(): Flow<ResultProgress<Unit>> = flow {
-        AgentClient.getVersion()
+    fun syncConfiguration(agentClient: AgentClient): Flow<ResultProgress<Unit>> = flow {
+        agentClient.getVersion()
             .onSuccess { version ->
                 if (version != CURRENT_VERSION) {
                     emit(ResultProgress.failure(DeprecatedException()))
@@ -37,7 +37,7 @@ data class IntervirtConfiguration(
                             message = getString(Res.string.wiping_old_data)
                         )
                     )
-                    AgentClient.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
+                    agentClient.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
                     emit(
                         ResultProgress.proceed(
                             percentage = 0.2f,
@@ -53,7 +53,7 @@ data class IntervirtConfiguration(
                                     message = getString(Res.string.creating_device, device.name, device.id)
                                 )
                             )
-                            AgentClient.addContainer(
+                            agentClient.addContainer(
                                 id = device.id,
                                 initialIPv4 = device.ipv4,
                                 initialIPv6 = device.ipv6,
@@ -72,7 +72,7 @@ data class IntervirtConfiguration(
                                         )
                                     )
                                 )
-                                AgentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value)
+                                agentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value)
                             }
                         }
                     }
@@ -91,12 +91,12 @@ data class IntervirtConfiguration(
                             )
                         )
                         when (conn) {
-                            is DeviceConnection.Computer -> AgentClient.connect(conn.device1.id, conn.device2.id)
+                            is DeviceConnection.Computer -> agentClient.connect(conn.device1.id, conn.device2.id)
                             is DeviceConnection.Switch -> {
                                 val switch1ConnectedComputers = conn.switch1.getConnectedComputers(connections)
                                 conn.switch2.getConnectedComputers(connections).forEach { computer1 ->
                                     switch1ConnectedComputers.forEach { computer2 ->
-                                        AgentClient.connect(
+                                        agentClient.connect(
                                             computer1.id,
                                             computer2.id
                                         )
@@ -105,7 +105,7 @@ data class IntervirtConfiguration(
                             }
 
                             is DeviceConnection.SwitchComputer -> conn.switch.getConnectedComputers(connections)
-                                .forEach { AgentClient.connect(it.id, conn.computer.id) }
+                                .forEach { agentClient.connect(it.id, conn.computer.id) }
                         }
                     }
                     emit(

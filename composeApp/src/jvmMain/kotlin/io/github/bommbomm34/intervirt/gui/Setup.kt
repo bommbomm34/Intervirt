@@ -5,16 +5,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.AGENT_PORT
-import io.github.bommbomm34.intervirt.DARK_MODE
-import io.github.bommbomm34.intervirt.LANGUAGE
-import io.github.bommbomm34.intervirt.VM_SHUTDOWN_TIMEOUT
 import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.data.Preferences
-import io.github.bommbomm34.intervirt.data.Screens
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
-import io.github.bommbomm34.intervirt.env
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.gui.components.buttons.NextButton
@@ -22,12 +16,14 @@ import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfigurat
 import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.gui.setup.Installation
 import io.github.bommbomm34.intervirt.isDarkMode
+import org.koin.compose.koinInject
 import java.io.File
 
 @Composable
 fun Setup() {
-    val isDarkMode = isDarkMode()
-    var currentSetupScreenIndex by remember { mutableStateOf(Screens.Setup.VM_CONFIGURATION) }
+    val preferences = koinInject<Preferences>()
+    val isDarkMode = preferences.isDarkMode()
+    var currentSetupScreenIndex by remember { mutableStateOf(0) }
     var vmConf by remember {
         mutableStateOf(
             VMConfigurationData(
@@ -40,19 +36,19 @@ fun Setup() {
     var appConf by remember {
         mutableStateOf(
             AppConfigurationData(
-                vmShutdownTimeout = VM_SHUTDOWN_TIMEOUT.toInt(),
-                agentPort = AGENT_PORT,
-                intervirtFolder = env("dataDir")
+                vmShutdownTimeout = preferences.VM_SHUTDOWN_TIMEOUT.toInt(),
+                agentPort = preferences.AGENT_PORT,
+                intervirtFolder = preferences.env("dataDir")
                     ?: (System.getProperty("user.home") + File.separator + "Intervirt"),
                 darkMode = isDarkMode,
-                language = LANGUAGE.toLanguageTag()
+                language = preferences.LANGUAGE.toLanguageTag()
             )
         )
     }
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(vmConf) { vmConf = it } },
         { AppConfiguration(appConf) { appConf = it } },
-        { Installation { applyConfiguration(vmConf, appConf) } }
+        { Installation { preferences.applyConfiguration(vmConf, appConf) } }
     )
     AlignedBox(Alignment.TopCenter) {
         Text(

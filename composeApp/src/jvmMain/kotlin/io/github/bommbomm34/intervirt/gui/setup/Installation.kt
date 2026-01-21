@@ -26,12 +26,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun Installation(
     applyConfiguration: () -> Unit
 ) {
     val logger = KotlinLogging.logger {  }
+    val downloader = koinInject<Downloader>()
+    val preferences = koinInject<Preferences>()
+    val fileManager = koinInject<FileManager>()
     var allowInstallation by remember { mutableStateOf(false) }
     var flow: Flow<ResultProgress<String>>? by remember { mutableStateOf(null) }
     var job: Job? by remember { mutableStateOf(null) }
@@ -57,7 +61,7 @@ fun Installation(
                                 message = getString(Res.string.creating_intervirt_folder)
                             )
                         )
-                        FileManager.init()
+                        fileManager.init()
                         // Applying configuration
                         emit(
                             ResultProgress.proceed(
@@ -67,16 +71,16 @@ fun Installation(
                         )
                         applyConfiguration()
                         // Downloading QEMU
-                        Downloader.downloadQEMU().collect {
+                        downloader.downloadQEMU().collect {
                             emit(it.copy(percentage = it.percentage * 0.4f + 0.1f))
                             if (it.result?.isFailure ?: false) job!!.cancel()
                         }
                         // Downloading disk
-                        Downloader.downloadAlpineDisk().collect {
+                        downloader.downloadAlpineDisk().collect {
                             emit(it.copy(percentage = it.percentage * 0.5f + 0.5f))
                             if (it.result?.isFailure ?: false) job!!.cancel()
                         }
-                        Preferences.saveString("INTERVIRT_INSTALLED", "true")
+                        preferences.saveString("INTERVIRT_INSTALLED", "true")
                         currentScreenIndex = 1
                     }
                 }
