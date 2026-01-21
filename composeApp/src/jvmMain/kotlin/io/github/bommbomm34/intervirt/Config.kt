@@ -64,6 +64,7 @@ val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp
 val OS_ICON_SIZE = env("OS_ICON_SIZE")?.toInt()?.dp ?: 128.dp
 val SUGGESTED_FILENAME = env("SUGGESTED_FILENAME") ?: "MyIntervirtProject"
 val LANGUAGE: Locale = env("LANGUAGE")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault() ?: Locale.US
+val ENABLE_AGENT = env("ENABLE_AGENT")?.toBoolean() ?: true
 val client = HttpClient(CIO) {
     engine {
         requestTimeout = 0

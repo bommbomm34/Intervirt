@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
+import io.github.bommbomm34.intervirt.ENABLE_AGENT
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.ResultProgress
@@ -28,8 +29,10 @@ object DeviceManager {
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
-        val res = AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image)
-        return res.check(device)
+        return if (ENABLE_AGENT) {
+            val res = AgentClient.addContainer(device.id, device.ipv4, device.ipv6, false, image)
+            res.check(device)
+        } else Result.success(device)
     }
 
     fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
@@ -49,7 +52,7 @@ object DeviceManager {
         logger.debug { "Removing device $device" }
         configuration.devices.remove(device)
         configuration.connections.removeIf { it.containsDevice(device) }
-        return if (device is Device.Computer) {
+        return if (device is Device.Computer && ENABLE_AGENT) {
             val res = AgentClient.removeContainer(device.id)
             res.check(Unit)
         } else Result.success(Unit)
@@ -58,11 +61,13 @@ object DeviceManager {
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Connecting device $device1 to $device2" }
         configuration.connections.add(device1 connect device2)
-        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
-            device1ConnectedComputers.forEach { computer2 ->
-                val res = AgentClient.connect(computer1.id, computer2.id)
-                res.onFailure { return res }
+        if (ENABLE_AGENT) {
+            val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
+            device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+                device1ConnectedComputers.forEach { computer2 ->
+                    val res = AgentClient.connect(computer1.id, computer2.id)
+                    res.onFailure { return res }
+                }
             }
         }
         return Result.success(Unit)
@@ -71,11 +76,13 @@ object DeviceManager {
     suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Disconnecting device $device1 to $device2" }
         configuration.connections.removeIf { it == device1 connect device2 }
-        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
-            device1ConnectedComputers.forEach { computer2 ->
-                val res = AgentClient.disconnect(computer1.id, computer2.id)
-                res.onFailure { return res }
+        if (ENABLE_AGENT) {
+            val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
+            device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+                device1ConnectedComputers.forEach { computer2 ->
+                    val res = AgentClient.disconnect(computer1.id, computer2.id)
+                    res.onFailure { return res }
+                }
             }
         }
         return Result.success(Unit)
@@ -84,15 +91,19 @@ object DeviceManager {
     suspend fun setIPv4(device: Device.Computer, ipv4: String): Result<Unit> {
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
-        val res = AgentClient.setIPv4(device.id, ipv4)
-        return res.check(Unit)
+        return if (ENABLE_AGENT){
+            val res = AgentClient.setIPv4(device.id, ipv4)
+            res.check(Unit)
+        } else Result.success(Unit)
     }
 
     suspend fun setIPv6(device: Device.Computer, ipv6: String): Result<Unit> {
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
-        val res = AgentClient.setIPv6(device.id, ipv6)
-        return res.check(Unit)
+        return if (ENABLE_AGENT){
+            val res = AgentClient.setIPv6(device.id, ipv6)
+            res.check(Unit)
+        } else Result.success(Unit)
     }
 
     suspend fun exportComputer(computer: Device.Computer): Result<File> {
@@ -108,15 +119,19 @@ object DeviceManager {
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean): Result<Unit> {
         logger.debug { "Set internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled
-        val res = AgentClient.setInternetAccess(device.id, enabled)
-        return res.check(Unit)
+        return if (ENABLE_AGENT) {
+            val res = AgentClient.setInternetAccess(device.id, enabled)
+            res.check(Unit)
+        } else Result.success(Unit)
     }
 
     suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings[internalPort] = externalPort
-        val res = AgentClient.addPortForwarding(device.id, internalPort, externalPort)
-        return res.check(Unit)
+        return if (ENABLE_AGENT){
+            val res = AgentClient.addPortForwarding(device.id, internalPort, externalPort)
+            res.check(Unit)
+        } else Result.success(Unit)
     }
 
     suspend fun removePortForwarding(externalPort: Int): Result<Unit> {
@@ -125,8 +140,10 @@ object DeviceManager {
             if (device is Device.Computer)
                 device.portForwardings.entries.removeIf { it.value == externalPort }
         }
-        val res = AgentClient.removePortForwarding(externalPort)
-        return res.check(Unit)
+        return if (ENABLE_AGENT) {
+            val res = AgentClient.removePortForwarding(externalPort)
+            res.check(Unit)
+        } else Result.success(Unit)
     }
 
     private fun generateID(prefix: String): String {
