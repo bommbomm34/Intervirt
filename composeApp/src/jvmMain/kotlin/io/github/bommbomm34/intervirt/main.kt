@@ -15,7 +15,7 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Downloader
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.FileManager
-import io.github.bommbomm34.intervirt.api.QEMUClient
+import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
@@ -36,7 +36,7 @@ fun main() = application {
         modules(mainModule)
     }) {
         val preferences = koinInject<Preferences>()
-        val qemuClient = koinInject<QEMUClient>()
+        val qemuClient = koinInject<QemuClient>()
         if (preferences.checkSetupStatus()) currentScreenIndex = 1
         System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
         FileKit.init("intervirt")

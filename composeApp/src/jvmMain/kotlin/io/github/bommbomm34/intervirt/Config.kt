@@ -18,7 +18,7 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Downloader
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.FileManager
-import io.github.bommbomm34.intervirt.api.QEMUClient
+import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.vinceglb.filekit.PlatformFile
@@ -46,7 +46,7 @@ val mainModule = module {
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::Preferences)
-    singleOf(::QEMUClient)
+    singleOf(::QemuClient)
 }
 val AVAILABLE_LANGUAGES = listOf(
     Locale.US

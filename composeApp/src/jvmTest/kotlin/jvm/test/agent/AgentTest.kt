@@ -47,10 +47,10 @@ class AgentTest : KoinTest {
 //            val res2 = testPing()
 //            if (!res2.any { it.message?.contains("Network is unreachable") ?: false }) error("PING MIGHT BE SUCCEEDED: \n${res1.joinToString { it.message ?: it.result?.exceptionOrNull()?.message ?: "" }}")
 //            println { "INTERNET DISABLE TEST PASSED" }
-            assertResult(deviceManager.setIPv4(computer3, "192.168.9.8"), "SET IPV4 ADDRESS TEST")
-            assertResult(deviceManager.setIPv4(computer4, "192.168.9.67"), "SET IPV4 ADDRESS TEST")
-            assertResult(deviceManager.setIPv6(computer3, deviceManager.generateIPv6()), "SET IPV6 ADDRESS TEST")
-            assertResult(deviceManager.setIPv6(computer4, deviceManager.generateIPv6()), "SET IPV6 ADDRESS TEST")
+            assertResult(deviceManager.setIpv4(computer3, "192.168.9.8"), "SET IPV4 ADDRESS TEST")
+            assertResult(deviceManager.setIpv4(computer4, "192.168.9.67"), "SET IPV4 ADDRESS TEST")
+            assertResult(deviceManager.setIpv6(computer3, deviceManager.generateIpv6()), "SET IPV6 ADDRESS TEST")
+            assertResult(deviceManager.setIpv6(computer4, deviceManager.generateIpv6()), "SET IPV6 ADDRESS TEST")
             assertResult(deviceManager.disconnectDevice(computer1, switch), "SWITCH DISCONNECTION TEST")
             agentClient.wipe().collect { progress ->
                 progress.result?.onFailure { throw AssertionError("FAILED WIPE: $it") }

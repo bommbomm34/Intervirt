@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
@@ -10,7 +9,7 @@ import java.net.ConnectException
 import java.net.Socket
 import java.util.concurrent.TimeUnit
 
-class QEMUClient(
+class QemuClient(
     val fileManager: FileManager,
     val agentClient: AgentClient,
     val preferences: Preferences
@@ -18,7 +17,7 @@ class QEMUClient(
     val logger = KotlinLogging.logger {  }
     var currentProcess: Process? = null
     val startAlpineVmCommands = listOf(
-        fileManager.getQEMUFile().absolutePath,
+        fileManager.getQemuFile().absolutePath,
         if (preferences.VM_ENABLE_KVM) "-enable-kvm" else "",
         "-smp", preferences.VM_CPU.toString(),
         "-drive", "file=../disk/alpine-linux.qcow2,format=qcow2",

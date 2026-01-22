@@ -71,7 +71,7 @@ fun Installation(
                         )
                         applyConfiguration()
                         // Downloading QEMU
-                        downloader.downloadQEMU().collect {
+                        downloader.downloadQemu().collect {
                             emit(it.copy(percentage = it.percentage * 0.4f + 0.1f))
                             if (it.result?.isFailure ?: false) job!!.cancel()
                         }

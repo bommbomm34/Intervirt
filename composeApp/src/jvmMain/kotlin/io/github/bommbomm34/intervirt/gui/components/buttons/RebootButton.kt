@@ -12,7 +12,7 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.reboot
 import intervirt.composeapp.generated.resources.rebooting
 import io.github.bommbomm34.intervirt.api.AgentClient
-import io.github.bommbomm34.intervirt.api.QEMUClient
+import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.openDialog
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ import org.koin.compose.koinInject
 @Composable
 fun RebootButton(){
     val agentClient = koinInject<AgentClient>()
-    val qemuClient = koinInject<QEMUClient>()
+    val qemuClient = koinInject<QemuClient>()
     val scope = rememberCoroutineScope()
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)

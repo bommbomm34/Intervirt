@@ -17,7 +17,7 @@ sealed class RequestBody {
     ) : RequestBody()
 
     @Serializable
-    data class IDWithNewIP (
+    data class IdWithNewIp (
         val id: String,
         val newIP: String,
         override val command: String,

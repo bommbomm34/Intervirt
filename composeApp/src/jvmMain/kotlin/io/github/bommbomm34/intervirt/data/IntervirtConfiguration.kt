@@ -55,8 +55,8 @@ data class IntervirtConfiguration(
                             )
                             agentClient.addContainer(
                                 id = device.id,
-                                initialIPv4 = device.ipv4,
-                                initialIPv6 = device.ipv6,
+                                initialIpv4 = device.ipv4,
+                                initialIpv6 = device.ipv6,
                                 mac = device.mac,
                                 internet = device.internetEnabled,
                                 image = device.image

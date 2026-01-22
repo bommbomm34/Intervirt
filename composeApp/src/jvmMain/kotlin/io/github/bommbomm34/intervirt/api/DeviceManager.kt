@@ -24,8 +24,8 @@ class DeviceManager(
             name = name ?: id,
             x = x,
             y = y,
-            ipv4 = generateIPv4(),
-            ipv6 = generateIPv6(),
+            ipv4 = generateIpv4(),
+            ipv6 = generateIpv6(),
             mac = generateMAC(),
             internetEnabled = false,
             portForwardings = mutableMapOf()
@@ -91,20 +91,20 @@ class DeviceManager(
         return Result.success(Unit)
     }
 
-    suspend fun setIPv4(device: Device.Computer, ipv4: String): Result<Unit> {
+    suspend fun setIpv4(device: Device.Computer, ipv4: String): Result<Unit> {
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
         return if (enableAgent) {
-            val res = agentClient.setIPv4(device.id, ipv4)
+            val res = agentClient.setIpv4(device.id, ipv4)
             res.check(Unit)
         } else Result.success(Unit)
     }
 
-    suspend fun setIPv6(device: Device.Computer, ipv6: String): Result<Unit> {
+    suspend fun setIpv6(device: Device.Computer, ipv6: String): Result<Unit> {
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
         return if (enableAgent) {
-            val res = agentClient.setIPv6(device.id, ipv6)
+            val res = agentClient.setIpv6(device.id, ipv6)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -169,7 +169,7 @@ class DeviceManager(
         return exceptionOrNull()?.let { Result.failure(it) } ?: Result.success(ifSuccess)
     }
 
-    fun generateIPv4(): String {
+    fun generateIpv4(): String {
         val rand = { Random.nextInt(256) }
         while (true) {
             val ipv4 = "192.168.${rand()}.${rand()}"
@@ -177,7 +177,7 @@ class DeviceManager(
         }
     }
 
-    fun generateIPv6(): String {
+    fun generateIpv6(): String {
         val rand = { Random.nextInt(65536).toString(16) }
         val randFirst = { Random.nextInt(256).toString(16) }
         while (true) {

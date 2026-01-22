@@ -22,23 +22,23 @@ import org.koin.compose.koinInject
 import java.io.File
 
 @Composable
-fun IPv4TextField(device: ViewDevice.Computer){
-    var validIPv4 by remember { mutableStateOf(true) }
+fun Ipv4TextField(device: ViewDevice.Computer){
+    var validipv4 by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
     OutlinedTextField(
         value = device.ipv4,
         onValueChange = {
             scope.launch {
-                validIPv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
-                if (validIPv4) {
+                validipv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
+                if (validipv4) {
                     device.ipv4 = it
-                    deviceManager.setIPv4(device.toDevice(), it)
+                    deviceManager.setIpv4(device.toDevice(), it)
                 }
             }
         },
         label = {
-            if (validIPv4){
+            if (validipv4){
                 Text(stringResource(Res.string.ipv4_address))
             } else {
                 Text(

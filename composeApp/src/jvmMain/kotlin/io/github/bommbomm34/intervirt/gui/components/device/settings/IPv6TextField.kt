@@ -20,23 +20,23 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun IPv6TextField(device: ViewDevice.Computer){
-    var validIPv6 by remember { mutableStateOf(true) }
+fun Ipv6TextField(device: ViewDevice.Computer){
+    var validIpv6 by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
     OutlinedTextField(
         value = device.ipv6,
         onValueChange = {
             scope.launch {
-                validIPv6 = InetAddressValidator.getInstance().isValidInet6Address(it)
-                if (validIPv6) {
+                validIpv6 = InetAddressValidator.getInstance().isValidInet6Address(it)
+                if (validIpv6) {
                     device.ipv6 = it
-                    deviceManager.setIPv6(device.toDevice(), it)
+                    deviceManager.setIpv6(device.toDevice(), it)
                 }
             }
         },
         label = {
-            if (validIPv6){
+            if (validIpv6){
                 Text(stringResource(Res.string.ipv6_address))
             } else {
                 Text(

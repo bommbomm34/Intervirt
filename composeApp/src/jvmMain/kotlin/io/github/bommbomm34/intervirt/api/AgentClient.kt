@@ -37,12 +37,12 @@ class AgentClient {
 
     suspend fun addContainer(
         id: String,
-        initialIPv4: String,
-        initialIPv6: String,
+        initialIpv4: String,
+        initialIpv6: String,
         mac: String,
         internet: Boolean,
         image: String
-    ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIPv4, initialIPv6, mac, internet, image))
+    ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIpv4, initialIpv6, mac, internet, image))
 
     suspend fun removeContainer(id: String): Result<Unit> = justSend(id.idBody("removeContainer"))
 
@@ -75,11 +75,11 @@ class AgentClient {
         )
     }
 
-    suspend fun setIPv4(id: String, newIP: String): Result<Unit> =
-        justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv4"))
+    suspend fun setIpv4(id: String, newIp: String): Result<Unit> =
+        justSend(RequestBody.IdWithNewIp(id, newIp, "setIPv4"))
 
-    suspend fun setIPv6(id: String, newIP: String): Result<Unit> =
-        justSend(RequestBody.IDWithNewIP(id, newIP, "setIPv6"))
+    suspend fun setIpv6(id: String, newIp: String): Result<Unit> =
+        justSend(RequestBody.IdWithNewIp(id, newIp, "setIPv6"))
 
     suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2, "connect"))
 

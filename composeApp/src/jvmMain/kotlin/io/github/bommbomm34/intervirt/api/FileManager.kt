@@ -4,11 +4,11 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.Os
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.getOS
-import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
+import io.github.bommbomm34.intervirt.data.getOs
+import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.call.*
@@ -113,11 +113,11 @@ class FileManager(
         }
     }
 
-    fun getQEMUFile(): File {
-        return when (getOS()) {
-            OS.WINDOWS -> getFile("qemu/qemu-system-x86_64")
-            OS.LINUX -> getFile("qemu/usr/local/bin/qemu-system-x86_64")
-            null -> throw UnsupportedOSException()
+    fun getQemuFile(): File {
+        return when (getOs()) {
+            Os.WINDOWS -> getFile("qemu/qemu-system-x86_64")
+            Os.LINUX -> getFile("qemu/usr/local/bin/qemu-system-x86_64")
+            null -> throw UnsupportedOsException()
         }
     }
 

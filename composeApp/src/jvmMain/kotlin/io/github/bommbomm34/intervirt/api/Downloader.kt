@@ -9,13 +9,13 @@ import io.github.bommbomm34.intervirt.ALPINE_DISK_URL
 import io.github.bommbomm34.intervirt.QEMU_LINUX_URL
 import io.github.bommbomm34.intervirt.QEMU_WINDOWS_URL
 import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
-import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.Os
 import io.github.bommbomm34.intervirt.data.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.getOS
+import io.github.bommbomm34.intervirt.data.getOs
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
-import io.github.bommbomm34.intervirt.exceptions.UnsupportedOSException
+import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
@@ -30,17 +30,17 @@ class Downloader(
 ) {
     val logger = KotlinLogging.logger {  }
 
-    fun downloadQEMUWindows(update: Boolean = false): Flow<ResultProgress<String>> = flow {
+    fun downloadQemuWindows(update: Boolean = false): Flow<ResultProgress<String>> = flow {
         logger.debug { "Installing QEMU on Windows..." }
-        downloadQEMUZIP(update, QEMU_WINDOWS_URL).collect { emit(it) }
+        downloadQemuZip(update, QEMU_WINDOWS_URL).collect { emit(it) }
     }
 
-    fun downloadQEMULinux(update: Boolean = false): Flow<ResultProgress<String>> = flow {
+    fun downloadQemuLinux(update: Boolean = false): Flow<ResultProgress<String>> = flow {
         logger.debug { "Installing QEMU on Linux..." }
-        downloadQEMUZIP(update, QEMU_LINUX_URL).collect { emit(it) }
+        downloadQemuZip(update, QEMU_LINUX_URL).collect { emit(it) }
     }
 
-    fun downloadQEMUZIP(update: Boolean, url: String): Flow<ResultProgress<String>> = flow {
+    fun downloadQemuZip(update: Boolean, url: String): Flow<ResultProgress<String>> = flow {
         if (!preferences.env("QEMU_INSTALLED").toBoolean() || update) {
             // Wipe previous installation if available
             fileManager.getFile("qemu").listFiles().forEach { it.delete() }
@@ -94,13 +94,13 @@ class Downloader(
         }
     }
 
-    fun downloadQEMU(update: Boolean = false): Flow<ResultProgress<String>> {
+    fun downloadQemu(update: Boolean = false): Flow<ResultProgress<String>> {
         logger.debug { "Downloading QEMU" }
-        return when (getOS()) {
-            OS.WINDOWS -> downloadQEMUWindows(update)
-            OS.LINUX -> downloadQEMULinux(update)
+        return when (getOs()) {
+            Os.WINDOWS -> downloadQemuWindows(update)
+            Os.LINUX -> downloadQemuLinux(update)
             null -> flow {
-                emit(ResultProgress.Companion.failure(UnsupportedOSException()))
+                emit(ResultProgress.Companion.failure(UnsupportedOsException()))
             }
         }
     }

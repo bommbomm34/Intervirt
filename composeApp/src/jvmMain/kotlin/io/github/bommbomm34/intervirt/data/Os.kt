@@ -1,15 +1,15 @@
 package io.github.bommbomm34.intervirt.data
 
-enum class OS {
+enum class Os {
     WINDOWS, LINUX
 }
 
-fun getOS(): OS? {
+fun getOs(): Os? {
     val os = System.getProperty("os.name")
     val ref = os.lowercase()
     return when {
-        ref.startsWith("windows") -> OS.WINDOWS
-        ref.startsWith("linux") -> OS.LINUX
+        ref.startsWith("windows") -> Os.WINDOWS
+        ref.startsWith("linux") -> Os.LINUX
         else -> null // OS is not supported
     }
 }
