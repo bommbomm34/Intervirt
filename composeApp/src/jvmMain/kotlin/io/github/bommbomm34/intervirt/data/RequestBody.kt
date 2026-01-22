@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class RequestBody {
-    abstract val command: String
     @Serializable
     data class AddContainer (
         val id: String,
@@ -12,65 +11,66 @@ sealed class RequestBody {
         val ipv6: String,
         val mac: String,
         val internet: Boolean,
-        val image: String,
-        override val command: String = "addContainer",
+        val image: String
     ) : RequestBody()
 
     @Serializable
-    data class IdWithNewIp (
+    data class IdWithNewIpv4 (
         val id: String,
-        val newIP: String,
-        override val command: String,
+        val newIpv4: String,
+    ) : RequestBody()
+
+    @Serializable
+    data class IdWithNewIpv6 (
+        val id: String,
+        val newIpv6: String,
     ) : RequestBody()
 
     @Serializable
     data class Connect (
         val id1: String,
-        val id2: String,
-        override val command: String,
+        val id2: String
+    ) : RequestBody()
+
+    @Serializable
+    data class Disconnect (
+        val id1: String,
+        val id2: String
     ) : RequestBody()
 
     @Serializable
     data class SetInternetAccess (
         val id: String,
-        val enabled: Boolean,
-        override val command: String = "setInternetAccess",
+        val enabled: Boolean
     ) : RequestBody()
 
     @Serializable
     data class AddPortForwarding (
         val id: String,
         val internalPort: Int,
-        val externalPort: Int,
-        override val command: String = "addPortForwarding",
+        val externalPort: Int
     ) : RequestBody()
 
     @Serializable
     data class RemovePortForwarding (
-        val externalPort: Int,
-        override val command: String = "removePortForwarding"
-    ) : RequestBody()
-
-    @Serializable
-    data class ID(
-        val id: String,
-        override val command: String,
+        val externalPort: Int
     ) : RequestBody()
 
     @Serializable
     data class Command(
-        override val command: String
+        val command: String
     ) : RequestBody()
 
     @Serializable
     data class RunCommand(
         val id: String,
-        val shellCommand: String,
-        val stateless: Boolean,
-        override val command: String = "runCommand"
+        val command: String
+    ) : RequestBody()
+
+    @Serializable
+    data class RemoveContainer (
+        val id: String
     ) : RequestBody()
 }
 
-
-fun String.idBody(command: String) = RequestBody.ID(command, this)
 fun String.commandBody() = RequestBody.Command(this)

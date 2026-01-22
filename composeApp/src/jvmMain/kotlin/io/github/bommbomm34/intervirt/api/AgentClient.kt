@@ -18,7 +18,7 @@ import java.io.File
 
 class AgentClient {
     val logger = KotlinLogging.logger {  }
-    var session: DefaultClientWebSocketSession? = null
+    lateinit var session: DefaultClientWebSocketSession
     var sessionLock = Mutex()
 
     suspend fun initConnection(): Result<Unit> {
@@ -44,7 +44,7 @@ class AgentClient {
         image: String
     ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIpv4, initialIpv6, mac, internet, image))
 
-    suspend fun removeContainer(id: String): Result<Unit> = justSend(id.idBody("removeContainer"))
+    suspend fun removeContainer(id: String): Result<Unit> = justSend(RequestBody.RemoveContainer(id))
 
     suspend fun getDisk(id: String, fileManager: FileManager): Result<File> {
         return fileManager.downloadFile(
@@ -76,15 +76,15 @@ class AgentClient {
     }
 
     suspend fun setIpv4(id: String, newIp: String): Result<Unit> =
-        justSend(RequestBody.IdWithNewIp(id, newIp, "setIPv4"))
+        justSend(RequestBody.IdWithNewIpv4(id, newIp))
 
     suspend fun setIpv6(id: String, newIp: String): Result<Unit> =
-        justSend(RequestBody.IdWithNewIp(id, newIp, "setIPv6"))
+        justSend(RequestBody.IdWithNewIpv6(id, newIp))
 
-    suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2, "connect"))
+    suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2))
 
     suspend fun disconnect(id1: String, id2: String): Result<Unit> =
-        justSend(RequestBody.Connect(id1, id2, "disconnect"))
+        justSend(RequestBody.Disconnect(id1, id2))
 
     suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> =
         justSend(RequestBody.SetInternetAccess(id, enabled))
@@ -115,8 +115,8 @@ class AgentClient {
         return Result.failure(UnknownError())
     }
 
-    fun runCommand(id: String, shellCommand: String, stateless: Boolean = true): Flow<ResultProgress<Unit>> =
-        flowSend(RequestBody.RunCommand(id, shellCommand, stateless))
+    fun runCommand(id: String, command: String): Flow<ResultProgress<Unit>> =
+        flowSend(RequestBody.RunCommand(id, command))
 
     suspend fun justSend(body: RequestBody): Result<Unit> {
         val response = send<ResponseBody>(body)
@@ -154,9 +154,9 @@ class AgentClient {
         val flow = flow<T> {
             val requestMessage = Json.encodeToString(body)
             logger.debug { "CLIENT: $requestMessage" }
-            session!!.send(Frame.Text(requestMessage))
+            session.send(Frame.Text(requestMessage))
             while (true) {
-                val responseMessage = (session!!.incoming.receive() as Frame.Text).readText()
+                val responseMessage = (session.incoming.receive() as Frame.Text).readText()
                 logger.debug { "AGENT: $responseMessage" }
                 if (responseMessage == "END") {
                     logger.debug { "AGENT END" }
@@ -166,18 +166,7 @@ class AgentClient {
         }
         sessionLock.withLock {
             logger.debug { "Checking connection with agent" }
-            if (session == null) {
-                logger.debug { "No connection available, initiating new one..." }
-                initConnection()
-                    .onSuccess {
-                        logger.debug { "Initiated connection successfully" }
-                        return Result.success(flow)
-                    }
-                    .onFailure {
-                        logger.debug { "Connection initialization failed: $it" }
-                        return Result.failure(it)
-                    }
-            } else Result.success(flow)
+            Result.success(flow)
             return Result.failure(UnknownError())
         }
     }

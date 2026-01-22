@@ -26,7 +26,7 @@ class DeviceManager(
             y = y,
             ipv4 = generateIpv4(),
             ipv6 = generateIpv6(),
-            mac = generateMAC(),
+            mac = generateMac(),
             internetEnabled = false,
             portForwardings = mutableMapOf()
         )
@@ -157,7 +157,7 @@ class DeviceManager(
         }
     }
 
-    private fun generateMAC(): String {
+    private fun generateMac(): String {
         val rand = { Random.nextInt(256).toString(16) }
         while (true) {
             val mac = "${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
