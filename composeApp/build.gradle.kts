@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.zip4j)
             implementation(libs.compose.tabler.icons)
             implementation(libs.commons.validator)
+            implementation("org.jline:jline:3.30.0")
         }
     }
 }

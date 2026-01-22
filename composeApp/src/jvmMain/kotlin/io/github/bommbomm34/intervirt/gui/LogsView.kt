@@ -29,7 +29,7 @@ fun LogsView(logs: List<String>){
         )
         GeneralSpacer()
         SelectionContainer {
-            LazyColumn() {
+            LazyColumn {
                 items(logs){
                     Text(
                         text = it,
