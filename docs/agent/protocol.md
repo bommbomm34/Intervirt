@@ -56,6 +56,7 @@ Successful message from server:
 {
     "progress": 0.9, // Percentage of progress (0.9 means 90%)
     "output": "Shutting down container..." // Progress message
+    "status": -1
 }
 ```
 
@@ -260,7 +261,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
@@ -281,7 +282,8 @@ Successful message from server:
 ```json
 {
     "progress": 0.9,
-    "output": "Removing container computer-XXXXX"
+    "output": "Removing container computer-XXXXX",
+    "status": -1
 }
 ```
 
@@ -315,7 +317,8 @@ Successful message from server:
 ```json
 {
     "progress": 0.9,
-    "output": "Updating ssh to X.X.X..."
+    "output": "Updating ssh to X.X.X...",
+    "status": -1
 }
 ```
 
@@ -487,5 +490,7 @@ If there is an error, please report it via HTTP Status Codes. The container arch
 - Every client request in WebSockets will contain the field `type`.
 - The server should listen on all interfaces on port 55436
 - Keep in mind that every request over WebSockets in JSON will contain a field named ```uuid``` which is just a random UUIDv4.
+- Send status code ```-1``` explicitly if the task is not completed.
+- If no status code is sent, the client will default to the status code ```0```.
 
 If you have questions, simply contact me and I'll answer you as soon as possible.

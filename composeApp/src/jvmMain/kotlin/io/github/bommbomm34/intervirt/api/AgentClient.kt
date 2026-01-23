@@ -6,6 +6,7 @@ import io.github.bommbomm34.intervirt.result
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.http.cio.Request
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.security.SecureRandom
+import kotlin.random.asKotlinRandom
 
 class AgentClient {
     private val logger = KotlinLogging.logger { }
@@ -159,11 +162,13 @@ class AgentClient {
             session.send(Frame.Text(requestMessage))
             while (true) {
                 val responseMessage = (session.incoming.receive() as Frame.Text).readText()
+                val data = Json.decodeFromString<T>(responseMessage)
                 logger.debug { "AGENT: $responseMessage" }
-                if (responseMessage == "END") {
+                emit(data)
+                if (!(data is ResponseBody && data.code == -1)) {
                     logger.debug { "AGENT END" }
                     break
-                } else emit(Json.decodeFromString(responseMessage))
+                }
             }
         }
         sessionLock.withLock {
