@@ -1,9 +1,12 @@
 package io.github.bommbomm34.intervirt.data
 
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 sealed class RequestBody {
+    val uuid = UUID.randomUUID().toString()
+
     @Serializable
     data class AddContainer (
         val id: String,

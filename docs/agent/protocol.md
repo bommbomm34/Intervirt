@@ -486,5 +486,6 @@ If there is an error, please report it via HTTP Status Codes. The container arch
 - Some commands in WebSockets require a stream instead a single answer (e.g. `wipe`).
 - Every client request in WebSockets will contain the field `type`.
 - The server should listen on all interfaces on port 55436
+- Keep in mind that every request over WebSockets in JSON will contain a field named ```uuid``` which is just a random UUIDv4.
 
 If you have questions, simply contact me and I'll answer you as soon as possible.
