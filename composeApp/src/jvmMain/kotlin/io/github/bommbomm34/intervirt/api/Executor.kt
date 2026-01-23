@@ -26,7 +26,7 @@ class Executor {
                 method = HttpMethod.Post,
                 host = "localhost",
                 port = 55436,
-                path = "shell?id=$id"
+                path = "pty?id=$id"
             )
             val flow = session.incoming
                 .receiveAsFlow()

@@ -14,14 +14,13 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.AddContainer",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.AddContainer",
     "id": "computer-93281", // Name of the container
     "ipv4": "192.168.0.145", // IPv4 address of the container
     "ipv6": "fd00:3452:2312:ab32:cdaa:4444:aaaa:bcda", // IPv6 address of the container
     "mac": "2a:5b:22:67:67:67", // MAC address of the container
     "internet": false, // Public internet access of the container
-    "image": "debian/13", // Image of the container
-    "type": "AddContainer" // Command of the request (this field is available in every request body).
+    "image": "debian/13" // Image of the container
 }
 ```
 
@@ -46,9 +45,8 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.RemoveContainer",
-    "id": "computer-93281", // Name of the container to remove
-    "command": "removeContainer"
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.RemoveContainer",
+    "id": "computer-93281" // Name of the container to remove
 }
 ```
 
@@ -82,10 +80,9 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.IdWithNewIpv4",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IdWithNewIpv4",
     "id": "computer-93281", // Name of the container
     "newIP": "192.168.0.133", // New IPv4 address of the container
-    "command": "setIPv4"
 }
 ```
 
@@ -110,10 +107,9 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.IdWithNewIpv6",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IdWithNewIpv6",
     "id": "computer-93281", // Name of the container
     "newIP": "fd00:3452:2312:ab32:cdaa:4444:bbbb:bcda", // New IPv6 address of the container
-    "command": "setIPv6"
 }
 ```
 
@@ -138,10 +134,9 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Connect",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Connect",
     "id1": "computer-93281", // Name of the first container to connect
     "id2": "computer-31222", // Name of the second container to connect
-    "command": "connect"
 }
 ```
 
@@ -168,10 +163,9 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Disconnect",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Disconnect",
     "id1": "computer-93281", // Name of the first container to disconnect
     "id2": "computer-31222", // Name of the second container to disconnect
-    "command": "disconnect"
 }
 ```
 
@@ -196,10 +190,9 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.SetInternetAccess",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.SetInternetAccess",
     "id": "computer-93281",
     "enabled": true, // If internet access should be enabled
-    "command": "setInternetAccess"
 }
 ```
 
@@ -224,11 +217,10 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.AddPortForwarding",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.AddPortForwarding",
     "id": "computer-93281",
     "internalPort": 80 // Port in the container to forward
     "externalPort": 8080, // External port to forward
-    "command": "addPortForwarding"
 }
 ```
 
@@ -253,9 +245,8 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.RemovePortForwarding",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.RemovePortForwarding",
     "externalPort": 8080, // External port of the port forwarding to remove
-    "command": "removePortForwarding"
 }
 ```
 
@@ -280,7 +271,7 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
     "command": "wipe"
 }
 ```
@@ -314,7 +305,7 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
     "command": "update"
 }
 ```
@@ -350,7 +341,7 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
     "command": "shutdown"
 }
 ```
@@ -377,7 +368,7 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
     "command": "reboot"
 }
 ```
@@ -404,7 +395,7 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
     "command": "version"
 }
 ```
@@ -414,7 +405,7 @@ Message from server:
 ```json
 {
     "version": "1.2.3" // Version of the Intervirt Agent
-			"canRunCommands": true // if the Agent can run commands on real containers
+    "canRunCommands": true // if the Agent can run commands on real containers
 }
 ```
 
@@ -428,7 +419,7 @@ Message from client:
 
 ```json
 {
-			"type": "io.github.bommbomm34.intervirt.data.RequestBody.RunCommand",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.RunCommand",
     "id": "computer-93281",
     "command": "whoami" // Command to run on the shell
 }
@@ -451,12 +442,16 @@ Failed message from server:
 }
 ```
 
+### PTY WebSockets
+
+This is a special WebSockets endpoint under ```ws://localhost:55436/pty?id=ID_OF_THE_CONTAINER```. It represents a PTY shell. The data format is always binary. The task of the Agent is to write received bytes to the PTY of the container of the given id. It should also send bytes read of the PTY of the container back to the client. 
+
 ### Intervirt Error Codes
 
 Intervirt has its own error codes:
 
 | Error code | Description                                                                                | Error text required |
-|------------|--------------------------------------------------------------------------------------------|---------------------|
+| ---------- | ------------------------------------------------------------------------------------------ | ------------------- |
 | 1          | There is an error available, but it's not defined by the Intervirt error codes explicitly. | yes                 |
 | 2          | There was an unsuccessful operation, but no error was given.                               | no                  |
 | 3          | The operation was already performed.                                                       | no                  |
@@ -480,8 +475,6 @@ Endpoint: `POST http://localhost:55436/file?id=ID_OF_THE_CONTAINER&path=DESTINAT
 
 The request body contains a file in binary form. The file is streamed by the client. It is sended as a multipart. Intervirt Agent should construct a file of it and copy it to the container filesystem of the container with the given id and save it to the given path.
 
-If there is an error, please report it via HTTP Status Codes. The container archive should always be a .tar.gz file.
-
 Endpoint: `GET http://localhost:55436/file?id=ID_OF_THE_CONTAINER&path=DESTINATION_PATH`
 
 Intervirt Agent should export the file of the container with the given id from the given path and return it in this request.
@@ -490,7 +483,7 @@ If there is an error, please report it via HTTP Status Codes. The container arch
 
 ### Tips
 
-- Some commands in WebSockets require a stream instead a single answer (e.g. `runCommand`).
+- Some commands in WebSockets require a stream instead a single answer (e.g. `wipe`).
 - Every client request in WebSockets will contain the field `type`.
 - The server should listen on all interfaces on port 55436
 
