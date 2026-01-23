@@ -26,7 +26,8 @@ data class ResponseBody(
 
 @Serializable
 data class VersionResponseBody(
-    val version: String
+    val version: String,
+    val canRunCommands: Boolean
 )
 
 //    data class ContainerInfo (

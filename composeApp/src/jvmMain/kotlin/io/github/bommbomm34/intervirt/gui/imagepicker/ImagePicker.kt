@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.data.Image
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import org.koin.compose.koinInject

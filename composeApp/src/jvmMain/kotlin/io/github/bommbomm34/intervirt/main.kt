@@ -28,7 +28,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.slf4j.simple.SimpleLogger
 import java.util.*
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import org.koin.compose.koinInject
 
 fun main() = application {

@@ -9,7 +9,7 @@ import intervirt.composeapp.generated.resources.dark_mode
 import intervirt.composeapp.generated.resources.intervirt_folder
 import intervirt.composeapp.generated.resources.vm_shutdown_timeout
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.FilePicker
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer

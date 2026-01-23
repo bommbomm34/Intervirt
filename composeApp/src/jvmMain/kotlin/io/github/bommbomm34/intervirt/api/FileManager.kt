@@ -5,7 +5,7 @@ import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Os
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.getOs
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
@@ -31,11 +31,11 @@ import java.io.File
 import java.nio.file.Files
 
 class FileManager(
-    val agentClient: AgentClient,
-    val preferences: Preferences
+    private val agentClient: AgentClient,
+    private val preferences: Preferences
 ) {
-    val logger = KotlinLogging.logger {  }
-    val dataDir = preferences.DATA_DIR
+    private val logger = KotlinLogging.logger {  }
+    private val dataDir = preferences.DATA_DIR
 
     fun init() {
         dataDir.mkdir()

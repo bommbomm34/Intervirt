@@ -2,19 +2,19 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import kotlin.random.Random
 
 class DeviceManager(
-    val agentClient: AgentClient,
-    val preferences: Preferences,
-    val fileManager: FileManager
+    private val agentClient: AgentClient,
+    private val preferences: Preferences,
+    private val fileManager: FileManager
 ) {
-    val logger = KotlinLogging.logger { }
-    val enableAgent = preferences.ENABLE_AGENT
+    private val logger = KotlinLogging.logger { }
+    private val enableAgent = preferences.ENABLE_AGENT
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")

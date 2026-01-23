@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.debian
 import io.github.bommbomm34.intervirt.data.Image
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import org.jetbrains.compose.resources.Resource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource

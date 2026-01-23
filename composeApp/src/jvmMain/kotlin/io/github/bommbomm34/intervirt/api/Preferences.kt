@@ -1,6 +1,5 @@
-package io.github.bommbomm34.intervirt.data
+package io.github.bommbomm34.intervirt.api
 
-import androidx.compose.runtime.toLong
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -13,9 +12,9 @@ import kotlin.io.path.exists
 
 @Suppress("PropertyName")
 class Preferences {
-    val logger = KotlinLogging.logger {  }
-    val data = mutableMapOf<String, String>()
-    val dataFile: Path = File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
+    private val logger = KotlinLogging.logger {  }
+    private val data = mutableMapOf<String, String>()
+    private val dataFile: Path = File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
 
     val DEBUG_ENABLED = env("DEBUG_ENABLED").toBoolean()
     val SSH_TIMEOUT = env("SSH_TIMEOUT")?.toLong() ?: 30000L
@@ -48,12 +47,12 @@ class Preferences {
 
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
 
-    private fun flush() = Files.writeString(dataFile, Json.encodeToString(data))
+    private fun flush() = Files.writeString(dataFile, Json.Default.encodeToString(data))
 
     private fun load() {
         if (dataFile.exists()){
             data.clear()
-            data.putAll(Json.decodeFromString(Files.readString(dataFile)))
+            data.putAll(Json.Default.decodeFromString(Files.readString(dataFile)))
         }
     }
 

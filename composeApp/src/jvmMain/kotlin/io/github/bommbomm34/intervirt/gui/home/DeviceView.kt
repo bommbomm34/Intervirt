@@ -24,7 +24,7 @@ import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer

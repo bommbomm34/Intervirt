@@ -17,18 +17,20 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 class AgentClient {
-    val logger = KotlinLogging.logger {  }
-    lateinit var session: DefaultClientWebSocketSession
-    var sessionLock = Mutex()
+    private val logger = KotlinLogging.logger { }
+    private lateinit var session: DefaultClientWebSocketSession
+    private var sessionLock = Mutex()
 
     suspend fun initConnection(): Result<Unit> {
         try {
-            session = client.webSocketSession(
-                method = HttpMethod.Get,
-                host = "localhost",
-                port = 55436,
-                path = "containerManagement"
-            )
+            if (!this::session.isInitialized) {
+                session = client.webSocketSession(
+                    method = HttpMethod.Get,
+                    host = "localhost",
+                    port = 55436,
+                    path = "containerManagement"
+                )
+            }
             return Result.success(Unit)
         } catch (e: Exception) {
             return Result.failure(e)
@@ -75,11 +77,11 @@ class AgentClient {
         )
     }
 
-    suspend fun setIpv4(id: String, newIp: String): Result<Unit> =
-        justSend(RequestBody.IdWithNewIpv4(id, newIp))
+    suspend fun setIpv4(id: String, newIP: String): Result<Unit> =
+        justSend(RequestBody.IdWithNewIpv4(id, newIP))
 
-    suspend fun setIpv6(id: String, newIp: String): Result<Unit> =
-        justSend(RequestBody.IdWithNewIpv6(id, newIp))
+    suspend fun setIpv6(id: String, newIP: String): Result<Unit> =
+        justSend(RequestBody.IdWithNewIpv6(id, newIP))
 
     suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2))
 
@@ -118,7 +120,7 @@ class AgentClient {
     fun runCommand(id: String, command: String): Flow<ResultProgress<Unit>> =
         flowSend(RequestBody.RunCommand(id, command))
 
-    suspend fun justSend(body: RequestBody): Result<Unit> {
+    private suspend fun justSend(body: RequestBody): Result<Unit> {
         val response = send<ResponseBody>(body)
         response
             .onSuccess {
@@ -130,7 +132,7 @@ class AgentClient {
         return Result.failure(UnknownError())
     }
 
-    fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
+    private fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
         var failed = false
         send<ResponseBody>(body)
             .onSuccess { flow ->
@@ -150,7 +152,7 @@ class AgentClient {
         if (!failed) emit(ResultProgress.success(Unit))
     }
 
-    suspend inline fun <reified T> send(body: RequestBody): Result<Flow<T>> {
+    private suspend inline fun <reified T> send(body: RequestBody): Result<Flow<T>> {
         val flow = flow<T> {
             val requestMessage = Json.encodeToString(body)
             logger.debug { "CLIENT: $requestMessage" }
@@ -166,8 +168,10 @@ class AgentClient {
         }
         sessionLock.withLock {
             logger.debug { "Checking connection with agent" }
-            Result.success(flow)
-            return Result.failure(UnknownError())
+            initConnection().fold(
+                onSuccess = { return Result.success(flow) },
+                onFailure = { return Result.failure(it) }
+            )
         }
     }
 }

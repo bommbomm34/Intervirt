@@ -10,7 +10,7 @@ import compose.icons.tablericons.*
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
 import io.github.vinceglb.filekit.PlatformFile

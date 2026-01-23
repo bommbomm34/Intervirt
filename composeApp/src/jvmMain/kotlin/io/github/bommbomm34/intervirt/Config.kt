@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Downloader
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.FileManager
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration

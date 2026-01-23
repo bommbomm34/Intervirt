@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import java.io.BufferedReader
@@ -10,13 +10,13 @@ import java.net.Socket
 import java.util.concurrent.TimeUnit
 
 class QemuClient(
-    val fileManager: FileManager,
-    val agentClient: AgentClient,
-    val preferences: Preferences
+    private val fileManager: FileManager,
+    private val agentClient: AgentClient,
+    private val preferences: Preferences
 ) {
-    val logger = KotlinLogging.logger {  }
-    var currentProcess: Process? = null
-    val startAlpineVmCommands = listOf(
+    private val logger = KotlinLogging.logger {  }
+    private var currentProcess: Process? = null
+    private val startAlpineVmCommands = listOf(
         fileManager.getQemuFile().absolutePath,
         if (preferences.VM_ENABLE_KVM) "-enable-kvm" else "",
         "-smp", preferences.VM_CPU.toString(),
@@ -74,12 +74,13 @@ class QemuClient(
     }
 
     fun isRunning() = currentProcess != null
-}
 
-fun testAgentPort(agentPort: Int): Boolean {
-    try {
-        Socket("127.0.0.1", agentPort).use { return true }
-    } catch (_: ConnectException) {
-        return false
+    private fun testAgentPort(agentPort: Int): Boolean {
+        try {
+            Socket("127.0.0.1", agentPort).use { return true }
+        } catch (_: ConnectException) {
+            return false
+        }
     }
 }
+

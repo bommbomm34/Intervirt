@@ -10,7 +10,7 @@ import intervirt.composeapp.generated.resources.save_changes
 import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.currentScreenIndex
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox

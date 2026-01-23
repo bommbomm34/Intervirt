@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.File
 
 class Executor {
-    val logger = KotlinLogging.logger { }
-    val sessions = mutableListOf<RemoteContainerSession>()
+    private val logger = KotlinLogging.logger { }
+    private val sessions = mutableListOf<RemoteContainerSession>()
 
     suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
         sessions.firstOrNull { it.id == id }?.let { return Result.success(it) }

@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.data.Preferences
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
