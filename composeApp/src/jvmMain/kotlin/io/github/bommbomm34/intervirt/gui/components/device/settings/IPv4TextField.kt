@@ -15,6 +15,7 @@ import intervirt.composeapp.generated.resources.ipv4_address
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.validator.routines.InetAddressValidator
 import org.jetbrains.compose.resources.stringResource
@@ -23,22 +24,22 @@ import java.io.File
 
 @Composable
 fun Ipv4TextField(device: ViewDevice.Computer){
-    var validipv4 by remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
+    var validIpv4 by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
     OutlinedTextField(
         value = device.ipv4,
         onValueChange = {
             scope.launch {
-                validipv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
-                if (validipv4) {
+                validIpv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
+                if (validIpv4) {
                     device.ipv4 = it
                     deviceManager.setIpv4(device.device, it)
                 }
             }
         },
         label = {
-            if (validipv4){
+            if (validIpv4){
                 Text(stringResource(Res.string.ipv4_address))
             } else {
                 Text(

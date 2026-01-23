@@ -19,6 +19,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import io.github.vinceglb.filekit.readString
 import io.github.vinceglb.filekit.writeString
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
@@ -32,7 +33,7 @@ fun OptionDropdown(
     onDismiss: () -> Unit
 ) {
     val preferences = koinInject<Preferences>()
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val writeConf: (PlatformFile) -> Unit = { file ->
         scope.launch {
             file.writeString(Json.encodeToString(configuration))

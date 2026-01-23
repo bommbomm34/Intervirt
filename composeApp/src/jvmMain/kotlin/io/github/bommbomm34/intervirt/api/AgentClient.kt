@@ -156,7 +156,7 @@ class AgentClient {
     }
 
     private suspend inline fun <reified T> send(body: RequestBody): Result<Flow<T>> {
-        val flow = flow<T> {
+        val flow = flow {
             val requestMessage = Json.encodeToString(body)
             logger.debug { "CLIENT: $requestMessage" }
             session.send(Frame.Text(requestMessage))

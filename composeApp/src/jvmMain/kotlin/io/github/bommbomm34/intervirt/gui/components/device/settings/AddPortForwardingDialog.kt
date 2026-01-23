@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.IntegerTextField
 import io.github.bommbomm34.intervirt.isValidPort
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -32,7 +33,7 @@ fun AddPortForwardingDialog(
         var internalPort by remember { mutableStateOf(1) }
         var externalPort by remember { mutableStateOf(1) }
         var result by remember { mutableStateOf(Result.success(Unit)) }
-        val scope = rememberCoroutineScope()
+        val scope = rememberCoroutineScope { Dispatchers.IO }
         val deviceManager = koinInject<DeviceManager>()
         Row(verticalAlignment = Alignment.CenterVertically) {
             IntegerTextField(

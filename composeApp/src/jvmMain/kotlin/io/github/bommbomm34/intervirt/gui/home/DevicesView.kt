@@ -35,6 +35,7 @@ import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddDeviceButton
 import io.github.bommbomm34.intervirt.gui.components.device.settings.DeviceSettings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -48,7 +49,7 @@ var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
 fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
     var deviceSettingsVisible by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
     val preferences = koinInject<Preferences>()
     AlignedBox(Alignment.Center) {

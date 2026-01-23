@@ -14,13 +14,14 @@ import intervirt.composeapp.generated.resources.booting
 import intervirt.composeapp.generated.resources.shutdown
 import intervirt.composeapp.generated.resources.shutting_down
 import io.github.bommbomm34.intervirt.api.QemuClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
 fun ShutdownButton(){
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val bootText = stringResource(Res.string.boot)
     val shutdownText = stringResource(Res.string.shutdown)
     val shuttingDownText = stringResource(Res.string.shutting_down)

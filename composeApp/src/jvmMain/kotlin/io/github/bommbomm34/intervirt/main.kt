@@ -29,6 +29,7 @@ import org.koin.dsl.module
 import org.slf4j.simple.SimpleLogger
 import java.util.*
 import io.github.bommbomm34.intervirt.api.Preferences
+import kotlinx.coroutines.Dispatchers
 import org.koin.compose.koinInject
 
 fun main() = application {
@@ -42,7 +43,7 @@ fun main() = application {
         FileKit.init("intervirt")
         Locale.setDefault(preferences.LANGUAGE)
         density = LocalDensity.current
-        val scope = rememberCoroutineScope()
+        val scope = rememberCoroutineScope { Dispatchers.IO }
         // Main Window
         Window(
             onCloseRequest = {

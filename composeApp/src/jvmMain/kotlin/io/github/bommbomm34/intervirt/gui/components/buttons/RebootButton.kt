@@ -15,6 +15,7 @@ import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.openDialog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -23,7 +24,7 @@ import org.koin.compose.koinInject
 fun RebootButton(){
     val agentClient = koinInject<AgentClient>()
     val qemuClient = koinInject<QemuClient>()
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)
     var rebootButtonText by remember { mutableStateOf(rebootText) }

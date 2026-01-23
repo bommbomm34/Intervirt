@@ -19,6 +19,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.imagepicker.ImagePicker
 import io.github.bommbomm34.intervirt.openDialog
 import io.github.bommbomm34.intervirt.statefulConf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -28,7 +29,7 @@ import kotlin.random.Random
 @Composable
 fun AddDeviceButton() {
     var dropdownExpanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val osIsNeededText = stringResource(Res.string.os_is_needed)
     val deviceManager = koinInject<DeviceManager>()
     Column {
@@ -85,13 +86,11 @@ fun AddDeviceButton() {
                 onClick = {
                     dropdownExpanded = false
                     // Add switch
-                    scope.launch {
-                        val device = deviceManager.addSwitch(
-                            x = Random.nextInt(300, 600),
-                            y = Random.nextInt(300, 600)
-                        )
-                        statefulConf.devices.add(device.toViewDevice())
-                    }
+                    val device = deviceManager.addSwitch(
+                        x = Random.nextInt(300, 600),
+                        y = Random.nextInt(300, 600)
+                    )
+                    statefulConf.devices.add(device.toViewDevice())
                 }
             ) {
                 Icon(

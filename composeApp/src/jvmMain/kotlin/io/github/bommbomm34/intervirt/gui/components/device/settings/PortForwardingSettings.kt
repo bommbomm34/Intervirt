@@ -15,12 +15,13 @@ import io.github.bommbomm34.intervirt.dialogState
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.openDialog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
 fun PortForwardingSettings(device: ViewDevice.Computer) {
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
     Column {
         AddButton {

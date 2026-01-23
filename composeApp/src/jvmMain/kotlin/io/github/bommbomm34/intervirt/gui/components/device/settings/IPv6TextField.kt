@@ -14,6 +14,7 @@ import intervirt.composeapp.generated.resources.invalid_ipv6_address
 import intervirt.composeapp.generated.resources.ipv6_address
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.validator.routines.InetAddressValidator
 import org.jetbrains.compose.resources.stringResource
@@ -22,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 fun Ipv6TextField(device: ViewDevice.Computer){
     var validIpv6 by remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
     OutlinedTextField(
         value = device.ipv6,
