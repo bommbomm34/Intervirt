@@ -9,10 +9,12 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.*
+import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
@@ -32,7 +34,9 @@ fun OptionDropdown(
     expanded: Boolean,
     onDismiss: () -> Unit
 ) {
+    val logger = KotlinLogging.logger {  }
     val preferences = koinInject<Preferences>()
+    val agentClient = koinInject<AgentClient>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val writeConf: (PlatformFile) -> Unit = { file ->
         scope.launch {
@@ -50,7 +54,11 @@ fun OptionDropdown(
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
-//                configuration.syncConfiguration().collect()
+                if (preferences.ENABLE_AGENT) {
+                    configuration.syncConfiguration(agentClient).collect {
+                        logger.info { it }
+                    }
+                }
                 statefulConf.update(ViewConfiguration(newConfiguration))
             }
         }

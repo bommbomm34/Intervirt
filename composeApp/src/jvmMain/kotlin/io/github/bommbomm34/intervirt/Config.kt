@@ -22,6 +22,7 @@ import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*

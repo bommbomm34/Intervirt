@@ -10,27 +10,21 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import io.github.bommbomm34.intervirt.api.AgentClient
-import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.Downloader
-import io.github.bommbomm34.intervirt.api.Executor
-import io.github.bommbomm34.intervirt.api.FileManager
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
+import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.vinceglb.filekit.FileKit
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import org.koin.compose.koinInject
 import org.slf4j.simple.SimpleLogger
 import java.util.*
-import io.github.bommbomm34.intervirt.api.Preferences
-import kotlinx.coroutines.Dispatchers
-import org.koin.compose.koinInject
 
 fun main() = application {
     KoinApplication(application = {
@@ -55,9 +49,14 @@ fun main() = application {
             onKeyEvent = {
                 isCtrlPressed = it.isCtrlPressed
                 if (it.key == Key.Escape) {
-                    drawingConnectionSource = null
-                }
-                false
+                    if (drawingConnectionSource != null) {
+                        drawingConnectionSource = null
+                        true
+                    } else if (deviceSettingsVisible) {
+                        deviceSettingsVisible = false
+                        true
+                    } else false
+                } else false
             },
             state = windowState,
             title = "Intervirt",

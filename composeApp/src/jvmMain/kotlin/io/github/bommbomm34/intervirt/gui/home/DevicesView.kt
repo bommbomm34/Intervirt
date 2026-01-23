@@ -43,12 +43,12 @@ import org.koin.compose.koinInject
 import kotlin.math.sqrt
 
 var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
+var deviceSettingsVisible by mutableStateOf(false)
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
-    var deviceSettingsVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
     val preferences = koinInject<Preferences>()
@@ -60,11 +60,8 @@ fun DevicesView() {
                     val delta = it.changes.first().scrollDelta.y * -preferences.ZOOM_SPEED
                     if (isCtrlPressed && devicesViewZoom + delta > 0.1f) devicesViewZoom += delta
                 }
-                .onClick(
-                    matcher = PointerMatcher.Secondary
-                ) {
-                    drawingConnectionSource = null
-                }
+                .onClick(matcher = PointerMatcher.Primary) { drawingConnectionSource = null }
+                .onClick(matcher = PointerMatcher.Secondary) { drawingConnectionSource = null }
                 .onPointerEvent(PointerEventType.Press) { event ->
                     if (event.button?.equals(PointerButton.Secondary) ?: false && drawingConnectionSource == null) {
                         val position = event.changes.first().position
