@@ -53,8 +53,8 @@ class DeviceManager(
 
     suspend fun removeDevice(device: Device): Result<Unit> {
         logger.debug { "Removing device $device" }
-        configuration.devices.remove(device)
         configuration.connections.removeIf { it.containsDevice(device) }
+        configuration.devices.remove(device)
         return if (device is Device.Computer && enableAgent) {
             val res = agentClient.removeContainer(device.id)
             res.check(Unit)

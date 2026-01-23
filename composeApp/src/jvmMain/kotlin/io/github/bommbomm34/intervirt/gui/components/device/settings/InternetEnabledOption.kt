@@ -20,7 +20,7 @@ fun InternetEnabledOption(device: ViewDevice.Computer){
         onCheckedChange = {
             scope.launch {
                 device.internetEnabled = it
-                deviceManager.setInternetEnabled(device.toDevice(), it)
+                deviceManager.setInternetEnabled(device.device, it)
             }
         },
         name = stringResource(Res.string.internet_access)

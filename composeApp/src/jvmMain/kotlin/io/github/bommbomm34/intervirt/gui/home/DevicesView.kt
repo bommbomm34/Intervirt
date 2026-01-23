@@ -86,8 +86,8 @@ fun DevicesView() {
                                     statefulConf.connections.remove(it)
                                     scope.launch {
                                         deviceManager.disconnectDevice(
-                                            it.device1.toDevice(),
-                                            it.device2.toDevice()
+                                            it.device1.device,
+                                            it.device2.device
                                         )
                                     }
                                 }
@@ -138,7 +138,7 @@ fun DevicesView() {
                         scope.launch {
                             if (copy.canConnect() && it.canConnect()) {
                                 statefulConf.connections.add(copy connect it)
-                                deviceManager.connectDevice(copy.toDevice(), it.toDevice())
+                                deviceManager.connectDevice(copy.device, it.device)
                             } else openDialog(
                                 importance = Importance.WARNING,
                                 message = getString(Res.string.too_many_devices_connected)

@@ -33,7 +33,7 @@ fun Ipv4TextField(device: ViewDevice.Computer){
                 validipv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
                 if (validipv4) {
                     device.ipv4 = it
-                    deviceManager.setIpv4(device.toDevice(), it)
+                    deviceManager.setIpv4(device.device, it)
                 }
             }
         },

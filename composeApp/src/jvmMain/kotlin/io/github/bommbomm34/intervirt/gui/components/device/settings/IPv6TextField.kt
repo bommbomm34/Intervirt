@@ -31,7 +31,7 @@ fun Ipv6TextField(device: ViewDevice.Computer){
                 validIpv6 = InetAddressValidator.getInstance().isValidInet6Address(it)
                 if (validIpv6) {
                     device.ipv6 = it
-                    deviceManager.setIpv6(device.toDevice(), it)
+                    deviceManager.setIpv6(device.device, it)
                 }
             }
         },

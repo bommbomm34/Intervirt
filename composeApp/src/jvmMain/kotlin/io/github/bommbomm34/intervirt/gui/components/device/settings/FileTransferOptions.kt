@@ -39,7 +39,7 @@ fun FileTransferOptions(device: ViewDevice.Computer){
             scope.launch {
                 // containerFilePath must be valid if this launcher is called
                 fileManager.pullFile(
-                    device = device.toDevice(),
+                    device = device.device,
                     path = containerFilePath,
                     destFile = it
                 )
@@ -53,7 +53,7 @@ fun FileTransferOptions(device: ViewDevice.Computer){
                     path?.let { _ ->
                         scope.launch {
                             fileManager.pushFile(
-                                device = device.toDevice(),
+                                device = device.device,
                                 path = path,
                                 platformFile = file
                             ).collect {

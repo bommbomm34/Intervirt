@@ -15,13 +15,13 @@ sealed class RequestBody {
     ) : RequestBody()
 
     @Serializable
-    data class IdWithNewIpv4 (
+    data class IDWithNewIpv4 (
         val id: String,
         val newIpv4: String,
     ) : RequestBody()
 
     @Serializable
-    data class IdWithNewIpv6 (
+    data class IDWithNewIpv6 (
         val id: String,
         val newIpv6: String,
     ) : RequestBody()

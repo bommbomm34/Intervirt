@@ -26,7 +26,7 @@ class Preferences {
     val DATA_DIR = File(env("DATA_DIR") ?: (System.getProperty("user.home") + File.separator + "Intervirt"))
     val DARK_MODE = env("DARK_MODE")?.toBoolean()
     val TOOLTIP_FONT_SIZE = 12.sp
-    val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 5f
+    val CONNECTION_STROKE_WIDTH = env("CONNECTION_STROKE_WIDTH")?.toFloat() ?: 10f
     val DEVICE_CONNECTION_COLOR = env("DEVICE_CONNECTION_COLOR")?.toLong(16) ?: 0xFF9CCC65
     val ZOOM_SPEED = env("ZOOM_SPEED")?.toFloat() ?: 0.1f
     val DEVICE_SIZE = env("DEVICE_SIZE")?.toInt()?.dp ?: 100.dp

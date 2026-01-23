@@ -78,7 +78,7 @@ fun AddPortForwardingDialog(
                 onClick = {
                     scope.launch {
                         device.portForwardings[internalPort] = externalPort
-                        deviceManager.addPortForwarding(device.toDevice(), internalPort, externalPort)
+                        deviceManager.addPortForwarding(device.device, internalPort, externalPort)
                         onCancel()
                     }
                 },

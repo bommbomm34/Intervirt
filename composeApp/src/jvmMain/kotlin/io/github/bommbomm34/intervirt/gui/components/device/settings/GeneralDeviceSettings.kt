@@ -13,6 +13,7 @@ import intervirt.composeapp.generated.resources.delete
 import intervirt.composeapp.generated.resources.name
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.data.toDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.openDialog
@@ -39,7 +40,7 @@ fun GeneralDeviceSettings(
         value = device.name,
         onValueChange = { newName ->
             device.name = newName
-            deviceManager.setName(device.toDevice(), newName)
+            deviceManager.setName(device.device, newName)
         },
         label = { Text(stringResource(Res.string.name)) }
     )
@@ -53,7 +54,8 @@ fun GeneralDeviceSettings(
                     scope.launch {
                         onClose()
                         statefulConf.devices.remove(device)
-                        deviceManager.removeDevice(device.toDevice())
+                        statefulConf.connections.removeIf { it.containsDevice(device) }
+                        deviceManager.removeDevice(device.device)
                     }
                 }
             }

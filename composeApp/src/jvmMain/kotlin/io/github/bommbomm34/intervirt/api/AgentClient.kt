@@ -78,10 +78,10 @@ class AgentClient {
     }
 
     suspend fun setIpv4(id: String, newIP: String): Result<Unit> =
-        justSend(RequestBody.IdWithNewIpv4(id, newIP))
+        justSend(RequestBody.IDWithNewIpv4(id, newIP))
 
     suspend fun setIpv6(id: String, newIP: String): Result<Unit> =
-        justSend(RequestBody.IdWithNewIpv6(id, newIP))
+        justSend(RequestBody.IDWithNewIpv6(id, newIP))
 
     suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2))
 

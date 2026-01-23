@@ -80,7 +80,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IdWithNewIpv4",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IDWithNewIpv4",
     "id": "computer-93281", // Name of the container
     "newIP": "192.168.0.133", // New IPv4 address of the container
 }
@@ -107,7 +107,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IdWithNewIpv6",
+    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IDWithNewIpv6",
     "id": "computer-93281", // Name of the container
     "newIP": "fd00:3452:2312:ab32:cdaa:4444:bbbb:bcda", // New IPv6 address of the container
 }

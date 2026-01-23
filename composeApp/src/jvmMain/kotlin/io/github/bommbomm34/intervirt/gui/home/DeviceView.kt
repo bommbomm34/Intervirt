@@ -25,6 +25,7 @@ import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -64,6 +65,8 @@ fun DeviceView(
                     offset = newOffset
                     device.x += it.x.toInt()
                     device.y += it.y.toInt()
+                    device.device.x += it.x.toInt()
+                    device.device.y += it.y.toInt()
                 }
             }
             .onClick(
