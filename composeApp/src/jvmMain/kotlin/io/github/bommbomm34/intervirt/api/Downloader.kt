@@ -9,10 +9,9 @@ import io.github.bommbomm34.intervirt.ALPINE_DISK_URL
 import io.github.bommbomm34.intervirt.QEMU_LINUX_URL
 import io.github.bommbomm34.intervirt.QEMU_WINDOWS_URL
 import io.github.bommbomm34.intervirt.SUPPORTED_ARCHITECTURES
-import io.github.bommbomm34.intervirt.data.Os
-import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.OS
 import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.getOs
+import io.github.bommbomm34.intervirt.data.getOS
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureException
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
@@ -32,9 +31,9 @@ class Downloader(
 
     fun downloadQemu(update: Boolean = false): Flow<ResultProgress<String>> {
         logger.debug { "Downloading QEMU" }
-        return when (getOs()) {
-            Os.WINDOWS -> downloadQemuWindows(update)
-            Os.LINUX -> downloadQemuLinux(update)
+        return when (getOS()) {
+            OS.WINDOWS -> downloadQemuWindows(update)
+            OS.LINUX -> downloadQemuLinux(update)
             null -> flow {
                 emit(ResultProgress.Companion.failure(UnsupportedOsException()))
             }
