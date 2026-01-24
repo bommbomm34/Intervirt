@@ -12,13 +12,11 @@ import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.closeDialog
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.toViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.imagepicker.ImagePicker
-import io.github.bommbomm34.intervirt.openDialog
-import io.github.bommbomm34.intervirt.statefulConf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -28,6 +26,7 @@ import kotlin.random.Random
 
 @Composable
 fun AddDeviceButton() {
+    val appState = koinInject<AppState>()
     var dropdownExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val osIsNeededText = stringResource(Res.string.os_is_needed)
@@ -41,10 +40,10 @@ fun AddDeviceButton() {
                 onClick = {
                     dropdownExpanded = false
                     // Add computer
-                    openDialog {
+                    appState.openDialog {
                         ImagePicker(
                             onDismiss = {
-                                openDialog(
+                                appState.openDialog(
                                     message = osIsNeededText,
                                     importance = Importance.ERROR
                                 )
@@ -57,11 +56,11 @@ fun AddDeviceButton() {
                                         image = image.fullName
                                     )
                                         .onSuccess {
-                                            statefulConf.devices.add(it.toViewDevice())
-                                            closeDialog()
+                                            appState.statefulConf.devices.add(it.toViewDevice())
+                                            appState.closeDialog()
                                         }
                                         .onFailure {
-                                            openDialog(
+                                            appState.openDialog(
                                                 importance = Importance.ERROR,
                                                 message = getString(
                                                     Res.string.error_during_device_creation,
@@ -90,7 +89,7 @@ fun AddDeviceButton() {
                         x = Random.nextInt(300, 600),
                         y = Random.nextInt(300, 600)
                     )
-                    statefulConf.devices.add(device.toViewDevice())
+                    appState.statefulConf.devices.add(device.toViewDevice())
                 }
             ) {
                 Icon(

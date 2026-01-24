@@ -10,11 +10,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.DialogState
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import io.github.bommbomm34.intervirt.dialogState
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.openDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -23,12 +22,13 @@ import org.koin.compose.koinInject
 fun PortForwardingSettings(device: ViewDevice.Computer) {
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
+    val appState = koinInject<AppState>()
     Column {
         AddButton {
-            openDialog {
+            appState.openDialog {
                 AddPortForwardingDialog(
                     device
-                ) { dialogState = (dialogState as DialogState.Custom).copy(visible = false) }
+                ) { appState.dialogState = (appState.dialogState as DialogState.Custom).copy(visible = false) }
             }
         }
         LazyColumn {

@@ -22,12 +22,14 @@ import intervirt.composeapp.generated.resources.info
 import intervirt.composeapp.generated.resources.warning
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.dialogState
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun Dialog() {
-    AnimatedVisibility(dialogState.visible) {
+    val appState = koinInject<AppState>()
+    AnimatedVisibility(appState.dialogState.visible) {
         Overlay {
             AlignedBox(Alignment.Center) {
                 Surface(
@@ -35,11 +37,11 @@ fun Dialog() {
                     color = MaterialTheme.colors.background.copy(blue = 0.05f)
                 ) {
                     Box(Modifier.padding(16.dp)){
-                        when (dialogState) {
-                            is DialogState.Custom -> (dialogState as DialogState.Custom).customContent()
+                        when (appState.dialogState) {
+                            is DialogState.Custom -> (appState.dialogState as DialogState.Custom).customContent()
                             is DialogState.Regular -> {
                                 CenterColumn (Modifier.padding(16.dp)) {
-                                    val state = dialogState as DialogState.Regular
+                                    val state = appState.dialogState as DialogState.Regular
                                     Text(
                                         text = when (state.importance) {
                                             Importance.INFO -> stringResource(Res.string.info)
@@ -56,7 +58,7 @@ fun Dialog() {
                                     Text(state.message)
                                     GeneralSpacer()
                                     Button(
-                                        onClick = { dialogState = state.copy(visible = false) }
+                                        onClick = { appState.dialogState = state.copy(visible = false) }
                                     ) {
                                         Text("OK")
                                     }

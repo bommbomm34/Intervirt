@@ -11,14 +11,12 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.isDarkMode
-import io.github.bommbomm34.intervirt.mousePosition
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalComposeUiApi::class)

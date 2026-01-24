@@ -15,10 +15,8 @@ import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.FlowProgressView
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.logs
 import io.github.bommbomm34.intervirt.api.Downloader
-import io.github.bommbomm34.intervirt.currentScreenIndex
-import io.github.bommbomm34.intervirt.showLogs
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +34,7 @@ fun Installation(
     val downloader = koinInject<Downloader>()
     val preferences = koinInject<Preferences>()
     val fileManager = koinInject<FileManager>()
+    val appState = koinInject<AppState>()
     var allowInstallation by remember { mutableStateOf(false) }
     var flow: Flow<ResultProgress<String>>? by remember { mutableStateOf(null) }
     var job: Job? by remember { mutableStateOf(null) }
@@ -81,7 +80,7 @@ fun Installation(
                             if (it.result?.isFailure ?: false) job!!.cancel()
                         }
                         preferences.saveString("INTERVIRT_INSTALLED", "true")
-                        currentScreenIndex = 1
+                        appState.currentScreenIndex = 1
                     }
                 }
             },
@@ -104,13 +103,13 @@ fun Installation(
                 onJobChange = { job = it }
             ) { resultProgress ->
                 logger.debug { "SETUP: $resultProgress" }
-                logs.add(resultProgress.log())
+                appState.logs.add(resultProgress.log())
             }
         }
         GeneralSpacer(8.dp)
         NamedCheckbox(
-            checked = showLogs,
-            onCheckedChange = { showLogs = it },
+            checked = appState.showLogs,
+            onCheckedChange = { appState.showLogs = it },
             name = stringResource(Res.string.show_logs),
         )
     }

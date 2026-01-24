@@ -4,11 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.bommbomm34.intervirt.configuration
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.DeviceConnection
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.statefulConf
 
 // Stateful IntervirtConfiguration for the UI
 data class ViewConfiguration(
@@ -26,6 +23,8 @@ data class ViewConfiguration(
         connections.clear()
         connections.addAll(configuration.connections)
     }
+
+    fun exists(device: ViewDevice) = devices.any { it.id == device.id }
 
     private fun DeviceConnection.toViewConnection(): ViewConnection {
         val viewDevice1 = devices.first { it.id == device1.id }

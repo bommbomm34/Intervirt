@@ -12,6 +12,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
@@ -32,7 +33,8 @@ fun main() = application {
     }) {
         val preferences = koinInject<Preferences>()
         val qemuClient = koinInject<QemuClient>()
-        if (preferences.checkSetupStatus()) currentScreenIndex = 1
+        val appState = koinInject<AppState>()
+        if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG")
         FileKit.init("intervirt")
         Locale.setDefault(preferences.LANGUAGE)
@@ -47,7 +49,7 @@ fun main() = application {
                 }
             },
             onKeyEvent = {
-                isCtrlPressed = it.isCtrlPressed
+                appState.isCtrlPressed = it.isCtrlPressed
                 if (it.key == Key.Escape) {
                     if (drawingConnectionSource != null) {
                         drawingConnectionSource = null
@@ -58,23 +60,23 @@ fun main() = application {
                     } else false
                 } else false
             },
-            state = windowState,
+            state = appState.windowState,
             title = "Intervirt",
         ) {
-            DefaultWindowScope(onPointerEvent = { mousePosition = it.changes.first().position }) {
+            DefaultWindowScope(onPointerEvent = { appState.mousePosition = it.changes.first().position }) {
                 App()
                 Dialog()
             }
         }
         // Logs Window
         Window(
-            onCloseRequest = { showLogs = false },
-            visible = showLogs,
+            onCloseRequest = { appState.showLogs = false },
+            visible = appState.showLogs,
             title = "Intervirt Logs",
             state = rememberWindowState(position = WindowPosition.Aligned(Alignment.CenterEnd))
         ) {
             DefaultWindowScope {
-                LogsView(logs)
+                LogsView(appState.logs)
             }
         }
     }

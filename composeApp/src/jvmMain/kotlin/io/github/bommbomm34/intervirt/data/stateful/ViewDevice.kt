@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.data.stateful
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,11 +9,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
-import intervirt.composeapp.generated.resources.Res
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.statefulConf
-import org.jetbrains.compose.resources.vectorResource
 
 sealed class ViewDevice {
     abstract val device: Device
@@ -51,8 +47,6 @@ sealed class ViewDevice {
         override fun getVector() = TablerIcons.Switch
         override fun canConnect() = true
     }
-
-    fun exists() = statefulConf.devices.any { it.id == id }
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
     abstract fun canConnect(): Boolean

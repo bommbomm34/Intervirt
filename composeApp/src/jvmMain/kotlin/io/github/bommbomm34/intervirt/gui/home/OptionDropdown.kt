@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -37,6 +38,7 @@ fun OptionDropdown(
     val logger = KotlinLogging.logger {  }
     val preferences = koinInject<Preferences>()
     val agentClient = koinInject<AgentClient>()
+    val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val writeConf: (PlatformFile) -> Unit = { file ->
         scope.launch {
@@ -59,7 +61,7 @@ fun OptionDropdown(
                         logger.info { it }
                     }
                 }
-                statefulConf.update(ViewConfiguration(newConfiguration))
+                appState.statefulConf.update(ViewConfiguration(newConfiguration))
             }
         }
     }
@@ -83,7 +85,7 @@ fun OptionDropdown(
             // Save
             DropdownMenuItem(
                 onClick = {
-                    val file = CURRENT_FILE // Copy delegated state variable
+                    val file = appState.currentFile // Copy delegated state variable
                     if (file != null) writeConf(file) else fileSaverLauncher.launch(
                         suggestedName = preferences.SUGGESTED_FILENAME,
                         extension = "ivrt"
@@ -113,7 +115,7 @@ fun OptionDropdown(
             }
             // Settings
             DropdownMenuItem(
-                onClick = { currentScreenIndex = 2 }
+                onClick = { appState.currentScreenIndex = 2 }
             ) {
                 IconText(
                     imageVector = TablerIcons.Settings,
@@ -122,7 +124,7 @@ fun OptionDropdown(
             }
             // About
             DropdownMenuItem(
-                onClick = { currentScreenIndex = 3 }
+                onClick = { appState.currentScreenIndex = 3 }
             ) {
                 IconText(
                     imageVector = TablerIcons.InfoCircle,

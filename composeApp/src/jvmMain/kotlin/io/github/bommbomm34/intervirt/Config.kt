@@ -21,6 +21,7 @@ import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.*
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.vinceglb.filekit.PlatformFile
@@ -49,6 +50,7 @@ val mainModule = module {
     singleOf(::FileManager)
     singleOf(::Preferences)
     singleOf(::QemuClient)
+    singleOf(::AppState)
 }
 val AVAILABLE_LANGUAGES = listOf(
     Locale.US
@@ -60,15 +62,7 @@ val client = HttpClient(CIO) {
     }
     install(WebSockets)
 }
-val logs = mutableStateListOf<String>()
-var showLogs by mutableStateOf(false)
-var dialogState: DialogState by mutableStateOf(DialogState.Default)
-var devicesViewZoom by mutableStateOf(1f)
-var isCtrlPressed by mutableStateOf(false)
-var mousePosition by mutableStateOf(Offset.Zero)
 lateinit var density: Density
-val CURRENT_FILE: PlatformFile? by mutableStateOf(null)
-var currentScreenIndex by mutableStateOf(0)
 val configuration = IntervirtConfiguration(
     version = CURRENT_VERSION,
     author = "",
@@ -96,8 +90,6 @@ val configuration = IntervirtConfiguration(
     ),
     connections = mutableListOf()
 ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id)) }
-val statefulConf = ViewConfiguration(configuration)
-var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
 fun String.versionCode() = replace(".", "").toInt()
 
 fun String.result() = Result.success(this)
@@ -110,28 +102,6 @@ fun Float.roundBy(num: Int = 2): Float {
 }
 
 fun Float.readablePercentage() = "${(times(100f)).roundBy()}%"
-
-fun openDialog(
-    importance: Importance,
-    message: String
-) {
-    dialogState = DialogState.Regular(
-        importance = importance,
-        message = message,
-        visible = true
-    )
-}
-
-fun openDialog(customContent: @Composable () -> Unit) {
-    dialogState = DialogState.Custom(customContent, true)
-}
-
-fun closeDialog() {
-    dialogState = when (dialogState) {
-        is DialogState.Custom -> (dialogState as DialogState.Custom).copy(visible = false)
-        is DialogState.Regular -> (dialogState as DialogState.Regular).copy(visible = false)
-    }
-}
 
 @Composable
 fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }

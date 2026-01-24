@@ -12,12 +12,11 @@ import intervirt.composeapp.generated.resources.are_you_sure_to_remove_device
 import intervirt.composeapp.generated.resources.delete
 import intervirt.composeapp.generated.resources.name
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.data.toDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.openDialog
-import io.github.bommbomm34.intervirt.statefulConf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -29,6 +28,7 @@ fun GeneralDeviceSettings(
     onClose: () -> Unit
 ) {
     val deviceManager = koinInject<DeviceManager>()
+    val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
     OutlinedTextField(
         value = device.id,
@@ -48,14 +48,14 @@ fun GeneralDeviceSettings(
     GeneralSpacer()
     Button(
         onClick = {
-            openDialog {
+            appState.openDialog {
                 AcceptDialog(
                     message = stringResource(Res.string.are_you_sure_to_remove_device, device.name),
                 ) {
                     scope.launch {
                         onClose()
-                        statefulConf.devices.remove(device)
-                        statefulConf.connections.removeIf { it.containsDevice(device) }
+                        appState.statefulConf.devices.remove(device)
+                        appState.statefulConf.connections.removeIf { it.containsDevice(device) }
                         deviceManager.removeDevice(device.device)
                     }
                 }

@@ -27,6 +27,7 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
@@ -49,13 +50,15 @@ fun DevicesView() {
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val deviceManager = koinInject<DeviceManager>()
     val preferences = koinInject<Preferences>()
+    val appState = koinInject<AppState>()
+    val statefulConf = appState.statefulConf
     AlignedBox(Alignment.Center) {
         Canvas(
             Modifier
                 .fillMaxSize()
                 .onPointerEvent(PointerEventType.Scroll) {
                     val delta = it.changes.first().scrollDelta.y * -preferences.ZOOM_SPEED
-                    if (isCtrlPressed && devicesViewZoom + delta > 0.1f) devicesViewZoom += delta
+                    if (appState.isCtrlPressed && appState.devicesViewZoom + delta > 0.1f) appState.devicesViewZoom += delta
                 }
                 .onClick(matcher = PointerMatcher.Primary) { drawingConnectionSource = null }
                 .onClick(matcher = PointerMatcher.Secondary) { drawingConnectionSource = null }
@@ -65,12 +68,12 @@ fun DevicesView() {
                         statefulConf.connections.firstOrNull { (device1, device2) ->
                             isPointOnLine(
                                 point = position,
-                                start = device1.fittingOffset(),
-                                end = device2.fittingOffset(),
+                                start = device1.fittingOffset(appState.devicesViewZoom),
+                                end = device2.fittingOffset(appState.devicesViewZoom),
                                 strokeWidth = preferences.CONNECTION_STROKE_WIDTH
                             )
                         }?.let {
-                            openDialog {
+                            appState.openDialog {
                                 AcceptDialog(
                                     message = stringResource(
                                         Res.string.are_you_sure_to_remove_connection,
@@ -91,19 +94,19 @@ fun DevicesView() {
                     }
                 }
         ) {
-            scale(devicesViewZoom) {
+            scale(appState.devicesViewZoom) {
                 drawingConnectionSource?.let {
                     drawConnection(
-                        offset1 = it.fittingOffset(),
-                        offset2 = mousePosition,
+                        offset1 = it.fittingOffset(appState.devicesViewZoom),
+                        offset2 = appState.mousePosition,
                         deviceConnectionColor = preferences.DEVICE_CONNECTION_COLOR,
                         connectionStrokeWidth = preferences.CONNECTION_STROKE_WIDTH
                     )
                 }
                 statefulConf.connections.forEach {
                     drawConnection(
-                        offset1 = it.device1.fittingOffset(),
-                        offset2 = it.device2.fittingOffset(),
+                        offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
+                        offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
                         deviceConnectionColor = preferences.DEVICE_CONNECTION_COLOR,
                         connectionStrokeWidth = preferences.CONNECTION_STROKE_WIDTH
                     )
@@ -113,8 +116,8 @@ fun DevicesView() {
     }
 
     // This block will most likely be triggered if a file is opened
-    selectedDevice?.let { if (!it.exists()) selectedDevice = null }
-    drawingConnectionSource?.let { if (!it.exists()) drawingConnectionSource = null }
+    selectedDevice?.let { if (!statefulConf.exists(it)) selectedDevice = null }
+    drawingConnectionSource?.let { if (!statefulConf.exists(it)) drawingConnectionSource = null }
     if (selectedDevice == null) deviceSettingsVisible = false
 
     statefulConf.devices.forEach { device ->
@@ -134,7 +137,7 @@ fun DevicesView() {
                             if (copy.canConnect() && it.canConnect()) {
                                 statefulConf.connections.add(copy connect it)
                                 deviceManager.connectDevice(copy.device, it.device)
-                            } else openDialog(
+                            } else appState.openDialog(
                                 importance = Importance.WARNING,
                                 message = getString(Res.string.too_many_devices_connected)
                             )
@@ -207,7 +210,7 @@ fun Offset.isOn(device: Device, image: ImageBitmap): Boolean =
     x in device.x.toFloat()..(device.x.toFloat() + image.width) &&
             y in device.y.toFloat()..(device.y.toFloat() + image.height)
 
-fun ViewDevice.fittingOffset(): Offset {
+fun ViewDevice.fittingOffset(devicesViewZoom: Float): Offset {
     val width = (getVector().defaultWidth * devicesViewZoom).toPx()
     val height = (getVector().defaultHeight * devicesViewZoom).toPx()
     return offset + Offset(width * 2f, height * 2f)

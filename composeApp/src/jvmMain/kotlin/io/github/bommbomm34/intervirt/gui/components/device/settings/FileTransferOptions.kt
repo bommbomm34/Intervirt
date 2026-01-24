@@ -18,11 +18,11 @@ import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.upload_file
 import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.api.FileManager
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.ContainerFilePicker
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.openDialog
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +33,7 @@ import org.koin.compose.koinInject
 @Composable
 fun FileTransferOptions(device: ViewDevice.Computer){
     val scope = rememberCoroutineScope { Dispatchers.IO }
+    val appState = koinInject<AppState>()
     val fileManager = koinInject<FileManager>()
     var containerFilePath by remember { mutableStateOf("") }
     val fileSaverLauncher = rememberFileSaverLauncher { file ->
@@ -49,7 +50,7 @@ fun FileTransferOptions(device: ViewDevice.Computer){
     }
     val filePickerLauncher = rememberFilePickerLauncher { file ->
         file?.let { _ ->
-            openDialog {
+            appState.openDialog {
                 ContainerFilePicker(device){ path ->
                     path?.let { _ ->
                         scope.launch {
@@ -69,7 +70,7 @@ fun FileTransferOptions(device: ViewDevice.Computer){
     Row (verticalAlignment = Alignment.CenterVertically) {
         IconButton(
             onClick = {
-                openDialog {
+                appState.openDialog {
                     ContainerFilePicker(device){ path ->
                         path?.let {
                             containerFilePath = it

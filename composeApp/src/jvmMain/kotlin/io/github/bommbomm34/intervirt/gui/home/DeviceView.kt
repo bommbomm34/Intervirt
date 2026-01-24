@@ -26,10 +26,10 @@ import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.configuration
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.windowState
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -39,6 +39,7 @@ fun DeviceView(
     onClickDevice: (ViewDevice) -> Unit,
     onSecondaryClick: (ViewDevice) -> Unit
 ) {
+    val appState = koinInject<AppState>()
     val preferences = koinInject<Preferences>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
@@ -57,7 +58,7 @@ fun DeviceView(
             ) {
                 val newOffset = offset + it
                 if (newOffset.isOn(
-                        dpSize = windowState.size,
+                        dpSize = appState.windowState.size,
                         imageSize = Offset(deviceSizePx, deviceSizePx),
                         minimumPadding = 140f
                     )

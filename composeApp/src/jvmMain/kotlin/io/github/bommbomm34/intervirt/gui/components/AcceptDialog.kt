@@ -7,8 +7,9 @@ import androidx.compose.runtime.Composable
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.no
 import intervirt.composeapp.generated.resources.yes
-import io.github.bommbomm34.intervirt.closeDialog
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun AcceptDialog(
@@ -16,19 +17,20 @@ fun AcceptDialog(
     onCancel: () -> Unit = {},
     onAccept: () -> Unit,
 ){
+    val appState = koinInject<AppState>()
     CenterColumn {
         Text(message)
         GeneralSpacer()
         Row {
             Button(onClick = {
-                closeDialog()
+                appState.closeDialog()
                 onAccept()
             }){
                 Text(stringResource(Res.string.yes))
             }
             GeneralSpacer()
             Button(onClick = {
-                closeDialog()
+                appState.closeDialog()
                 onCancel()
             }){
                 Text(stringResource(Res.string.no))

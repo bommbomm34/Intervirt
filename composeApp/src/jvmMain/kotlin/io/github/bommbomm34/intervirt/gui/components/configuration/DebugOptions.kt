@@ -7,16 +7,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.openDialog
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun DebugOptions() {
-    val scope = rememberCoroutineScope()
+    val appState = koinInject<AppState>()
     Text("Debugging enabled")
     Text("Current version: $CURRENT_VERSION")
     Button(onClick = {
-        openDialog(
+        appState.openDialog(
             importance = Importance.INFO,
             message = "Debug with: ./gradlew"
         )

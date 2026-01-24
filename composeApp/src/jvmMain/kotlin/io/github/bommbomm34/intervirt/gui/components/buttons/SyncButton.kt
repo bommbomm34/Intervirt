@@ -14,8 +14,7 @@ import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.logs
-import io.github.bommbomm34.intervirt.openDialog
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -24,6 +23,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun SyncButton() {
+    val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
@@ -36,9 +36,9 @@ fun SyncButton() {
                     syncing = true
                     configuration.syncConfiguration(agentClient).collect {
                         syncFailed = it.result?.isFailure ?: false
-                        logs.add(it.log())
+                        appState.logs.add(it.log())
                         if (syncFailed) {
-                            openDialog(
+                            appState.openDialog(
                                 importance = Importance.ERROR,
                                 message = it.log()
                             )
