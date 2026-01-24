@@ -6,7 +6,7 @@ This document contains the API specification of the *Intervirt Agent* which acts
 
 The client requires one endpoint to be available via unencrypted WebSocket (`ws://`). It should be accessible through `ws://localhost:55436/containerManagement` via `GET`.
 
-Messages from the client will always be encoded in JSON. Messages from the server will also always be encoded in JSON. The programm will also send commands to the server. Below, you will see example requests and corresponding example responses.
+Messages from the client will always be encoded in JSON. Messages from the server will also always be encoded in JSON. The programm will also send commands to the server. Below, you will see example requests and corresponding example responses. Please keep in mind that there are some more fields in the requests/responses to fill than the example requests/responses. See the *Tips* section to find the extra fields.
 
 ##### Add container
 
@@ -492,5 +492,6 @@ If there is an error, please report it via HTTP Status Codes. The container arch
 - Keep in mind that every request over WebSockets in JSON will contain a field named ```uuid``` which is just a random UUIDv4.
 - Send status code ```-1``` explicitly if the task is not completed.
 - If no status code is sent, the client will default to the status code ```0```.
+- The example responses don't include ```refID```. Please include it in production. It should contain the ```uuid``` of the request which the response refers to.
 
 If you have questions, simply contact me and I'll answer you as soon as possible.
