@@ -52,6 +52,7 @@ sealed class ViewDevice {
         override fun canConnect() = true
     }
 
+    fun exists() = statefulConf.devices.any { it.id == id }
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
     abstract fun canConnect(): Boolean

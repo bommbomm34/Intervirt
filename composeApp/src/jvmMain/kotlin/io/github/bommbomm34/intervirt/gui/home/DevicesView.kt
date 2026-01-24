@@ -16,9 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -27,9 +24,9 @@ import intervirt.composeapp.generated.resources.are_you_sure_to_remove_connectio
 import intervirt.composeapp.generated.resources.too_many_devices_connected
 import io.github.bommbomm34.intervirt.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
@@ -93,12 +90,6 @@ fun DevicesView() {
                         }
                     }
                 }
-                .onKeyEvent {
-                    if (it.key == Key.Escape) {
-                        drawingConnectionSource = null
-                        true
-                    } else false
-                }
         ) {
             scale(devicesViewZoom) {
                 drawingConnectionSource?.let {
@@ -120,6 +111,12 @@ fun DevicesView() {
             }
         }
     }
+
+    // This block will most likely be triggered if a file is opened
+    selectedDevice?.let { if (!it.exists()) selectedDevice = null }
+    drawingConnectionSource?.let { if (!it.exists()) drawingConnectionSource = null }
+    if (selectedDevice == null) deviceSettingsVisible = false
+
     statefulConf.devices.forEach { device ->
         DeviceView(
             device = device,
