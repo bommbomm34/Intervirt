@@ -33,6 +33,7 @@ import java.net.URI
 @Composable
 fun OptionDropdown(
     expanded: Boolean,
+    onConfChange: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val logger = KotlinLogging.logger {  }
@@ -52,7 +53,7 @@ fun OptionDropdown(
         type = FileKitType.File(extensions = listOf("ivrt"))
     ) { file ->
         if (file != null){
-            scope.launch {
+            scope.launch (Dispatchers.IO) {
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
@@ -62,6 +63,7 @@ fun OptionDropdown(
                     }
                 }
                 appState.statefulConf.update(ViewConfiguration(newConfiguration))
+                onConfChange()
             }
         }
     }
