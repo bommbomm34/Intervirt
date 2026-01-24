@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowState
+import intervirt.composeapp.generated.resources.Res
 import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Downloader
@@ -138,3 +139,5 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
 @Composable fun Preferences.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
+
+internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()

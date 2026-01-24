@@ -30,6 +30,7 @@ kotlin {
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.compose.webview)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -45,8 +46,8 @@ kotlin {
             implementation(libs.zip4j)
             implementation(libs.compose.tabler.icons)
             implementation(libs.commons.validator)
-            implementation("org.jline:jline:3.30.0")
         }
+
     }
 }
 

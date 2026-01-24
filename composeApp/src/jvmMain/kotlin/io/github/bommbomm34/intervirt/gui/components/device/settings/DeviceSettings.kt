@@ -38,7 +38,7 @@ fun DeviceSettings(
                     Column {
                         OSField(device)
                         GeneralSpacer()
-                        FileTransferOptions(device)
+                        IOOptions(device)
                         GeneralSpacer()
                         Ipv4TextField(device)
                         GeneralSpacer()

@@ -10,11 +10,14 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import intervirt.composeapp.generated.resources.Res
+import intervirt.composeapp.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
+import io.github.bommbomm34.intervirt.gui.ShellView
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
 import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
@@ -22,6 +25,7 @@ import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.slf4j.simple.SimpleLogger
@@ -77,6 +81,16 @@ fun main() = application {
         ) {
             DefaultWindowScope {
                 LogsView(appState.logs)
+            }
+        }
+        // Shell Window
+        Window(
+            onCloseRequest = { appState.openComputerShell = null },
+            visible = appState.openComputerShell != null,
+            title = stringResource(Res.string.terminal_window_title, appState.openComputerShell?.name ?: "")
+        ){
+            DefaultWindowScope {
+                appState.openComputerShell?.let { ShellView(it) }
             }
         }
     }

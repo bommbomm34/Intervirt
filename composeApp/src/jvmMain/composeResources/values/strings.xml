@@ -89,4 +89,6 @@
     <string name="error_during_device_creation">Error during device creation: %1$s</string>
     <string name="upload_file">Upload file</string>
     <string name="download_file">Download file</string>
+    <string name="terminal">Terminal</string>
+    <string name="terminal_window_title">%1$s - Terminal</string>
 </resources>
