@@ -1,9 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
-import androidx.compose.ui.geometry.Offset
 import io.github.bommbomm34.intervirt.configuration
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -39,12 +36,17 @@ sealed class Device {
     fun getConnectedDevices(totalConnections: List<DeviceConnection>) =
         totalConnections.mapNotNull { if (it.device1 == this) it.device2 else if (it.device2 == this) it.device1 else null }
 
-    fun getConnectedComputers(totalConnections: List<DeviceConnection>, exceptDevice: Device? = null): List<Computer> {
+    fun getConnectedComputers(
+        totalConnections: List<DeviceConnection>,
+        exceptDevices: Set<Device> = emptySet()
+    ): List<Computer> {
         val connected = getConnectedDevices(totalConnections)
         val connectedComputers = mutableSetOf<Computer>() // Usage of a set is important because duplicates can occur
-        connected.filter { device -> exceptDevice?.let { device != exceptDevice } ?: true }
-            .forEach { if (it is Computer) connectedComputers.add(it) else 
-            connectedComputers.addAll(it.getConnectedComputers(totalConnections, this)) }
+        connected.filter { device -> exceptDevices.all { device.id != it.id } }
+            .forEach {
+                if (it is Computer) connectedComputers.add(it) else
+                    connectedComputers.addAll(it.getConnectedComputers(totalConnections, exceptDevices + this))
+            }
         return connectedComputers.toList()
     }
 
