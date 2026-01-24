@@ -14,7 +14,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.AddContainer",
+    "type": "AddContainer",
     "id": "computer-93281", // Name of the container
     "ipv4": "192.168.0.145", // IPv4 address of the container
     "ipv6": "fd00:3452:2312:ab32:cdaa:4444:aaaa:bcda", // IPv6 address of the container
@@ -45,7 +45,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.RemoveContainer",
+    "type": "RemoveContainer",
     "id": "computer-93281" // Name of the container to remove
 }
 ```
@@ -81,7 +81,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IDWithNewIpv4",
+    "type": "IDWithNewIpv4",
     "id": "computer-93281", // Name of the container
     "newIP": "192.168.0.133", // New IPv4 address of the container
 }
@@ -108,7 +108,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.IDWithNewIpv6",
+    "type": "IDWithNewIpv6",
     "id": "computer-93281", // Name of the container
     "newIP": "fd00:3452:2312:ab32:cdaa:4444:bbbb:bcda", // New IPv6 address of the container
 }
@@ -135,7 +135,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Connect",
+    "type": "Connect",
     "id1": "computer-93281", // Name of the first container to connect
     "id2": "computer-31222", // Name of the second container to connect
 }
@@ -164,7 +164,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Disconnect",
+    "type": "Disconnect",
     "id1": "computer-93281", // Name of the first container to disconnect
     "id2": "computer-31222", // Name of the second container to disconnect
 }
@@ -191,7 +191,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.SetInternetAccess",
+    "type": "SetInternetAccess",
     "id": "computer-93281",
     "enabled": true, // If internet access should be enabled
 }
@@ -218,7 +218,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.AddPortForwarding",
+    "type": "AddPortForwarding",
     "id": "computer-93281",
     "internalPort": 80 // Port in the container to forward
     "externalPort": 8080, // External port to forward
@@ -246,7 +246,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.RemovePortForwarding",
+    "type": "RemovePortForwarding",
     "externalPort": 8080, // External port of the port forwarding to remove
 }
 ```
@@ -272,7 +272,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "Command",
     "command": "wipe"
 }
 ```
@@ -307,7 +307,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "Command",
     "command": "update"
 }
 ```
@@ -344,7 +344,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "Command",
     "command": "shutdown"
 }
 ```
@@ -371,7 +371,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "Command",
     "command": "reboot"
 }
 ```
@@ -398,7 +398,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.Command",
+    "type": "Command",
     "command": "version"
 }
 ```
@@ -422,7 +422,7 @@ Message from client:
 
 ```json
 {
-    "type": "io.github.bommbomm34.intervirt.data.RequestBody.RunCommand",
+    "type": "RunCommand",
     "id": "computer-93281",
     "command": "whoami" // Command to run on the shell
 }
