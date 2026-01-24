@@ -17,7 +17,7 @@ class Preferences {
     private val dataFile: Path = File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
 
     val DEBUG_ENABLED = env("DEBUG_ENABLED").toBoolean()
-    val SSH_TIMEOUT = env("SSH_TIMEOUT")?.toLong() ?: 30000L
+    val AGENT_TIMEOUT = env("AGENT_TIMEOUT")?.toLong() ?: 30000L
     val AGENT_PORT = env("AGENT_PORT")?.toInt() ?: 55436
     val VM_SHUTDOWN_TIMEOUT = env("VM_SHUTDOWN_TIMEOUT")?.toLong() ?: 30000L
     val VM_RAM = env("VM_RAM")?.toInt() ?: 2048
@@ -34,6 +34,7 @@ class Preferences {
     val SUGGESTED_FILENAME = env("SUGGESTED_FILENAME") ?: "MyIntervirtProject"
     val LANGUAGE: Locale = env("LANGUAGE")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault() ?: Locale.US
     val ENABLE_AGENT = env("ENABLE_AGENT")?.toBooleanStrictOrNull() ?: true
+    val QEMU_MONITOR_PORT = env("QEMU_MONITOR_PORT")?.toInt() ?: 55437
 
     init { load() }
 
