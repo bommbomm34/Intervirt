@@ -15,6 +15,7 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ fun DebugOptions() {
     }) {
         Text("Debug Agent")
     }
+    GeneralSpacer()
     Row {
         var command by remember { mutableStateOf("") }
         OutlinedTextField(
@@ -56,5 +58,31 @@ fun DebugOptions() {
         ){
             Text("Send")
         }
+    }
+    GeneralSpacer()
+    Button(
+        onClick = {
+            scope.launch {
+                qemuClient.addPortForwarding(
+                    protocol = "tcp",
+                    hostPort = 8999,
+                    guestPort = 22
+                ).onFailure { logger.error(it){ "Example port forwarding creation failed" } }
+            }
+        }
+    ){
+        Text("Add example port forwarding")
+    }
+    Button(
+        onClick = {
+            scope.launch {
+                qemuClient.removePortForwarding(
+                    protocol = "tcp",
+                    hostPort = 8999
+                ).onFailure { logger.error(it){ "Example port forwarding creation failed" } }
+            }
+        }
+    ){
+        Text("Remove example port forwarding")
     }
 }

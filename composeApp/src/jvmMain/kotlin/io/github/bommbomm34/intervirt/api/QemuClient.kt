@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.data.qemu.QemuMonitorSession
-import io.github.bommbomm34.intervirt.data.qemu.QemuRequestBody
 import io.github.bommbomm34.intervirt.exceptions.OSError
 import io.github.bommbomm34.intervirt.exceptions.QmpException
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -103,13 +102,41 @@ class QemuClient(
         logger.debug { "Alpine VM is now offline" }
     }
 
+    suspend fun addPortForwarding(protocol: String, hostPort: Int, guestPort: Int): Result<Unit> {
+        qmpSend(buildJsonObject {
+            put("execute", "human-monitor-command")
+            putJsonObject("arguments") {
+                put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$hostPort-:$guestPort")
+            }
+        }).fold(
+            onSuccess = { return Result.success(Unit) },
+            onFailure = { return Result.failure(it) }
+        )
+    }
+
+    suspend fun removePortForwarding(protocol: String, hostPort: Int): Result<Unit> {
+        qmpSend(buildJsonObject {
+            put("execute", "human-monitor-command")
+            putJsonObject("arguments") {
+                put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$hostPort")
+            }
+        }).fold(
+            onSuccess = { return Result.success(Unit) },
+            onFailure = { return Result.failure(it) }
+        )
+    }
+
+    suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession) = qmpSend(
+        json = buildJsonObject { put("execute", command) },
+        session = session
+    )
 
     @Suppress("UNCHECKED_CAST")
-    suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession): Result<JsonObject> {
-        val encoded = Json.encodeToString(QemuRequestBody(command))
+    suspend fun qmpSend(json: JsonElement, session: QemuMonitorSession? = qemuMonitorSession): Result<JsonElement> {
+        val payload = Json.encodeToString(json)
         session?.withLock {
-            logger.debug { "Send to QMP: $encoded" }
-            writeLine(encoded)
+            logger.debug { "Send to QMP: $payload" }
+            writeLine(payload)
             logger.debug { "Waiting for answer" }
             withTimeoutOrNull(preferences.QEMU_MONITOR_TIMEOUT) {
                 while (true) {
@@ -119,7 +146,7 @@ class QemuClient(
                         val returnObj = obj["return"]
                         val errorObj = obj["error"]
                         return@withTimeoutOrNull when {
-                            returnObj != null -> Result.success(returnObj.jsonObject)
+                            returnObj != null -> Result.success(returnObj)
                             errorObj != null -> Result.failure(QmpException(Json.decodeFromJsonElement(errorObj.jsonObject)))
                             else -> Result.failure(SerializationException("Received JSON is not QMP-conform: $line"))
                         }
@@ -134,14 +161,14 @@ class QemuClient(
     }
 
     private fun isRunningLoop() {
-        if (isRunningLoopJob == null){
+        if (isRunningLoopJob == null) {
             isRunningLoopJob = CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
                     running = qemuMonitorSession?.let { _ ->
                         val result = qmpSend("query-status")
                         logger.debug { "Result of query-status: $result" }
                         result.fold(
-                            onSuccess = { it["running"]!!.jsonPrimitive.boolean },
+                            onSuccess = { it.jsonObject["running"]!!.jsonPrimitive.boolean },
                             onFailure = { false }
                         )
                     } ?: false
@@ -175,4 +202,3 @@ class QemuClient(
         }
     }
 }
-
