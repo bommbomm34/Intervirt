@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import compose.icons.TablerIcons
 import compose.icons.tablericons.*
@@ -36,7 +37,7 @@ fun OptionDropdown(
     onConfChange: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val logger = KotlinLogging.logger {  }
+    val logger = rememberLogger()
     val preferences = koinInject<Preferences>()
     val agentClient = koinInject<AgentClient>()
     val appState = koinInject<AppState>()

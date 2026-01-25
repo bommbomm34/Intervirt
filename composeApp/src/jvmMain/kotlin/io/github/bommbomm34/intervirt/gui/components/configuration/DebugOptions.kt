@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 
 @Composable
@@ -46,10 +47,9 @@ fun DebugOptions() {
         Button(
             onClick = {
                 scope.launch {
-                    if (!qemuClient.isRunning()) qemuClient.bootAlpine().getOrThrow()
-                    qemuClient.monitorSend(command).collect {
-                        logger.info { "Command result of $command: $it" }
-                    }
+                    if (!qemuClient.running) qemuClient.bootAlpine().getOrThrow()
+                    val res = qemuClient.qmpSend(command).getOrNull()?.let { Json.encodeToString(it) }
+                    logger.debug { "Command result of $command: $res" }
                 }
 
             }

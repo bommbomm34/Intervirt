@@ -31,7 +31,7 @@ import java.nio.file.Files
 
 class FileManager(
     private val agentClient: AgentClient,
-    private val preferences: Preferences
+    preferences: Preferences
 ) {
     private val logger = KotlinLogging.logger {  }
     private val dataDir = preferences.DATA_DIR
@@ -119,6 +119,8 @@ class FileManager(
             null -> throw UnsupportedOsException()
         }
     }
+
+    fun getAlpineDisk(): File = getFile("disk/alpine-linux.qcow2")
 
     suspend fun pullFile(device: Device.Computer, path: String, destFile: PlatformFile): Result<Unit> {
         val res = agentClient.downloadFile(device.id, path, this)

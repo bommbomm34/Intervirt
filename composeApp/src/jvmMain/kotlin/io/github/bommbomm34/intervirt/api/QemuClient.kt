@@ -1,15 +1,15 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.data.QemuMonitorSession
+import io.github.bommbomm34.intervirt.data.qemu.QemuMonitorSession
+import io.github.bommbomm34.intervirt.data.qemu.QemuRequestBody
+import io.github.bommbomm34.intervirt.exceptions.OSError
+import io.github.bommbomm34.intervirt.exceptions.QmpException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.utils.io.readLine
-import io.ktor.utils.io.writeStringUtf8
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.*
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ConnectException
@@ -22,23 +22,29 @@ class QemuClient(
     private val preferences: Preferences
 ) {
 
+    var running = false
+    private var isRunningLoopJob: Job? = null
     private val logger = KotlinLogging.logger { }
     private lateinit var currentProcess: Process
-    private lateinit var qemuMonitorSession: QemuMonitorSession
+    private var qemuMonitorSession: QemuMonitorSession? = null
 
-    private val startAlpineVMCommands = listOf(
-        fileManager.getQemuFile().absolutePath,
-        if (preferences.VM_ENABLE_KVM) "-enable-kvm" else "",
-        "-smp", preferences.VM_CPU.toString(),
-        "-drive", "file=../disk/alpine-linux.qcow2,format=qcow2",
-        "-m", preferences.VM_RAM.toString(),
-        "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${preferences.AGENT_PORT}-:55436,dns=9.9.9.9",
-        "-monitor", "tcp:127.0.0.1:${preferences.QEMU_MONITOR_PORT},server,nowait",
-        "-device", "e1000,netdev=net0",
-        "-nographic"
-    )
+    private val startAlpineVMCommands = buildList {
+        add(fileManager.getQemuFile().absolutePath)
+        if (preferences.VM_ENABLE_KVM) add("-enable-kvm")
+        addAll(
+            listOf(
+                "-smp", preferences.VM_CPU.toString(),
+                "-drive", "file=${fileManager.getAlpineDisk().absolutePath}",
+                "-m", preferences.VM_RAM.toString(),
+                "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${preferences.AGENT_PORT}-:55436,dns=9.9.9.9",
+                "-qmp", "tcp:127.0.0.1:${preferences.QEMU_MONITOR_PORT},server,nowait",
+                "-device", "e1000,netdev=net0",
+                "-nographic"
+            )
+        )
+    }
 
-    suspend fun bootAlpine(): Result<Boolean> {
+    suspend fun bootAlpine(): Result<Unit> = withContext(Dispatchers.IO) {
         logger.debug { "Booting Alpine Linux" }
         val builder = ProcessBuilder(*startAlpineVMCommands.toTypedArray())
         builder.directory(fileManager.getFile("qemu"))
@@ -49,19 +55,23 @@ class QemuClient(
 //        logger.debug { "Output: " + currentProcess.inputStream.bufferedReader().readText() }
             if (currentProcess.isAlive) {
                 logger.debug { "Waiting for availability" }
-                val startTime = System.currentTimeMillis()
-                while (!testAgentPort(preferences.AGENT_PORT)) {
-                    if (System.currentTimeMillis() - startTime > preferences.AGENT_TIMEOUT) {
-                        return Result.failure(IllegalStateException("Agent isn't available"))
+                delay(2000) // Wait for QEMU to start QMP
+                initMonitorSocket()
+                    .onSuccess { qemuMonitorSession = it }
+                    .onFailure { return@withContext Result.failure(it) }
+                isRunningLoop() // Runs in background
+                while (!running) {
+                    if (!currentProcess.isAlive) {
+                        // QEMU start process failed
+                        val error = OSError(tempReader.readText())
+                        logger.error(error) { "Process exited unexpectedly" }
+                        return@withContext Result.failure(error)
                     }
-                    delay(500)
+                    delay(1000)
                 }
             }
-            return if (currentProcess.isAlive) {
-                initMonitorSocket().fold(
-                    onSuccess = { Result.success(true) },
-                    onFailure = { Result.failure(it) }
-                )
+            return@withContext if (currentProcess.isAlive) {
+                Result.success(Unit)
             } else {
                 Result.failure(IllegalStateException())
             }
@@ -70,30 +80,73 @@ class QemuClient(
 
     suspend fun shutdownAlpine() {
         logger.info { "Shutting down Alpine VM" }
-        agentClient.shutdown()
-            .onFailure {
-                logger.error { "Shutdown attempt through agent failed: $it" }
-                logger.debug { "Shutdown through process termination" }
-                currentProcess.destroy()
-                logger.debug { "Waiting for Alpine VM to shutdown" }
-                currentProcess.waitFor(preferences.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
-                if (currentProcess.isAlive) {
-                    logger.debug { "Timeout exceeded, forcing shutdown..." }
-                    currentProcess.destroyForcibly()
-                    currentProcess.waitFor()
+        logger.debug { "Closing QEMU monitor session" }
+        qemuMonitorSession?.close()
+        runCatching {
+            agentClient.shutdown()
+                .onFailure {
+                    logger.error(it) { "Shutdown attempt through agent failed" }
+                    currentProcess.destroy()
+                    logger.debug { "Waiting for Alpine VM to shutdown" }
+                    currentProcess.waitFor(preferences.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                    if (currentProcess.isAlive) {
+                        logger.debug { "Timeout exceeded, forcing shutdown..." }
+                        currentProcess.destroyForcibly()
+                        currentProcess.waitFor()
+                    }
                 }
-            }
+        }.onFailure {
+            if (it is UninitializedPropertyAccessException) logger.debug { "Alpine VM is already offline." }
+        }
+        isRunningLoopJob?.cancel()
+        isRunningLoopJob = null
         logger.debug { "Alpine VM is now offline" }
     }
-    fun isRunning() = this::currentProcess.isInitialized && currentProcess.isAlive
 
-    fun monitorSend(command: String): Flow<String> = flow {
-        logger.debug { "Send $command to monitor" }
-        qemuMonitorSession.writeChannel.writeStringUtf8(command)
-        while (true){
-            val line = qemuMonitorSession.readChannel.readLine()
-            line?.let {
-                if (it.contains("(qemu)")) break else emit(line)
+
+    @Suppress("UNCHECKED_CAST")
+    suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession): Result<JsonObject> {
+        val encoded = Json.encodeToString(QemuRequestBody(command))
+        session?.withLock {
+            logger.debug { "Send to QMP: $encoded" }
+            writeLine(encoded)
+            logger.debug { "Waiting for answer" }
+            withTimeoutOrNull(preferences.QEMU_MONITOR_TIMEOUT) {
+                while (true) {
+                    readLine()?.let { line ->
+                        logger.debug { "Received answer: $line" }
+                        val obj = Json.decodeFromString<JsonObject>(line)
+                        val returnObj = obj["return"]
+                        val errorObj = obj["error"]
+                        return@withTimeoutOrNull when {
+                            returnObj != null -> Result.success(returnObj.jsonObject)
+                            errorObj != null -> Result.failure(QmpException(Json.decodeFromJsonElement(errorObj.jsonObject)))
+                            else -> Result.failure(SerializationException("Received JSON is not QMP-conform: $line"))
+                        }
+                    }
+                }
+            }?.let { anyValue ->
+                return if (anyValue is Result<*>) anyValue as Result<JsonObject> else
+                    Result.failure(IllegalStateException("Expected answer from QMP, but nothing received."))
+            }
+        }
+        return Result.failure(NullPointerException("No QEMU Monitor session is available."))
+    }
+
+    private fun isRunningLoop() {
+        if (isRunningLoopJob == null){
+            isRunningLoopJob = CoroutineScope(Dispatchers.IO).launch {
+                while (true) {
+                    running = qemuMonitorSession?.let { _ ->
+                        val result = qmpSend("query-status")
+                        logger.debug { "Result of query-status: $result" }
+                        result.fold(
+                            onSuccess = { it["running"]!!.jsonPrimitive.boolean },
+                            onFailure = { false }
+                        )
+                    } ?: false
+                    delay(2500)
+                }
             }
         }
     }
@@ -106,15 +159,19 @@ class QemuClient(
         }
     }
 
-    private suspend fun initMonitorSocket(): Result<Unit> = runCatching {
+    private suspend fun initMonitorSocket(): Result<QemuMonitorSession> = runCatching {
+        logger.debug { "Initializing monitor socket connection" }
         val selector = ActorSelectorManager(Dispatchers.IO)
-        val socket = aSocket(selector).tcp().connect("127.0.0.1", preferences.QEMU_MONITOR_PORT)
-        val input = socket.openReadChannel()
-        val output = socket.openWriteChannel(autoFlush = true)
-        qemuMonitorSession = QemuMonitorSession(input, output)
-        while (true){
-            val line = input.readLine()
-            if (line?.contains("(qemu)") ?: false) break
+        return@runCatching withTimeout(5000) {
+            val socket = aSocket(selector).tcp().connect("127.0.0.1", preferences.QEMU_MONITOR_PORT)
+            val session = QemuMonitorSession(selector, socket)
+            logger.debug { "Initialized session" }
+            session.withLock { session.readLine() } // First message is just greeting
+            logger.debug { "Negotiating capabilities with QMP" }
+            // Negotiate capabilities
+            qmpSend("qmp_capabilities", session).getOrThrow()
+            qemuMonitorSession = session
+            return@withTimeout session
         }
     }
 }

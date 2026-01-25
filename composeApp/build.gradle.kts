@@ -39,7 +39,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation(libs.slf4j.simple)
+            implementation(libs.slf4j.reload4j)
             implementation(libs.kotlin.logging.jvm)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)

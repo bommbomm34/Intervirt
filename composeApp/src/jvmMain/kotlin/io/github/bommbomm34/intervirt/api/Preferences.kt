@@ -18,6 +18,7 @@ class Preferences {
 
     val DEBUG_ENABLED = env("DEBUG_ENABLED").toBoolean()
     val AGENT_TIMEOUT = env("AGENT_TIMEOUT")?.toLong() ?: 30000L
+    val QEMU_MONITOR_TIMEOUT = env("QEMU_MONITOR_TIMEOUT")?.toLong() ?: 5000L
     val AGENT_PORT = env("AGENT_PORT")?.toInt() ?: 55436
     val VM_SHUTDOWN_TIMEOUT = env("VM_SHUTDOWN_TIMEOUT")?.toLong() ?: 30000L
     val VM_RAM = env("VM_RAM")?.toInt() ?: 2048

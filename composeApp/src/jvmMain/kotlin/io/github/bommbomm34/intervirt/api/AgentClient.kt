@@ -36,13 +36,15 @@ class AgentClient {
                     path = "containerManagement"
                 )
             }
-            CoroutineScope(Dispatchers.IO).launch {
-                while (true) {
-                    try {
-                        val response = session.receiveDeserialized<ResponseBody>()
-                        requests[response.refID]!!.emit(response)
-                    } catch (e: WebsocketDeserializeException) {
-                        if (e.frame is Frame.Close) break
+            result.onSuccess {
+                CoroutineScope(Dispatchers.IO).launch {
+                    while (true) {
+                        try {
+                            val response = session.receiveDeserialized<ResponseBody>()
+                            requests[response.refID]!!.emit(response)
+                        } catch (e: WebsocketDeserializeException) {
+                            if (e.frame is Frame.Close) break
+                        }
                     }
                 }
             }

@@ -25,6 +25,7 @@ import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -139,5 +140,7 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
 @Composable fun Preferences.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
+
+@Composable fun rememberLogger() = remember { KotlinLogging.logger {  } }
 
 internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()

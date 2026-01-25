@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -29,7 +30,7 @@ fun SyncButton() {
     var syncFailed by remember { mutableStateOf(false) }
     val qemuClient = koinInject<QemuClient>()
     val agentClient = koinInject<AgentClient>()
-    if (qemuClient.isRunning()){
+    if (qemuClient.running){
         IconButton(
             onClick = {
                 scope.launch {
