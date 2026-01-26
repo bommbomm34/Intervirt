@@ -99,16 +99,16 @@ fun DevicesView() {
                     drawConnection(
                         offset1 = it.fittingOffset(appState.devicesViewZoom),
                         offset2 = appState.mousePosition,
-                        deviceConnectionColor = preferences.DEVICE_CONNECTION_COLOR,
-                        connectionStrokeWidth = preferences.CONNECTION_STROKE_WIDTH
+                        color = preferences.DEVICE_CONNECTION_COLOR,
+                        strokeWidth = preferences.CONNECTION_STROKE_WIDTH
                     )
                 }
                 statefulConf.connections.forEach {
                     drawConnection(
                         offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
                         offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
-                        deviceConnectionColor = preferences.DEVICE_CONNECTION_COLOR,
-                        connectionStrokeWidth = preferences.CONNECTION_STROKE_WIDTH
+                        color = preferences.DEVICE_CONNECTION_COLOR,
+                        strokeWidth = preferences.CONNECTION_STROKE_WIDTH
                     )
                 }
             }
@@ -168,14 +168,14 @@ fun DevicesView() {
 fun DrawScope.drawConnection(
     offset1: Offset,
     offset2: Offset,
-    deviceConnectionColor: Long,
-    connectionStrokeWidth: Float
+    color: Long,
+    strokeWidth: Float
 ) {
     drawLine(
         start = offset1,
         end = offset2,
-        color = Color(deviceConnectionColor),
-        strokeWidth = connectionStrokeWidth
+        color = Color(color),
+        strokeWidth = strokeWidth
     )
 }
 
