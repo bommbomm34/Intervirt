@@ -2,17 +2,20 @@ package io.github.bommbomm34.intervirt.gui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.onClick
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerButton
@@ -74,6 +77,8 @@ fun DeviceView(
                 matcher = PointerMatcher.Secondary,
                 onClick = { onSecondaryClick(device) }
             )
+            .clip(RoundedCornerShape(16f))
+            .background(MaterialTheme.colors.background)
     ) {
         Icon(
             imageVector = device.getVector(),
