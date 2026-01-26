@@ -493,5 +493,6 @@ If there is an error, please report it via HTTP Status Codes. The container arch
 - Send status code ```-1``` explicitly if the task is not completed.
 - If no status code is sent, the client will default to the status code ```0```.
 - The example responses don't include ```refID```. Please include it in production. It should contain the ```uuid``` of the request which the response refers to.
+- Always return a ```type``` field in the JSON responses. It should be ```Version``` (if the client requests the version), otherwise ```General```
 
 If you have questions, simply contact me and I'll answer you as soon as possible.

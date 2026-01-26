@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.File
 
-class Executor {
+class Executor(
+    private val preferences: Preferences
+) {
     private val logger = KotlinLogging.logger { }
     private val sessions = mutableListOf<RemoteContainerSession>()
 
@@ -25,7 +27,7 @@ class Executor {
             val session = client.webSocketSession(
                 method = HttpMethod.Post,
                 host = "localhost",
-                port = 55436,
+                port = preferences.AGENT_PORT,
                 path = "pty?id=$id"
             )
             val flow = session.incoming

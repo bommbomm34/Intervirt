@@ -33,6 +33,7 @@ class AgentTest : KoinTest {
             val deviceManager = get<DeviceManager>()
             val agentClient = get<AgentClient>()
 
+            assertResult(agentClient.getVersion(), "VERSION TEST")
             val (computer1, computer2, computer3, computer4, computer5, switch) = assertResult(createDevices(deviceManager), "DEVICE CREATION TEST")
             assertResult(deviceManager.removeDevice(computer5), "DEVICE REMOVAL TEST")
             assertResult(deviceManager.connectDevice(computer3, computer4), "COMPUTER CONNECTION TEST")
@@ -88,10 +89,15 @@ class AgentTest : KoinTest {
     }
 
     fun <T> assertResult(result: Result<T>, test: String = ""): T {
-        result.onFailure { throw AssertionError("FAILED $test: $it") }
-        // If it gets here, the test passed successfully
-        logger.info { "PASSED $test" }
-        return result.getOrNull()!!
+        result.fold(
+            onSuccess = {
+                logger.info { "PASSED $test: $it" }
+                return result.getOrNull()!!
+            },
+            onFailure = {
+                throw AssertionError("FAILED $test: $it")
+            }
+        )
     }
 }
 

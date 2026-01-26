@@ -30,6 +30,8 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import java.io.File
@@ -62,7 +64,9 @@ val client = HttpClient(CIO) {
     engine {
         requestTimeout = 0
     }
-    install(WebSockets)
+    install(WebSockets){
+        contentConverter = KotlinxWebsocketSerializationConverter(Json)
+    }
 }
 lateinit var density: Density
 val configuration = IntervirtConfiguration(

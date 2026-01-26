@@ -21,37 +21,13 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-class AgentClient {
+class AgentClient(
+    preferences: Preferences
+) {
     private val logger = KotlinLogging.logger { }
     private lateinit var session: DefaultClientWebSocketSession
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
-
-    suspend fun listen(): Result<Unit> {
-        if (!this::session.isInitialized) {
-            val result = runCatching {
-                session = client.webSocketSession(
-                    method = HttpMethod.Get,
-                    host = "localhost",
-                    port = 55436,
-                    path = "containerManagement"
-                )
-            }
-            result.onSuccess {
-                CoroutineScope(Dispatchers.IO).launch {
-                    while (true) {
-                        try {
-                            val response = session.receiveDeserialized<ResponseBody>()
-                            requests[response.refID]!!.emit(response)
-                        } catch (e: WebsocketDeserializeException) {
-                            if (e.frame is Frame.Close) break
-                        }
-                    }
-                }
-            }
-            return result
-        }
-        return Result.success(Unit)
-    }
+    private val agentPort = preferences.AGENT_PORT
 
     suspend fun addContainer(
         id: String,
@@ -66,14 +42,14 @@ class AgentClient {
 
     suspend fun getDisk(id: String, fileManager: FileManager): Result<File> {
         return fileManager.downloadFile(
-            "http://localhost:55436/disk?id=$id",
+            "http://localhost:$agentPort/disk?id=$id",
             "disk-$id-${System.currentTimeMillis()}.tar.gz"
         ).first { it.result != null }.result!!
     }
 
     fun uploadDisk(id: String, file: File, fileManager: FileManager): Flow<ResultProgress<Unit>> {
         return fileManager.uploadFile(
-            "http://localhost:55436/disk?id=$id",
+            "http://localhost:$agentPort/disk?id=$id",
             file
         )
     }
@@ -81,14 +57,14 @@ class AgentClient {
     suspend fun downloadFile(id: String, path: String, fileManager: FileManager): Result<File> {
         val fileExtension = path.substringAfterLast(".", "")
         return fileManager.downloadFile(
-            "http://localhost:55436/file?id=$id&$path",
+            "http://localhost:$agentPort/file?id=$id&$path",
             "file-$id-${System.currentTimeMillis()}${if (fileExtension.isBlank()) "" else ".$fileExtension"}"
         ).first { it.result != null }.result!!
     }
 
     fun uploadFile(id: String, file: File, path: String, fileManager: FileManager): Flow<ResultProgress<Unit>> {
         return fileManager.uploadFile(
-            "http://localhost:55436/file?id=$id&path=$path",
+            "http://localhost:$agentPort/file?id=$id&path=$path",
             file
         )
     }
@@ -181,5 +157,32 @@ class AgentClient {
             },
             onFailure = { return Result.failure(it) }
         )
+    }
+
+    private suspend fun listen(): Result<Unit> {
+        if (!this::session.isInitialized) {
+            val result = runCatching {
+                session = client.webSocketSession(
+                    method = HttpMethod.Get,
+                    host = "localhost",
+                    port = agentPort,
+                    path = "containerManagement"
+                )
+            }
+            result.onSuccess {
+                CoroutineScope(Dispatchers.IO).launch {
+                    while (true) {
+                        try {
+                            val response = session.receiveDeserialized<ResponseBody>()
+                            requests[response.refID]!!.emit(response)
+                        } catch (e: WebsocketDeserializeException) {
+                            if (e.frame is Frame.Close) break
+                        }
+                    }
+                }
+            }
+            return result
+        }
+        return Result.success(Unit)
     }
 }
