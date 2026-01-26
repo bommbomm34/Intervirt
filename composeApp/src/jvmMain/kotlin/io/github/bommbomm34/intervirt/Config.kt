@@ -81,7 +81,7 @@ val configuration = IntervirtConfiguration(
         ),
         Device.Computer(
             id = "computer-67676",
-            image = "debian/13",
+            image = "intervirtos/1",
             name = "My Debian",
             x = 500,
             y = 500,

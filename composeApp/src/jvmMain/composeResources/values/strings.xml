@@ -91,4 +91,13 @@
     <string name="download_file">Download file</string>
     <string name="terminal">Terminal</string>
     <string name="terminal_window_title">%1$s - Terminal</string>
+    <string name="browser">Browser</string>
+    <string name="dns_resolver">DNS Resolver</string>
+    <string name="dns_server">DNS Server</string>
+    <string name="http_server">HTTP Server</string>
+    <string name="mail_client">Mail Client</string>
+    <string name="mail_server">Mail Server</string>
+    <string name="ssh_client">SSH Client</string>
+    <string name="ssh_server">SSH Server</string>
+    <string name="browser_description">Simple internet browser for IntervirtOS</string>
 </resources>

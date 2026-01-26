@@ -36,6 +36,8 @@ class Preferences {
     val LANGUAGE: Locale = env("LANGUAGE")?.let { Locale.forLanguageTag(it) } ?: Locale.getDefault() ?: Locale.US
     val ENABLE_AGENT = env("ENABLE_AGENT")?.toBooleanStrictOrNull() ?: true
     val QEMU_MONITOR_PORT = env("QEMU_MONITOR_PORT")?.toInt() ?: 55437
+    val TITLE_FONT_SIZE = env("TITLE_FONT_SIZE")?.toInt()?.sp ?: 48.sp
+    val APP_ICON_SIZE = env("APP_ICON_SIZE")?.toInt()?.dp ?: OS_ICON_SIZE
 
     init { load() }
 

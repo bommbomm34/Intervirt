@@ -39,7 +39,7 @@ fun ImagePicker(
         LazyVerticalGrid(
             columns = GridCells.FixedSize(preferences.OS_ICON_SIZE * 1.2f)
         ){
-            items(images){ image -> // Incus Image, not a photo :)
+            items(images){ image ->
                 ImageItem(image){
                     showImageInfo = true
                     selectedImage = image

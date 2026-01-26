@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.data
 
 import intervirt.composeapp.generated.resources.*
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.getString
 
@@ -42,3 +43,5 @@ fun String.toReadableImage() = when {
     startsWith("voidlinux/") -> "Void Linux"
     else -> substringBefore("/")
 }
+
+fun ViewDevice.Computer.hasIntervirtOS() = image.substringBefore("/") == "intervirtos"

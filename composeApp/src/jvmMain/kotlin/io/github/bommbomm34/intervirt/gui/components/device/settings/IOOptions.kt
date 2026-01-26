@@ -12,8 +12,10 @@ import androidx.compose.ui.Alignment
 import compose.icons.TablerIcons
 import compose.icons.tablericons.FileDownload
 import compose.icons.tablericons.FileUpload
+import compose.icons.tablericons.PlayerPlay
 import compose.icons.tablericons.Terminal
 import intervirt.composeapp.generated.resources.Res
+import intervirt.composeapp.generated.resources.boot
 import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.terminal
 import intervirt.composeapp.generated.resources.upload_file

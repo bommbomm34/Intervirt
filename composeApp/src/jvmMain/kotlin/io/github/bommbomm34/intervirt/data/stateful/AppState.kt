@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Density
@@ -24,6 +25,7 @@ class AppState {
     var mousePosition by mutableStateOf(Offset.Zero)
     val currentFile: PlatformFile? by mutableStateOf(null)
     var currentScreenIndex by mutableStateOf(0)
+    var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
     val statefulConf = ViewConfiguration(configuration)
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))

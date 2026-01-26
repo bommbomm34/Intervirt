@@ -14,6 +14,7 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
@@ -22,6 +23,7 @@ import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
 import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
+import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.Dispatchers
@@ -82,14 +84,17 @@ fun main() = application {
                 LogsView(appState.logs)
             }
         }
-        // Shell Window
+        // OS Window
         Window(
             onCloseRequest = { appState.openComputerShell = null },
             visible = appState.openComputerShell != null,
-            title = stringResource(Res.string.terminal_window_title, appState.openComputerShell?.name ?: "")
+            title = appState.osWindowTitle ?: stringResource(Res.string.terminal_window_title, appState.openComputerShell?.name ?: "")
         ){
             DefaultWindowScope {
-                appState.openComputerShell?.let { ShellView(it) }
+                appState.openComputerShell?.let {
+                    // Check if device has IntervirtOS installed
+                    if (it.hasIntervirtOS()) Main(it) else ShellView(it)
+                }
             }
         }
     }
