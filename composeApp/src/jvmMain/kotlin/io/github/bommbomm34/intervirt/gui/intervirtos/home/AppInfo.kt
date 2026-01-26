@@ -24,5 +24,5 @@ data class AppInfo(
     val name: StringResource,
     val icon: ImageVector,
     val description: StringResource,
-    val content: @Composable (() -> Unit)
+    val content: @Composable ((onClose: () -> Unit) -> Unit)
 )

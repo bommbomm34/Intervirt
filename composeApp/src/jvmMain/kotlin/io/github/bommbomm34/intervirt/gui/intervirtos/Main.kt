@@ -23,6 +23,6 @@ fun Main(computer: ViewDevice.Computer){
     }
     appState.osWindowTitle = appInfo?.name?.let { "IntervirtOS ${computer.name} - ${stringResource(it)}" }
     AnimatedVisibility(appInfo != null){
-        appInfo?.content
+        appInfo?.content { appInfo = null }
     }
 }

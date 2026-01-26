@@ -100,4 +100,6 @@
     <string name="ssh_client">SSH Client</string>
     <string name="ssh_server">SSH Server</string>
     <string name="browser_description">Simple internet browser for IntervirtOS</string>
+    <string name="url">URL</string>
+    <string name="browse">Browse</string>
 </resources>
