@@ -4,7 +4,9 @@ import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.flow.firstOrNull
 import java.io.File
+import java.net.ServerSocket
 import kotlin.random.Random
 
 class DeviceManager(
@@ -159,6 +161,21 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
+    suspend fun getProxy(computer: Device.Computer): Result<String> {
+        val proxyPort = getFreePort()
+        // Add port forwarding for proxy
+        addPortForwarding(
+            device = computer,
+            externalPort = proxyPort,
+            internalPort = 1080
+        ).onFailure { return Result.failure(it) }
+        // Start proxy
+        runCommand(computer, "rc-service danted start")
+            .firstOrNull { it.result?.isFailure ?: false }
+            ?.let { return Result.failure(it.result!!.exceptionOrNull()!!) }
+        return Result.success("127.0.0.1:$proxyPort")
+    }
+
     private fun generateID(prefix: String): String {
         while (true) {
             val id = prefix + "-" + Random.nextInt(999999)
@@ -177,6 +194,8 @@ class DeviceManager(
     private fun <T, R> Result<T>.check(ifSuccess: R): Result<R> {
         return exceptionOrNull()?.let { Result.failure(it) } ?: Result.success(ifSuccess)
     }
+
+    private fun getFreePort() = ServerSocket(0).use { it.localPort }
 
     fun generateIpv4(): String {
         val rand = { Random.nextInt(256) }

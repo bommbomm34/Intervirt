@@ -59,5 +59,4 @@ class Preferences {
             data.putAll(Json.Default.decodeFromString(Files.readString(dataFile)))
         }
     }
-
 }
