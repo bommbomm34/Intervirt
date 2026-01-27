@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -10,8 +9,9 @@ import kotlin.random.Random
 
 class DeviceManager(
     private val agentClient: AgentClient,
-    private val preferences: Preferences,
-    private val fileManager: FileManager
+    private val fileManager: FileManager,
+    private val qemuClient: QemuClient,
+    preferences: Preferences,
 ) {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = preferences.ENABLE_AGENT
@@ -132,6 +132,11 @@ class DeviceManager(
     suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings[internalPort] = externalPort
+        qemuClient.addPortForwarding(
+            protocol = "tcp", // TODO: It should be editable,
+            hostPort = externalPort,
+            guestPort = externalPort // Guest is not the container itself
+        ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
             val res = agentClient.addPortForwarding(device.id, internalPort, externalPort)
             res.check(Unit)
@@ -144,6 +149,10 @@ class DeviceManager(
             if (device is Device.Computer)
                 device.portForwardings.entries.removeIf { it.value == externalPort }
         }
+        qemuClient.removePortForwarding(
+            protocol = "tcp", // TODO: It should be editable
+            hostPort = externalPort
+        ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
             val res = agentClient.removePortForwarding(externalPort)
             res.check(Unit)
