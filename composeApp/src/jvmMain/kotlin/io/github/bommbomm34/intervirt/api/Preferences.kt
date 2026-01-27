@@ -38,6 +38,7 @@ class Preferences {
     val QEMU_MONITOR_PORT = env("QEMU_MONITOR_PORT")?.toInt() ?: 55437
     val TITLE_FONT_SIZE = env("TITLE_FONT_SIZE")?.toInt()?.sp ?: 48.sp
     val APP_ICON_SIZE = env("APP_ICON_SIZE")?.toInt()?.dp ?: OS_ICON_SIZE
+    val DEFAULT_DNS_SERVER = env("DEFAULT_DNS_SERVER") ?: "9.9.9.9"
 
     init { load() }
 

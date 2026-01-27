@@ -50,10 +50,10 @@ class Executor(
         }
     }
 
-    fun runCommandOnHost(workingFolder: File, vararg commands: String): Flow<CommandStatus> =
+    fun runCommandOnHost(workingFolder: File? = null, commands: List<String>): Flow<CommandStatus> =
         flow {
-            val builder = ProcessBuilder(*commands)
-            builder.directory(workingFolder)
+            val builder = ProcessBuilder(commands)
+            workingFolder?.let { builder.directory(it) }
             builder.redirectErrorStream()
             logger.info { "Running '${commands.joinToString(" ")}' on host" }
             val process = builder.start()

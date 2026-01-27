@@ -102,4 +102,8 @@
     <string name="browser_description">Simple internet browser for IntervirtOS</string>
     <string name="url">URL</string>
     <string name="browse">Browse</string>
+    <string name="dns_resolver_description">Resolve domains and retrieve DNS records</string>
+    <string name="domain">Domain</string>
+    <string name="reverse_lookup">Reverse Lookup</string>
+    <string name="lookup">Lookup</string>
 </resources>

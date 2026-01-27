@@ -19,6 +19,7 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.browse
 import intervirt.composeapp.generated.resources.url
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
+import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.AlignedColumn
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
@@ -32,6 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Browser(
+    computer: ViewDevice.Computer,
     onClose: () -> Unit
 ){
     var url by remember { mutableStateOf("") }
