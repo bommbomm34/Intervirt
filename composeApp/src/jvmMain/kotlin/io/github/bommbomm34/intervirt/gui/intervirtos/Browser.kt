@@ -33,15 +33,12 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Browser(
-    computer: ViewDevice.Computer,
-    onClose: () -> Unit
+    computer: ViewDevice.Computer
 ){
     var url by remember { mutableStateOf("") }
     val navigator = rememberWebViewNavigator()
     CenterColumn {
         CenterRow {
-            AlignedColumn(Alignment.Start){ CloseButton(onClose) }
-            GeneralSpacer()
             AlignedColumn(Alignment.CenterHorizontally){
                 OutlinedTextField(
                     value = url,

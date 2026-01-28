@@ -106,4 +106,5 @@
     <string name="domain">Domain</string>
     <string name="reverse_lookup">Reverse Lookup</string>
     <string name="lookup">Lookup</string>
+    <string name="http_server_description">Serves static websites</string>
 </resources>

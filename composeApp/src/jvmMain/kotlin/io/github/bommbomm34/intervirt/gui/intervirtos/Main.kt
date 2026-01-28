@@ -6,8 +6,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.gui.components.AlignedBox
+import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.gui.intervirtos.home.AppInfo
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -23,6 +26,9 @@ fun Main(computer: ViewDevice.Computer){
     }
     appState.osWindowTitle = appInfo?.name?.let { "IntervirtOS ${computer.name} - ${stringResource(it)}" }
     AnimatedVisibility(appInfo != null){
-        appInfo?.content(computer) { appInfo = null }
+        AlignedBox(Alignment.TopStart){
+            CloseButton { appInfo = null }
+        }
+        appInfo?.content(computer)
     }
 }

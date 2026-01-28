@@ -45,8 +45,7 @@ private val json = Json {
 
 @Composable
 fun DnsResolver(
-    computer: ViewDevice.Computer,
-    onClose: () -> Unit
+    computer: ViewDevice.Computer
 ) {
     val preferences = koinInject<Preferences>()
     val deviceManager = koinInject<DeviceManager>()
@@ -58,9 +57,6 @@ fun DnsResolver(
     var reverseLookup by remember { mutableStateOf(false) }
     val records = mutableStateListOf<DnsRecord>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
-    AlignedBox(Alignment.TopStart) {
-        CloseButton(onClose)
-    }
     AlignedBox(Alignment.Center) {
         CenterColumn {
             OutlinedTextField(
