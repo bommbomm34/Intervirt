@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.gui.components
 
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.runtime.Composable
 import io.github.bommbomm34.intervirt.data.PortForwarding
 

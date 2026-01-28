@@ -1,10 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
-import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.download_succeeded
-import intervirt.composeapp.generated.resources.downloading
-import intervirt.composeapp.generated.resources.error_while_zip_extraction
-import intervirt.composeapp.generated.resources.successful_installation
+import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.ALPINE_DISK_URL
 import io.github.bommbomm34.intervirt.QEMU_LINUX_URL
 import io.github.bommbomm34.intervirt.QEMU_WINDOWS_URL

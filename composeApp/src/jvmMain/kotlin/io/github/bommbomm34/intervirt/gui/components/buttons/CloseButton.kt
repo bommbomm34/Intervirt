@@ -4,7 +4,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import compose.icons.TablerIcons
 import compose.icons.tablericons.X
 import intervirt.composeapp.generated.resources.Res

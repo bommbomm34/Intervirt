@@ -1,7 +1,6 @@
 package jvm.test.agent
 
 import io.github.bommbomm34.intervirt.api.AgentClient
-import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.mainModule
@@ -10,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.context.startKoin
 import org.koin.test.KoinTest
 import org.koin.test.get
-import kotlin.fold
 import kotlin.test.Test
 
 

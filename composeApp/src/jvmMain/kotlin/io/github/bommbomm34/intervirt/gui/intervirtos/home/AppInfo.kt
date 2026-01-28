@@ -7,23 +7,9 @@ import compose.icons.tablericons.Browser
 import compose.icons.tablericons.CloudFog
 import compose.icons.tablericons.Terminal
 import compose.icons.tablericons.Window
-import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.browser
-import intervirt.composeapp.generated.resources.browser_description
-import intervirt.composeapp.generated.resources.dns_resolver
-import intervirt.composeapp.generated.resources.dns_resolver_description
-import intervirt.composeapp.generated.resources.http_server
-import intervirt.composeapp.generated.resources.http_server_description
-import intervirt.composeapp.generated.resources.ssh_server
-import intervirt.composeapp.generated.resources.ssh_server_description
-import intervirt.composeapp.generated.resources.terminal
-import intervirt.composeapp.generated.resources.terminal_description
+import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import io.github.bommbomm34.intervirt.gui.intervirtos.Browser
-import io.github.bommbomm34.intervirt.gui.intervirtos.DnsResolver
-import io.github.bommbomm34.intervirt.gui.intervirtos.HttpServer
-import io.github.bommbomm34.intervirt.gui.intervirtos.SshServer
-import io.github.bommbomm34.intervirt.gui.intervirtos.Terminal
+import io.github.bommbomm34.intervirt.gui.intervirtos.*
 import org.jetbrains.compose.resources.StringResource
 
 // More apps will be added in the future :)

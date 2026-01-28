@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.awt.Component
-import javax.swing.JPanel
 
 @Composable
 fun Terminal(

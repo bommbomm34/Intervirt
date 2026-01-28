@@ -1,24 +1,14 @@
 package io.github.bommbomm34.intervirt.gui.components.configuration
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.DropdownMenu
 import androidx.compose.runtime.Composable
-import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.agent_port
-import intervirt.composeapp.generated.resources.dark_mode
-import intervirt.composeapp.generated.resources.intervirt_folder
-import intervirt.composeapp.generated.resources.vm_shutdown_timeout
-import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.FilePicker
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.IntegerTextField
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.vinceglb.filekit.absolutePath
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import java.util.Locale
+import java.util.*
 
 @Composable
 fun AppConfiguration(

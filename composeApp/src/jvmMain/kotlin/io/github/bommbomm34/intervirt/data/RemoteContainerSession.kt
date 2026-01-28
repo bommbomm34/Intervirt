@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
-import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.client.plugins.websocket.*
 
 data class RemoteContainerSession(
     val id: String, // Container id

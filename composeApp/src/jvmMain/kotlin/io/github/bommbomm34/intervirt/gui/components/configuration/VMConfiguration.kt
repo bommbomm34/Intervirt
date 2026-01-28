@@ -2,12 +2,7 @@ package io.github.bommbomm34.intervirt.gui.components.configuration
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.amount_of_cpu_cores
-import intervirt.composeapp.generated.resources.enable_kvm
-import intervirt.composeapp.generated.resources.enable_kvm_tooltip
-import intervirt.composeapp.generated.resources.ram_in_mb
-import intervirt.composeapp.generated.resources.vm_setup_introduction
+import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer

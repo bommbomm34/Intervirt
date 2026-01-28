@@ -2,20 +2,13 @@ package io.github.bommbomm34.intervirt.gui.components.device.settings
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.IconButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import compose.icons.TablerIcons
 import compose.icons.tablericons.FileDownload
 import compose.icons.tablericons.FileUpload
-import compose.icons.tablericons.PlayerPlay
 import compose.icons.tablericons.Terminal
 import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.boot
 import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.terminal
 import intervirt.composeapp.generated.resources.upload_file

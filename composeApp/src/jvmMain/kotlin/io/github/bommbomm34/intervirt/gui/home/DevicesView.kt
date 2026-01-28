@@ -22,7 +22,7 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.are_you_sure_to_remove_connection
 import intervirt.composeapp.generated.resources.too_many_devices_connected
-import io.github.bommbomm34.intervirt.*
+import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.Device
@@ -33,6 +33,7 @@ import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddDeviceButton
 import io.github.bommbomm34.intervirt.gui.components.device.settings.DeviceSettings
+import io.github.bommbomm34.intervirt.toPx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString

@@ -5,9 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.api.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
@@ -16,7 +14,6 @@ import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -25,7 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import java.io.File
 
 val DNS_RECORD_TYPES = listOf(
     "A",

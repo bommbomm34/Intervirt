@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
 import com.jediterm.terminal.TtyConnector
-import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect

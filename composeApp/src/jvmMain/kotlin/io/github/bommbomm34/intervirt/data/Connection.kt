@@ -1,9 +1,6 @@
 package io.github.bommbomm34.intervirt.data
 
-import io.ktor.network.sockets.Connection
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * A connection

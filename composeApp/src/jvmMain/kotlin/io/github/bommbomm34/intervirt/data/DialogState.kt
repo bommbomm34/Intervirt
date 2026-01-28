@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.data
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 
 sealed class DialogState(

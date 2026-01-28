@@ -2,7 +2,7 @@ package io.github.bommbomm34.intervirt.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.UUID
+import java.util.*
 
 @Serializable
 sealed class RequestBody {

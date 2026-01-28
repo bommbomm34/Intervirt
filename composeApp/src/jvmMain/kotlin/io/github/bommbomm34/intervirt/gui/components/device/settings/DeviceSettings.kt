@@ -3,14 +3,13 @@ package io.github.bommbomm34.intervirt.gui.components.device.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import compose.icons.TablerIcons
-import compose.icons.tablericons.X
 import intervirt.composeapp.generated.resources.Res
-import intervirt.composeapp.generated.resources.close
 import intervirt.composeapp.generated.resources.hide_port_forwardings
 import intervirt.composeapp.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice

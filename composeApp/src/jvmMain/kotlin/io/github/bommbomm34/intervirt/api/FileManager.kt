@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.api
 
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
-import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.OS
@@ -12,13 +11,13 @@ import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.call.*
-import io.ktor.client.plugins.onUpload
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
-import io.ktor.utils.io.streams.asInput
+import io.ktor.utils.io.streams.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
