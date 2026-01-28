@@ -1,19 +1,8 @@
 package io.github.bommbomm34.intervirt.data
 
 import io.github.bommbomm34.intervirt.exceptions.*
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 
 @Serializable()
 sealed class ResponseBody {
@@ -29,12 +18,12 @@ sealed class ResponseBody {
     ) : ResponseBody() {
         fun exception(): Exception? {
             return when (code) {
-                1 -> UndefinedError(error!!)
-                2 -> UnknownError()
-                3 -> OperationAlreadyPerformedError()
-                4 -> OSError(error!!)
+                1 -> UndefinedException(error!!)
+                2 -> UnknownException()
+                3 -> OperationAlreadyPerformedException()
+                4 -> OSException(error!!)
                 5 -> ContainerExecutionException(error!!)
-                6 -> NotFoundError(error!!)
+                6 -> NotFoundException(error!!)
                 7 -> NotSupportedOperationException()
                 8 -> IllegalArgumentException(error!!)
                 0 -> null

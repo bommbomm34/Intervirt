@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.data.qemu.QemuMonitorSession
-import io.github.bommbomm34.intervirt.exceptions.OSError
+import io.github.bommbomm34.intervirt.exceptions.OSException
 import io.github.bommbomm34.intervirt.exceptions.QmpException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
@@ -62,7 +62,7 @@ class QemuClient(
                 while (!running) {
                     if (!currentProcess.isAlive) {
                         // QEMU start process failed
-                        val error = OSError(tempReader.readText())
+                        val error = OSException(tempReader.readText())
                         logger.error(error) { "Process exited unexpectedly" }
                         return@withContext Result.failure(error)
                     }
