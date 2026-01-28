@@ -222,6 +222,7 @@ Message from client:
     "id": "computer-93281",
     "internalPort": 80 // Port in the container to forward
     "externalPort": 8080, // External port to forward
+    "protocol": "tcp" // Protocol of the port forwarding
 }
 ```
 
@@ -248,6 +249,7 @@ Message from client:
 {
     "type": "RemovePortForwarding",
     "externalPort": 8080, // External port of the port forwarding to remove
+    "protocol": "tcp" // Protocol of the port forwarding
 }
 ```
 
@@ -408,71 +410,43 @@ Message from server:
 ```json
 {
     "version": "1.2.3" // Version of the Intervirt Agent
-    "canRunCommands": true // if the Agent can run commands on real containers
-}
-```
-
-Acquires the version of the Intervirt Agent. This command must not fail.
-
-##### Run command on container
-
-If the agent responds in the version request with canRunCommands = false, this command may fail with error code 6.
-
-Message from client:
-
-```json
-{
-    "type": "RunCommand",
-    "id": "computer-93281",
-    "command": "whoami" // Command to run on the shell
-}
-```
-
-Successful message from server:
-
-```json
-{
-    "output": "root", // Output of the command
-}
-```
-
-Failed message from server:
-
-```json
-{
-    "error": "Not enough permissions to run the command" // Output of the command in a stream
-    "code": 1 // Error code (in Intervirt manner, not Unix!)
 }
 ```
 
 ### PTY WebSockets
 
-This is a special WebSockets endpoint under ```ws://localhost:55436/pty?id=ID_OF_THE_CONTAINER```. It represents a PTY shell. The data format is always binary. The task of the Agent is to write received bytes to the PTY of the container of the given id. It should also send bytes read of the PTY of the container back to the client. 
+This is a special WebSockets endpoint under ```ws://localhost:55436/pty?id=ID_OF_THE_CONTAINER```. It represents a PTY shell. The data format is always binary (except of window changes). The task of the Agent is to write received bytes to the PTY of the container of the given id. It should also send bytes read of the PTY of the container back to the client.
+
+The client performes a window size change like that:
+
+```json
+{
+    "type": "ShellSizeChange",
+    "lines": 80,
+    "columns": 80
+}
+```
+
+It will be sended as a `Frame.Text` , not `Frame.Binary`. You **must not** forward this JSON to Incus. Instead, you should format it to an Incus-conform way and send it to the `control` WebSocket PTY channel of the Incus container. 
 
 ### Intervirt Error Codes
 
 Intervirt has its own error codes:
 
-| Error code | Description                                                                                | Error text required |
-| ---------- | ------------------------------------------------------------------------------------------ | ------------------- |
-| 1          | There is an error available, but it's not defined by the Intervirt error codes explicitly. | yes                 |
-| 2          | There was an unsuccessful operation, but no error was given.                               | no                  |
-| 3          | The operation was already performed.                                                       | no                  |
-| 4          | There was an error associated with the guest system.                                       | yes                 |
-| 5          | There was an error in a command execution on the guest system                              | yes                 |
-| 6          | The requested or needed resource was not found.                                            | yes                 |
+| Error code | Description                                                                                                        | Error text required |
+| ---------- | ------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| 1          | There is an error available, but it's not defined by the Intervirt error codes explicitly.                         | yes                 |
+| 2          | There was an unsuccessful operation, but no error was given.                                                       | no                  |
+| 3          | The operation was already performed.                                                                               | no                  |
+| 4          | There was an error associated with the guest system.                                                               | yes                 |
+| 5          | There was an error in a command execution on the guest system                                                      | yes                 |
+| 6          | The requested or needed resource was not found.                                                                    | yes                 |
+| 7          | The server doesn't support the operation                                                                           | no                  |
+| 8          | The JSON input of the client isn't valid or contains invalid arguments (e.g. invalid protocol for port forwarding) | yes                 |
 
 ### RESTful Endpoints
 
 There is also two regular API endpoints via REST without WebSockets:
-
-Endpoint: `GET http://localhost:55436/disk?id=ID_OF_THE_CONTAINER`
-
-The Intervirt Agent should export the container as an archive and return it in this request.
-
-Endpoint: `POST http://localhost:55436/disk?id=ID_OF_THE_CONTAINER`
-
-The request body contains the container archive in binary form. The file is streamed by the client. It is sended as a multipart. Intervirt Agent should load the container filesystem contained in the archive in the container associated with the given id (name).
 
 Endpoint: `POST http://localhost:55436/file?id=ID_OF_THE_CONTAINER&path=DESTINATION_PATH`
 
