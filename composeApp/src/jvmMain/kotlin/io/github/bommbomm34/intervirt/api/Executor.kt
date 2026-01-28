@@ -1,8 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.ContainerInputStream
-import io.github.bommbomm34.intervirt.data.ContainerOutputStream
 import io.github.bommbomm34.intervirt.data.RemoteContainerSession
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
@@ -18,10 +16,10 @@ class Executor(
     private val preferences: Preferences
 ) {
     private val logger = KotlinLogging.logger { }
-    private val sessions = mutableListOf<RemoteContainerSession>()
+    private val sessions = mutableMapOf<String, RemoteContainerSession>()
 
     suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
-        sessions.firstOrNull { it.id == id }?.let { return Result.success(it) }
+        sessions[id]?.let { return Result.success(it) }
         try {
             logger.debug { "Initializing container session with $id" }
             val session = client.webSocketSession(
@@ -30,20 +28,9 @@ class Executor(
                 port = preferences.AGENT_PORT,
                 path = "pty?id=$id"
             )
-            val flow = session.incoming
-                .receiveAsFlow()
-                .map { it.readBytes() }
-            val remoteSession = RemoteContainerSession(
-                id = id,
-                websocket = session,
-                inputStream = ContainerInputStream(flow),
-                outputStream = ContainerOutputStream(
-                    executor = this,
-                    id = id
-                )
-            )
-            sessions.add(remoteSession)
-            return Result.success(remoteSession)
+            val remoteContainerSession = RemoteContainerSession(id, session)
+            sessions[id] = remoteContainerSession
+            return Result.success(remoteContainerSession)
         } catch (e: Exception) {
             logger.error { "Container session initialization failed: $e" }
             return Result.failure(e)
@@ -64,18 +51,6 @@ class Executor(
             }
             emit(process.exitValue().toCommandStatus())
         }
-
-    suspend fun writePtyBytesOnContainer(id: String, bytes: ByteArray): Result<Unit> {
-        val session = getContainerSession(id).getOrElse {
-            return Result.failure(it)
-        }.websocket
-        try {
-            session.send(bytes)
-            return Result.success(Unit)
-        } catch (e: Exception) {
-            return Result.failure(e)
-        }
-    }
 }
 
 data class CommandStatus(
