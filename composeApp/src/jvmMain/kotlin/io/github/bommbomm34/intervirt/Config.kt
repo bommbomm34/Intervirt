@@ -4,17 +4,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.WindowState
 import intervirt.composeapp.generated.resources.Res
 import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Downloader
 import io.github.bommbomm34.intervirt.api.Executor
@@ -23,18 +19,16 @@ import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import kotlinx.serialization.json.Json
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.binds
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import java.io.File
 import java.net.ServerSocket
 import java.util.*
 import kotlin.math.pow
@@ -50,7 +44,7 @@ const val HOMEPAGE_URL = "https://perhof.org/intervirt"
 val mainModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
-    singleOf(::AgentClient)
+    singleOf(::DefaultAgentClient){ binds(listOf(AgentClient::class)) }
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::Preferences)

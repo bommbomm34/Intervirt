@@ -1,20 +1,18 @@
 package io.github.bommbomm34.intervirt.api
 
 import com.jediterm.terminal.TtyConnector
+import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import java.io.File
 import java.net.ServerSocket
 import kotlin.random.Random
 
 class DeviceManager(
     private val agentClient: AgentClient,
-    private val fileManager: FileManager,
     private val qemuClient: QemuClient,
     preferences: Preferences,
 ) {

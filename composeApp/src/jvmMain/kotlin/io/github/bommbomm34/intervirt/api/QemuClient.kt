@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
+import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.exceptions.OSException
 import io.github.bommbomm34.intervirt.exceptions.QmpException

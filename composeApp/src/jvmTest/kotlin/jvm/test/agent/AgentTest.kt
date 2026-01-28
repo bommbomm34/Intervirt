@@ -1,21 +1,17 @@
 package jvm.test.agent
 
 import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.mainModule
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import org.koin.core.context.GlobalContext.get
 import org.koin.core.context.startKoin
-import org.koin.java.KoinJavaComponent.get
 import org.koin.test.KoinTest
 import org.koin.test.get
 import kotlin.fold
 import kotlin.test.Test
-import kotlin.test.assertFails
-import kotlin.test.assertNotNull
-
 
 
 class AgentTest : KoinTest {

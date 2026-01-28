@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.api
 
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
+import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.OS

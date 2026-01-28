@@ -4,12 +4,10 @@ import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.api.AgentClient
 import io.github.bommbomm34.intervirt.exceptions.DeprecatedException
-import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
-import java.io.File
 
 // Configuration of an Intervirt project
 @Serializable
