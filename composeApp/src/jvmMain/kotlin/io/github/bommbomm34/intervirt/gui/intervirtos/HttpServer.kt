@@ -6,13 +6,14 @@ import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.enable_virtual_hosts
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -36,7 +37,7 @@ fun HttpServer(
             name = stringResource(Res.string.enable_virtual_hosts)
         )
         GeneralSpacer()
-        AnimatedVisibility(enableVirtualHosts){
+        AnimatedVisibility(enableVirtualHosts) {
             // TODO: Virtual hosts
         }
     }
@@ -46,11 +47,11 @@ private suspend fun DeviceManager.enableHttpServer(
     computer: ViewDevice.Computer,
     enabled: Boolean
 ): Result<Unit> {
-    runCommand(
+    val total = runCommand(
         computer = computer.device,
-        command = "systemctl ${if (enabled) "start" else "stop"} apache2"
-    )
-        .firstOrNull { it.result?.isFailure ?: false }
-        ?.let { return Result.failure(it.result!!.exceptionOrNull()!!) }
-    return Result.success(Unit)
+        commands = listOf("systemctl", if (enabled) "start" else "stop", "apache2")
+    ).getTotalCommandStatus()
+
+    return if (total.statusCode!! == 0) Result.success(Unit)
+    else Result.failure(ContainerExecutionException(total.message!!))
 }

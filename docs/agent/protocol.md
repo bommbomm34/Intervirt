@@ -422,7 +422,7 @@ The client performes a window size change like that:
 ```json
 {
     "type": "ShellSizeChange",
-    "lines": 80,
+    "rows": 80,
     "columns": 80
 }
 ```

@@ -4,7 +4,9 @@ import com.jediterm.terminal.TtyConnector
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
+import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import java.io.File
 import java.net.ServerSocket
@@ -111,14 +113,6 @@ class DeviceManager(
             res.check(Unit)
         } else Result.success(Unit)
     }
-
-    suspend fun exportComputer(computer: Device.Computer): Result<File> {
-        logger.debug { "Exporting $computer" }
-        return agentClient.getDisk(computer.id, fileManager)
-    }
-
-    fun runCommand(computer: Device.Computer, command: String) = agentClient.runCommand(computer.id, command)
-
     fun setName(device: Device, name: String) {
         device.name = name
     }
@@ -132,7 +126,9 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int): Result<Unit> {
+    suspend fun runCommand(computer: Device.Computer, commands: List<String>): Flow<CommandStatus> = TODO("Not yet implemented")
+
+    suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int, protocol: String): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings[internalPort] = externalPort
         qemuClient.addPortForwarding(
@@ -141,12 +137,12 @@ class DeviceManager(
             guestPort = externalPort // Guest is not the container itself
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
-            val res = agentClient.addPortForwarding(device.id, internalPort, externalPort)
+            val res = agentClient.addPortForwarding(device.id, internalPort, externalPort, protocol)
             res.check(Unit)
         } else Result.success(Unit)
     }
 
-    suspend fun removePortForwarding(externalPort: Int): Result<Unit> {
+    suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> {
         logger.debug { "Remove port forwarding of $externalPort" }
         configuration.devices.forEach { device ->
             if (device is Device.Computer)
@@ -157,7 +153,7 @@ class DeviceManager(
             hostPort = externalPort
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
-            val res = agentClient.removePortForwarding(externalPort)
+            val res = agentClient.removePortForwarding(externalPort, protocol)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -168,12 +164,12 @@ class DeviceManager(
         addPortForwarding(
             device = computer,
             externalPort = proxyPort,
-            internalPort = 1080
+            internalPort = 1080,
+            protocol = "tcp"
         ).onFailure { return Result.failure(it) }
         // Start proxy
-        runCommand(computer, "rc-service danted start")
-            .firstOrNull { it.result?.isFailure ?: false }
-            ?.let { return Result.failure(it.result!!.exceptionOrNull()!!) }
+        val total = runCommand(computer, listOf("rc-service", "danted", "start")).getTotalCommandStatus()
+        if (total.statusCode!! != 0) return Result.failure(ContainerExecutionException(total.message!!))
         return Result.success("127.0.0.1:$proxyPort")
     }
 

@@ -59,13 +59,15 @@ sealed class RequestBody {
     data class AddPortForwarding (
         val id: String,
         val internalPort: Int,
-        val externalPort: Int
+        val externalPort: Int,
+        val protocol: String
     ) : RequestBody()
 
     @SerialName("RemovePortForwarding")
     @Serializable
     data class RemovePortForwarding (
-        val externalPort: Int
+        val externalPort: Int,
+        val protocol: String
     ) : RequestBody()
 
     @SerialName("Command")
@@ -74,18 +76,18 @@ sealed class RequestBody {
         val command: String
     ) : RequestBody()
 
-    @SerialName("RunCommand")
-    @Serializable
-    data class RunCommand(
-        val id: String,
-        val command: String
-    ) : RequestBody()
-
     @SerialName("RemoveContainer")
     @Serializable
     data class RemoveContainer (
         val id: String
     ) : RequestBody()
+
+    @SerialName("ShellSizeChange")
+    @Serializable
+    data class ShellSizeChange(
+        val rows: Int,
+        val columns: Int
+    )
 }
 
 fun String.commandBody() = RequestBody.Command(this)

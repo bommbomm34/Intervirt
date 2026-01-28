@@ -72,7 +72,8 @@ data class IntervirtConfiguration(
                                         )
                                     )
                                 )
-                                agentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value)
+                                // TODO: Port forwardings should have protocol support for UDP
+                                agentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value, "tcp")
                             }
                         }
                     }

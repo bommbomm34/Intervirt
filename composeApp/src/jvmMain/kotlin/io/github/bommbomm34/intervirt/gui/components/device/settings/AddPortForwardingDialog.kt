@@ -79,7 +79,8 @@ fun AddPortForwardingDialog(
                 onClick = {
                     scope.launch {
                         device.portForwardings[internalPort] = externalPort
-                        deviceManager.addPortForwarding(device.device, internalPort, externalPort)
+                        // TODO: Support UDP protocol
+                        deviceManager.addPortForwarding(device.device, internalPort, externalPort, "tcp")
                         onCancel()
                     }
                 },

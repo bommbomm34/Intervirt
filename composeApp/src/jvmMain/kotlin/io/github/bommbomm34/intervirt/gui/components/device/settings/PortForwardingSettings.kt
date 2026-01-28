@@ -38,7 +38,8 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
                     RemoveButton {
                         scope.launch {
                             device.portForwardings.remove(portForwarding.first)
-                            deviceManager.removePortForwarding(portForwarding.second)
+                            // TODO: Support UDP protocol
+                            deviceManager.removePortForwarding(portForwarding.second, "tcp")
                         }
                     }
                 }

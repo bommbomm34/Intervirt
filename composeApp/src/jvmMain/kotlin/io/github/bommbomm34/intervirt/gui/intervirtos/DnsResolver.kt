@@ -121,12 +121,13 @@ private suspend fun DeviceManager.lookupDns(
     nameserver: String,
     reverse: Boolean
 ): List<DnsRecord> {
-    val command = "doggo $name --type $type --nameserver $nameserver --json" + (if (reverse) "-x" else "")
+    val baseCommandList = listOf("doggo", name, "--type", type, "--nameserver", nameserver, "--json")
+    val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
     val output = StringBuilder()
-    logger.debug { "Execute command \"$command\" for DNS lookup" }
+    logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
     runCommand(
         computer = device,
-        command = command
+        commands = commandList
     ).collect { progress -> progress.message?.let { output.append(it) } }
     logger.debug { "Received during DNS lookup:\n$output" }
     val resolverOutput = json.decodeFromString<DnsResolverOutput>(output.toString())

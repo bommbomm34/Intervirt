@@ -8,7 +8,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
 import kotlinx.coroutines.Dispatchers
@@ -36,11 +38,11 @@ private suspend fun DeviceManager.enableSshServer(
     computer: ViewDevice.Computer,
     enabled: Boolean
 ): Result<Unit> {
-    runCommand(
+    val total = runCommand(
         computer = computer.device,
-        command = "systemctl ${if (enabled) "start" else "stop"} ssh"
-    )
-        .firstOrNull { it.result?.isFailure ?: false }
-        ?.let { return Result.failure(it.result!!.exceptionOrNull()!!) }
-    return Result.success(Unit)
+        commands = listOf("systemctl", if (enabled) "start" else "stop", "ssh")
+    ).getTotalCommandStatus()
+
+    return if (total.statusCode!! == 0) Result.success(Unit)
+    else Result.failure(ContainerExecutionException(total.message!!))
 }

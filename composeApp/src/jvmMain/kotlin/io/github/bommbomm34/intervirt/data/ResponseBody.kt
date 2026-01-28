@@ -35,6 +35,8 @@ sealed class ResponseBody {
                 4 -> OSError(error!!)
                 5 -> ContainerExecutionException(error!!)
                 6 -> NotFoundError(error!!)
+                7 -> NotSupportedOperationException()
+                8 -> IllegalArgumentException(error!!)
                 0 -> null
                 else -> error("Invalid status code $code")
             }
@@ -45,7 +47,6 @@ sealed class ResponseBody {
     @Serializable
     data class Version(
         override val refID: String,
-        val version: String,
-        val canRunCommands: Boolean
+        val version: String
     ) : ResponseBody()
 }

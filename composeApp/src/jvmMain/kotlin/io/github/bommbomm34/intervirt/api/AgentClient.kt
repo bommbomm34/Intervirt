@@ -40,20 +40,6 @@ class AgentClient(
 
     suspend fun removeContainer(id: String): Result<Unit> = justSend(RequestBody.RemoveContainer(id))
 
-    suspend fun getDisk(id: String, fileManager: FileManager): Result<File> {
-        return fileManager.downloadFile(
-            "http://localhost:$agentPort/disk?id=$id",
-            "disk-$id-${System.currentTimeMillis()}.tar.gz"
-        ).first { it.result != null }.result!!
-    }
-
-    fun uploadDisk(id: String, file: File, fileManager: FileManager): Flow<ResultProgress<Unit>> {
-        return fileManager.uploadFile(
-            "http://localhost:$agentPort/disk?id=$id",
-            file
-        )
-    }
-
     suspend fun downloadFile(id: String, path: String, fileManager: FileManager): Result<File> {
         val fileExtension = path.substringAfterLast(".", "")
         return fileManager.downloadFile(
@@ -83,11 +69,11 @@ class AgentClient(
     suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> =
         justSend(RequestBody.SetInternetAccess(id, enabled))
 
-    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int): Result<Unit> =
-        justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort))
+    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int, protocol: String): Result<Unit> =
+        justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort, protocol))
 
-    suspend fun removePortForwarding(externalPort: Int): Result<Unit> =
-        justSend(RequestBody.RemovePortForwarding(externalPort))
+    suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> =
+        justSend(RequestBody.RemovePortForwarding(externalPort, protocol))
 
     fun wipe(): Flow<ResultProgress<Unit>> = flowSend("wipe".commandBody())
 
@@ -108,9 +94,6 @@ class AgentClient(
             }
         return Result.failure(UnknownError())
     }
-
-    fun runCommand(id: String, command: String): Flow<ResultProgress<Unit>> =
-        flowSend(RequestBody.RunCommand(id, command))
 
     private suspend fun justSend(body: RequestBody): Result<Unit> {
         val response = send<ResponseBody.General>(body)
