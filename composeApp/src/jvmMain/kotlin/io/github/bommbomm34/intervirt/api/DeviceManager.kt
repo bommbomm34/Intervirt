@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
+import com.jediterm.terminal.TtyConnector
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
@@ -174,6 +175,10 @@ class DeviceManager(
             .firstOrNull { it.result?.isFailure ?: false }
             ?.let { return Result.failure(it.result!!.exceptionOrNull()!!) }
         return Result.success("127.0.0.1:$proxyPort")
+    }
+
+    suspend fun getTtyConnector(computer: Device.Computer): TtyConnector {
+        TODO("Not yet implemented")
     }
 
     private fun generateID(prefix: String): String {
