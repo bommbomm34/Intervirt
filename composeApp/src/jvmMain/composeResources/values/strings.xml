@@ -110,4 +110,5 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="enable_virtual_hosts">Enable virtual hosts</string>
+    <string name="ssh_server_description">Others in your network can remotely control your computer safely</string>
 </resources>

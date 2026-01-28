@@ -13,10 +13,13 @@ import intervirt.composeapp.generated.resources.dns_resolver
 import intervirt.composeapp.generated.resources.dns_resolver_description
 import intervirt.composeapp.generated.resources.http_server
 import intervirt.composeapp.generated.resources.http_server_description
+import intervirt.composeapp.generated.resources.ssh_server
+import intervirt.composeapp.generated.resources.ssh_server_description
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.intervirtos.Browser
 import io.github.bommbomm34.intervirt.gui.intervirtos.DnsResolver
 import io.github.bommbomm34.intervirt.gui.intervirtos.HttpServer
+import io.github.bommbomm34.intervirt.gui.intervirtos.SshServer
 import org.jetbrains.compose.resources.StringResource
 
 // More apps will be added in the future :)
@@ -38,6 +41,12 @@ val INTERVIRTOS_APPS = listOf(
         icon = TablerIcons.Window, // TODO: Change it to according icon
         description = Res.string.http_server_description,
         content = ::HttpServer
+    ),
+    AppInfo(
+        name = Res.string.ssh_server,
+        icon = TablerIcons.Window,
+        description = Res.string.ssh_server_description, // TODO: Change it to according icon
+        content = ::SshServer
     )
 )
 
