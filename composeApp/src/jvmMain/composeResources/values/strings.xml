@@ -107,4 +107,6 @@
     <string name="reverse_lookup">Reverse Lookup</string>
     <string name="lookup">Lookup</string>
     <string name="http_server_description">Serves static websites</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 </resources>
