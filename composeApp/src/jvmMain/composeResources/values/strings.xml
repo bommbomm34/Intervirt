@@ -109,4 +109,5 @@
     <string name="http_server_description">Serves static websites</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="enable_virtual_hosts">Enable virtual hosts</string>
 </resources>
