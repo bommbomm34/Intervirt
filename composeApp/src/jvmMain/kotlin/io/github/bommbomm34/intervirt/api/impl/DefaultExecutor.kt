@@ -4,12 +4,19 @@ import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.RemoteContainerSession
+import io.github.bommbomm34.intervirt.data.toByteArrayChannel
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.websocket.close
+import io.ktor.websocket.send
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.job
 import java.io.File
+import kotlin.coroutines.coroutineContext
 
 class DefaultExecutor(
     private val preferences: Preferences
@@ -18,6 +25,7 @@ class DefaultExecutor(
     private val sessions = mutableMapOf<String, RemoteContainerSession>()
 
     override suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
+        val scope = CoroutineScope(Dispatchers.IO)
         sessions[id]?.let { return Result.success(it) }
         try {
             logger.debug { "Initializing container session with $id" }
@@ -27,7 +35,13 @@ class DefaultExecutor(
                 port = preferences.AGENT_PORT,
                 path = "pty?id=$id"
             )
-            val remoteContainerSession = RemoteContainerSession(id, session)
+            val remoteContainerSession = RemoteContainerSession(
+                id = id,
+                incoming = scope.toByteArrayChannel(session.incoming),
+                outgoing = scope.toByteArrayChannel(session.outgoing)
+            ) {
+                session.close()
+            }
             sessions[id] = remoteContainerSession
             return Result.success(remoteContainerSession)
         } catch (e: Exception) {

@@ -1,33 +1,38 @@
 package io.github.bommbomm34.intervirt.data
 
-import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.getOrElse
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.launch
 
 data class RemoteContainerSession(
     val id: String,
-    private val websocket: DefaultClientWebSocketSession
+    private val incoming: ReceiveChannel<ByteArray>,
+    private val outgoing: SendChannel<ByteArray>,
+    private val onClose: suspend () -> Unit = {}
 ) {
 
     suspend fun write(bytes: ByteArray): Result<Unit> = runCatching {
-        websocket.send(bytes)
+        outgoing.send(bytes)
     }
 
     fun read(length: Int): ByteArray {
-        val byteArray = websocket.incoming
+        val byteArray = incoming
             .receive(length)
             .flatMap { it.toList() }
             .toByteArray()
         return byteArray
     }
 
-    suspend fun close() = websocket.close()
-    fun isConnected(): Boolean = websocket.isActive
+    suspend fun close() = onClose()
 
-    private fun ReceiveChannel<Frame>.receive(length: Int): List<ByteArray> {
+    // TODO: Review Delicate API
+    @OptIn(DelicateCoroutinesApi::class)
+    fun isConnected(): Boolean = !incoming.isClosedForReceive && !outgoing.isClosedForSend
+
+    private fun ReceiveChannel<ByteArray>.receive(length: Int): List<ByteArray> {
         val list = mutableListOf<ByteArray>()
         var lengthOfBytes = 0
         while (true) {
@@ -37,4 +42,24 @@ data class RemoteContainerSession(
             if (lengthOfBytes < length) list.add(bytes) else return list
         }
     }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun CoroutineScope.toByteArrayChannel(channel: ReceiveChannel<Frame>): ReceiveChannel<ByteArray> = produce {
+    for (frame in channel) {
+        send(frame.readBytes())
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun CoroutineScope.toByteArrayChannel(channel: SendChannel<Frame>): SendChannel<ByteArray> {
+    val input = Channel<ByteArray>(Channel.BUFFERED)
+
+    launch {
+        for (bytes in input) {
+            channel.send(Frame.Binary(fin = true, data = bytes))
+        }
+    }
+
+    return input
 }
