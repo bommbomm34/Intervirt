@@ -10,7 +10,7 @@ import compose.icons.tablericons.RefreshAlert
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.sync_guest
 import intervirt.composeapp.generated.resources.syncing
-import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Importance
@@ -28,13 +28,13 @@ fun SyncButton() {
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
     val qemuClient = koinInject<QemuClient>()
-    val agentClient = koinInject<AgentClient>()
+    val guestManager = koinInject<GuestManager>()
     if (qemuClient.running){
         IconButton(
             onClick = {
                 scope.launch {
                     syncing = true
-                    configuration.syncConfiguration(agentClient).collect {
+                    configuration.syncConfiguration(guestManager).collect {
                         syncFailed = it.result?.isFailure ?: false
                         appState.logs.add(it.log())
                         if (syncFailed) {

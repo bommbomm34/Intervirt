@@ -1,6 +1,6 @@
 package jvm.test.agent
 
-import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.mainModule
@@ -25,9 +25,9 @@ class AgentTest : KoinTest {
                 modules(mainModule)
             }
             val deviceManager = get<DeviceManager>()
-            val agentClient = get<AgentClient>()
+            val guestManager = get<GuestManager>()
 
-            assertResult(agentClient.getVersion(), "VERSION TEST")
+            assertResult(guestManager.getVersion(), "VERSION TEST")
             val (computer1, computer2, computer3, computer4, computer5, switch) = assertResult(createDevices(deviceManager), "DEVICE CREATION TEST")
             assertResult(deviceManager.removeDevice(computer5), "DEVICE REMOVAL TEST")
             assertResult(deviceManager.connectDevice(computer3, computer4), "COMPUTER CONNECTION TEST")
@@ -47,7 +47,7 @@ class AgentTest : KoinTest {
             assertResult(deviceManager.setIpv6(computer3, deviceManager.generateIpv6()), "SET IPV6 ADDRESS TEST")
             assertResult(deviceManager.setIpv6(computer4, deviceManager.generateIpv6()), "SET IPV6 ADDRESS TEST")
             assertResult(deviceManager.disconnectDevice(computer1, switch), "SWITCH DISCONNECTION TEST")
-            agentClient.wipe().collect { progress ->
+            guestManager.wipe().collect { progress ->
                 progress.result?.onFailure { throw AssertionError("FAILED WIPE: $it") }
                 println("WIPE: ${progress.message}")
             }

@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.api
 
-import com.jediterm.terminal.TtyConnector
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
@@ -11,7 +10,7 @@ import java.net.ServerSocket
 import kotlin.random.Random
 
 class DeviceManager(
-    private val agentClient: AgentClient,
+    private val guestManager: GuestManager,
     private val qemuClient: QemuClient,
     preferences: Preferences,
 ) {
@@ -35,7 +34,7 @@ class DeviceManager(
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
         return if (enableAgent) {
-            val res = agentClient.addContainer(device.id, device.ipv4, device.ipv6, device.mac, false, image)
+            val res = guestManager.addContainer(device.id, device.ipv4, device.ipv6, device.mac, false, image)
             res.check(device)
         } else Result.success(device)
     }
@@ -58,7 +57,7 @@ class DeviceManager(
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
         return if (device is Device.Computer && enableAgent) {
-            val res = agentClient.removeContainer(device.id)
+            val res = guestManager.removeContainer(device.id)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -70,7 +69,7 @@ class DeviceManager(
             val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
             device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
                 device1ConnectedComputers.forEach { computer2 ->
-                    val res = agentClient.connect(computer1.id, computer2.id)
+                    val res = guestManager.connect(computer1.id, computer2.id)
                     res.onFailure { return res }
                 }
             }
@@ -85,7 +84,7 @@ class DeviceManager(
             val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
             device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
                 device1ConnectedComputers.forEach { computer2 ->
-                    val res = agentClient.disconnect(computer1.id, computer2.id)
+                    val res = guestManager.disconnect(computer1.id, computer2.id)
                     res.onFailure { return res }
                 }
             }
@@ -97,7 +96,7 @@ class DeviceManager(
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
         return if (enableAgent) {
-            val res = agentClient.setIpv4(device.id, ipv4)
+            val res = guestManager.setIpv4(device.id, ipv4)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -106,7 +105,7 @@ class DeviceManager(
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
         return if (enableAgent) {
-            val res = agentClient.setIpv6(device.id, ipv6)
+            val res = guestManager.setIpv6(device.id, ipv6)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -118,7 +117,7 @@ class DeviceManager(
         logger.debug { "Set internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled
         return if (enableAgent) {
-            val res = agentClient.setInternetAccess(device.id, enabled)
+            val res = guestManager.setInternetAccess(device.id, enabled)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -134,7 +133,7 @@ class DeviceManager(
             guestPort = externalPort // Guest is not the container itself
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
-            val res = agentClient.addPortForwarding(device.id, internalPort, externalPort, protocol)
+            val res = guestManager.addPortForwarding(device.id, internalPort, externalPort, protocol)
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -150,7 +149,7 @@ class DeviceManager(
             hostPort = externalPort
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
-            val res = agentClient.removePortForwarding(externalPort, protocol)
+            val res = guestManager.removePortForwarding(externalPort, protocol)
             res.check(Unit)
         } else Result.success(Unit)
     }

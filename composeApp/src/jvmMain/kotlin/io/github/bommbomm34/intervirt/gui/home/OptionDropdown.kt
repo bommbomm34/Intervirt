@@ -9,7 +9,7 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HELP_URL
-import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
@@ -39,7 +39,7 @@ fun OptionDropdown(
 ) {
     val logger = rememberLogger()
     val preferences = koinInject<Preferences>()
-    val agentClient = koinInject<AgentClient>()
+    val guestManager = koinInject<GuestManager>()
     val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val writeConf: (PlatformFile) -> Unit = { file ->
@@ -59,7 +59,7 @@ fun OptionDropdown(
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
                 if (preferences.ENABLE_AGENT) {
-                    configuration.syncConfiguration(agentClient).collect {
+                    configuration.syncConfiguration(guestManager).collect {
                         logger.info { it }
                     }
                 }

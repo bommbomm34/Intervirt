@@ -2,7 +2,7 @@ package io.github.bommbomm34.intervirt.data
 
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
-import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.exceptions.DeprecatedException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,8 +17,8 @@ data class IntervirtConfiguration(
     val devices: MutableList<Device>,
     val connections: MutableList<DeviceConnection>
 ) {
-    fun syncConfiguration(agentClient: AgentClient): Flow<ResultProgress<Unit>> = flow {
-        agentClient.getVersion()
+    fun syncConfiguration(guestManager: GuestManager): Flow<ResultProgress<Unit>> = flow {
+        guestManager.getVersion()
             .onSuccess { version ->
                 if (version != CURRENT_VERSION) {
                     emit(ResultProgress.failure(DeprecatedException()))
@@ -35,7 +35,7 @@ data class IntervirtConfiguration(
                             message = getString(Res.string.wiping_old_data)
                         )
                     )
-                    agentClient.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
+                    guestManager.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
                     emit(
                         ResultProgress.proceed(
                             percentage = 0.2f,
@@ -51,7 +51,7 @@ data class IntervirtConfiguration(
                                     message = getString(Res.string.creating_device, device.name, device.id)
                                 )
                             )
-                            agentClient.addContainer(
+                            guestManager.addContainer(
                                 id = device.id,
                                 initialIpv4 = device.ipv4,
                                 initialIpv6 = device.ipv6,
@@ -71,7 +71,7 @@ data class IntervirtConfiguration(
                                     )
                                 )
                                 // TODO: Port forwardings should have protocol support for UDP
-                                agentClient.addPortForwarding(device.id, portForwarding.key, portForwarding.value, "tcp")
+                                guestManager.addPortForwarding(device.id, portForwarding.key, portForwarding.value, "tcp")
                             }
                         }
                     }
@@ -90,12 +90,12 @@ data class IntervirtConfiguration(
                             )
                         )
                         when (conn) {
-                            is DeviceConnection.Computer -> agentClient.connect(conn.device1.id, conn.device2.id)
+                            is DeviceConnection.Computer -> guestManager.connect(conn.device1.id, conn.device2.id)
                             is DeviceConnection.Switch -> {
                                 val switch1ConnectedComputers = conn.switch1.getConnectedComputers(connections)
                                 conn.switch2.getConnectedComputers(connections).forEach { computer1 ->
                                     switch1ConnectedComputers.forEach { computer2 ->
-                                        agentClient.connect(
+                                        guestManager.connect(
                                             computer1.id,
                                             computer2.id
                                         )
@@ -104,7 +104,7 @@ data class IntervirtConfiguration(
                             }
 
                             is DeviceConnection.SwitchComputer -> conn.switch.getConnectedComputers(connections)
-                                .forEach { agentClient.connect(it.id, conn.computer.id) }
+                                .forEach { guestManager.connect(it.id, conn.computer.id) }
                         }
                     }
                     emit(

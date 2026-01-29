@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 class QemuClient(
     private val fileManager: FileManager,
-    private val agentClient: AgentClient,
+    private val guestManager: GuestManager,
     private val preferences: Preferences
 ) {
 
@@ -82,7 +82,7 @@ class QemuClient(
         logger.debug { "Closing QEMU monitor session" }
         qemuMonitorSession?.close()
         runCatching {
-            agentClient.shutdown()
+            guestManager.shutdown()
                 .onFailure {
                     logger.error(it) { "Shutdown attempt through agent failed" }
                     currentProcess.destroy()

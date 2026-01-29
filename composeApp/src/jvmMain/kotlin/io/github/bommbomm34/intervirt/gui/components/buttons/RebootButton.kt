@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.reboot
 import intervirt.composeapp.generated.resources.rebooting
-import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
@@ -18,7 +18,7 @@ import org.koin.compose.koinInject
 @Composable
 fun RebootButton(){
     val appState = koinInject<AppState>()
-    val agentClient = koinInject<AgentClient>()
+    val guestManager = koinInject<GuestManager>()
     val qemuClient = koinInject<QemuClient>()
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val rebootText = stringResource(Res.string.reboot)
@@ -28,7 +28,7 @@ fun RebootButton(){
         onClick = {
             scope.launch {
                 rebootButtonText = rebootingText
-                agentClient.reboot()
+                guestManager.reboot()
                     .onFailure {
                         appState.openDialog(
                             importance = Importance.ERROR,

@@ -30,7 +30,7 @@ import java.io.File
 import java.nio.file.Files
 
 class FileManager(
-    private val agentClient: AgentClient,
+    private val guestManager: GuestManager,
     preferences: Preferences
 ) {
     private val logger = KotlinLogging.logger {  }
@@ -123,7 +123,7 @@ class FileManager(
     fun getAlpineDisk(): File = getFile("disk/alpine-linux.qcow2")
 
     suspend fun pullFile(device: Device.Computer, path: String, destFile: PlatformFile): Result<Unit> {
-        val res = agentClient.downloadFile(device.id, path, this)
+        val res = guestManager.downloadFile(device.id, path, this)
         val file = res.getOrElse { return Result.failure(it) }
         return withContext(Dispatchers.IO) {
             try {
@@ -135,7 +135,7 @@ class FileManager(
         }
     }
 
-    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile) = agentClient.uploadFile(device.id, platformFile.file, path, this)
+    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile) = guestManager.uploadFile(device.id, platformFile.file, path, this)
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

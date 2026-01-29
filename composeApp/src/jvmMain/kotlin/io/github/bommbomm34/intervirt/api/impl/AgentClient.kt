@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.api.impl
 
-import io.github.bommbomm34.intervirt.api.AgentClient
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.client
@@ -21,9 +21,9 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-class DefaultAgentClient(
+class AgentClient(
     preferences: Preferences
-) : AgentClient {
+) : GuestManager {
     private val logger = KotlinLogging.logger { }
     private lateinit var session: DefaultClientWebSocketSession
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()

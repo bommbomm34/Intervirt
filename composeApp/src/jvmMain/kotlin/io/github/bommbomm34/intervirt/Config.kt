@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import intervirt.composeapp.generated.resources.Res
 import io.github.bommbomm34.intervirt.api.*
-import io.github.bommbomm34.intervirt.api.impl.DefaultAgentClient
+import io.github.bommbomm34.intervirt.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -38,7 +38,7 @@ const val HOMEPAGE_URL = "https://perhof.org/intervirt"
 val mainModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
-    singleOf(::DefaultAgentClient){ binds(listOf(AgentClient::class)) }
+    singleOf(::AgentClient){ binds(listOf(GuestManager::class)) }
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::Preferences)

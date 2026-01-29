@@ -4,7 +4,7 @@ import io.github.bommbomm34.intervirt.data.ResultProgress
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
-interface AgentClient {
+interface GuestManager {
     suspend fun addContainer(
         id: String,
         initialIpv4: String,
