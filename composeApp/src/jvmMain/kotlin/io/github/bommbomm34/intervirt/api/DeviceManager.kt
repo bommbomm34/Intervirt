@@ -1,5 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
+import io.github.bommbomm34.intervirt.api.impl.CommandStatus
+import io.github.bommbomm34.intervirt.api.impl.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect

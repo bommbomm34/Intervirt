@@ -3,7 +3,7 @@ package io.github.bommbomm34.intervirt.gui.intervirtos
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.getTotalCommandStatus
+import io.github.bommbomm34.intervirt.api.impl.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
