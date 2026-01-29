@@ -2,18 +2,17 @@ package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.RemoteContainerSession
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 class VirtualExecutor : Executor {
-    override suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
-        TODO("Not yet implemented")
-    }
+    override val logger = KotlinLogging.logger {  }
+    private val sessions = mutableMapOf<String, VirtualRemoteContainerSession>()
 
-    override fun runCommandOnHost(
-        workingFolder: File?,
-        commands: List<String>
-    ): Flow<CommandStatus> {
-        TODO("Not yet implemented")
+    override suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
+        val session = VirtualRemoteContainerSession(id)
+        sessions[id] = session
+        return Result.success(session)
     }
 }

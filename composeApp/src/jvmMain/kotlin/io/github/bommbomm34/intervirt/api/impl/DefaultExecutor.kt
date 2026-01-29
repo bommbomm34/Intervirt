@@ -17,7 +17,7 @@ import java.io.File
 class DefaultExecutor(
     private val preferences: Preferences
 ) : Executor {
-    private val logger = KotlinLogging.logger { }
+    override val logger = KotlinLogging.logger { }
     private val sessions = mutableMapOf<String, WebSocketRemoteContainerSession>()
 
     override suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
@@ -45,21 +45,6 @@ class DefaultExecutor(
             return Result.failure(e)
         }
     }
-
-    override fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
-        flow {
-            val builder = ProcessBuilder(commands)
-            workingFolder?.let { builder.directory(it) }
-            builder.redirectErrorStream()
-            logger.info { "Running '${commands.joinToString(" ")}' on host" }
-            val process = builder.start()
-            val reader = process.inputStream.bufferedReader()
-            while (process.isAlive) {
-                val line = reader.readLine() ?: continue
-                emit(line.toCommandStatus())
-            }
-            emit(process.exitValue().toCommandStatus())
-        }
 }
 
 data class CommandStatus(
