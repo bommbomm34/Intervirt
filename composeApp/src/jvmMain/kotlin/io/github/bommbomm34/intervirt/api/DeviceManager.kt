@@ -170,10 +170,6 @@ class DeviceManager(
         return Result.success("127.0.0.1:$proxyPort")
     }
 
-    suspend fun getTtyConnector(computer: Device.Computer): TtyConnector {
-        TODO("Not yet implemented")
-    }
-
     private fun generateID(prefix: String): String {
         while (true) {
             val id = prefix + "-" + Random.nextInt(999999)

@@ -112,4 +112,5 @@
     <string name="enable_virtual_hosts">Enable virtual hosts</string>
     <string name="ssh_server_description">Others in your network can remotely control your computer safely</string>
     <string name="terminal_description">Run commands with the text</string>
+    <string name="terminal_init_failed">Failure during terminal initialization</string>
 </resources>
