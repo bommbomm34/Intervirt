@@ -2,27 +2,23 @@ package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.api.RemoteContainerSession
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.RemoteContainerSession
-import io.github.bommbomm34.intervirt.data.toByteArrayChannel
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.close
-import io.ktor.websocket.send
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.job
 import java.io.File
-import kotlin.coroutines.coroutineContext
 
 class DefaultExecutor(
     private val preferences: Preferences
 ) : Executor {
     private val logger = KotlinLogging.logger { }
-    private val sessions = mutableMapOf<String, RemoteContainerSession>()
+    private val sessions = mutableMapOf<String, WebSocketRemoteContainerSession>()
 
     override suspend fun getContainerSession(id: String): Result<RemoteContainerSession> {
         val scope = CoroutineScope(Dispatchers.IO)
@@ -35,7 +31,7 @@ class DefaultExecutor(
                 port = preferences.AGENT_PORT,
                 path = "pty?id=$id"
             )
-            val remoteContainerSession = RemoteContainerSession(
+            val remoteContainerSession = WebSocketRemoteContainerSession(
                 id = id,
                 incoming = scope.toByteArrayChannel(session.incoming),
                 outgoing = scope.toByteArrayChannel(session.outgoing)

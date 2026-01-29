@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.Executor
-import io.github.bommbomm34.intervirt.data.RemoteContainerSession
+import io.github.bommbomm34.intervirt.api.RemoteContainerSession
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 

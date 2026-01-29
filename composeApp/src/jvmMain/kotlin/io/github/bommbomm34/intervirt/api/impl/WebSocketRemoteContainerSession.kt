@@ -1,5 +1,6 @@
-package io.github.bommbomm34.intervirt.data
+package io.github.bommbomm34.intervirt.api.impl
 
+import io.github.bommbomm34.intervirt.api.RemoteContainerSession
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -7,18 +8,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.launch
 
-data class RemoteContainerSession(
-    val id: String,
+class WebSocketRemoteContainerSession(
+    override val id: String,
     private val incoming: ReceiveChannel<ByteArray>,
     private val outgoing: SendChannel<ByteArray>,
     private val onClose: suspend () -> Unit = {}
-) {
+) : RemoteContainerSession {
 
-    suspend fun write(bytes: ByteArray): Result<Unit> = runCatching {
+    override suspend fun write(bytes: ByteArray): Result<Unit> = runCatching {
         outgoing.send(bytes)
     }
 
-    fun read(length: Int): ByteArray {
+    override fun read(length: Int): ByteArray {
         val byteArray = incoming
             .receive(length)
             .flatMap { it.toList() }
@@ -26,11 +27,11 @@ data class RemoteContainerSession(
         return byteArray
     }
 
-    suspend fun close() = onClose()
+    override suspend fun close() = onClose()
 
     // TODO: Review Delicate API
     @OptIn(DelicateCoroutinesApi::class)
-    fun isConnected(): Boolean = !incoming.isClosedForReceive && !outgoing.isClosedForSend
+    override fun isConnected(): Boolean = !incoming.isClosedForReceive && !outgoing.isClosedForSend
 
     private fun ReceiveChannel<ByteArray>.receive(length: Int): List<ByteArray> {
         val list = mutableListOf<ByteArray>()
