@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.gui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -38,7 +39,9 @@ fun Dialog() {
                         when (appState.dialogState) {
                             is DialogState.Custom -> (appState.dialogState as DialogState.Custom).customContent()
                             is DialogState.Regular -> {
-                                CenterColumn (Modifier.padding(16.dp)) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
                                     val state = appState.dialogState as DialogState.Regular
                                     Text(
                                         text = when (state.importance) {

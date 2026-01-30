@@ -1,9 +1,11 @@
 package io.github.bommbomm34.intervirt.gui.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.no
 import intervirt.composeapp.generated.resources.yes
@@ -18,7 +20,9 @@ fun AcceptDialog(
     onAccept: () -> Unit,
 ){
     val appState = koinInject<AppState>()
-    CenterColumn {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(message)
         GeneralSpacer()
         Row {
