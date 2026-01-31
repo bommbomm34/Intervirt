@@ -24,7 +24,7 @@ import intervirt.composeapp.generated.resources.are_you_sure_to_remove_connectio
 import intervirt.composeapp.generated.resources.too_many_devices_connected
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
@@ -49,7 +49,7 @@ fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     val appState = koinInject<AppState>()
     val statefulConf = appState.statefulConf
     AlignedBox(Alignment.Center) {
@@ -57,7 +57,7 @@ fun DevicesView() {
             Modifier
                 .fillMaxSize()
                 .onPointerEvent(PointerEventType.Scroll) {
-                    val delta = it.changes.first().scrollDelta.y * -preferences.ZOOM_SPEED
+                    val delta = it.changes.first().scrollDelta.y * -appEnv.ZOOM_SPEED
                     if (appState.isCtrlPressed && appState.devicesViewZoom + delta > 0.1f) appState.devicesViewZoom += delta
                 }
                 .onClick(matcher = PointerMatcher.Primary) { drawingConnectionSource = null }
@@ -70,7 +70,7 @@ fun DevicesView() {
                                 point = position,
                                 start = device1.fittingOffset(appState.devicesViewZoom),
                                 end = device2.fittingOffset(appState.devicesViewZoom),
-                                strokeWidth = preferences.CONNECTION_STROKE_WIDTH
+                                strokeWidth = appEnv.CONNECTION_STROKE_WIDTH
                             )
                         }?.let {
                             appState.openDialog {
@@ -99,16 +99,16 @@ fun DevicesView() {
                     drawConnection(
                         offset1 = it.fittingOffset(appState.devicesViewZoom),
                         offset2 = appState.mousePosition,
-                        color = preferences.DEVICE_CONNECTION_COLOR,
-                        strokeWidth = preferences.CONNECTION_STROKE_WIDTH
+                        color = appEnv.DEVICE_CONNECTION_COLOR,
+                        strokeWidth = appEnv.CONNECTION_STROKE_WIDTH
                     )
                 }
                 statefulConf.connections.forEach {
                     drawConnection(
                         offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
                         offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
-                        color = preferences.DEVICE_CONNECTION_COLOR,
-                        strokeWidth = preferences.CONNECTION_STROKE_WIDTH
+                        color = appEnv.DEVICE_CONNECTION_COLOR,
+                        strokeWidth = appEnv.CONNECTION_STROKE_WIDTH
                     )
                 }
             }

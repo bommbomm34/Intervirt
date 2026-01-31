@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.exceptions.OSException
 import io.github.bommbomm34.intervirt.exceptions.QmpException
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit
 class QemuClient(
     private val fileManager: FileManager,
     private val guestManager: GuestManager,
-    private val preferences: Preferences
+    private val appEnv: AppEnv
 ) {
 
     var running = false
@@ -29,14 +30,14 @@ class QemuClient(
 
     private val startAlpineVMCommands = buildList {
         add(fileManager.getQemuFile().absolutePath)
-        if (preferences.VM_ENABLE_KVM) add("-enable-kvm")
+        if (appEnv.VM_ENABLE_KVM) add("-enable-kvm")
         addAll(
             listOf(
-                "-smp", preferences.VM_CPU.toString(),
+                "-smp", appEnv.VM_CPU.toString(),
                 "-drive", "file=${fileManager.getAlpineDisk().absolutePath}",
-                "-m", preferences.VM_RAM.toString(),
-                "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${preferences.AGENT_PORT}-:55436,dns=9.9.9.9",
-                "-qmp", "tcp:127.0.0.1:${preferences.QEMU_MONITOR_PORT},server,nowait",
+                "-m", appEnv.VM_RAM.toString(),
+                "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${appEnv.AGENT_PORT}-:55436,dns=9.9.9.9",
+                "-qmp", "tcp:127.0.0.1:${appEnv.QEMU_MONITOR_PORT},server,nowait",
                 "-device", "e1000,netdev=net0",
                 "-nographic"
             )
@@ -88,7 +89,7 @@ class QemuClient(
                         logger.error(it) { "Shutdown attempt through agent failed" }
                         currentProcess.destroy()
                         logger.debug { "Waiting for Alpine VM to shutdown" }
-                        currentProcess.waitFor(preferences.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                        currentProcess.waitFor(appEnv.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
                         if (currentProcess.isAlive) {
                             logger.debug { "Timeout exceeded, forcing shutdown..." }
                             currentProcess.destroyForcibly()
@@ -140,7 +141,7 @@ class QemuClient(
             logger.debug { "Send to QMP: $payload" }
             writeLine(payload)
             logger.debug { "Waiting for answer" }
-            withTimeoutOrNull(preferences.QEMU_MONITOR_TIMEOUT) {
+            withTimeoutOrNull(appEnv.QEMU_MONITOR_TIMEOUT) {
                 while (true) {
                     readLine()?.let { line ->
                         logger.debug { "Received answer: $line" }
@@ -192,7 +193,7 @@ class QemuClient(
         logger.debug { "Initializing monitor socket connection" }
         val selector = ActorSelectorManager(Dispatchers.IO)
         return@runCatching withTimeout(5000) {
-            val socket = aSocket(selector).tcp().connect("127.0.0.1", preferences.QEMU_MONITOR_PORT)
+            val socket = aSocket(selector).tcp().connect("127.0.0.1", appEnv.QEMU_MONITOR_PORT)
             val session = QemuMonitorSession(selector, socket)
             logger.debug { "Initialized session" }
             session.withLock { session.readLine() } // First message is just greeting

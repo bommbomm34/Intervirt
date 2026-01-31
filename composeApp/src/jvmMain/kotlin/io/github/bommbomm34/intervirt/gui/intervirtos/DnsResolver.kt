@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
@@ -42,13 +42,13 @@ private val json = Json {
 fun DnsResolver(
     computer: ViewDevice.Computer
 ) {
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
     val logger = KotlinLogging.logger {  }
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
     var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }
-    var dnsServer by remember { mutableStateOf(preferences.DEFAULT_DNS_SERVER) }
+    var dnsServer by remember { mutableStateOf(appEnv.DEFAULT_DNS_SERVER) }
     var reverseLookup by remember { mutableStateOf(false) }
     val records = mutableStateListOf<DnsRecord>()
     val scope = rememberCoroutineScope()

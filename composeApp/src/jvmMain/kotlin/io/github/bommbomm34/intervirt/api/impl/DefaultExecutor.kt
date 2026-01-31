@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.RemoteContainerSession
 import io.github.bommbomm34.intervirt.client
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -13,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
 class DefaultExecutor(
-    private val preferences: Preferences
+    private val appEnv: AppEnv
 ) : Executor {
     override val logger = KotlinLogging.logger { }
     private val sessions = mutableMapOf<String, WebSocketRemoteContainerSession>()
@@ -26,7 +27,7 @@ class DefaultExecutor(
             val session = client.webSocketSession(
                 method = HttpMethod.Post,
                 host = "localhost",
-                port = preferences.AGENT_PORT,
+                port = appEnv.AGENT_PORT,
                 path = "pty?id=$id"
             )
             val remoteContainerSession = WebSocketRemoteContainerSession(

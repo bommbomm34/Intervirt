@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
@@ -18,7 +19,7 @@ fun ImagePicker(
     onDismiss: () -> Unit,
     onInstall: (Image) -> Unit
 ) {
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     val images = remember { mutableStateListOf<Image>() }
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
@@ -31,7 +32,7 @@ fun ImagePicker(
     }
     AlignedBox(Alignment.Center, 64.dp){
         LazyVerticalGrid(
-            columns = GridCells.FixedSize(preferences.OS_ICON_SIZE * 1.2f)
+            columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE * 1.2f)
         ){
             items(images){ image ->
                 ImageItem(image){

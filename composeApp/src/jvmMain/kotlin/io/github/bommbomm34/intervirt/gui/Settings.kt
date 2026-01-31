@@ -10,6 +10,7 @@ import intervirt.composeapp.generated.resources.save_changes
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
@@ -28,26 +29,27 @@ import kotlin.system.exitProcess
 
 @Composable
 fun Settings() {
+    val appEnv = koinInject<AppEnv>()
     val preferences = koinInject<Preferences>()
     val appState = koinInject<AppState>()
-    val isDarkMode = preferences.isDarkMode()
+    val isDarkMode = appEnv.isDarkMode()
     var appConf by remember {
         mutableStateOf(
             AppConfigurationData(
-                vmShutdownTimeout = preferences.VM_SHUTDOWN_TIMEOUT.toInt(),
-                agentPort = preferences.AGENT_PORT,
-                intervirtFolder = preferences.DATA_DIR.absolutePath,
-                darkMode = preferences.DARK_MODE ?: isDarkMode,
-                language = preferences.LANGUAGE.toLanguageTag()
+                vmShutdownTimeout = appEnv.VM_SHUTDOWN_TIMEOUT.toInt(),
+                agentPort = appEnv.AGENT_PORT,
+                intervirtFolder = appEnv.DATA_DIR.absolutePath,
+                darkMode = appEnv.DARK_MODE ?: isDarkMode,
+                language = appEnv.LANGUAGE.toLanguageTag()
             )
         )
     }
     var vmConf by remember {
         mutableStateOf(
             VMConfigurationData(
-                ram = preferences.VM_RAM,
-                cpu = preferences.VM_CPU,
-                kvm = preferences.VM_ENABLE_KVM
+                ram = appEnv.VM_RAM,
+                cpu = appEnv.VM_CPU,
+                kvm = appEnv.VM_ENABLE_KVM
             )
         )
     }
@@ -77,7 +79,7 @@ fun Settings() {
                 Text(stringResource(Res.string.save_changes))
             }
             GeneralSpacer()
-            if (preferences.DEBUG_ENABLED) DebugOptions()
+            if (appEnv.DEBUG_ENABLED) DebugOptions()
         }
     }
 }

@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import io.github.bommbomm34.intervirt.api.Executor
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.RemoteContainerSession
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
@@ -20,11 +20,11 @@ import org.koin.compose.koinInject
 fun ShellView(computer: ViewDevice.Computer) {
     val executor = koinInject<Executor>()
     val appState = koinInject<AppState>()
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     val navigator = rememberWebViewNavigator()
     val logger = remember { KotlinLogging.logger { } }
     var ready by remember { mutableStateOf(false) }
-    if (preferences.ENABLE_AGENT) {
+    if (appEnv.ENABLE_AGENT) {
         var session: RemoteContainerSession? by remember { mutableStateOf(null) }
         LaunchedEffect(computer.id) {
             val result = executor.getContainerSession(computer.id)

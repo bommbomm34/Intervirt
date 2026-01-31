@@ -10,8 +10,8 @@ import compose.icons.tablericons.*
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HELP_URL
 import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.configuration
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
@@ -38,7 +38,7 @@ fun OptionDropdown(
     onDismiss: () -> Unit
 ) {
     val logger = rememberLogger()
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     val guestManager = koinInject<GuestManager>()
     val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope()
@@ -58,7 +58,7 @@ fun OptionDropdown(
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
-                if (preferences.ENABLE_AGENT) {
+                if (appEnv.ENABLE_AGENT) {
                     configuration.syncConfiguration(guestManager).collect {
                         logger.info { it }
                     }
@@ -90,7 +90,7 @@ fun OptionDropdown(
                 onClick = {
                     val file = appState.currentFile // Copy delegated state variable
                     if (file != null) writeConf(file) else fileSaverLauncher.launch(
-                        suggestedName = preferences.SUGGESTED_FILENAME,
+                        suggestedName = appEnv.SUGGESTED_FILENAME,
                         extension = "ivrt"
                     )
                     onDismiss()
@@ -105,7 +105,7 @@ fun OptionDropdown(
             DropdownMenuItem(
                 onClick = {
                     fileSaverLauncher.launch(
-                        suggestedName = preferences.SUGGESTED_FILENAME,
+                        suggestedName = appEnv.SUGGESTED_FILENAME,
                         extension = "ivrt"
                     )
                     onDismiss()

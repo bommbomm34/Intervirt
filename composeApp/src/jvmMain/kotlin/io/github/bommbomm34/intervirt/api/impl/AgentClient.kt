@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.client
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.RequestBody
 import io.github.bommbomm34.intervirt.data.ResponseBody
 import io.github.bommbomm34.intervirt.data.ResultProgress
@@ -22,12 +23,12 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 class AgentClient(
-    preferences: Preferences
+    appEnv: AppEnv
 ) : GuestManager {
     private val logger = KotlinLogging.logger { }
     private lateinit var session: DefaultClientWebSocketSession
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
-    private val agentPort = preferences.AGENT_PORT
+    private val agentPort = appEnv.AGENT_PORT
 
     override suspend fun addContainer(
         id: String,

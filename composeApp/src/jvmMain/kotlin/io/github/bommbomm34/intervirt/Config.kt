@@ -45,6 +45,7 @@ val mainModule = module {
     singleOf(::Preferences)
     singleOf(::QemuClient)
     singleOf(::AppState)
+    single { get<Preferences>().getAppEnv() }
 }
 val AVAILABLE_LANGUAGES = listOf(
     Locale.US
@@ -131,7 +132,7 @@ fun Preferences.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConf
 val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
-@Composable fun Preferences.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
+@Composable fun AppEnv.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
 

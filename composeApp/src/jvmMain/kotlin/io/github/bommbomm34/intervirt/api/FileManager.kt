@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.api
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.OS
 import io.github.bommbomm34.intervirt.data.ResultProgress
@@ -32,10 +33,10 @@ import java.nio.file.Files
 
 class FileManager(
     private val guestManager: GuestManager,
-    preferences: Preferences
+    appEnv: AppEnv
 ) {
     private val logger = KotlinLogging.logger { }
-    private val dataDir = preferences.DATA_DIR
+    private val dataDir = appEnv.DATA_DIR
 
     suspend fun init() = withContext(Dispatchers.IO) {
         dataDir.mkdir()

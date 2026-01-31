@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -19,16 +20,16 @@ import org.koin.compose.koinInject
 fun Home(
     onAppChange: (AppInfo) -> Unit
 ){
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     CenterColumn {
         Text(
             text = "IntervirtOS",
-            fontSize = preferences.TITLE_FONT_SIZE
+            fontSize = appEnv.TITLE_FONT_SIZE
         )
         GeneralSpacer()
         AlignedBox(Alignment.Center){
             LazyVerticalGrid(
-                columns = GridCells.FixedSize(preferences.OS_ICON_SIZE * 1.2f)
+                columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE * 1.2f)
             ){
                 items(INTERVIRTOS_APPS){ appInfo ->
                     AppItem(

@@ -14,6 +14,7 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
@@ -36,11 +37,12 @@ fun main() = application {
         modules(mainModule)
     }) {
         val preferences = koinInject<Preferences>()
+        val appEnv = koinInject<AppEnv>()
         val qemuClient = koinInject<QemuClient>()
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         FileKit.init("intervirt")
-        Locale.setDefault(preferences.LANGUAGE)
+        Locale.setDefault(appEnv.LANGUAGE)
         density = LocalDensity.current
         val scope = rememberCoroutineScope()
         // Main Window

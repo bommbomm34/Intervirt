@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.api.impl.CommandStatus
 import io.github.bommbomm34.intervirt.api.impl.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.configuration
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
@@ -14,10 +15,10 @@ import kotlin.random.Random
 class DeviceManager(
     private val guestManager: GuestManager,
     private val qemuClient: QemuClient,
-    preferences: Preferences,
+    appEnv: AppEnv,
 ) {
     private val logger = KotlinLogging.logger { }
-    private val enableAgent = preferences.ENABLE_AGENT
+    private val enableAgent = appEnv.ENABLE_AGENT
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")

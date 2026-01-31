@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.applyConfiguration
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.MultipleAnimatedVisibility
@@ -22,8 +23,9 @@ import java.io.File
 
 @Composable
 fun Setup() {
+    val appEnv = koinInject<AppEnv>()
     val preferences = koinInject<Preferences>()
-    val isDarkMode = preferences.isDarkMode()
+    val isDarkMode = appEnv.isDarkMode()
     var currentSetupScreenIndex by remember { mutableStateOf(0) }
     var vmConf by remember {
         mutableStateOf(
@@ -37,12 +39,11 @@ fun Setup() {
     var appConf by remember {
         mutableStateOf(
             AppConfigurationData(
-                vmShutdownTimeout = preferences.VM_SHUTDOWN_TIMEOUT.toInt(),
-                agentPort = preferences.AGENT_PORT,
-                intervirtFolder = preferences.env("dataDir")
-                    ?: (System.getProperty("user.home") + File.separator + "Intervirt"),
+                vmShutdownTimeout = appEnv.VM_SHUTDOWN_TIMEOUT.toInt(),
+                agentPort = appEnv.AGENT_PORT,
+                intervirtFolder = appEnv.DATA_DIR.absolutePath,
                 darkMode = isDarkMode,
-                language = preferences.LANGUAGE.toLanguageTag()
+                language = appEnv.LANGUAGE.toLanguageTag()
             )
         )
     }

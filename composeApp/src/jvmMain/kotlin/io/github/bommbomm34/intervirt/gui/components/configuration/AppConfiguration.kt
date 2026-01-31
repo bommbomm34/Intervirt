@@ -2,8 +2,8 @@ package io.github.bommbomm34.intervirt.gui.components.configuration
 
 import androidx.compose.runtime.Composable
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.vinceglb.filekit.absolutePath
 import org.jetbrains.compose.resources.stringResource
@@ -15,7 +15,7 @@ fun AppConfiguration(
     conf: AppConfigurationData,
     onConfChange: (AppConfigurationData) -> Unit
 ){
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     CenterColumn {
         IntegerTextField(
             value = conf.vmShutdownTimeout,
@@ -32,7 +32,7 @@ fun AppConfiguration(
         FilePicker(
             label = stringResource(Res.string.intervirt_folder),
             directory = true,
-            defaultPath = preferences.DATA_DIR.absolutePath
+            defaultPath = appEnv.DATA_DIR.absolutePath
         ) { onConfChange(conf.copy(intervirtFolder = it.absolutePath())) }
         GeneralSpacer()
         NamedCheckbox(

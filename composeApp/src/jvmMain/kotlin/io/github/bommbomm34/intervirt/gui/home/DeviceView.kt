@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.Secondary
-import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
@@ -36,10 +36,10 @@ fun DeviceView(
     onSecondaryClick: (ViewDevice) -> Unit
 ) {
     val appState = koinInject<AppState>()
-    val preferences = koinInject<Preferences>()
+    val appEnv = koinInject<AppEnv>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceSizePx = dpToPx(preferences.DEVICE_SIZE)
+    val deviceSizePx = dpToPx(appEnv.DEVICE_SIZE)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -76,7 +76,7 @@ fun DeviceView(
         Icon(
             imageVector = device.getVector(),
             contentDescription = device.name,
-            modifier = Modifier.size(preferences.DEVICE_SIZE, preferences.DEVICE_SIZE),
+            modifier = Modifier.size(appEnv.DEVICE_SIZE, appEnv.DEVICE_SIZE),
             tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f)
         )
         GeneralSpacer(2.dp)
