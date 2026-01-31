@@ -7,12 +7,10 @@ import io.github.bommbomm34.intervirt.client
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
-import io.ktor.websocket.close
+import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import java.io.File
 
 class DefaultExecutor(
     private val preferences: Preferences

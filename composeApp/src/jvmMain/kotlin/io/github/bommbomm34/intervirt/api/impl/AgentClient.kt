@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.api.impl
 
-import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.FileManager
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.RequestBody

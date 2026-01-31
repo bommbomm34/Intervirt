@@ -1,7 +1,7 @@
 package jvm.test.agent
 
-import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.mainModule
 import io.github.oshai.kotlinlogging.KotlinLogging

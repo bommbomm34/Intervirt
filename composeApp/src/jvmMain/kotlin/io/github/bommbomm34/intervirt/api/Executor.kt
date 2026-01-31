@@ -3,7 +3,6 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.api.impl.CommandStatus
 import io.github.bommbomm34.intervirt.api.impl.toCommandStatus
 import io.github.oshai.kotlinlogging.KLogger
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
