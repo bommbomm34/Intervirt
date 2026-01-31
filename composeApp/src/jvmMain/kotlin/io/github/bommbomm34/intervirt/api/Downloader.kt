@@ -33,7 +33,7 @@ class Downloader(
             OS.WINDOWS -> downloadQemuWindows(update)
             OS.LINUX -> downloadQemuLinux(update)
             null -> flow {
-                emit(ResultProgress.Companion.failure(UnsupportedOsException()))
+                emit(ResultProgress.failure(UnsupportedOsException()))
             }
         }
     }
@@ -45,14 +45,14 @@ class Downloader(
             file.collect { resultProgress ->
                 if (resultProgress.result != null) {
                     resultProgress.result.onFailure {
-                        emit(ResultProgress.Companion.failure(it))
+                        emit(ResultProgress.failure(it))
                     }.onSuccess {
-                        emit(ResultProgress.Companion.success(getString(Res.string.download_succeeded)))
+                        emit(ResultProgress.success(getString(Res.string.download_succeeded)))
                         preferences.saveString("DISK_INSTALLED", "true")
                     }
                 } else {
                     emit(
-                        ResultProgress.Companion.proceed(
+                        ResultProgress.proceed(
                             resultProgress.percentage,
                             getString(Res.string.downloading, "VM")
                         )
@@ -61,7 +61,7 @@ class Downloader(
             }
         } else {
             logger.debug { "Already installed disk" }
-            emit(ResultProgress.Companion.success(getString(Res.string.successful_installation, "VM")))
+            emit(ResultProgress.success(getString(Res.string.successful_installation, "VM")))
         }
     }
 
@@ -100,7 +100,7 @@ class Downloader(
                                 zip.extractAll(fileManager.getFile("qemu").absolutePath)
                                 preferences.saveString("QEMU_INSTALLED", "true")
                                 emit(
-                                    ResultProgress.Companion.success(
+                                    ResultProgress.success(
                                         getString(
                                             Res.string.download_succeeded,
                                             "QEMU"
@@ -110,7 +110,7 @@ class Downloader(
                             } catch (e: ZipException) {
                                 logger.error { "Error occurred while extracting ${zipFile.name}: ${e.message}" }
                                 emit(
-                                    ResultProgress.Companion.failure(
+                                    ResultProgress.failure(
                                         ZipExtractionException(
                                             getString(
                                                 Res.string.error_while_zip_extraction,
@@ -122,11 +122,11 @@ class Downloader(
                                 )
                             }
                         }.onFailure {
-                            emit(ResultProgress.Companion.failure(DownloadException(it.localizedMessage)))
+                            emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
                         }
                     } else {
                         emit(
-                            ResultProgress.Companion.proceed(
+                            ResultProgress.proceed(
                                 resultProgress.percentage,
                                 getString(Res.string.downloading, "QEMU")
                             )
@@ -136,7 +136,7 @@ class Downloader(
             }
         } else {
             logger.debug { "Already installed QEMU" }
-            emit(ResultProgress.Companion.success(getString(Res.string.successful_installation, "QEMU")))
+            emit(ResultProgress.success(getString(Res.string.successful_installation, "QEMU")))
         }
     }
 }

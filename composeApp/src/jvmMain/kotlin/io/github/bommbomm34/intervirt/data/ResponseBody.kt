@@ -4,7 +4,7 @@ import io.github.bommbomm34.intervirt.exceptions.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable()
+@Serializable
 sealed class ResponseBody {
     abstract val refID: String
     @SerialName("General")

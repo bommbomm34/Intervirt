@@ -65,7 +65,7 @@ class FileManager(
             client.prepareGet(url).execute { response ->
                 if (response.status != HttpStatusCode.OK) {
                     emit(
-                        ResultProgress.Companion.result(
+                        ResultProgress.result(
                             Result.failure(
                                 Exception(
                                     getString(Res.string.download_failed, response.status.description)
@@ -84,11 +84,11 @@ class FileManager(
 
                             chunk.transferTo(stream)
                             logger.debug { "Downloaded $count bytes of $totalBytes bytes" }
-                            emit(ResultProgress.Companion.proceed(count.toFloat() / totalBytes))
+                            emit(ResultProgress.proceed(count.toFloat() / totalBytes))
                         }
                     }
                     logger.debug { "Successfully downloaded $name" }
-                    emit(ResultProgress.Companion.result(Result.success(file)))
+                    emit(ResultProgress.result(Result.success(file)))
                 }
             }
         }.flowOn(Dispatchers.IO)
@@ -108,7 +108,7 @@ class FileManager(
             )
             onUpload { bytesSentTotal, contentLength ->
                 val progress = contentLength?.let { bytesSentTotal / it.toFloat() }
-                emit(ResultProgress.Companion.proceed(progress ?: 0f))
+                emit(ResultProgress.proceed(progress ?: 0f))
             }
         }
     }

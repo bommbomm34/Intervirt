@@ -114,17 +114,17 @@ class AgentClient(
                 flow.collect {
                     if (it.code != 0) {
                         failed = true
-                        emit(ResultProgress.Companion.failure(it.exception()!!))
+                        emit(ResultProgress.failure(it.exception()!!))
                     } else {
-                        emit(ResultProgress.Companion.proceed(it.progress ?: 0f, it.output))
+                        emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
                     }
                 }
             }
             .onFailure {
                 failed = true
-                emit(ResultProgress.Companion.failure(it))
+                emit(ResultProgress.failure(it))
             }
-        if (!failed) emit(ResultProgress.Companion.success(Unit))
+        if (!failed) emit(ResultProgress.success(Unit))
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -146,7 +146,7 @@ class AgentClient(
         if (!this::session.isInitialized) {
             val result = runCatching {
                 session = client.webSocketSession(
-                    method = HttpMethod.Companion.Get,
+                    method = HttpMethod.Get,
                     host = "localhost",
                     port = agentPort,
                     path = "containerManagement"

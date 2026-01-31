@@ -37,8 +37,7 @@ class WebSocketRemoteContainerSession(
         val list = mutableListOf<ByteArray>()
         var lengthOfBytes = 0
         while (true) {
-            val frame = tryReceive().getOrElse { return list }
-            val bytes = (frame as Frame.Binary).readBytes()
+            val bytes = tryReceive().getOrElse { return list }
             lengthOfBytes += bytes.size
             if (lengthOfBytes < length) list.add(bytes) else return list
         }

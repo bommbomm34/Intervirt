@@ -52,7 +52,7 @@ class Preferences {
 
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
 
-    private fun flush() = Files.writeString(dataFile, Json.Default.encodeToString(data))
+    private fun flush() = Files.writeString(dataFile, Json.encodeToString(data))
 
     private fun load() {
         if (dataFile.exists()){
