@@ -36,7 +36,7 @@ class FileManager(
     appEnv: AppEnv
 ) {
     private val logger = KotlinLogging.logger { }
-    private val dataDir = appEnv.DATA_DIR
+    private val dataDir = appEnv.dataDir
 
     suspend fun init() = withContext(Dispatchers.IO) {
         dataDir.mkdir()

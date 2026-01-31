@@ -36,20 +36,20 @@ fun Settings() {
     var appConf by remember {
         mutableStateOf(
             AppConfigurationData(
-                vmShutdownTimeout = appEnv.VM_SHUTDOWN_TIMEOUT.toInt(),
-                agentPort = appEnv.AGENT_PORT,
-                intervirtFolder = appEnv.DATA_DIR.absolutePath,
-                darkMode = appEnv.DARK_MODE ?: isDarkMode,
-                language = appEnv.LANGUAGE.toLanguageTag()
+                vmShutdownTimeout = appEnv.vmShutdownTimeout.toInt(),
+                agentPort = appEnv.agentPort,
+                intervirtFolder = appEnv.dataDir.absolutePath,
+                darkMode = appEnv.darkMode ?: isDarkMode,
+                language = appEnv.language.toLanguageTag()
             )
         )
     }
     var vmConf by remember {
         mutableStateOf(
             VMConfigurationData(
-                ram = appEnv.VM_RAM,
-                cpu = appEnv.VM_CPU,
-                kvm = appEnv.VM_ENABLE_KVM
+                ram = appEnv.vmRam,
+                cpu = appEnv.vmCpu,
+                kvm = appEnv.vmEnableKvm
             )
         )
     }
@@ -79,7 +79,7 @@ fun Settings() {
                 Text(stringResource(Res.string.save_changes))
             }
             GeneralSpacer()
-            if (appEnv.DEBUG_ENABLED) DebugOptions()
+            if (appEnv.debugEnabled) DebugOptions()
         }
     }
 }

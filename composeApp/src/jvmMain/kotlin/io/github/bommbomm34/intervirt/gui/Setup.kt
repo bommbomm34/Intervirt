@@ -19,7 +19,6 @@ import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfigurati
 import io.github.bommbomm34.intervirt.gui.setup.Installation
 import io.github.bommbomm34.intervirt.isDarkMode
 import org.koin.compose.koinInject
-import java.io.File
 
 @Composable
 fun Setup() {
@@ -39,11 +38,11 @@ fun Setup() {
     var appConf by remember {
         mutableStateOf(
             AppConfigurationData(
-                vmShutdownTimeout = appEnv.VM_SHUTDOWN_TIMEOUT.toInt(),
-                agentPort = appEnv.AGENT_PORT,
-                intervirtFolder = appEnv.DATA_DIR.absolutePath,
+                vmShutdownTimeout = appEnv.vmShutdownTimeout.toInt(),
+                agentPort = appEnv.agentPort,
+                intervirtFolder = appEnv.dataDir.absolutePath,
                 darkMode = isDarkMode,
-                language = appEnv.LANGUAGE.toLanguageTag()
+                language = appEnv.language.toLanguageTag()
             )
         )
     }

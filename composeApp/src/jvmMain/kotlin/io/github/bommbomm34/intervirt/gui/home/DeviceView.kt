@@ -39,7 +39,7 @@ fun DeviceView(
     val appEnv = koinInject<AppEnv>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceSizePx = dpToPx(appEnv.DEVICE_SIZE)
+    val deviceSizePx = dpToPx(appEnv.deviceSize)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -76,7 +76,7 @@ fun DeviceView(
         Icon(
             imageVector = device.getVector(),
             contentDescription = device.name,
-            modifier = Modifier.size(appEnv.DEVICE_SIZE, appEnv.DEVICE_SIZE),
+            modifier = Modifier.size(appEnv.deviceSize, appEnv.deviceSize),
             tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f)
         )
         GeneralSpacer(2.dp)

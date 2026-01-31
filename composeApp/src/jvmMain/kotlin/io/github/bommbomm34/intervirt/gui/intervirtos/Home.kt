@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
@@ -24,12 +23,12 @@ fun Home(
     CenterColumn {
         Text(
             text = "IntervirtOS",
-            fontSize = appEnv.TITLE_FONT_SIZE
+            fontSize = appEnv.titleFontSize
         )
         GeneralSpacer()
         AlignedBox(Alignment.Center){
             LazyVerticalGrid(
-                columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE * 1.2f)
+                columns = GridCells.FixedSize(appEnv.osIconSize * 1.2f)
             ){
                 items(INTERVIRTOS_APPS){ appInfo ->
                     AppItem(

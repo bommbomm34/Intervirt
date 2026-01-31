@@ -24,7 +24,7 @@ fun ShellView(computer: ViewDevice.Computer) {
     val navigator = rememberWebViewNavigator()
     val logger = remember { KotlinLogging.logger { } }
     var ready by remember { mutableStateOf(false) }
-    if (appEnv.ENABLE_AGENT) {
+    if (appEnv.enableAgent) {
         var session: RemoteContainerSession? by remember { mutableStateOf(null) }
         LaunchedEffect(computer.id) {
             val result = executor.getContainerSession(computer.id)

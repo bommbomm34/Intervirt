@@ -42,7 +42,7 @@ fun main() = application {
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         FileKit.init("intervirt")
-        Locale.setDefault(appEnv.LANGUAGE)
+        Locale.setDefault(appEnv.language)
         density = LocalDensity.current
         val scope = rememberCoroutineScope()
         // Main Window

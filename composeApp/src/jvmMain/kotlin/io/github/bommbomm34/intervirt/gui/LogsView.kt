@@ -8,7 +8,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -29,7 +28,7 @@ fun LogsView(logs: List<String>){
                     Text(
                         text = it,
                         color = Color.Gray,
-                        fontSize = appEnv.TOOLTIP_FONT_SIZE
+                        fontSize = appEnv.tooltipFontSize
                     )
                     HorizontalDivider()
                 }

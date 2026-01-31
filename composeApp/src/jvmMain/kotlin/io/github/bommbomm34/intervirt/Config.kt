@@ -132,7 +132,7 @@ fun Preferences.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConf
 val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
-@Composable fun AppEnv.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
+@Composable fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
 

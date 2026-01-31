@@ -18,7 +18,7 @@ class DeviceManager(
     appEnv: AppEnv,
 ) {
     private val logger = KotlinLogging.logger { }
-    private val enableAgent = appEnv.ENABLE_AGENT
+    private val enableAgent = appEnv.enableAgent
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")

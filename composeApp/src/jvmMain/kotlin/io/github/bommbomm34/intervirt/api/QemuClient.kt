@@ -30,14 +30,14 @@ class QemuClient(
 
     private val startAlpineVMCommands = buildList {
         add(fileManager.getQemuFile().absolutePath)
-        if (appEnv.VM_ENABLE_KVM) add("-enable-kvm")
+        if (appEnv.vmEnableKvm) add("-enable-kvm")
         addAll(
             listOf(
-                "-smp", appEnv.VM_CPU.toString(),
+                "-smp", appEnv.vmCpu.toString(),
                 "-drive", "file=${fileManager.getAlpineDisk().absolutePath}",
-                "-m", appEnv.VM_RAM.toString(),
-                "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${appEnv.AGENT_PORT}-:55436,dns=9.9.9.9",
-                "-qmp", "tcp:127.0.0.1:${appEnv.QEMU_MONITOR_PORT},server,nowait",
+                "-m", appEnv.vmRam.toString(),
+                "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${appEnv.agentPort}-:55436,dns=9.9.9.9",
+                "-qmp", "tcp:127.0.0.1:${appEnv.qemuMonitorPort},server,nowait",
                 "-device", "e1000,netdev=net0",
                 "-nographic"
             )
@@ -89,7 +89,7 @@ class QemuClient(
                         logger.error(it) { "Shutdown attempt through agent failed" }
                         currentProcess.destroy()
                         logger.debug { "Waiting for Alpine VM to shutdown" }
-                        currentProcess.waitFor(appEnv.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                        currentProcess.waitFor(appEnv.vmShutdownTimeout, TimeUnit.MILLISECONDS)
                         if (currentProcess.isAlive) {
                             logger.debug { "Timeout exceeded, forcing shutdown..." }
                             currentProcess.destroyForcibly()
@@ -141,7 +141,7 @@ class QemuClient(
             logger.debug { "Send to QMP: $payload" }
             writeLine(payload)
             logger.debug { "Waiting for answer" }
-            withTimeoutOrNull(appEnv.QEMU_MONITOR_TIMEOUT) {
+            withTimeoutOrNull(appEnv.qemuMonitorTimeout) {
                 while (true) {
                     readLine()?.let { line ->
                         logger.debug { "Received answer: $line" }
@@ -193,7 +193,7 @@ class QemuClient(
         logger.debug { "Initializing monitor socket connection" }
         val selector = ActorSelectorManager(Dispatchers.IO)
         return@runCatching withTimeout(5000) {
-            val socket = aSocket(selector).tcp().connect("127.0.0.1", appEnv.QEMU_MONITOR_PORT)
+            val socket = aSocket(selector).tcp().connect("127.0.0.1", appEnv.qemuMonitorPort)
             val session = QemuMonitorSession(selector, socket)
             logger.debug { "Initialized session" }
             session.withLock { session.readLine() } // First message is just greeting

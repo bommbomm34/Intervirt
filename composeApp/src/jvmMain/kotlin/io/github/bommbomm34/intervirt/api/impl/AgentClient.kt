@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.RequestBody
@@ -28,7 +27,7 @@ class AgentClient(
     private val logger = KotlinLogging.logger { }
     private lateinit var session: DefaultClientWebSocketSession
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
-    private val agentPort = appEnv.AGENT_PORT
+    private val agentPort = appEnv.agentPort
 
     override suspend fun addContainer(
         id: String,

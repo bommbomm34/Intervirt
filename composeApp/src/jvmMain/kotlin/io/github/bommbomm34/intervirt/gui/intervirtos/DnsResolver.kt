@@ -48,7 +48,7 @@ fun DnsResolver(
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
     var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }
-    var dnsServer by remember { mutableStateOf(appEnv.DEFAULT_DNS_SERVER) }
+    var dnsServer by remember { mutableStateOf(appEnv.defaultDnsServer) }
     var reverseLookup by remember { mutableStateOf(false) }
     val records = mutableStateListOf<DnsRecord>()
     val scope = rememberCoroutineScope()

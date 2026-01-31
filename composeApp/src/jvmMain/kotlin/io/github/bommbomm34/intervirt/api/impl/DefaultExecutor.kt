@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.Executor
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.RemoteContainerSession
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.AppEnv
@@ -27,7 +26,7 @@ class DefaultExecutor(
             val session = client.webSocketSession(
                 method = HttpMethod.Post,
                 host = "localhost",
-                port = appEnv.AGENT_PORT,
+                port = appEnv.agentPort,
                 path = "pty?id=$id"
             )
             val remoteContainerSession = WebSocketRemoteContainerSession(

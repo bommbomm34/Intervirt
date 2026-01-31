@@ -14,6 +14,6 @@ fun ImageIcon(image: Image) {
     androidx.compose.foundation.Image(
         painter = painterResource(image.icon),
         contentDescription = image.toReadableName(),
-        modifier = Modifier.size(appEnv.OS_ICON_SIZE)
+        modifier = Modifier.size(appEnv.osIconSize)
     )
 }
