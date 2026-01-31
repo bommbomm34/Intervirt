@@ -84,14 +84,16 @@ class QemuClient(
         runCatching {
             guestManager.shutdown()
                 .onFailure {
-                    logger.error(it) { "Shutdown attempt through agent failed" }
-                    currentProcess.destroy()
-                    logger.debug { "Waiting for Alpine VM to shutdown" }
-                    currentProcess.waitFor(preferences.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
-                    if (currentProcess.isAlive) {
-                        logger.debug { "Timeout exceeded, forcing shutdown..." }
-                        currentProcess.destroyForcibly()
-                        currentProcess.waitFor()
+                    withContext(Dispatchers.IO){
+                        logger.error(it) { "Shutdown attempt through agent failed" }
+                        currentProcess.destroy()
+                        logger.debug { "Waiting for Alpine VM to shutdown" }
+                        currentProcess.waitFor(preferences.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                        if (currentProcess.isAlive) {
+                            logger.debug { "Timeout exceeded, forcing shutdown..." }
+                            currentProcess.destroyForcibly()
+                            currentProcess.waitFor()
+                        }
                     }
                 }
         }.onFailure {

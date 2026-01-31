@@ -20,14 +20,13 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
 fun IOOptions(device: ViewDevice.Computer){
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()
     val fileManager = koinInject<FileManager>()
     var containerFilePath by remember { mutableStateOf("") }

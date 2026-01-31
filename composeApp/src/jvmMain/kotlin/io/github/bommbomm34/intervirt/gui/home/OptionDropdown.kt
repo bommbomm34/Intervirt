@@ -41,7 +41,7 @@ fun OptionDropdown(
     val preferences = koinInject<Preferences>()
     val guestManager = koinInject<GuestManager>()
     val appState = koinInject<AppState>()
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     val writeConf: (PlatformFile) -> Unit = { file ->
         scope.launch {
             file.writeString(Json.encodeToString(configuration))

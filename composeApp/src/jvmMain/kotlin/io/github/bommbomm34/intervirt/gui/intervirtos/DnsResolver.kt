@@ -17,7 +17,6 @@ import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
@@ -52,7 +51,7 @@ fun DnsResolver(
     var dnsServer by remember { mutableStateOf(preferences.DEFAULT_DNS_SERVER) }
     var reverseLookup by remember { mutableStateOf(false) }
     val records = mutableStateListOf<DnsRecord>()
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     AlignedBox(Alignment.Center) {
         CenterColumn {
             OutlinedTextField(

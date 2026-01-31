@@ -11,7 +11,6 @@ import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
@@ -20,7 +19,7 @@ import org.koin.compose.koinInject
 fun DebugOptions() {
     val appState = koinInject<AppState>()
     val qemuClient = koinInject<QemuClient>()
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     val logger = remember { KotlinLogging.logger {  } }
     Text("Debugging enabled")
     Text("Current version: $CURRENT_VERSION")

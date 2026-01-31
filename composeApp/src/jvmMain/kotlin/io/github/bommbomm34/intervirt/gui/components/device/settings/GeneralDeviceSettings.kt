@@ -16,7 +16,6 @@ import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -28,7 +27,7 @@ fun GeneralDeviceSettings(
 ) {
     val deviceManager = koinInject<DeviceManager>()
     val appState = koinInject<AppState>()
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     OutlinedTextField(
         value = device.id,
         onValueChange = {}, // ID can't be changed once set

@@ -15,7 +15,6 @@ import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -24,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SyncButton() {
     val appState = koinInject<AppState>()
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
     val qemuClient = koinInject<QemuClient>()

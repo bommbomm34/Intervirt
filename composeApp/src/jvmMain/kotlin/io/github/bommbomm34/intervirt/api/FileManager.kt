@@ -21,6 +21,7 @@ import io.ktor.utils.io.streams.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlinx.io.asSink
@@ -33,21 +34,21 @@ class FileManager(
     private val guestManager: GuestManager,
     preferences: Preferences
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
     private val dataDir = preferences.DATA_DIR
 
-    fun init() {
+    suspend fun init() = withContext(Dispatchers.IO) {
         dataDir.mkdir()
         dataDir.createFileInDirectory("qemu", true)
         dataDir.createFileInDirectory("disk", true)
         dataDir.createFileInDirectory("cache", true)
     }
 
-    fun newFile(path: String): File {
-        return dataDir.createFileInDirectory(path)
+    suspend fun newFile(path: String) = withContext(Dispatchers.IO){
+        dataDir.createFileInDirectory(path)
     }
 
-    fun removeFile(path: String) {
+    suspend fun removeFile(path: String) = withContext(Dispatchers.IO){
         dataDir.createFileInDirectory(path)
     }
 
@@ -90,7 +91,7 @@ class FileManager(
                     emit(ResultProgress.Companion.result(Result.success(file)))
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
 
     fun uploadFile(url: String, file: File): Flow<ResultProgress<Unit>> = flow {
         client.post(url) {
@@ -129,13 +130,14 @@ class FileManager(
             try {
                 Files.move(file.toPath(), destFile.file.toPath())
                 return@withContext Result.success(Unit)
-            } catch (e: IOException){
+            } catch (e: IOException) {
                 return@withContext Result.failure(e)
             }
         }
     }
 
-    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile) = guestManager.uploadFile(device.id, platformFile.file, path, this)
+    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile) =
+        guestManager.uploadFile(device.id, platformFile.file, path, this)
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

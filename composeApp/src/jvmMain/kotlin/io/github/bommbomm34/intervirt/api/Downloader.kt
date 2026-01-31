@@ -13,8 +13,10 @@ import io.github.bommbomm34.intervirt.exceptions.UnsupportedArchitectureExceptio
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.exception.ZipException
 import org.jetbrains.compose.resources.getString
@@ -23,7 +25,7 @@ class Downloader(
     private val preferences: Preferences,
     private val fileManager: FileManager
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     fun downloadQemu(update: Boolean = false): Flow<ResultProgress<String>> {
         logger.debug { "Downloading QEMU" }
@@ -84,50 +86,52 @@ class Downloader(
 
     private fun downloadQemuZip(update: Boolean, url: String): Flow<ResultProgress<String>> = flow {
         if (!preferences.env("QEMU_INSTALLED").toBoolean() || update) {
-            // Wipe previous installation if available
-            fileManager.getFile("qemu").listFiles().forEach { it.delete() }
-            // Install fresh QEMU
-            val file = fileManager.downloadFile(url, "qemu-portable.zip")
-            file.collect { resultProgress ->
-                if (resultProgress.result != null) {
-                    resultProgress.result.onSuccess { zipFile ->
-                        val zip = ZipFile(zipFile)
-                        try {
-                            logger.debug { "Extracting ${zipFile.name}" }
-                            zip.extractAll(fileManager.getFile("qemu").absolutePath)
-                            preferences.saveString("QEMU_INSTALLED", "true")
-                            emit(
-                                ResultProgress.Companion.success(
-                                    getString(
-                                        Res.string.download_succeeded,
-                                        "QEMU"
-                                    )
-                                )
-                            )
-                        } catch (e: ZipException) {
-                            logger.error { "Error occurred while extracting ${zipFile.name}: ${e.message}" }
-                            emit(
-                                ResultProgress.Companion.failure(
-                                    ZipExtractionException(
+            withContext(Dispatchers.IO) {
+                // Wipe previous installation if available
+                fileManager.getFile("qemu").listFiles().forEach { it.delete() }
+                // Install fresh QEMU
+                val file = fileManager.downloadFile(url, "qemu-portable.zip")
+                file.collect { resultProgress ->
+                    if (resultProgress.result != null) {
+                        resultProgress.result.onSuccess { zipFile ->
+                            val zip = ZipFile(zipFile)
+                            try {
+                                logger.debug { "Extracting ${zipFile.name}" }
+                                zip.extractAll(fileManager.getFile("qemu").absolutePath)
+                                preferences.saveString("QEMU_INSTALLED", "true")
+                                emit(
+                                    ResultProgress.Companion.success(
                                         getString(
-                                            Res.string.error_while_zip_extraction,
-                                            zipFile.name,
-                                            e.localizedMessage
+                                            Res.string.download_succeeded,
+                                            "QEMU"
                                         )
                                     )
                                 )
-                            )
+                            } catch (e: ZipException) {
+                                logger.error { "Error occurred while extracting ${zipFile.name}: ${e.message}" }
+                                emit(
+                                    ResultProgress.Companion.failure(
+                                        ZipExtractionException(
+                                            getString(
+                                                Res.string.error_while_zip_extraction,
+                                                zipFile.name,
+                                                e.localizedMessage
+                                            )
+                                        )
+                                    )
+                                )
+                            }
+                        }.onFailure {
+                            emit(ResultProgress.Companion.failure(DownloadException(it.localizedMessage)))
                         }
-                    }.onFailure {
-                        emit(ResultProgress.Companion.failure(DownloadException(it.localizedMessage)))
-                    }
-                } else {
-                    emit(
-                        ResultProgress.Companion.proceed(
-                            resultProgress.percentage,
-                            getString(Res.string.downloading, "QEMU")
+                    } else {
+                        emit(
+                            ResultProgress.Companion.proceed(
+                                resultProgress.percentage,
+                                getString(Res.string.downloading, "QEMU")
+                            )
                         )
-                    )
+                    }
                 }
             }
         } else {

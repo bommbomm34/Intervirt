@@ -13,7 +13,6 @@ import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -22,7 +21,7 @@ import org.koin.compose.koinInject
 fun HttpServer(
     computer: ViewDevice.Computer
 ) {
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
     var running by remember { mutableStateOf(false) }
     var enableVirtualHosts by remember { mutableStateOf(false) }

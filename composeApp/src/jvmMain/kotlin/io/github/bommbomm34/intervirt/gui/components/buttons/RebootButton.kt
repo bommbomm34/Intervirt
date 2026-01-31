@@ -10,7 +10,6 @@ import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -20,7 +19,7 @@ fun RebootButton(){
     val appState = koinInject<AppState>()
     val guestManager = koinInject<GuestManager>()
     val qemuClient = koinInject<QemuClient>()
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope()
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)
     var rebootButtonText by remember { mutableStateOf(rebootText) }

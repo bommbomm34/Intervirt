@@ -25,7 +25,6 @@ import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
@@ -43,7 +42,7 @@ fun main() = application {
         FileKit.init("intervirt")
         Locale.setDefault(preferences.LANGUAGE)
         density = LocalDensity.current
-        val scope = rememberCoroutineScope { Dispatchers.IO }
+        val scope = rememberCoroutineScope()
         // Main Window
         Window(
             onCloseRequest = {

@@ -27,7 +27,6 @@ interface Executor {
                 emit(line.toCommandStatus())
             }
             emit(process.exitValue().toCommandStatus())
-        }
-            .flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.IO)
 
 }
