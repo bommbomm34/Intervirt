@@ -28,5 +28,6 @@ data class AppEnv(
     val qemuMonitorPort: Int,
     val titleFontSize: TextUnit,
     val appIconSize: Dp?,
-    val defaultDnsServer: String
+    val defaultDnsServer: String,
+    val pseudoMode: Boolean
 )

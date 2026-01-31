@@ -49,7 +49,8 @@ class Preferences {
         qemuMonitorPort = env("QEMU_MONITOR_PORT")?.toInt() ?: 55437,
         titleFontSize = env("TITLE_FONT_SIZE")?.toInt()?.sp ?: 48.sp,
         appIconSize = env("APP_ICON_SIZE")?.toInt()?.dp,
-        defaultDnsServer = env("DEFAULT_DNS_SERVER") ?: "9.9.9.9"
+        defaultDnsServer = env("DEFAULT_DNS_SERVER") ?: "9.9.9.9",
+        pseudoMode = env("PSEUDO_MODE").toBoolean()
     )
     
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
