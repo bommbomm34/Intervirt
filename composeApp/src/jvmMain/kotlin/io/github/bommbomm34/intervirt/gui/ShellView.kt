@@ -24,30 +24,6 @@ fun ShellView(computer: ViewDevice.Computer) {
     val navigator = rememberWebViewNavigator()
     val logger = remember { KotlinLogging.logger { } }
     var ready by remember { mutableStateOf(false) }
-    if (appEnv.enableAgent) {
-        var session: RemoteContainerSession? by remember { mutableStateOf(null) }
-        LaunchedEffect(computer.id) {
-            val result = executor.getContainerSession(computer.id)
-            result.fold(
-                onSuccess = {
-                    session = it
-                    ready = true
-                },
-                onFailure = {
-                    appState.openDialog(
-                        importance = Importance.ERROR,
-                        message = it.localizedMessage
-                    )
-                }
-            )
-        }
-    }
 
-    Column {
-        WebView(
-            state = rememberWebViewState(""),
-            modifier = Modifier.fillMaxSize(),
-            navigator = navigator
-        )
-    }
+    // TODO: Implement ShellView
 }
