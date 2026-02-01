@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.FlowProgressView
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +31,7 @@ import org.koin.compose.koinInject
 fun Installation(
     applyConfiguration: () -> Unit
 ) {
-    val logger = KotlinLogging.logger {  }
+    val logger = rememberLogger()
     val downloader = koinInject<Downloader>()
     val preferences = koinInject<Preferences>()
     val fileManager = koinInject<FileManager>()

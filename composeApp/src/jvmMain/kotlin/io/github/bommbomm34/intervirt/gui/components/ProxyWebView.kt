@@ -9,6 +9,7 @@ import com.parkwoocheol.composewebview.client.rememberWebViewClient
 import com.parkwoocheol.composewebview.client.shouldInterceptRequest
 import com.parkwoocheol.composewebview.rememberSaveableWebViewState
 import com.parkwoocheol.composewebview.rememberWebViewController
+import io.github.bommbomm34.intervirt.rememberLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.request
@@ -27,11 +28,13 @@ fun ProxyWebView(
 ) {
     val webViewState = rememberSaveableWebViewState(url)
     val controller = rememberWebViewController()
+    val logger = rememberLogger()
     val client = rememberWebViewClient {
         // Delegates requests to
         shouldInterceptRequest { _, request ->
             if (request == null) return@shouldInterceptRequest null
             runBlocking {
+                logger.debug { "${request.method} ${request.url}" }
                 val res = client.request {
                     url(request.url)
                     request.headers.forEach { (key, value) -> header(key, value) }

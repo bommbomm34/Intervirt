@@ -15,6 +15,7 @@ import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
+import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ fun DnsResolver(
 ) {
     val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
-    val logger = KotlinLogging.logger {  }
+    val logger = rememberLogger()
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
     var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }
