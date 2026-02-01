@@ -11,6 +11,7 @@ import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.PortForwarding
 
 sealed class ViewDevice {
     abstract val device: Device
@@ -32,7 +33,7 @@ sealed class ViewDevice {
         val mac = device.mac
         var internetEnabled by mutableStateOf(device.internetEnabled)
         val portForwardings =
-            mutableStateMapOf<Int, Int>().apply { putAll(device.portForwardings) } // internalPort:externalPort
+            mutableListOf<PortForwarding>().apply { addAll(device.portForwardings) } // internalPort:externalPort
 
         override fun getVector() = TablerIcons.DevicesPc
         override fun canConnect() = configuration.connections.count { it.containsDevice(device) } == 0

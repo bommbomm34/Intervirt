@@ -65,13 +65,12 @@ data class IntervirtConfiguration(
                                         percentage = progress,
                                         message = getString(
                                             Res.string.adding_port_forwarding,
-                                            "${portForwarding.key}:${portForwarding.value}",
+                                            "${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}",
                                             device.name
                                         )
                                     )
                                 )
-                                // TODO: Port forwardings should have protocol support for UDP
-                                guestManager.addPortForwarding(device.id, portForwarding.key, portForwarding.value, "tcp")
+                                guestManager.addPortForwarding(device.id, portForwarding.guestPort, portForwarding.hostPort, portForwarding.protocol)
                             }
                         }
                     }

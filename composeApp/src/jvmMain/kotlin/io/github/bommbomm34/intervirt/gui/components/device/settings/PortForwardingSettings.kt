@@ -31,14 +31,13 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
             }
         }
         LazyColumn {
-            items(device.portForwardings.toList()) { portForwarding ->
+            items(device.portForwardings) { portForwarding ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${portForwarding.first}:${portForwarding.second}")
+                    Text("${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}")
                     RemoveButton {
                         scope.launch {
-                            device.portForwardings.remove(portForwarding.first)
-                            // TODO: Support UDP protocol
-                            deviceManager.removePortForwarding(portForwarding.second, "tcp")
+                            device.portForwardings.remove(portForwarding)
+                            deviceManager.removePortForwarding(portForwarding.hostPort, portForwarding.protocol)
                         }
                     }
                 }

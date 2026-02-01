@@ -82,8 +82,8 @@ val configuration = IntervirtConfiguration(
             ipv6 = "fd00:6767:6767:6767:0808:abcd:abcd:aaaa",
             mac = "fd:67:67:67:67:67",
             internetEnabled = false,
-            portForwardings = mutableMapOf(
-                67 to 25565
+            portForwardings = mutableListOf(
+                PortForwarding("tcp", 67, 25565)
             )
         )
     ),

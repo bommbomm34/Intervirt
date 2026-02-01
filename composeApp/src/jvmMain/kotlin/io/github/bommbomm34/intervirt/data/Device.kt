@@ -22,7 +22,7 @@ sealed class Device {
         var ipv6: String,
         val mac: String,
         var internetEnabled: Boolean,
-        val portForwardings: MutableMap<Int, Int> // internalPort:externalPort
+        val portForwardings: MutableList<PortForwarding> // internalPort:externalPort
     ) : Device()
 
     @Serializable

@@ -5,6 +5,7 @@ import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.CommandStatus
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
@@ -35,7 +36,7 @@ class DeviceManager(
             ipv6 = generateIpv6(),
             mac = generateMac(),
             internetEnabled = false,
-            portForwardings = mutableMapOf()
+            portForwardings = mutableListOf()
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
@@ -140,7 +141,7 @@ class DeviceManager(
         protocol: String
     ): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
-        device.portForwardings[internalPort] = externalPort
+        device.portForwardings.add(PortForwarding(protocol, externalPort, internalPort))
         qemuClient.addPortForwarding(
             protocol = "tcp", // TODO: It should be editable,
             hostPort = externalPort,
@@ -156,10 +157,10 @@ class DeviceManager(
         logger.debug { "Remove port forwarding of $externalPort" }
         configuration.devices.forEach { device ->
             if (device is Device.Computer)
-                device.portForwardings.entries.removeIf { it.value == externalPort }
+                device.portForwardings.removeIf { it.hostPort == externalPort }
         }
         qemuClient.removePortForwarding(
-            protocol = "tcp", // TODO: It should be editable
+            protocol = protocol,
             hostPort = externalPort
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
