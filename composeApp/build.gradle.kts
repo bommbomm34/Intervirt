@@ -31,7 +31,7 @@ kotlin {
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.compose.webview)
+            implementation("io.github.parkwoocheol:compose-webview:1.6.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -49,6 +49,9 @@ kotlin {
             implementation(libs.commons.validator)
             implementation(libs.jediterm.core)
             implementation(libs.jediterm.ui)
+            implementation(libs.webview.java)
+            implementation("org.openjfx:javafx-controls:21")
+            implementation("org.openjfx:javafx-web:21")
         }
 
     }

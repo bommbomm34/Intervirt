@@ -113,4 +113,6 @@
     <string name="ssh_server_description">Others in your network can remotely control your computer safely</string>
     <string name="terminal_description">Run commands with the text</string>
     <string name="terminal_init_failed">Failure during terminal initialization</string>
+    <string name="waiting_for_container_proxy">Waiting for container proxy...</string>
+    <string name="failed_to_load_proxy">Failed to load proxy :%1$s</string>
 </resources>

@@ -1,32 +1,39 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.browse
+import intervirt.composeapp.generated.resources.failed_to_load_proxy
 import intervirt.composeapp.generated.resources.url
+import intervirt.composeapp.generated.resources.waiting_for_container_proxy
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
+import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedColumn
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.kdroidfilter.webview.web.WebView
-import io.github.kdroidfilter.webview.web.rememberWebViewNavigator
-import io.github.kdroidfilter.webview.web.rememberWebViewState
+import io.github.bommbomm34.intervirt.gui.components.webview.ProxyWebView
+import io.github.bommbomm34.intervirt.gui.components.webview.rememberWebViewState
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun Browser(
     computer: ViewDevice.Computer
 ){
+    val deviceManager = koinInject<DeviceManager>()
+    val state = rememberWebViewState(HOMEPAGE_URL)
     var url by remember { mutableStateOf("") }
-    val navigator = rememberWebViewNavigator()
+    var proxyUrl: Result<String>? by remember { mutableStateOf(null) }
+    LaunchedEffect(computer.id){
+        proxyUrl = deviceManager.getProxy(computer.device)
+    }
     CenterColumn {
         CenterRow {
             AlignedColumn(Alignment.CenterHorizontally){
@@ -39,17 +46,27 @@ fun Browser(
             GeneralSpacer()
             AlignedColumn(Alignment.End){
                 Button(
-                    onClick = { navigator.loadUrl(url) }
+                    onClick = { state.url = url }
                 ){
                     Text(stringResource(Res.string.browse))
                 }
             }
         }
         GeneralSpacer()
-        WebView(
-            state = rememberWebViewState(HOMEPAGE_URL),
-            navigator = navigator,
-            modifier = Modifier.fillMaxSize()
-        )
+        val proxy = proxyUrl
+        if (proxy != null){
+            proxy.fold(
+                onSuccess = {
+                    state.proxy = it
+                    ProxyWebView(state)
+                },
+                onFailure = {
+                    Text(
+                        text = stringResource(Res.string.failed_to_load_proxy, it.localizedMessage),
+                        color = Color.Red
+                    )
+                }
+            )
+        } else Text(stringResource(Res.string.waiting_for_container_proxy))
     }
 }
