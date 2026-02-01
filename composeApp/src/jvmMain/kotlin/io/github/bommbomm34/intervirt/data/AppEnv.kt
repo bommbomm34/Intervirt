@@ -29,5 +29,6 @@ data class AppEnv(
     val titleFontSize: TextUnit,
     val appIconSize: Dp?,
     val defaultDnsServer: String,
-    val pseudoMode: Boolean
+    val pseudoMode: Boolean,
+    val enableJavaScript: Boolean
 )

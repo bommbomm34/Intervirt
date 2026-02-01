@@ -144,6 +144,6 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
 fun Dp.toPx() = density.run { toPx() }
 
 @Composable
-fun rememberLogger() = remember { KotlinLogging.logger {  } }
+fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 
 internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()

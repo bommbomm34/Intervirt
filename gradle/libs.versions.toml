@@ -3,7 +3,6 @@ aboutLibraries = "13.2.1"
 androidx-lifecycle = "2.9.6"
 commons-validator = "1.10.1"
 compose-tabler-icons = "1.1.1"
-compose-webview = "1.6.0"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.0"
 filekit = "0.12.0"
@@ -17,6 +16,7 @@ ktor = "3.4.0"
 slf4j = "2.0.17"
 version-catalog-update = "1.0.1"
 zip4j = "2.11.5"
+osdetector = "1.7.3"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -25,7 +25,6 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commons-validator" }
 compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-tabler-icons" }
-compose-webview = { module = "io.github.parkwoocheol:compose-webview", version.ref = "compose-webview" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 jediterm-core = { module = "org.jetbrains.jediterm:jediterm-core", version.ref = "jediterm" }
@@ -52,3 +51,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
+osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }

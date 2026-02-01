@@ -31,7 +31,7 @@ import org.koin.compose.koinInject
 fun Installation(
     applyConfiguration: () -> Unit
 ) {
-    val logger = rememberLogger()
+    val logger = rememberLogger("Installation")
     val downloader = koinInject<Downloader>()
     val preferences = koinInject<Preferences>()
     val fileManager = koinInject<FileManager>()

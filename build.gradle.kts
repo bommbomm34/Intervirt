@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.aboutLibraries) apply false
+    alias(libs.plugins.osdetector)
     alias(libs.plugins.versionCatalogUpdate)
 }
 

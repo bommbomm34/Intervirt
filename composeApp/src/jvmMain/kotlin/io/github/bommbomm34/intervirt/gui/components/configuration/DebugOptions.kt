@@ -21,7 +21,7 @@ fun DebugOptions() {
     val appState = koinInject<AppState>()
     val qemuClient = koinInject<QemuClient>()
     val scope = rememberCoroutineScope()
-    val logger = rememberLogger()
+    val logger = rememberLogger("DebugOptions")
     Text("Debugging enabled")
     Text("Current version: $CURRENT_VERSION")
     Button(onClick = {

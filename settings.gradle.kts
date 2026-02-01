@@ -26,7 +26,6 @@ dependencyResolutionManagement {
         }
         mavenCentral()
         maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/")
-        maven("https://jitpack.io")
     }
 }
 

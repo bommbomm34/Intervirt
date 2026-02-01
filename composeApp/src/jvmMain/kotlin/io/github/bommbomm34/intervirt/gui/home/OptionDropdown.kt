@@ -37,7 +37,7 @@ fun OptionDropdown(
     onConfChange: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val logger = rememberLogger()
+    val logger = rememberLogger("OptionDropdown")
     val appEnv = koinInject<AppEnv>()
     val guestManager = koinInject<GuestManager>()
     val appState = koinInject<AppState>()

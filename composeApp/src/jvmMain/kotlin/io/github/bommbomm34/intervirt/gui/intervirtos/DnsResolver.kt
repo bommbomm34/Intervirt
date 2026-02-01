@@ -45,7 +45,7 @@ fun DnsResolver(
 ) {
     val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
-    val logger = rememberLogger()
+    val logger = rememberLogger("DnsResolver")
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
     var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }

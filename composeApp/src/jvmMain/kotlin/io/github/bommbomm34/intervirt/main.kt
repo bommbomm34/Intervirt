@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt
 
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
@@ -26,6 +27,7 @@ import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
+import javafx.application.Platform
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
@@ -41,8 +43,12 @@ fun main() = application {
         val qemuClient = koinInject<QemuClient>()
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
-        FileKit.init("intervirt")
-        Locale.setDefault(appEnv.language)
+        remember {
+            // These things shouldn't be only called once
+            Locale.setDefault(appEnv.language)
+            FileKit.init("intervirt")
+            initJfx()
+        }
         density = LocalDensity.current
         val scope = rememberCoroutineScope()
         // Main Window
@@ -97,5 +103,15 @@ fun main() = application {
                 }
             }
         }
+    }
+}
+
+private fun initJfx(){
+    Platform.startup {  }
+    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+        if (thread.name == "AWT-EventQueue-0" && throwable is NullPointerException && throwable.message?.contains("java.awt.font.TextHitInfo.getInsertionIndex()") ?: false){
+            // Probably this exception: Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException: Cannot invoke "java.awt.font.TextHitInfo.getInsertionIndex()" because "<parameter1>" is null
+            // This exception is not critical and doesn't crash the app. Don't handle it.
+        } else throw throwable // Other exceptions are fine to be thrown.
     }
 }

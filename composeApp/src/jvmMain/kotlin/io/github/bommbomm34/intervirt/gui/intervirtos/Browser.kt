@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.*
-import io.ktor.client.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -22,9 +22,9 @@ fun Browser(
     val deviceManager = koinInject<DeviceManager>()
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
-    var proxyClient: Result<HttpClient>? by remember { mutableStateOf(null) }
+    var proxyUrl: Result<Address>? by remember { mutableStateOf(null) }
     LaunchedEffect(computer.id) {
-        proxyClient = deviceManager.getContainerHttpClient(computer.device)
+        proxyUrl = deviceManager.getProxyUrl(computer.device)
     }
     CenterColumn {
         CenterRow {
@@ -45,13 +45,13 @@ fun Browser(
             }
         }
         GeneralSpacer()
-        val client = proxyClient
-        if (client != null) {
-            client.fold(
+        val res = proxyUrl
+        if (res != null) {
+            res.fold(
                 onSuccess = {
                     ProxyWebView(
                         url = currentUrl,
-                        client = it
+                        proxyAddress = it
                     )
                 },
                 onFailure = {

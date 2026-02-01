@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.api.impl.CommandStatus
 import io.github.bommbomm34.intervirt.configuration
+import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
@@ -167,21 +168,13 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun getContainerHttpClient(computer: Device.Computer): Result<HttpClient> {
+    suspend fun getProxyUrl(computer: Device.Computer): Result<Address> {
         val port = getFreePort()
         return qemuClient.addPortForwarding(
             protocol = "tcp",
             hostPort = port,
             guestPort = 1080
-        ).map {
-            val httpClient = HttpClient(CIO) {
-                engine {
-                    proxy = ProxyBuilder.http("http://localhost:$port")
-                }
-            }
-            containerHttpClients[computer] = httpClient
-            httpClient
-        }
+        ).map { Address("127.0.0.1", port) }
     }
 
     private fun generateID(prefix: String): String {

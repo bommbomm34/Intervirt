@@ -1,5 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
+val javaFXVersion = "21"
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
@@ -7,12 +9,23 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.aboutLibraries)
+    alias(libs.plugins.osdetector)
 }
 
 kotlin {
     jvm()
 
     sourceSets {
+        // https://stackoverflow.com/questions/73187027/use-javafx-in-kotlin-multiplatform
+        val javaFXSuffix = when (osdetector.classifier){
+            "linux-x86_64" -> "linux"
+            "linux-aarch_64" -> "linux-aarch64"
+            "windows-x86_64" -> "win"
+            "osx-x86_64" -> "mac"
+            "osx-aarch_64" -> "mac-aarch64"
+            else -> throw IllegalStateException("Unknown OS: ${osdetector.classifier}")
+        }
+
         commonMain.dependencies {
             implementation("org.jetbrains.compose.runtime:runtime:1.10.0")
             implementation("org.jetbrains.compose.foundation:foundation:1.10.0")
@@ -31,7 +44,6 @@ kotlin {
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.compose.webview)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -49,6 +61,13 @@ kotlin {
             implementation(libs.commons.validator)
             implementation(libs.jediterm.core)
             implementation(libs.jediterm.ui)
+            // JavaFX
+            implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")
+            implementation("org.openjfx:javafx-graphics:$javaFXVersion:${javaFXSuffix}")
+            implementation("org.openjfx:javafx-controls:$javaFXVersion:${javaFXSuffix}")
+            implementation("org.openjfx:javafx-web:$javaFXVersion:${javaFXSuffix}")
+            implementation("org.openjfx:javafx-swing:$javaFXVersion:${javaFXSuffix}")
+            implementation("org.openjfx:javafx-media:$javaFXVersion:${javaFXSuffix}")
         }
 
     }
