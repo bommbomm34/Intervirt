@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.api.impl.CommandStatus
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.data.CommandStatus
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging

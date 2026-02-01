@@ -413,22 +413,6 @@ Message from server:
 }
 ```
 
-### PTY WebSockets
-
-This is a special WebSockets endpoint under ```ws://localhost:55436/pty?id=ID_OF_THE_CONTAINER```. It represents a PTY shell. The data format is always binary (except of window changes). The task of the Agent is to write received bytes to the PTY of the container of the given id. It should also send bytes read of the PTY of the container back to the client.
-
-The client performes a window size change like that:
-
-```json
-{
-    "type": "ShellSizeChange",
-    "rows": 80,
-    "columns": 80
-}
-```
-
-It will be sended as a `Frame.Text` , not `Frame.Binary`. You **must not** forward this JSON to Incus. Instead, you should format it to an Incus-conform way and send it to the `control` WebSocket PTY channel of the Incus container. 
-
 ### Intervirt Error Codes
 
 Intervirt has its own error codes:

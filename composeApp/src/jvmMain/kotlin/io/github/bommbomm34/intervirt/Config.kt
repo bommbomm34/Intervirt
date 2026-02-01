@@ -12,8 +12,6 @@ import androidx.compose.ui.unit.Dp
 import intervirt.composeapp.generated.resources.Res
 import io.github.bommbomm34.intervirt.api.*
 import io.github.bommbomm34.intervirt.api.impl.AgentClient
-import io.github.bommbomm34.intervirt.api.impl.DefaultExecutor
-import io.github.bommbomm34.intervirt.api.impl.VirtualExecutor
 import io.github.bommbomm34.intervirt.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.data.stateful.AppState
@@ -23,7 +21,6 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
 import kotlinx.serialization.json.Json
-import org.koin.core.module.dsl.binds
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -40,9 +37,7 @@ const val HELP_URL = "https://docs.perhof.org/intervirt"
 const val HOMEPAGE_URL = "https://perhof.org/intervirt"
 
 val mainModule = module {
-    single {
-        if (get<AppEnv>().pseudoMode) VirtualExecutor() else DefaultExecutor(get())
-    }.binds(arrayOf(Executor::class))
+    singleOf(::Executor)
     singleOf(::Downloader)
     single {
         (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(get()))
