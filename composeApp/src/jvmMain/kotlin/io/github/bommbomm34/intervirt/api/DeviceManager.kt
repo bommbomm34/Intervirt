@@ -1,13 +1,14 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.api.impl.CommandStatus
-import io.github.bommbomm34.intervirt.api.impl.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.connect
-import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.engine.cio.*
 import kotlinx.coroutines.flow.Flow
 import java.net.ServerSocket
 import kotlin.random.Random
@@ -19,6 +20,7 @@ class DeviceManager(
 ) {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
+    private val containerHttpClients = mutableMapOf<Device.Computer, HttpClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -59,6 +61,7 @@ class DeviceManager(
         logger.debug { "Removing device $device" }
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
+        containerHttpClients.remove(device)
         return if (device is Device.Computer && enableAgent) {
             val res = guestManager.removeContainer(device.id)
             res.check(Unit)
@@ -112,6 +115,7 @@ class DeviceManager(
             res.check(Unit)
         } else Result.success(Unit)
     }
+
     fun setName(device: Device, name: String) {
         device.name = name
     }
@@ -125,9 +129,15 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun runCommand(computer: Device.Computer, commands: List<String>): Flow<CommandStatus> = TODO("Not yet implemented")
+    suspend fun runCommand(computer: Device.Computer, commands: List<String>): Flow<CommandStatus> =
+        TODO("Not yet implemented")
 
-    suspend fun addPortForwarding(device: Device.Computer, internalPort: Int, externalPort: Int, protocol: String): Result<Unit> {
+    suspend fun addPortForwarding(
+        device: Device.Computer,
+        internalPort: Int,
+        externalPort: Int,
+        protocol: String
+    ): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings[internalPort] = externalPort
         qemuClient.addPortForwarding(
@@ -157,19 +167,21 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun getProxy(computer: Device.Computer): Result<String> {
-        val proxyPort = getFreePort()
-        // Add port forwarding for proxy
-        addPortForwarding(
-            device = computer,
-            externalPort = proxyPort,
-            internalPort = 1080,
-            protocol = "tcp"
-        ).onFailure { return Result.failure(it) }
-        // Start proxy
-        val total = runCommand(computer, listOf("rc-service", "danted", "start")).getTotalCommandStatus()
-        if (total.statusCode!! != 0) return Result.failure(ContainerExecutionException(total.message!!))
-        return Result.success("127.0.0.1:$proxyPort")
+    suspend fun getContainerHttpClient(computer: Device.Computer): Result<HttpClient> {
+        val port = getFreePort()
+        return qemuClient.addPortForwarding(
+            protocol = "tcp",
+            hostPort = port,
+            guestPort = 1080
+        ).map {
+            val httpClient = HttpClient(CIO) {
+                engine {
+                    proxy = ProxyBuilder.http("http://localhost:$port")
+                }
+            }
+            containerHttpClients[computer] = httpClient
+            httpClient
+        }
     }
 
     private fun generateID(prefix: String): String {
