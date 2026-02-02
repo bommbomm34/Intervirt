@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.data.CommandStream
 import org.apache.sshd.client.SshClient
+import org.apache.sshd.client.channel.ChannelExec
 import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.sftp.client.SftpClientFactory
 import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider
@@ -25,14 +25,11 @@ class ContainerSshClient(port: Int) {
         session.auth().verify()
     }
 
-    fun exec(command: String): CommandStream {
+    fun exec(command: String): ChannelExec {
         val channel = session.createExecChannel(command)
+        channel.isRedirectErrorStream = true
         channel.open().verify()
-        return CommandStream(
-            stdin = channel.`in`,
-            stdout = channel.out,
-            stderr = channel.err
-        ) { channel.close() }
+        return channel
     }
 
     fun close() {

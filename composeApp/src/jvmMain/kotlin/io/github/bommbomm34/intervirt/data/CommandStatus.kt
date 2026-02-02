@@ -6,9 +6,6 @@ data class CommandStatus(
     val message: String? = null,
     val statusCode: Int? = null
 )
-
-fun String.toCommandStatus() = CommandStatus(message = this)
-fun Int.toCommandStatus() = CommandStatus(statusCode = this)
 suspend fun Flow<CommandStatus>.getTotalCommandStatus(iterate: suspend (CommandStatus) -> Unit = {}): CommandStatus {
     var statusCode: Int? = null
     val totalOutput = StringBuilder()
