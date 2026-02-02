@@ -428,20 +428,6 @@ Intervirt has its own error codes:
 | 7          | The server doesn't support the operation                                                                           | no                  |
 | 8          | The JSON input of the client isn't valid or contains invalid arguments (e.g. invalid protocol for port forwarding) | yes                 |
 
-### RESTful Endpoints
-
-There is also two regular API endpoints via REST without WebSockets:
-
-Endpoint: `POST http://localhost:55436/file?id=ID_OF_THE_CONTAINER&path=DESTINATION_PATH`
-
-The request body contains a file in binary form. The file is streamed by the client. It is sended as a multipart. Intervirt Agent should construct a file of it and copy it to the container filesystem of the container with the given id and save it to the given path.
-
-Endpoint: `GET http://localhost:55436/file?id=ID_OF_THE_CONTAINER&path=DESTINATION_PATH`
-
-Intervirt Agent should export the file of the container with the given id from the given path and return it in this request.
-
-If there is an error, please report it via HTTP Status Codes. The container archive should always be a .tar.gz file.
-
 ### Tips
 
 - Some commands in WebSockets require a stream instead a single answer (e.g. `wipe`).

@@ -61,6 +61,8 @@ kotlin {
             implementation(libs.commons.validator)
             implementation(libs.jediterm.core)
             implementation(libs.jediterm.ui)
+            implementation(libs.sshd.core)
+            implementation(libs.sshd.sftp)
             // JavaFX
             implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")
             implementation("org.openjfx:javafx-graphics:$javaFXVersion:${javaFXSuffix}")
