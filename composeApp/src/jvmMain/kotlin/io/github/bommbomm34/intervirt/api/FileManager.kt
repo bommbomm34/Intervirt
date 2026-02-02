@@ -125,20 +125,11 @@ class FileManager(
     fun getAlpineDisk(): File = getFile("disk/alpine-linux.qcow2")
 
     suspend fun pullFile(device: Device.Computer, path: String, destFile: PlatformFile): Result<Unit> {
-        val res = guestManager.downloadFile(device.id, path, this)
-        val file = res.getOrElse { return Result.failure(it) }
-        return withContext(Dispatchers.IO) {
-            try {
-                Files.move(file.toPath(), destFile.file.toPath())
-                return@withContext Result.success(Unit)
-            } catch (e: IOException) {
-                return@withContext Result.failure(e)
-            }
-        }
+        TODO("Not yet implemented")
     }
 
-    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile) =
-        guestManager.uploadFile(device.id, platformFile.file, path, this)
+    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile): Unit =
+        TODO("Not yet implemented")
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {

@@ -32,32 +32,6 @@ class VirtualGuestManager : GuestManager {
         return if (removed) Result.success(Unit) else Result.failure(NotFoundException("Container $id not found."))
     }
 
-    override suspend fun downloadFile(
-        id: String,
-        path: String,
-        fileManager: FileManager
-    ): Result<File> = runCatching {
-        val file = File(path)
-        val targetFile = fileManager.getFile("cache/${Base64.encode(path.toByteArray())}.${file.extension}")
-        file.copyTo(targetFile)
-        return@runCatching targetFile
-    }
-
-    override fun uploadFile(
-        id: String,
-        file: File,
-        path: String,
-        fileManager: FileManager
-    ): Flow<ResultProgress<Unit>> = flow {
-        emit(ResultProgress.proceed(0.1f, "Uploading file..."))
-        runCatching {
-            file.copyTo(File(path))
-        }.fold(
-            onSuccess = { emit(ResultProgress.success(Unit)) },
-            onFailure = { emit(ResultProgress.failure(it)) }
-        )
-    }
-
     override suspend fun setIpv4(id: String, newIP: String): Result<Unit> = runCatching {
         containers.first { it.id == id }.ipv4 = newIP
     }

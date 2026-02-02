@@ -40,21 +40,6 @@ class AgentClient(
 
     override suspend fun removeContainer(id: String): Result<Unit> = justSend(RequestBody.RemoveContainer(id))
 
-    override suspend fun downloadFile(id: String, path: String, fileManager: FileManager): Result<File> {
-        val fileExtension = path.substringAfterLast(".", "")
-        return fileManager.downloadFile(
-            "http://localhost:$agentPort/file?id=$id&$path",
-            "file-$id-${System.currentTimeMillis()}${if (fileExtension.isBlank()) "" else ".$fileExtension"}"
-        ).first { it.result != null }.result!!
-    }
-
-    override fun uploadFile(id: String, file: File, path: String, fileManager: FileManager): Flow<ResultProgress<Unit>> {
-        return fileManager.uploadFile(
-            "http://localhost:$agentPort/file?id=$id&path=$path",
-            file
-        )
-    }
-
     override suspend fun setIpv4(id: String, newIP: String): Result<Unit> =
         justSend(RequestBody.IDWithNewIpv4(id, newIP))
 

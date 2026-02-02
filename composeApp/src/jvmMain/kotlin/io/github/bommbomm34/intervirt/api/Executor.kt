@@ -31,7 +31,7 @@ class Executor(val deviceManager: DeviceManager) {
         return deviceManager.getSshClient(computer).map { sshClient ->
             flow {
                 val command = commands.joinToString(" ")
-                logger.info { "Running '$command' on container" }
+                logger.info { "Running '$command' on container ${computer.id}" }
                 sshClient.exec(command).use {
                     val reader = it.`in`.bufferedReader()
                     while (!it.isClosed) {

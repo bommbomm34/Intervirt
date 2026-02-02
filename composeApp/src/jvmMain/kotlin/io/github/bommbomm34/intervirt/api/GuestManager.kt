@@ -16,10 +16,6 @@ interface GuestManager {
 
     suspend fun removeContainer(id: String): Result<Unit>
 
-    suspend fun downloadFile(id: String, path: String, fileManager: FileManager): Result<File>
-
-    fun uploadFile(id: String, file: File, path: String, fileManager: FileManager): Flow<ResultProgress<Unit>>
-
     suspend fun setIpv4(id: String, newIP: String): Result<Unit>
 
     suspend fun setIpv6(id: String, newIP: String): Result<Unit>
