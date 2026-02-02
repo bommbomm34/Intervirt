@@ -22,7 +22,7 @@ class DeviceManager(
 ) {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
-    private val containerHttpClients = mutableMapOf<Device.Computer, HttpClient>()
+    private val containerSshClients = mutableMapOf<Device.Computer, ContainerSshClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -63,7 +63,8 @@ class DeviceManager(
         logger.debug { "Removing device $device" }
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
-        containerHttpClients.remove(device)
+        containerSshClients[device]?.close()
+        containerSshClients.remove(device)
         return if (device is Device.Computer && enableAgent) {
             val res = guestManager.removeContainer(device.id)
             res.check(Unit)
@@ -131,9 +132,6 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun runCommand(computer: Device.Computer, commands: List<String>): Flow<CommandStatus> =
-        TODO("Not yet implemented")
-
     suspend fun addPortForwarding(
         device: Device.Computer,
         internalPort: Int,
@@ -179,6 +177,23 @@ class DeviceManager(
         ).map { Address("127.0.0.1", port) }
     }
 
+    suspend fun getSshClient(computer: Device.Computer): Result<ContainerSshClient> {
+        // Check if there is an existing client
+        containerSshClients[computer]?.let { return Result.success(it) }
+        // Open port for SSH
+        val port = getFreePort()
+        return addPortForwarding(
+            device = computer,
+            internalPort = 22,
+            externalPort = port,
+            protocol = "tcp"
+        ).map {
+            val sshClient = ContainerSshClient(port)
+            containerSshClients[computer] = sshClient
+            sshClient
+        }
+    }
+
     private fun generateID(prefix: String): String {
         while (true) {
             val id = prefix + "-" + Random.nextInt(999999)
@@ -215,5 +230,9 @@ class DeviceManager(
             val ipv6 = "fd${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
             if (configuration.devices.all { if (it is Device.Computer) it.ipv6 != ipv6 else true }) return ipv6
         }
+    }
+
+    fun close(){
+        containerSshClients.forEach { (_, client) -> client.close() }
     }
 }
