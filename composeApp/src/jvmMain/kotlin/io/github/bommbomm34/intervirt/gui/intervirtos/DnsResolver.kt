@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
@@ -44,7 +45,7 @@ fun DnsResolver(
     computer: ViewDevice.Computer
 ) {
     val appEnv = koinInject<AppEnv>()
-    val deviceManager = koinInject<DeviceManager>()
+    val executor = koinInject<Executor>()
     val logger = rememberLogger("DnsResolver")
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
@@ -90,7 +91,7 @@ fun DnsResolver(
                 onClick = {
                     records.clear()
                     scope.launch {
-                        deviceManager.lookupDns(
+                        executor.lookupDns(
                             logger = logger,
                             device = computer.device,
                             name = domain,
@@ -109,7 +110,7 @@ fun DnsResolver(
     }
 }
 
-private suspend fun DeviceManager.lookupDns(
+private suspend fun Executor.lookupDns(
     logger: KLogger,
     device: Device.Computer,
     name: String,
@@ -117,19 +118,21 @@ private suspend fun DeviceManager.lookupDns(
     nameserver: String,
     reverse: Boolean
 ): List<DnsRecord> {
-    val baseCommandList = listOf("doggo", name, "--type", type, "--nameserver", nameserver, "--json")
-    val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
-    val output = StringBuilder()
-    logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
-    runCommand(
-        computer = device,
-        commands = commandList
-    ).collect { progress -> progress.message?.let { output.append(it) } }
-    logger.debug { "Received during DNS lookup:\n$output" }
-    val resolverOutput = json.decodeFromString<DnsResolverOutput>(output.toString())
-    return resolverOutput.responses
-        .getOrNull(0)
-        ?.answers
-        ?.map { it.toDnsRecord() }
-        ?: emptyList()
+    TODO("Not yet implemented")
+    // TODO: Handle errors correctly
+//    val baseCommandList = listOf("doggo", name, "--type", type, "--nameserver", nameserver, "--json")
+//    val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
+//    val output = StringBuilder()
+//    logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
+//    runCommand(
+//        computer = device,
+//        commands = commandList
+//    ).collect { progress -> progress.message?.let { output.append(it) } }
+//    logger.debug { "Received during DNS lookup:\n$output" }
+//    val resolverOutput = json.decodeFromString<DnsResolverOutput>(output.toString())
+//    return resolverOutput.responses
+//        .getOrNull(0)
+//        ?.answers
+//        ?.map { it.toDnsRecord() }
+//        ?: emptyList()
 }

@@ -6,6 +6,7 @@ import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.enable_virtual_hosts
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.data.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
@@ -22,12 +23,12 @@ fun HttpServer(
     computer: ViewDevice.Computer
 ) {
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject<DeviceManager>()
+    val executor = koinInject<Executor>()
     var running by remember { mutableStateOf(false) }
     var enableVirtualHosts by remember { mutableStateOf(false) }
     AlignedBox(Alignment.TopEnd) {
         PlayButton(running) {
-            scope.launch { deviceManager.enableHttpServer(computer, it) }
+            scope.launch { executor.enableHttpServer(computer, it) }
         }
         GeneralSpacer()
         NamedCheckbox(
@@ -42,14 +43,14 @@ fun HttpServer(
     }
 }
 
-private suspend fun DeviceManager.enableHttpServer(
+private suspend fun Executor.enableHttpServer(
     computer: ViewDevice.Computer,
     enabled: Boolean
 ): Result<Unit> {
-    val total = runCommand(
+    val total = runCommandOnGuest(
         computer = computer.device,
         commands = listOf("systemctl", if (enabled) "start" else "stop", "apache2")
-    ).getTotalCommandStatus()
+    ).getOrElse { return Result.failure(it) }.getTotalCommandStatus()
 
     return if (total.statusCode!! == 0) Result.success(Unit)
     else Result.failure(ContainerExecutionException(total.message!!))

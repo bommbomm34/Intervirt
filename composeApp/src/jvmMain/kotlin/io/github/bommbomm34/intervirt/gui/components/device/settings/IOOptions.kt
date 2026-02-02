@@ -12,33 +12,53 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.terminal
 import intervirt.composeapp.generated.resources.upload_file
+import io.github.bommbomm34.intervirt.api.ContainerSshClient
+import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.FileManager
+import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.ContainerFilePicker
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
+import io.github.vinceglb.filekit.utils.toPath
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import kotlin.io.path.copyTo
 
 @Composable
 fun IOOptions(device: ViewDevice.Computer){
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()
     val fileManager = koinInject<FileManager>()
+    val deviceManager = koinInject<DeviceManager>()
+    val logger = rememberLogger("IOOptions")
+    var sshClient: ContainerSshClient? by remember { mutableStateOf(null) }
     var containerFilePath by remember { mutableStateOf("") }
+    LaunchedEffect(device.id){
+        sshClient = deviceManager.getSshClient(device.device).getOrElse {
+            logger.error(it) { "Failure during obtaining a SshClient for ${device.id}" }
+            null
+        }
+    }
     val fileSaverLauncher = rememberFileSaverLauncher { file ->
         file?.let {
             scope.launch {
                 // containerFilePath must be valid if this launcher is called
-                fileManager.pullFile(
-                    device = device.device,
-                    path = containerFilePath,
-                    destFile = it
-                )
+                try {
+                    sshClient!!.fs
+                        .getPath(containerFilePath)
+                        .copyTo(file.file.toPath())
+                } catch (e: Exception){
+                    appState.openDialog(
+                        importance = Importance.ERROR,
+                        message = e.localizedMessage
+                    )
+                }
             }
         }
     }
@@ -48,12 +68,14 @@ fun IOOptions(device: ViewDevice.Computer){
                 ContainerFilePicker(device){ path ->
                     path?.let { _ ->
                         scope.launch {
-                            fileManager.pushFile(
-                                device = device.device,
-                                path = path,
-                                platformFile = file
-                            ).collect {
-                                // TODO: Show progress via dialog
+                            try {
+                                file.file.toPath()
+                                    .copyTo(sshClient!!.fs.getPath(path))
+                            } catch (e: Exception){
+                                appState.openDialog(
+                                    importance = Importance.ERROR,
+                                    message = e.localizedMessage
+                                )
                             }
                         }
                     }
@@ -62,39 +84,41 @@ fun IOOptions(device: ViewDevice.Computer){
         }
     }
     Row (verticalAlignment = Alignment.CenterVertically) {
-        IconButton(
-            onClick = {
-                appState.openDialog {
-                    ContainerFilePicker(device){ path ->
-                        path?.let {
-                            containerFilePath = it
-                            val fullFileName = path.substringAfterLast("/")
-                            fileSaverLauncher.launch(
-                                suggestedName = fullFileName.substringBefore("."),
-                                extension = fullFileName.substringAfterLast(".")
-                            )
+        sshClient?.let {
+            IconButton(
+                onClick = {
+                    appState.openDialog {
+                        ContainerFilePicker(device){ path ->
+                            path?.let {
+                                containerFilePath = it
+                                val fullFileName = path.substringAfterLast("/")
+                                fileSaverLauncher.launch(
+                                    suggestedName = fullFileName.substringBefore("."),
+                                    extension = fullFileName.substringAfterLast(".")
+                                )
+                            }
                         }
                     }
                 }
+            ){
+                GeneralIcon(
+                    imageVector = TablerIcons.FileUpload,
+                    contentDescription = stringResource(Res.string.upload_file)
+                )
             }
-        ){
-            GeneralIcon(
-                imageVector = TablerIcons.FileUpload,
-                contentDescription = stringResource(Res.string.upload_file)
-            )
-        }
-        GeneralSpacer()
-        IconButton(
-            onClick = {
-                filePickerLauncher.launch()
+            GeneralSpacer()
+            IconButton(
+                onClick = {
+                    filePickerLauncher.launch()
+                }
+            ){
+                GeneralIcon(
+                    imageVector = TablerIcons.FileDownload,
+                    contentDescription = stringResource(Res.string.download_file)
+                )
             }
-        ){
-            GeneralIcon(
-                imageVector = TablerIcons.FileDownload,
-                contentDescription = stringResource(Res.string.download_file)
-            )
+            GeneralSpacer()
         }
-        GeneralSpacer()
         IconButton(
             onClick = {
                 appState.openComputerShell = device

@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.gui.intervirtos
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.data.getTotalCommandStatus
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
@@ -16,25 +17,25 @@ fun SshServer(
     computer: ViewDevice.Computer
 ){
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject<DeviceManager>()
+    val executor = koinInject<Executor>()
     var running by remember { mutableStateOf(false) }
     AlignedBox(Alignment.TopEnd){
         PlayButton(running){
             scope.launch {
-                deviceManager.enableSshServer(computer, it)
+                executor.enableSshServer(computer, it)
             }
         }
     }
 }
 
-private suspend fun DeviceManager.enableSshServer(
+private suspend fun Executor.enableSshServer(
     computer: ViewDevice.Computer,
     enabled: Boolean
 ): Result<Unit> {
-    val total = runCommand(
+    val total = runCommandOnGuest(
         computer = computer.device,
         commands = listOf("systemctl", if (enabled) "start" else "stop", "ssh")
-    ).getTotalCommandStatus()
+    ).getOrElse { return Result.failure(it) }.getTotalCommandStatus()
 
     return if (total.statusCode!! == 0) Result.success(Unit)
     else Result.failure(ContainerExecutionException(total.message!!))

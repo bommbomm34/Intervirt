@@ -3,11 +3,7 @@ package io.github.bommbomm34.intervirt.api
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.OS
-import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.getOS
+import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
@@ -24,12 +20,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.io.IOException
 import kotlinx.io.asSink
 import kotlinx.io.buffered
 import org.jetbrains.compose.resources.getString
 import java.io.File
-import java.nio.file.Files
+import kotlin.io.path.copyTo
 
 class FileManager(
     private val guestManager: GuestManager,
@@ -45,11 +40,11 @@ class FileManager(
         dataDir.createFileInDirectory("cache", true)
     }
 
-    suspend fun newFile(path: String) = withContext(Dispatchers.IO){
+    suspend fun newFile(path: String) = withContext(Dispatchers.IO) {
         dataDir.createFileInDirectory(path)
     }
 
-    suspend fun removeFile(path: String) = withContext(Dispatchers.IO){
+    suspend fun removeFile(path: String) = withContext(Dispatchers.IO) {
         dataDir.createFileInDirectory(path)
     }
 
@@ -123,13 +118,6 @@ class FileManager(
     }
 
     fun getAlpineDisk(): File = getFile("disk/alpine-linux.qcow2")
-
-    suspend fun pullFile(device: Device.Computer, path: String, destFile: PlatformFile): Result<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    fun pushFile(device: Device.Computer, path: String, platformFile: PlatformFile): Unit =
-        TODO("Not yet implemented")
 }
 
 fun File.createFileInDirectory(name: String, directory: Boolean = false): File {
