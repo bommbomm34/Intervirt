@@ -171,10 +171,11 @@ class DeviceManager(
 
     suspend fun getProxyUrl(computer: Device.Computer): Result<Address> {
         val port = getFreePort()
-        return qemuClient.addPortForwarding(
-            protocol = "tcp",
-            hostPort = port,
-            guestPort = 1080
+        return addPortForwarding(
+            device = computer,
+            internalPort = 1080,
+            externalPort = port,
+            protocol = "tcp"
         ).map { Address("127.0.0.1", port) }
     }
 
