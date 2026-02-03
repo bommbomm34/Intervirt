@@ -1,12 +1,9 @@
 package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.api.impl.ContainerSshClient
+import io.github.bommbomm34.intervirt.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.configuration
-import io.github.bommbomm34.intervirt.data.Address
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.PortForwarding
-import io.github.bommbomm34.intervirt.data.connect
+import io.github.bommbomm34.intervirt.data.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.ServerSocket
 import kotlin.random.Random
@@ -15,7 +12,6 @@ import kotlin.random.Random
 class DeviceManager(
     private val guestManager: GuestManager,
     private val qemuClient: QemuClient,
-    private val virtualIOClient: Boolean,
     appEnv: AppEnv,
 ) {
     private val logger = KotlinLogging.logger { }
@@ -175,22 +171,31 @@ class DeviceManager(
         ).map { Address("127.0.0.1", port) }
     }
 
-    suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> {
-        // Check if there is an existing client
-        containerIOClients[computer]?.let { return Result.success(it) }
-        return if (virtualIOClient){
-            val port = getFreePort()
-            addPortForwarding(
-                device = computer,
-                internalPort = 22,
-                externalPort = port,
-                protocol = "tcp"
-            ).map {
-                val sshClient = ContainerSshClient(port)
-                containerIOClients[computer] = sshClient
-                sshClient
-            }
-        } else TODO("Use a mock client here")
+    suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
+        containerIOClients[computer]?.let { Result.success(it) } ?: initSshClient(computer)
+
+    suspend fun initSshClient(computer: Device.Computer): Result<ContainerSshClient> {
+        val port = getFreePort()
+        return addPortForwarding(
+            device = computer,
+            internalPort = 22,
+            externalPort = port,
+            protocol = "tcp"
+        ).map {
+            val sshClient = ContainerSshClient(port)
+            containerIOClients[computer] = sshClient
+            sshClient
+        }
+    }
+
+    fun initVirtualIOClient(
+        computer: Device.Computer,
+        executor: Executor,
+        fileManager: FileManager
+    ): VirtualContainerIOClient {
+        val client = VirtualContainerIOClient(executor, fileManager)
+        containerIOClients[computer] = client
+        return client
     }
 
     private fun generateID(prefix: String): String {
@@ -231,7 +236,7 @@ class DeviceManager(
         }
     }
 
-    fun close(){
+    fun close() {
         containerIOClients.forEach { (_, client) -> client.close() }
     }
 }
