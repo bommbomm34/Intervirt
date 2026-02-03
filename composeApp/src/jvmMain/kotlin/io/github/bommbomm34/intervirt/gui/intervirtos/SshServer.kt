@@ -32,11 +32,12 @@ private suspend fun Executor.enableSshServer(
     computer: ViewDevice.Computer,
     enabled: Boolean
 ): Result<Unit> {
-    val total = runCommandOnGuest(
-        computer = computer.device,
-        commands = listOf("systemctl", if (enabled) "start" else "stop", "ssh")
-    ).getOrElse { return Result.failure(it) }.getTotalCommandStatus()
-
-    return if (total.statusCode!! == 0) Result.success(Unit)
-    else Result.failure(ContainerExecutionException(total.message!!))
+    TODO("Not yet implemented")
+//    val total = runCommandOnGuest(
+//        computer = computer.device,
+//        commands = listOf("systemctl", if (enabled) "start" else "stop", "ssh")
+//    ).getOrElse { return Result.failure(it) }.getTotalCommandStatus()
+//
+//    return if (total.statusCode!! == 0) Result.success(Unit)
+//    else Result.failure(ContainerExecutionException(total.message!!))
 }

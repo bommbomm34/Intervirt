@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.enable_virtual_hosts
+import io.github.bommbomm34.intervirt.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.data.getTotalCommandStatus
@@ -43,15 +44,15 @@ fun HttpServer(
     }
 }
 
-private suspend fun Executor.enableHttpServer(
-    computer: ViewDevice.Computer,
+private suspend fun ContainerIOClient.enableHttpServer(
     enabled: Boolean
 ): Result<Unit> {
-    val total = runCommandOnGuest(
-        computer = computer.device,
-        commands = listOf("systemctl", if (enabled) "start" else "stop", "apache2")
-    ).getOrElse { return Result.failure(it) }.getTotalCommandStatus()
-
-    return if (total.statusCode!! == 0) Result.success(Unit)
-    else Result.failure(ContainerExecutionException(total.message!!))
+    TODO("Not yet implemented")
+//    val total = runCommandOnGuest(
+//        computer = computer.device,
+//        commands = listOf("systemctl", if (enabled) "start" else "stop", "apache2")
+//    ).getOrElse { return Result.failure(it) }.getTotalCommandStatus()
+//
+//    return if (total.statusCode!! == 0) Result.success(Unit)
+//    else Result.failure(ContainerExecutionException(total.message!!))
 }
