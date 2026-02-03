@@ -20,3 +20,6 @@ suspend fun Flow<CommandStatus>.getTotalCommandStatus(iterate: suspend (CommandS
     }
     return CommandStatus(totalOutput.toString(), statusCode)
 }
+
+fun String.toCommandStatus() = CommandStatus(message = this)
+fun Int.toCommandStatus() = CommandStatus(statusCode = this)

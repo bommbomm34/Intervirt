@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.data.CommandStatus
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.toCommandStatus
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -26,24 +27,4 @@ class Executor(val deviceManager: DeviceManager) {
             }
             emit(process.exitValue().toCommandStatus())
         }.flowOn(Dispatchers.IO)
-
-    suspend fun runCommandOnGuest(computer: Device.Computer, commands: List<String>): Result<Flow<CommandStatus>> {
-        return deviceManager.getSshClient(computer).map { sshClient ->
-            flow {
-                val command = commands.joinToString(" ")
-                logger.info { "Running '$command' on container ${computer.id}" }
-                sshClient.exec(command).use {
-                    val reader = it.`in`.bufferedReader()
-                    while (!it.isClosed) {
-                        val line = reader.readLine() ?: continue
-                        emit(line.toCommandStatus())
-                    }
-                    emit(it.exitStatus.toCommandStatus())
-                }
-            }
-        }
-    }
-
-    private fun String.toCommandStatus() = CommandStatus(message = this)
-    private fun Int.toCommandStatus() = CommandStatus(statusCode = this)
 }

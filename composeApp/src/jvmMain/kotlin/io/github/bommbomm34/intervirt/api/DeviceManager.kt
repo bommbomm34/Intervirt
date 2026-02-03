@@ -1,28 +1,26 @@
 package io.github.bommbomm34.intervirt.api
 
+import io.github.bommbomm34.intervirt.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.CommandStatus
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.*
-import io.ktor.client.engine.*
-import io.ktor.client.engine.cio.*
-import kotlinx.coroutines.flow.Flow
 import java.net.ServerSocket
 import kotlin.random.Random
+
 
 class DeviceManager(
     private val guestManager: GuestManager,
     private val qemuClient: QemuClient,
+    private val virtualIOClient: Boolean,
     appEnv: AppEnv,
 ) {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
-    private val containerSshClients = mutableMapOf<Device.Computer, ContainerSshClient>()
+    private val containerIOClients = mutableMapOf<Device.Computer, ContainerIOClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -63,8 +61,8 @@ class DeviceManager(
         logger.debug { "Removing device $device" }
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
-        containerSshClients[device]?.close()
-        containerSshClients.remove(device)
+        containerIOClients[device]?.close()
+        containerIOClients.remove(device)
         return if (device is Device.Computer && enableAgent) {
             val res = guestManager.removeContainer(device.id)
             res.check(Unit)
@@ -177,21 +175,22 @@ class DeviceManager(
         ).map { Address("127.0.0.1", port) }
     }
 
-    suspend fun getSshClient(computer: Device.Computer): Result<ContainerSshClient> {
+    suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> {
         // Check if there is an existing client
-        containerSshClients[computer]?.let { return Result.success(it) }
-        // Open port for SSH
-        val port = getFreePort()
-        return addPortForwarding(
-            device = computer,
-            internalPort = 22,
-            externalPort = port,
-            protocol = "tcp"
-        ).map {
-            val sshClient = ContainerSshClient(port)
-            containerSshClients[computer] = sshClient
-            sshClient
-        }
+        containerIOClients[computer]?.let { return Result.success(it) }
+        return if (virtualIOClient){
+            val port = getFreePort()
+            addPortForwarding(
+                device = computer,
+                internalPort = 22,
+                externalPort = port,
+                protocol = "tcp"
+            ).map {
+                val sshClient = ContainerSshClient(port)
+                containerIOClients[computer] = sshClient
+                sshClient
+            }
+        } else TODO("Use a mock client here")
     }
 
     private fun generateID(prefix: String): String {
@@ -233,6 +232,6 @@ class DeviceManager(
     }
 
     fun close(){
-        containerSshClients.forEach { (_, client) -> client.close() }
+        containerIOClients.forEach { (_, client) -> client.close() }
     }
 }

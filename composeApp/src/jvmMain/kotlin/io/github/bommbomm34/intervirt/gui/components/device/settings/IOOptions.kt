@@ -12,7 +12,8 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.terminal
 import intervirt.composeapp.generated.resources.upload_file
-import io.github.bommbomm34.intervirt.api.ContainerSshClient
+import io.github.bommbomm34.intervirt.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.data.Importance
@@ -24,24 +25,24 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
-import io.github.vinceglb.filekit.utils.toPath
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import java.nio.file.Path
 import kotlin.io.path.copyTo
+import kotlin.io.path.name
 
 @Composable
 fun IOOptions(device: ViewDevice.Computer){
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()
-    val fileManager = koinInject<FileManager>()
     val deviceManager = koinInject<DeviceManager>()
     val logger = rememberLogger("IOOptions")
-    var sshClient: ContainerSshClient? by remember { mutableStateOf(null) }
-    var containerFilePath by remember { mutableStateOf("") }
+    var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
+    var containerFilePath: Path? by remember { mutableStateOf(null) }
     LaunchedEffect(device.id){
-        sshClient = deviceManager.getSshClient(device.device).getOrElse {
-            logger.error(it) { "Failure during obtaining a SshClient for ${device.id}" }
+        ioClient = deviceManager.getIOClient(device.device).getOrElse {
+            logger.error(it) { "Failure during obtaining a IOClient for ${device.id}" }
             null
         }
     }
@@ -50,9 +51,7 @@ fun IOOptions(device: ViewDevice.Computer){
             scope.launch {
                 // containerFilePath must be valid if this launcher is called
                 try {
-                    sshClient!!.fs
-                        .getPath(containerFilePath)
-                        .copyTo(file.file.toPath())
+                    containerFilePath!!.copyTo(file.file.toPath())
                 } catch (e: Exception){
                     appState.openDialog(
                         importance = Importance.ERROR,
@@ -69,8 +68,7 @@ fun IOOptions(device: ViewDevice.Computer){
                     path?.let { _ ->
                         scope.launch {
                             try {
-                                file.file.toPath()
-                                    .copyTo(sshClient!!.fs.getPath(path))
+                                file.file.toPath().copyTo(path)
                             } catch (e: Exception){
                                 appState.openDialog(
                                     importance = Importance.ERROR,
@@ -84,14 +82,14 @@ fun IOOptions(device: ViewDevice.Computer){
         }
     }
     Row (verticalAlignment = Alignment.CenterVertically) {
-        sshClient?.let {
+        ioClient?.let {
             IconButton(
                 onClick = {
                     appState.openDialog {
                         ContainerFilePicker(device){ path ->
                             path?.let {
                                 containerFilePath = it
-                                val fullFileName = path.substringAfterLast("/")
+                                val fullFileName = path.name
                                 fileSaverLauncher.launch(
                                     suggestedName = fullFileName.substringBefore("."),
                                     extension = fullFileName.substringAfterLast(".")
