@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
+import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
@@ -12,9 +13,11 @@ private val json = Json {
 }
 
 class IntervirtOSClient(
-    private val ioClient: ContainerIOClient
+    private val ioClient: ContainerIOClient,
+    private val computer: Device.Computer
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
+    private val serviceManager = SystemServiceManager(ioClient)
 
     suspend fun lookupDns(
         name: String,
@@ -40,6 +43,29 @@ class IntervirtOSClient(
             },
             onFailure = { emptyList() }
         )
+    }
 
+    suspend fun getProxyUrl(
+        deviceManager: DeviceManager
+    ): Result<Address> {
+        val port = getFreePort()
+        return deviceManager.addPortForwarding(
+            device = computer,
+            internalPort = 1080,
+            externalPort = port,
+            protocol = "tcp"
+        ).map { Address("127.0.0.1", port) }
+    }
+
+    suspend fun enableHttpServer(
+        enabled: Boolean
+    ): Result<Unit> {
+        return if (enabled) serviceManager.start("apache2") else serviceManager.stop("apache2")
+    }
+
+    suspend fun enableSshServer(
+        enabled: Boolean
+    ): Result<Unit> {
+        return if (enabled) serviceManager.start("ssh") else serviceManager.stop("ssh")
     }
 }

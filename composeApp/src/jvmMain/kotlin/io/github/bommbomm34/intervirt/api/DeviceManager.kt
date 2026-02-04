@@ -161,16 +161,6 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun getProxyUrl(computer: Device.Computer): Result<Address> {
-        val port = getFreePort()
-        return addPortForwarding(
-            device = computer,
-            internalPort = 1080,
-            externalPort = port,
-            protocol = "tcp"
-        ).map { Address("127.0.0.1", port) }
-    }
-
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
         containerIOClients[computer]?.let { Result.success(it) } ?: initSshClient(computer)
 
@@ -217,8 +207,6 @@ class DeviceManager(
         return exceptionOrNull()?.let { Result.failure(it) } ?: Result.success(ifSuccess)
     }
 
-    private fun getFreePort() = ServerSocket(0).use { it.localPort }
-
     fun generateIpv4(): String {
         val rand = { Random.nextInt(256) }
         while (true) {
@@ -240,3 +228,5 @@ class DeviceManager(
         containerIOClients.forEach { (_, client) -> client.close() }
     }
 }
+
+fun getFreePort() = ServerSocket(0).use { it.localPort }

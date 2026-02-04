@@ -5,12 +5,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
@@ -18,10 +16,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.rememberLogger
-import io.github.oshai.kotlinlogging.KLogger
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -39,9 +34,10 @@ val DNS_RECORD_TYPES = listOf(
 
 @Composable
 fun DnsResolver(
-    computer: ViewDevice.Computer
+    osClient: IntervirtOSClient
 ) {
     val appEnv = koinInject<AppEnv>()
+    val appState = koinInject<AppState>()
     val deviceManager = koinInject<DeviceManager>()
     val logger = rememberLogger("DnsResolver")
     var domain by remember { mutableStateOf("perhof.org") }
@@ -88,9 +84,7 @@ fun DnsResolver(
                 onClick = {
                     records.clear()
                     scope.launch {
-                        executor.lookupDns(
-                            logger = logger,
-                            device = computer.device,
+                        osClient.lookupDns(
                             name = domain,
                             type = dnsRecordType,
                             nameserver = dnsServer,

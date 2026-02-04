@@ -9,6 +9,7 @@ import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.vinceglb.filekit.PlatformFile
+import kotlin.fold
 
 class AppState {
     val logs = mutableStateListOf<String>()
@@ -44,5 +45,15 @@ class AppState {
 
     fun openDialog(customContent: @Composable () -> Unit) {
         dialogState = DialogState.Custom(customContent, true)
+    }
+
+    /**
+     * Open error dialog if result is failed, otherwise call `onSuccess`
+     */
+    inline fun <T> runDialogCatching(block: () -> T): Result<T> = runCatching(block).onFailure {
+        openDialog(
+            importance = Importance.ERROR,
+            message = it.localizedMessage
+        )
     }
 }
