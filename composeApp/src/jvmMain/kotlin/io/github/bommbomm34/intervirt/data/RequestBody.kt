@@ -82,12 +82,17 @@ sealed class RequestBody {
         val id: String
     ) : RequestBody()
 
-    @SerialName("ShellSizeChange")
+    @SerialName("StartContainer")
     @Serializable
-    data class ShellSizeChange(
-        val rows: Int,
-        val columns: Int
-    )
+    data class StartContainer (
+        val id: String
+    ) : RequestBody()
+
+    @SerialName("StopContainer")
+    @Serializable
+    data class StopContainer (
+        val id: String
+    ) : RequestBody()
 }
 
 fun String.commandBody() = RequestBody.Command(this)

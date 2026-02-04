@@ -82,6 +82,14 @@ class VirtualGuestManager : GuestManager {
         }
     }
 
+    override suspend fun startContainer(id: String): Result<Unit> = runCatching {
+        getContainerByID(id).running = true
+    }
+
+    override suspend fun stopContainer(id: String): Result<Unit> = runCatching {
+        getContainerByID(id).running = false
+    }
+
     override fun wipe(): Flow<ResultProgress<Unit>> = flow {
         emit(ResultProgress.proceed(0.2f, "Deleting containers..."))
         containers.clear()
@@ -114,5 +122,6 @@ private data class Container(
     val mac: String,
     var internet: Boolean,
     val image: String,
-    val portForwardings: MutableList<PortForwarding> = mutableListOf()
+    val portForwardings: MutableList<PortForwarding> = mutableListOf(),
+    var running: Boolean = false
 )

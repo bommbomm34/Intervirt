@@ -30,6 +30,10 @@ interface GuestManager : AutoCloseable {
 
     suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit>
 
+    suspend fun startContainer(id: String): Result<Unit>
+
+    suspend fun stopContainer(id: String): Result<Unit>
+
     fun wipe(): Flow<ResultProgress<Unit>>
 
     fun update(): Flow<ResultProgress<Unit>>

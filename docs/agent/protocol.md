@@ -2,13 +2,13 @@
 
 This document contains the API specification of the *Intervirt Agent* which acts as a server for the Intervirt client.
 
-### WebSocket Endpoints
+## WebSocket Endpoints
 
 The client requires one endpoint to be available via unencrypted WebSocket (`ws://`). It should be accessible through `ws://localhost:55436/containerManagement` via `GET`.
 
 Messages from the client will always be encoded in JSON. Messages from the server will also always be encoded in JSON. The programm will also send commands to the server. Below, you will see example requests and corresponding example responses. Please keep in mind that there are some more fields in the requests/responses to fill than the example requests/responses. See the *Tips* section to find the extra fields.
 
-##### Add container
+### Add container
 
 Message from client:
 
@@ -39,7 +39,7 @@ Failed message from server:
 }
 ```
 
-##### Remove container
+### Remove container
 
 Message from client:
 
@@ -72,10 +72,62 @@ Failed message from server:
 {
     "error": "Container computer-93281 doesn't exist." // Error message
     "code": 6
+} 
+```
+
+### Start container
+
+Message from client:
+
+```json
+{
+    "type": "StartContainer",
+    "id": "computer-93281" // Name of the container to start
 }
 ```
 
-##### Set IPv4 address
+Successful message from server:
+
+```json
+{}
+```
+
+Failed message from server:
+
+```json
+{
+    "error": "Container computer-93281 doesn't exist." // Error message
+    "code": 6
+}
+```
+
+### Stop container
+
+Message from client:
+
+```json
+{
+    "type": "StopContainer",
+    "id": "computer-93281" // Name of the container to stop
+}
+```
+
+Successful message from server:
+
+```json
+{}
+```
+
+Failed message from server:
+
+```json
+{
+    "error": "Container computer-93281 doesn't exist." // Error message
+    "code": 6
+}
+```
+
+### Set IPv4 address
 
 Message from client:
 
@@ -102,7 +154,7 @@ Failed message from server:
 }
 ```
 
-##### Set IPv6 address
+### Set IPv6 address
 
 Message from client:
 
@@ -129,7 +181,7 @@ Failed message from server:
 }
 ```
 
-##### Connect
+### Connect
 
 Message from client:
 
@@ -158,7 +210,7 @@ Failed message from server:
 
 You should connect both containers via networking.
 
-##### Disconnect
+### Disconnect
 
 Message from client:
 
@@ -185,7 +237,7 @@ Failed message from server:
 }
 ```
 
-##### Set internet access
+### Set internet access
 
 Message from client:
 
@@ -212,7 +264,7 @@ Failed message from server:
 }
 ```
 
-##### Add port forwarding
+### Add port forwarding
 
 Message from client:
 
@@ -241,7 +293,7 @@ Failed message from server:
 }
 ```
 
-##### Remove port forwarding
+### Remove port forwarding
 
 Message from client:
 
@@ -268,7 +320,7 @@ Failed message from server:
 }
 ```
 
-##### Wipe
+### Wipe
 
 Message from client:
 
@@ -303,7 +355,7 @@ Failed message from server:
 }
 ```
 
-##### Update
+### Update
 
 Message from client:
 
@@ -340,7 +392,7 @@ Failed message from server:
 
 This command should perform a system upgrade on the guest and also update all containers and restart them.
 
-##### Shutdown
+### Shutdown
 
 Message from client:
 
@@ -367,7 +419,7 @@ Failed message from server:
 
 This should shutdown all containers and the guest.
 
-##### Reboot
+### Reboot
 
 Message from client:
 
@@ -394,7 +446,7 @@ Failed message from server:
 
 This should shutdown all containers and reboot the guest.
 
-##### Get version
+### Get version
 
 Message from client:
 
@@ -428,7 +480,7 @@ Intervirt has its own error codes:
 | 7          | The server doesn't support the operation                                                                           | no                  |
 | 8          | The JSON input of the client isn't valid or contains invalid arguments (e.g. invalid protocol for port forwarding) | yes                 |
 
-### Tips
+## Tips
 
 - Some commands in WebSockets require a stream instead a single answer (e.g. `wipe`).
 - Every client request in WebSockets will contain the field `type`.

@@ -132,6 +132,10 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
+    suspend fun start(computer: Device.Computer) = guestManager.startContainer(computer.id)
+
+    suspend fun stop(computer: Device.Computer) = guestManager.stopContainer(computer.id)
+
     suspend fun addPortForwarding(
         device: Device.Computer,
         internalPort: Int,

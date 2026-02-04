@@ -1,27 +1,16 @@
 package io.github.bommbomm34.intervirt.api.impl
 
-import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.client
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.RequestBody
-import io.github.bommbomm34.intervirt.data.ResponseBody
-import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.commandBody
+import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.result
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.serialization.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 class AgentClient(
@@ -58,11 +47,20 @@ class AgentClient(
     override suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> =
         justSend(RequestBody.SetInternetAccess(id, enabled))
 
-    override suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int, protocol: String): Result<Unit> =
+    override suspend fun addPortForwarding(
+        id: String,
+        internalPort: Int,
+        externalPort: Int,
+        protocol: String
+    ): Result<Unit> =
         justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort, protocol))
 
     override suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> =
         justSend(RequestBody.RemovePortForwarding(externalPort, protocol))
+
+    override suspend fun startContainer(id: String): Result<Unit> = justSend(RequestBody.StartContainer(id))
+
+    override suspend fun stopContainer(id: String): Result<Unit> = justSend(RequestBody.StopContainer(id))
 
     override fun wipe(): Flow<ResultProgress<Unit>> = flowSend("wipe".commandBody())
 
