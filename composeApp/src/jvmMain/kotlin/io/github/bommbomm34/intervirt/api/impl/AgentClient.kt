@@ -20,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -157,8 +158,8 @@ class AgentClient(
         return Result.success(Unit)
     }
 
-    override fun close() {
+    override fun close() = runBlocking(Dispatchers.IO) {
         listenJob?.cancel()
-        session.cancel()
+        session.close()
     }
 }

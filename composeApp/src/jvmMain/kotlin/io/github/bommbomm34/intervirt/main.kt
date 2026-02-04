@@ -40,6 +40,8 @@ fun main() = application {
     }) {
         val preferences = koinInject<Preferences>()
         val appEnv = koinInject<AppEnv>()
+        val deviceManager = koinInject<DeviceManager>()
+        val guestManager = koinInject<GuestManager>()
         val qemuClient = koinInject<QemuClient>()
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
@@ -55,7 +57,9 @@ fun main() = application {
         Window(
             onCloseRequest = {
                 scope.launch {
-                    qemuClient.shutdownAlpine()
+                    deviceManager.close()
+                    guestManager.close()
+                    qemuClient.close()
                     exitApplication()
                 }
             },
