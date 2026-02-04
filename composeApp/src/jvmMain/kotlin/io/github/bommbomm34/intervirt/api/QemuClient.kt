@@ -20,7 +20,7 @@ class QemuClient(
     private val fileManager: FileManager,
     private val guestManager: GuestManager,
     private val appEnv: AppEnv
-) {
+) : AutoCloseable {
 
     var running = false
     private var isRunningLoopJob: Job? = null
@@ -203,5 +203,10 @@ class QemuClient(
             qemuMonitorSession = session
             return@withTimeout session
         }
+    }
+
+    override fun close() = runBlocking(Dispatchers.IO) {
+        isRunningLoopJob?.cancel()
+        shutdownAlpine()
     }
 }

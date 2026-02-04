@@ -103,6 +103,8 @@ class VirtualGuestManager : GuestManager {
     private fun getContainerByID(id: String) = containers.first { it.id == id }
 
     private fun String.exists() = containers.any { it.id == this }
+
+    override fun close() {} // Nothing to close
 }
 
 private data class Container(

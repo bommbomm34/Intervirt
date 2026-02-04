@@ -4,6 +4,7 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -11,7 +12,7 @@ import kotlinx.coroutines.withContext
 data class QemuMonitorSession(
     private val selector: ActorSelectorManager,
     private val socket: Socket
-) {
+) : AutoCloseable {
     val socketLock = Mutex()
     private val readChannel = socket.openReadChannel()
     private val writeChannel = socket.openWriteChannel(autoFlush = true)
@@ -30,7 +31,7 @@ data class QemuMonitorSession(
         } else null
     }
 
-    suspend fun close() = withContext(Dispatchers.IO) {
+    override fun close() = runBlocking(Dispatchers.IO) {
         socket.close()
         selector.close()
     }

@@ -18,7 +18,7 @@ class DeviceManager(
     private val executor: Executor,
     private val fileManager: FileManager,
     appEnv: AppEnv,
-) {
+) : AutoCloseable {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
     private val virtualContainerIO = appEnv.virtualContainerIO
@@ -228,7 +228,7 @@ class DeviceManager(
         }
     }
 
-    fun close() {
+    override fun close() {
         containerIOClients.forEach { (_, client) -> client.close() }
     }
 }

@@ -16,6 +16,8 @@ import io.ktor.serialization.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
@@ -26,6 +28,7 @@ class AgentClient(
 ) : GuestManager {
     private val logger = KotlinLogging.logger { }
     private lateinit var session: DefaultClientWebSocketSession
+    private var listenJob: Job? = null
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
     private val agentPort = appEnv.agentPort
 
@@ -138,7 +141,7 @@ class AgentClient(
                 )
             }
             result.onSuccess {
-                CoroutineScope(Dispatchers.IO).launch {
+                listenJob = CoroutineScope(Dispatchers.IO).launch {
                     while (true) {
                         try {
                             val response = session.receiveDeserialized<ResponseBody>()
@@ -152,5 +155,10 @@ class AgentClient(
             return result
         }
         return Result.success(Unit)
+    }
+
+    override fun close() {
+        listenJob?.cancel()
+        session.cancel()
     }
 }
