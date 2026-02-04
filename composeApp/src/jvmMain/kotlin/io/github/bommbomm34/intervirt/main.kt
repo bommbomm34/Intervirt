@@ -13,9 +13,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.terminal_window_title
-import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.api.*
 import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
@@ -41,13 +41,23 @@ fun main() = application {
         val preferences = koinInject<Preferences>()
         val appEnv = koinInject<AppEnv>()
         val qemuClient = koinInject<QemuClient>()
+        val executor = koinInject<Executor>()
+        val fileManager = koinInject<FileManager>()
         val appState = koinInject<AppState>()
+        val deviceManager = koinInject<DeviceManager>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         remember {
             // These things shouldn't be only called once
             Locale.setDefault(appEnv.language)
             FileKit.init("intervirt")
             initJfx()
+            if (appEnv.virtualContainerIO) configuration.devices.forEach {
+                if (it is Device.Computer) deviceManager.initVirtualIOClient(
+                    computer = it,
+                    executor = executor,
+                    fileManager = fileManager
+                )
+            }
         }
         density = LocalDensity.current
         val scope = rememberCoroutineScope()
@@ -94,8 +104,11 @@ fun main() = application {
         Window(
             onCloseRequest = { appState.openComputerShell = null },
             visible = appState.openComputerShell != null,
-            title = appState.osWindowTitle ?: stringResource(Res.string.terminal_window_title, appState.openComputerShell?.name ?: "")
-        ){
+            title = appState.osWindowTitle ?: stringResource(
+                Res.string.terminal_window_title,
+                appState.openComputerShell?.name ?: ""
+            )
+        ) {
             DefaultWindowScope {
                 appState.openComputerShell?.let {
                     // Check if device has IntervirtOS installed
@@ -106,10 +119,10 @@ fun main() = application {
     }
 }
 
-private fun initJfx(){
-    Platform.startup {  }
+private fun initJfx() {
+    Platform.startup { }
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-        if (thread.name == "AWT-EventQueue-0" && throwable is NullPointerException && throwable.message?.contains("java.awt.font.TextHitInfo.getInsertionIndex()") ?: false){
+        if (thread.name == "AWT-EventQueue-0" && throwable is NullPointerException && throwable.message?.contains("java.awt.font.TextHitInfo.getInsertionIndex()") ?: false) {
             // Probably this exception: Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException: Cannot invoke "java.awt.font.TextHitInfo.getInsertionIndex()" because "<parameter1>" is null
             // This exception is not critical and doesn't crash the app. Don't handle it.
         } else throw throwable // Other exceptions are fine to be thrown.

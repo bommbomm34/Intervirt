@@ -51,7 +51,8 @@ class Preferences {
         appIconSize = env("APP_ICON_SIZE")?.toInt()?.dp,
         defaultDnsServer = env("DEFAULT_DNS_SERVER") ?: "9.9.9.9",
         pseudoMode = env("PSEUDO_MODE").toBoolean(),
-        enableJavaScript = env("ENABLE_JAVASCRIPT")?.toBoolean() ?: true
+        enableJavaScript = env("ENABLE_JAVASCRIPT")?.toBoolean() ?: true,
+        virtualContainerIO = env("VIRTUAL_CONTAINER_IO").toBoolean()
     )
     
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)

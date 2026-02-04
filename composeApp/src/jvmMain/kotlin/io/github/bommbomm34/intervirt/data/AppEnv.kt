@@ -30,5 +30,6 @@ data class AppEnv(
     val appIconSize: Dp?,
     val defaultDnsServer: String,
     val pseudoMode: Boolean,
-    val enableJavaScript: Boolean
+    val enableJavaScript: Boolean,
+    val virtualContainerIO: Boolean
 )
