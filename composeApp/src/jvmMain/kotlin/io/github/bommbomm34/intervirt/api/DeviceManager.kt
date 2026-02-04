@@ -3,7 +3,10 @@ package io.github.bommbomm34.intervirt.api
 import io.github.bommbomm34.intervirt.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.configuration
-import io.github.bommbomm34.intervirt.data.*
+import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.PortForwarding
+import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.ServerSocket
 import kotlin.random.Random
@@ -12,10 +15,13 @@ import kotlin.random.Random
 class DeviceManager(
     private val guestManager: GuestManager,
     private val qemuClient: QemuClient,
+    private val executor: Executor,
+    private val fileManager: FileManager,
     appEnv: AppEnv,
 ) {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
+    private val virtualContainerIO = appEnv.virtualContainerIO
     private val containerIOClients = mutableMapOf<Device.Computer, ContainerIOClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
@@ -162,7 +168,9 @@ class DeviceManager(
     }
 
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
-        containerIOClients[computer]?.let { Result.success(it) } ?: initSshClient(computer)
+        containerIOClients[computer]?.let { Result.success(it) } ?: if (virtualContainerIO) Result.success(
+            initVirtualIOClient(computer)
+        ) else initSshClient(computer)
 
     suspend fun initSshClient(computer: Device.Computer): Result<ContainerSshClient> {
         val port = getFreePort()
@@ -178,11 +186,7 @@ class DeviceManager(
         }
     }
 
-    fun initVirtualIOClient(
-        computer: Device.Computer,
-        executor: Executor,
-        fileManager: FileManager
-    ): VirtualContainerIOClient {
+    fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
         val client = VirtualContainerIOClient(executor, fileManager)
         containerIOClients[computer] = client
         return client

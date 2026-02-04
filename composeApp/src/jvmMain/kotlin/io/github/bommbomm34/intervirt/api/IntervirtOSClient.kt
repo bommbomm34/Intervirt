@@ -32,14 +32,20 @@ class IntervirtOSClient(
             commands = commandList
         ).fold(
             onSuccess = { flow ->
-                val output = flow.getTotalCommandStatus().message!!
+                val total = flow.getTotalCommandStatus()
+                val output = total.message!!
                 logger.debug { "Received during DNS lookup:\n$output" }
-                val resolverOutput = json.decodeFromString<DnsResolverOutput>(output)
-                resolverOutput.responses
-                    .getOrNull(0)
-                    ?.answers
-                    ?.map { it.toDnsRecord() }
-                    ?: emptyList()
+                if (total.statusCode!! == 0){
+                    val resolverOutput = json.decodeFromString<DnsResolverOutput>(output)
+                    resolverOutput.responses
+                        .getOrNull(0)
+                        ?.answers
+                        ?.map { it.toDnsRecord() }
+                        ?: emptyList()
+                } else {
+                    logger.error { "Unexpected status code during DNS lookup: ${total.statusCode}" }
+                    emptyList()
+                }
             },
             onFailure = { emptyList() }
         )

@@ -6,7 +6,6 @@ import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
@@ -24,12 +23,8 @@ import kotlinx.io.asSink
 import kotlinx.io.buffered
 import org.jetbrains.compose.resources.getString
 import java.io.File
-import kotlin.io.path.copyTo
 
-class FileManager(
-    private val guestManager: GuestManager,
-    appEnv: AppEnv
-) {
+class FileManager(appEnv: AppEnv) {
     private val logger = KotlinLogging.logger { }
     private val dataDir = appEnv.dataDir
 
