@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.api
 
-import io.github.bommbomm34.intervirt.data.getTotalCommandStatus
+import io.github.bommbomm34.intervirt.data.getCommandResult
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 
 // Simple wrapper for systemd
@@ -18,8 +18,8 @@ class SystemServiceManager(
         val res = ioClient.exec(commands.toList())
         return res.fold(
             onSuccess = {
-                val total = it.getTotalCommandStatus()
-                if (total.statusCode == 0) Result.success(total.message!!) else Result.failure(ContainerExecutionException(total.message!!))
+                val (output, statusCode) = it.getCommandResult()
+                if (statusCode == 0) Result.success(output) else Result.failure(ContainerExecutionException(output))
             },
             onFailure = { Result.failure(it) }
         )

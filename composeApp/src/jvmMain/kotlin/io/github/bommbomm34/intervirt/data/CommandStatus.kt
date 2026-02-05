@@ -2,24 +2,37 @@ package io.github.bommbomm34.intervirt.data
 
 import kotlinx.coroutines.flow.Flow
 
-data class CommandStatus(
-    val message: String? = null,
-    val statusCode: Int? = null
+sealed class CommandStatus {
+    data class Running(val message: String) : CommandStatus()
+    data class End(val statusCode: Int) : CommandStatus()
+}
+
+data class CommandResult(
+    val output: String,
+    val statusCode: Int
 )
-suspend fun Flow<CommandStatus>.getTotalCommandStatus(iterate: suspend (CommandStatus) -> Unit = {}): CommandStatus {
+
+/**
+ * Collects the flow and returns a `CommandResult`.
+ * @throws NullPointerException if the flow doesn't contain a `CommandStatus.End`
+ */
+suspend fun Flow<CommandStatus>.getCommandResult(iterate: suspend (CommandStatus) -> Unit = {}): CommandResult {
     var statusCode: Int? = null
     val totalOutput = StringBuilder()
     collect {
-        if (it.statusCode == null) {
-            totalOutput.append(it.message)
-            iterate(it)
-        } else {
-            statusCode = it.statusCode
-            return@collect
+        when (it){
+            is CommandStatus.Running -> {
+                totalOutput.append(it.message)
+                iterate(it)
+            }
+            is CommandStatus.End -> {
+                statusCode = it.statusCode
+                return@collect
+            }
         }
     }
-    return CommandStatus(totalOutput.toString(), statusCode)
+    return CommandResult(totalOutput.toString(), statusCode!!)
 }
 
-fun String.toCommandStatus() = CommandStatus(message = this)
-fun Int.toCommandStatus() = CommandStatus(statusCode = this)
+fun String.toCommandStatus() = CommandStatus.Running(this)
+fun Int.toCommandStatus() = CommandStatus.End(this)

@@ -4,7 +4,7 @@ import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
-import io.github.bommbomm34.intervirt.data.getTotalCommandStatus
+import io.github.bommbomm34.intervirt.data.getCommandResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 
@@ -32,10 +32,9 @@ class IntervirtOSClient(
             commands = commandList
         ).fold(
             onSuccess = { flow ->
-                val total = flow.getTotalCommandStatus()
-                val output = total.message!!
+                val (output, statusCode) = flow.getCommandResult()
                 logger.debug { "Received during DNS lookup:\n$output" }
-                if (total.statusCode!! == 0){
+                if (statusCode == 0){
                     val resolverOutput = json.decodeFromString<DnsResolverOutput>(output)
                     resolverOutput.responses
                         .getOrNull(0)
@@ -43,7 +42,7 @@ class IntervirtOSClient(
                         ?.map { it.toDnsRecord() }
                         ?: emptyList()
                 } else {
-                    logger.error { "Unexpected status code during DNS lookup: ${total.statusCode}" }
+                    logger.error { "Unexpected status code during DNS lookup: $statusCode" }
                     emptyList()
                 }
             },
