@@ -30,9 +30,6 @@ import kotlin.math.pow
 import kotlin.math.round
 
 const val CURRENT_VERSION = "0.0.1"
-const val QEMU_WINDOWS_URL = "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.ziṕ"
-const val QEMU_LINUX_URL = "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
-const val ALPINE_DISK_URL = "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
 const val HELP_URL = "https://docs.perhof.org/intervirt"
 const val HOMEPAGE_URL = "https://perhof.org/intervirt"
 

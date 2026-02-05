@@ -31,5 +31,9 @@ data class AppEnv(
     val defaultDnsServer: String,
     val pseudoMode: Boolean,
     val enableJavaScript: Boolean,
-    val virtualContainerIO: Boolean
+    val virtualContainerIO: Boolean,
+    val vmDiskUrl: String,
+    val vmDiskHashUrl: String,
+    val qemuZipUrl: String,
+    val qemuZipHashUrl: String
 )

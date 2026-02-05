@@ -3,6 +3,8 @@ package io.github.bommbomm34.intervirt.api
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.data.OS
+import io.github.bommbomm34.intervirt.data.getOS
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -15,6 +17,10 @@ class Preferences {
     private val logger = KotlinLogging.logger {  }
     private val data = mutableMapOf<String, String>()
     private val dataFile: Path = File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
+    private val defaultQemuZipUrl = when (getOS()){
+        OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
+        OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
+    }
 
     init { load() }
 
@@ -52,7 +58,11 @@ class Preferences {
         defaultDnsServer = env("DEFAULT_DNS_SERVER") ?: "9.9.9.9",
         pseudoMode = env("PSEUDO_MODE").toBoolean(),
         enableJavaScript = env("ENABLE_JAVASCRIPT")?.toBoolean() ?: true,
-        virtualContainerIO = env("VIRTUAL_CONTAINER_IO").toBoolean()
+        virtualContainerIO = env("VIRTUAL_CONTAINER_IO").toBoolean(),
+        vmDiskUrl = env("VM_DISK_URL") ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2",
+        vmDiskHashUrl = env("VM_DISK_HASH_URL") ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2.sha256",
+        qemuZipUrl = env("QEMU_ZIP_URL") ?: defaultQemuZipUrl,
+        qemuZipHashUrl = env("QEMU_ZIP_HASH_URL") ?: "$defaultQemuZipUrl.sha256"
     )
     
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
