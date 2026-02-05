@@ -14,6 +14,7 @@ import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ fun SyncButton() {
                 scope.launch {
                     syncing = true
                     configuration.syncConfiguration(guestManager).collect {
-                        syncFailed = it.result?.isFailure ?: false
+                        syncFailed = it is ResultProgress.Result && it.result.isFailure
                         appState.logs.add(it.log())
                         if (syncFailed) {
                             appState.openDialog(

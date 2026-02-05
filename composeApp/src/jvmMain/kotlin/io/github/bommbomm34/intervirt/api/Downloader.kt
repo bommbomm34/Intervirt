@@ -43,7 +43,7 @@ class Downloader(
         if (!preferences.env("DISK_INSTALLED").toBoolean()) {
             val file = fileManager.downloadFile(ALPINE_DISK_URL, "alpine-linux.qcow2", fileManager.getFile("disk"))
             file.collect { resultProgress ->
-                if (resultProgress.result != null) {
+                if (resultProgress is ResultProgress.Result) {
                     resultProgress.result.onFailure {
                         emit(ResultProgress.failure(it))
                     }.onSuccess {
@@ -92,7 +92,7 @@ class Downloader(
                 // Install fresh QEMU
                 val file = fileManager.downloadFile(url, "qemu-portable.zip")
                 file.collect { resultProgress ->
-                    if (resultProgress.result != null) {
+                    if (resultProgress is ResultProgress.Result) {
                         resultProgress.result.onSuccess { zipFile ->
                             val zip = ZipFile(zipFile)
                             try {

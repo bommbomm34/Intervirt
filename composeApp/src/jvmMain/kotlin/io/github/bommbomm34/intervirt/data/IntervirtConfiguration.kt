@@ -35,7 +35,7 @@ data class IntervirtConfiguration(
                             message = getString(Res.string.wiping_old_data)
                         )
                     )
-                    guestManager.wipe().collect { emit(it.copy(percentage = it.percentage * 0.2f)) }
+                    guestManager.wipe().collect { emit(it.clone(percentage = it.percentage * 0.2f)) }
                     emit(
                         ResultProgress.proceed(
                             percentage = 0.2f,

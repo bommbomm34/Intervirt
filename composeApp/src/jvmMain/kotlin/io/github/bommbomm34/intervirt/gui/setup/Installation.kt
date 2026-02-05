@@ -72,13 +72,13 @@ fun Installation(
                         applyConfiguration()
                         // Downloading QEMU
                         downloader.downloadQemu().collect {
-                            emit(it.copy(percentage = it.percentage * 0.4f + 0.1f))
-                            if (it.result?.isFailure ?: false) job!!.cancel()
+                            emit(it.clone(percentage = it.percentage * 0.4f + 0.1f))
+                            if (it is ResultProgress.Result && it.result.isFailure) job!!.cancel()
                         }
                         // Downloading disk
                         downloader.downloadAlpineDisk().collect {
-                            emit(it.copy(percentage = it.percentage * 0.5f + 0.5f))
-                            if (it.result?.isFailure ?: false) job!!.cancel()
+                            emit(it.clone(percentage = it.percentage * 0.5f + 0.5f))
+                            if (it is ResultProgress.Result && it.result.isFailure) job!!.cancel()
                         }
                         preferences.saveString("INTERVIRT_INSTALLED", "true")
                         appState.currentScreenIndex = 1

@@ -3,6 +3,7 @@ package jvm.test.agent
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.mainModule
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
@@ -48,8 +49,8 @@ class AgentTest : KoinTest {
             assertResult(deviceManager.setIpv6(computer4, deviceManager.generateIpv6()), "SET IPV6 ADDRESS TEST")
             assertResult(deviceManager.disconnectDevice(computer1, switch), "SWITCH DISCONNECTION TEST")
             guestManager.wipe().collect { progress ->
-                progress.result?.onFailure { throw AssertionError("FAILED WIPE: $it") }
-                println("WIPE: ${progress.message}")
+                if (progress is ResultProgress.Result) progress.result.onFailure { throw AssertionError("FAILED WIPE: $it") }
+                println("WIPE: ${progress.message()}")
             }
             logger.info { "----- CONGRATULATIONS: ALL TESTS PASSED SUCCESSFULLY. -----" }
         }
