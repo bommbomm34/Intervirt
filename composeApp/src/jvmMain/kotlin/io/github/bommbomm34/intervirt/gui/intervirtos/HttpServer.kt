@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
+import io.github.bommbomm34.intervirt.gui.intervirtos.http.VirtualHostsManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -32,7 +33,7 @@ fun HttpServer(
         )
         GeneralSpacer()
         AnimatedVisibility(enableVirtualHosts) {
-            // TODO: Virtual hosts
+            VirtualHostsManager(osClient)
         }
     }
 }

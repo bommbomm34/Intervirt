@@ -2,11 +2,14 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.VirtualHost
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.data.getCommandResult
+import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
+import kotlin.io.path.writeText
 
 private val json = Json {
     ignoreUnknownKeys = true
@@ -62,10 +65,33 @@ class IntervirtOSClient(
         ).map { Address("127.0.0.1", port) }
     }
 
+    // HTTP
     suspend fun enableHttpServer(
         enabled: Boolean
     ): Result<Unit> {
         return if (enabled) serviceManager.start("apache2") else serviceManager.stop("apache2")
+    }
+
+    suspend fun loadConf(conf: String): Result<Unit> {
+        logger.debug { "Loading Apache2 configuration" }
+        logger.debug { "Uploading Apache2 configuration" }
+        runCatching {
+            ioClient.getPath("/etc/apache2/sites-available/intervirt.conf").writeText(conf)
+        }.onFailure { return Result.failure(it) }
+        logger.debug { "Enabling Apache2 configuration" }
+        return ioClient.exec(listOf("/usr/bin/a2ensite", "intervirt.conf")).fold(
+            onSuccess = { flow ->
+                val (output, statusCode) = flow.getCommandResult()
+                if (statusCode != 0) {
+                    logger.error { "Failed to enable Apache2 configuration: $output" }
+                    Result.failure(ContainerExecutionException(output))
+                } else {
+                    logger.debug { "Reloading Apache2 configuration" }
+                    serviceManager.restart("apache2")
+                }
+            },
+            onFailure = { Result.failure(it) }
+        )
     }
 
     suspend fun enableSshServer(

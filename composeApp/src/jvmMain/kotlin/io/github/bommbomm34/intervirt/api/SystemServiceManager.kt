@@ -11,6 +11,8 @@ class SystemServiceManager(
 
     suspend fun stop(name: String): Result<Unit> = exec("systemctl", "stop", name).map { }
 
+    suspend fun restart(name: String): Result<Unit> = exec("systemctl", "restart", name).map { }
+
     // TODO: Return a structured data class instead a single string
     suspend fun status(name: String): Result<String> = exec("systemctl", "status", "name")
 
