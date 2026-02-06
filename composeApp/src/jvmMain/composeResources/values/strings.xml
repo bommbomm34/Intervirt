@@ -115,4 +115,7 @@
     <string name="terminal_init_failed">Failure during terminal initialization</string>
     <string name="waiting_for_container_proxy">Waiting for container proxy...</string>
     <string name="failed_to_load_proxy">Failed to load proxy :%1$s</string>
+    <string name="class_name">Class</string>
+    <string name="type">Type</string>
+    <string name="data">Data</string>
 </resources>

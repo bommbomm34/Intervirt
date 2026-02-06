@@ -19,6 +19,7 @@ zip4j = "2.11.5"
 osdetector = "1.7.3"
 sshd = "3.0.0-M2"
 kommand = "2.3.0"
+compose-table = "0.2.3"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -47,6 +48,7 @@ zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "sshd" }
 sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "sshd" }
 kommand = { module = "com.kgit2:kommand", version.ref = "kommand" }
+compose-table = { module = "io.github.windedge.table:table-m3", version.ref = "compose-table" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

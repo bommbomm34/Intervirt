@@ -64,6 +64,7 @@ kotlin {
             implementation(libs.sshd.core)
             implementation(libs.sshd.sftp)
             implementation(libs.kommand)
+            implementation(libs.compose.table)
             // JavaFX
             implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")
             implementation("org.openjfx:javafx-graphics:$javaFXVersion:${javaFXSuffix}")
