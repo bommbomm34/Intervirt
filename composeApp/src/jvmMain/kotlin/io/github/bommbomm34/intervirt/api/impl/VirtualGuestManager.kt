@@ -102,7 +102,7 @@ class VirtualGuestManager : GuestManager {
         emit(ResultProgress.success(Unit))
     }
 
-    override suspend fun shutdown() = Result.success(Unit)
+    override suspend fun shutdown() = Result.failure<Unit>(NotImplementedError("Shutdown through VirtualGuestManager isn't possible."))
 
     override suspend fun reboot() = Result.success(Unit)
 

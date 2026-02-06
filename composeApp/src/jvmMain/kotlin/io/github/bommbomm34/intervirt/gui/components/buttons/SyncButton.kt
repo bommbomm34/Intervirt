@@ -22,14 +22,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun SyncButton() {
+fun SyncButton(running: Boolean) {
     val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
-    val qemuClient = koinInject<QemuClient>()
     val guestManager = koinInject<GuestManager>()
-    if (qemuClient.running){
+    if (running){
         IconButton(
             onClick = {
                 scope.launch {

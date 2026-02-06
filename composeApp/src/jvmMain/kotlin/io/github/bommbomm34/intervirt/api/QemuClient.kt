@@ -23,10 +23,15 @@ class QemuClient(
 ) : AutoCloseable {
 
     var running = false
+        set(value) {
+            onRunningChangeListeners.forEach { it(value) }
+            field = value
+        }
     private var isRunningLoopJob: Job? = null
     private val logger = KotlinLogging.logger { }
     private lateinit var currentProcess: Process
     private var qemuMonitorSession: QemuMonitorSession? = null
+    private val onRunningChangeListeners = mutableListOf<(Boolean) -> Unit>()
 
     private val startAlpineVMCommands = buildList {
         add(fileManager.getQemuFile().absolutePath)
@@ -102,6 +107,7 @@ class QemuClient(
         }
         isRunningLoopJob?.cancel()
         isRunningLoopJob = null
+        running = false
         logger.debug { "Alpine VM is now offline" }
     }
 
@@ -163,6 +169,8 @@ class QemuClient(
         return Result.failure(NullPointerException("No QEMU Monitor session is available."))
     }
 
+    fun onRunningChange(block: (Boolean) -> Unit) = onRunningChangeListeners.add(block)
+
     private fun isRunningLoop() {
         if (isRunningLoopJob == null) {
             isRunningLoopJob = CoroutineScope(Dispatchers.IO).launch {
@@ -178,14 +186,6 @@ class QemuClient(
                     delay(2500)
                 }
             }
-        }
-    }
-
-    private fun testAgentPort(agentPort: Int): Boolean {
-        try {
-            Socket("127.0.0.1", agentPort).use { return true }
-        } catch (_: ConnectException) {
-            return false
         }
     }
 

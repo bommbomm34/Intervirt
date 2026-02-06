@@ -15,10 +15,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun RebootButton(){
+fun RebootButton(running: Boolean){
     val appState = koinInject<AppState>()
     val guestManager = koinInject<GuestManager>()
-    val qemuClient = koinInject<QemuClient>()
     val scope = rememberCoroutineScope()
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)
@@ -37,7 +36,7 @@ fun RebootButton(){
                 rebootButtonText = rebootText
             }
         },
-        enabled = qemuClient.running
+        enabled = running
     ){
         Text(rebootButtonText)
     }
