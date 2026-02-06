@@ -25,7 +25,7 @@ class IntervirtOSClient(
         nameserver: String,
         reverse: Boolean
     ): List<DnsRecord> {
-        val baseCommandList = listOf("doggo", name, "--type", type, "--nameserver", nameserver, "--json")
+        val baseCommandList = listOf("/usr/bin/doggo", name, "--type", type, "--nameserver", nameserver, "--json")
         val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
         logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
         return ioClient.exec(

@@ -4,18 +4,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
-import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -37,15 +33,12 @@ fun DnsResolver(
     osClient: IntervirtOSClient
 ) {
     val appEnv = koinInject<AppEnv>()
-    val appState = koinInject<AppState>()
-    val deviceManager = koinInject<DeviceManager>()
-    val logger = rememberLogger("DnsResolver")
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
     var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }
     var dnsServer by remember { mutableStateOf(appEnv.defaultDnsServer) }
     var reverseLookup by remember { mutableStateOf(false) }
-    val records = mutableStateListOf<DnsRecord>()
+    val records = remember { mutableStateListOf<DnsRecord>() }
     val scope = rememberCoroutineScope()
     AlignedBox(Alignment.Center) {
         CenterColumn {
@@ -84,11 +77,13 @@ fun DnsResolver(
                 onClick = {
                     records.clear()
                     scope.launch {
-                        osClient.lookupDns(
-                            name = domain,
-                            type = dnsRecordType,
-                            nameserver = dnsServer,
-                            reverse = reverseLookup
+                        records.addAll(
+                            osClient.lookupDns(
+                                name = domain,
+                                type = dnsRecordType,
+                                nameserver = dnsServer,
+                                reverse = reverseLookup
+                            )
                         )
                     }
                 }

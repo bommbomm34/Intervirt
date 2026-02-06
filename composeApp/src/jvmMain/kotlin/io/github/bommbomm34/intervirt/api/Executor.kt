@@ -14,17 +14,18 @@ class Executor {
 
     fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
         flow {
+
             val builder = ProcessBuilder(commands)
             workingFolder?.let { builder.directory(it) }
             builder.redirectErrorStream()
             logger.info { "Running '${commands.joinToString(" ")}' on host" }
             val process = builder.start()
-            val reader = process.inputStream.bufferedReader()
-            while (process.isAlive) {
-                val line = reader.readLine() ?: continue
-                logger.debug { "Output: $line" }
-                emit(line.toCommandStatus())
+            process.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { line ->
+                    logger.debug { "Output: $line" }
+                    emit(line.toCommandStatus())
+                }
             }
-            emit(process.exitValue().toCommandStatus())
+            emit(process.waitFor().toCommandStatus())
         }.flowOn(Dispatchers.IO)
 }
