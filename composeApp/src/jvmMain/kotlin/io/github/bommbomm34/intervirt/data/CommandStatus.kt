@@ -22,7 +22,7 @@ suspend fun Flow<CommandStatus>.getCommandResult(iterate: suspend (CommandStatus
     collect {
         when (it){
             is CommandStatus.Running -> {
-                totalOutput.append(it.message)
+                totalOutput.append(it.message + "\n")
                 iterate(it)
             }
             is CommandStatus.End -> {
