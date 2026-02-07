@@ -8,6 +8,7 @@ import androidx.compose.ui.window.WindowState
 import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
 import kotlin.fold
 
@@ -50,7 +51,7 @@ class AppState {
     /**
      * Open error dialog if result is failed, otherwise call `onSuccess`
      */
-    inline fun <T> runDialogCatching(block: () -> T): Result<T> = runCatching(block).onFailure {
+    suspend inline fun <T> runDialogCatching(block: suspend () -> T): Result<T> = runSuspendingCatching(block).onFailure {
         openDialog(
             importance = Importance.ERROR,
             message = it.localizedMessage

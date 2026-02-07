@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.result
+import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -131,7 +132,7 @@ class AgentClient(
 
     private suspend fun listen(): Result<Unit> {
         if (!this::session.isInitialized) {
-            val result = runCatching {
+            val result = runSuspendingCatching {
                 session = client.webSocketSession(
                     method = HttpMethod.Get,
                     host = "localhost",

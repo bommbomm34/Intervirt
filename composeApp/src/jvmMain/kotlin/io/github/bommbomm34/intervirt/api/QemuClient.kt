@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.exceptions.OSException
 import io.github.bommbomm34.intervirt.exceptions.QmpException
+import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -87,7 +88,7 @@ class QemuClient(
         logger.info { "Shutting down Alpine VM" }
         logger.debug { "Closing QEMU monitor session" }
         qemuMonitorSession?.close()
-        runCatching {
+        runSuspendingCatching {
             guestManager.shutdown()
                 .onFailure {
                     withContext(Dispatchers.IO){
@@ -189,10 +190,10 @@ class QemuClient(
         }
     }
 
-    private suspend fun initMonitorSocket(): Result<QemuMonitorSession> = runCatching {
+    private suspend fun initMonitorSocket(): Result<QemuMonitorSession> = runSuspendingCatching {
         logger.debug { "Initializing monitor socket connection" }
         val selector = ActorSelectorManager(Dispatchers.IO)
-        return@runCatching withTimeout(5000) {
+        return@runSuspendingCatching withTimeout(5000) {
             val socket = aSocket(selector).tcp().connect("127.0.0.1", appEnv.qemuMonitorPort)
             val session = QemuMonitorSession(selector, socket)
             logger.debug { "Initialized session" }

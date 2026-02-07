@@ -45,11 +45,11 @@ class ContainerSshClient(port: Int) : ContainerIOClient {
     }
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> = runCatching {
+        val command = commands.joinToString(" ")
+        logger.info { "Running '$command' on container" }
+        val channel = session.createExecChannel(command)
+        channel.open().verify()
         flow {
-            val command = commands.joinToString(" ")
-            logger.info { "Running '$command' on container" }
-            val channel = session.createExecChannel(command)
-            channel.open().verify()
             val reader = channel.`in`.bufferedReader()
             while (!channel.isClosed) {
                 val line = reader.readLine() ?: continue

@@ -20,6 +20,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
+import io.ktor.utils.io.CancellationException
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds
@@ -101,6 +102,16 @@ fun Float.readablePercentage() = "${(times(100f)).roundBy()}%"
 
 @Composable
 fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
+
+suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> {
+    return try {
+        Result.success(block())
+    } catch (e: CancellationException){
+        throw e
+    } catch (e: Throwable){
+        Result.failure(e)
+    }
+}
 
 fun Int.isValidPort() = this in 1..65535
 

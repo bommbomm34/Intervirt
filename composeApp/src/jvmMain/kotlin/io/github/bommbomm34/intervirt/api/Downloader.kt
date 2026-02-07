@@ -6,6 +6,7 @@ import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
+import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -25,7 +26,7 @@ class Downloader(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    suspend fun checkUpdates(): Result<List<Component>> = runCatching {
+    suspend fun checkUpdates(): Result<List<Component>> = runSuspendingCatching {
         buildList {
             if (appEnv.qemuZipHashUrl.fetch().getOrThrow() != preferences.env("CURRENT_QEMU_HASH")) add(Component.QEMU)
             if (appEnv.vmDiskHashUrl.fetch()
