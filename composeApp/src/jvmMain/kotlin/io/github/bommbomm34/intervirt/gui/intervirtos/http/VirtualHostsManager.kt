@@ -15,7 +15,7 @@ fun VirtualHostsManager(osClient: IntervirtOSClient) {
     val appState = koinInject<AppState>()
     LaunchedEffect(virtualHosts){
         appState.runDialogCatching {
-            osClient.loadConf(VirtualHost.generateConfiguration(virtualHosts))
+            osClient.loadHttpConf(VirtualHost.generateConfiguration(virtualHosts))
         }
     }
     AddVirtualHostView { virtualHosts.add(it) }

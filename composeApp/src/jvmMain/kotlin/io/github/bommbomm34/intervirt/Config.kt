@@ -104,7 +104,6 @@ fun Float.readablePercentage() = "${(times(100f)).roundBy()}%"
 fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
 
 suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> {
-    2 + 2
     return try {
         Result.success(block())
     } catch (e: CancellationException){

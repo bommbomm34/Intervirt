@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.VirtualHost
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.data.getCommandResult
@@ -72,7 +71,7 @@ class IntervirtOSClient(
         return if (enabled) serviceManager.start("apache2") else serviceManager.stop("apache2")
     }
 
-    suspend fun loadConf(conf: String): Result<Unit> {
+    suspend fun loadHttpConf(conf: String): Result<Unit> {
         logger.debug { "Loading Apache2 configuration" }
         logger.debug { "Uploading Apache2 configuration" }
         runCatching {
@@ -93,6 +92,8 @@ class IntervirtOSClient(
             onFailure = { Result.failure(it) }
         )
     }
+
+    suspend fun isHttpServerActive(): Result<Boolean> = serviceManager.status("apache2").map { it.active }
 
     suspend fun enableSshServer(
         enabled: Boolean
