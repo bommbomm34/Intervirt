@@ -17,7 +17,8 @@ import org.koin.compose.koinInject
 @Composable
 fun SimpleTable(
     headers: List<String>,
-    content: List<List<Any>>
+    content: List<List<Any>>,
+    customElements: List<@Composable () -> Unit> = emptyList()
 ){
     SelectionContainer {
         DataTable(
@@ -30,11 +31,14 @@ fun SimpleTable(
                 }
             }
         ){
-            content.forEach { row ->
+            content.forEachIndexed { i, row ->
                 row {
                     row.forEach {
-                        cell { VisibleText(it) }
+                        cell {
+                            VisibleText(it)
+                        }
                     }
+                    customElements.getOrNull(i)?.let { cell { it() } }
                 }
             }
         }

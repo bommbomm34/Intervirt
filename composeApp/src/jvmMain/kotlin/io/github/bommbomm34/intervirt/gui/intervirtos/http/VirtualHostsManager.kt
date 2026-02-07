@@ -19,5 +19,5 @@ fun VirtualHostsManager(osClient: IntervirtOSClient) {
         }
     }
     // TODO: Add virtual hosts through dialog
-    // TODO: Display virtual hosts
+    VirtualHostsTable(virtualHosts){ virtualHosts.remove(it) }
 }

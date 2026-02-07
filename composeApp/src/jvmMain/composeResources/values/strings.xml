@@ -118,4 +118,5 @@
     <string name="class_name">Class</string>
     <string name="type">Type</string>
     <string name="data">Data</string>
+    <string name="destination_folder">Destination folder</string>
 </resources>
