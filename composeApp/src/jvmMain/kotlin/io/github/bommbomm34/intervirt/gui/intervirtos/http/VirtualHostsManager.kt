@@ -18,6 +18,6 @@ fun VirtualHostsManager(osClient: IntervirtOSClient) {
             osClient.loadConf(VirtualHost.generateConfiguration(virtualHosts))
         }
     }
-    // TODO: Add virtual hosts through dialog
+    AddVirtualHostView { virtualHosts.add(it) }
     VirtualHostsTable(virtualHosts){ virtualHosts.remove(it) }
 }
