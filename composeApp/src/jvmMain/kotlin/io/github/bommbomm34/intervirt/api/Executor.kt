@@ -26,6 +26,8 @@ class Executor {
                     emit(line.toCommandStatus())
                 }
             }
-            emit(process.waitFor().toCommandStatus())
+            val statusCode = process.waitFor()
+            logger.debug { "Process ended with status code $statusCode" }
+            emit(statusCode.toCommandStatus())
         }.flowOn(Dispatchers.IO)
 }

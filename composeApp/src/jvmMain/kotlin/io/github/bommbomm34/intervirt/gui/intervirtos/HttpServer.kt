@@ -25,15 +25,13 @@ fun HttpServer(
         PlayButton(running) {
             scope.launch { osClient.enableHttpServer(it) }
         }
-        GeneralSpacer()
-        NamedCheckbox(
-            checked = enableVirtualHosts,
-            onCheckedChange = { enableVirtualHosts = it },
-            name = stringResource(Res.string.enable_virtual_hosts)
-        )
-        GeneralSpacer()
-        AnimatedVisibility(enableVirtualHosts) {
-            VirtualHostsManager(osClient)
-        }
+    }
+    NamedCheckbox(
+        checked = enableVirtualHosts,
+        onCheckedChange = { enableVirtualHosts = it },
+        name = stringResource(Res.string.enable_virtual_hosts)
+    )
+    AnimatedVisibility(enableVirtualHosts) {
+        VirtualHostsManager(osClient)
     }
 }

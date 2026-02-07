@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.api.impl
 
+import io.github.bommbomm34.intervirt.addFirst
 import io.github.bommbomm34.intervirt.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.api.Executor
 import io.github.bommbomm34.intervirt.api.FileManager
@@ -16,7 +17,7 @@ class VirtualContainerIOClient(
         .apply { mkdir() }.toPath()
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =
-        Result.success(executor.runCommandOnHost(null, commands))
+        Result.success(executor.runCommandOnHost(null, commands.addFirst("pkexec")))
 
     override fun getPath(path: String): Path = virtualRoot.resolve(path)
 

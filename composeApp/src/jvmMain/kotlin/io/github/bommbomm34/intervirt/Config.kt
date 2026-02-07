@@ -104,6 +104,7 @@ fun Float.readablePercentage() = "${(times(100f)).roundBy()}%"
 fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
 
 suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> {
+    2 + 2
     return try {
         Result.success(block())
     } catch (e: CancellationException){
@@ -111,6 +112,11 @@ suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> 
     } catch (e: Throwable){
         Result.failure(e)
     }
+}
+fun <T> List<T>.addFirst(element: T): List<T> {
+    val mutableList = toMutableList()
+    mutableList.addFirst(element)
+    return mutableList
 }
 
 fun Int.isValidPort() = this in 1..65535
