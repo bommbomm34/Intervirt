@@ -30,7 +30,7 @@ fun CustomTable(
                 }
             }
         ){
-            content.forEachIndexed { i, row ->
+            content.forEach { row ->
                 row {
                     row.forEach {
                         cell {

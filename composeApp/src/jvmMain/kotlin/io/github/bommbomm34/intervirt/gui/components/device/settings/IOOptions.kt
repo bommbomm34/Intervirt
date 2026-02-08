@@ -13,13 +13,11 @@ import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.terminal
 import intervirt.composeapp.generated.resources.upload_file
 import io.github.bommbomm34.intervirt.api.ContainerIOClient
-import io.github.bommbomm34.intervirt.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.FileManager
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.ContainerFilePicker
+import io.github.bommbomm34.intervirt.gui.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberLogger
@@ -64,7 +62,8 @@ fun IOOptions(device: ViewDevice.Computer){
     val filePickerLauncher = rememberFilePickerLauncher { file ->
         file?.let { _ ->
             appState.openDialog {
-                ContainerFilePicker(device){ path ->
+                ContainerFilePicker(ioClient!!){ path ->
+                    appState.closeDialog()
                     path?.let { _ ->
                         scope.launch {
                             try {
@@ -82,11 +81,12 @@ fun IOOptions(device: ViewDevice.Computer){
         }
     }
     Row (verticalAlignment = Alignment.CenterVertically) {
-        ioClient?.let {
+        ioClient?.let { client ->
             IconButton(
                 onClick = {
                     appState.openDialog {
-                        ContainerFilePicker(device){ path ->
+                        ContainerFilePicker(client){ path ->
+                            appState.closeDialog()
                             path?.let {
                                 containerFilePath = it
                                 val fullFileName = path.name

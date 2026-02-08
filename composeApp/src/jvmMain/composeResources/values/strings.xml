@@ -119,4 +119,6 @@
     <string name="type">Type</string>
     <string name="data">Data</string>
     <string name="destination_folder">Destination folder</string>
+    <string name="file">File</string>
+    <string name="folder">Folder</string>
 </resources>
