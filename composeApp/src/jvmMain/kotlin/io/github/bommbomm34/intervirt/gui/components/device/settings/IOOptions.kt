@@ -23,6 +23,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
+import io.github.vinceglb.filekit.name
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -62,13 +63,14 @@ fun IOOptions(device: ViewDevice.Computer){
     val filePickerLauncher = rememberFilePickerLauncher { file ->
         file?.let { _ ->
             appState.openDialog {
-                ContainerFilePicker(ioClient!!){ path ->
+                ContainerFilePicker(ioClient!!, file.name){ path ->
                     appState.closeDialog()
                     path?.let { _ ->
                         scope.launch {
                             try {
                                 file.file.toPath().copyTo(path)
                             } catch (e: Exception){
+                                logger.error(e){ "Error occurred during file upload" }
                                 appState.openDialog(
                                     importance = Importance.ERROR,
                                     message = e.localizedMessage

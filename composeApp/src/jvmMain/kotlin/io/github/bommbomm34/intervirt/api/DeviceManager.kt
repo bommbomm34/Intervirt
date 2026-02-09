@@ -191,7 +191,7 @@ class DeviceManager(
     }
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
-        val client = VirtualContainerIOClient(executor, fileManager)
+        val client = VirtualContainerIOClient(computer.id, executor, fileManager)
         containerIOClients[computer] = client
         return client
     }
