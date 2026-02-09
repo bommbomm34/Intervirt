@@ -102,8 +102,8 @@ fun IOOptions(device: ViewDevice.Computer){
                 }
             ){
                 GeneralIcon(
-                    imageVector = TablerIcons.FileUpload,
-                    contentDescription = stringResource(Res.string.upload_file)
+                    imageVector = TablerIcons.FileDownload,
+                    contentDescription = stringResource(Res.string.download_file)
                 )
             }
             GeneralSpacer()
@@ -113,8 +113,8 @@ fun IOOptions(device: ViewDevice.Computer){
                 }
             ){
                 GeneralIcon(
-                    imageVector = TablerIcons.FileDownload,
-                    contentDescription = stringResource(Res.string.download_file)
+                    imageVector = TablerIcons.FileUpload,
+                    contentDescription = stringResource(Res.string.upload_file)
                 )
             }
             GeneralSpacer()
