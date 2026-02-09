@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -56,7 +57,9 @@ fun Dialog() {
                                         }
                                     )
                                     GeneralSpacer()
-                                    Text(state.message)
+                                    SelectionContainer {
+                                        Text(state.message)
+                                    }
                                     GeneralSpacer()
                                     Button(
                                         onClick = { appState.dialogState = state.copy(visible = false) }
