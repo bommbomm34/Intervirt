@@ -1,11 +1,13 @@
 package io.github.bommbomm34.intervirt.api
 
-import intervirt.composeapp.generated.resources.*
+import intervirt.composeapp.generated.resources.Res
+import intervirt.composeapp.generated.resources.download_succeeded
+import intervirt.composeapp.generated.resources.downloading
+import intervirt.composeapp.generated.resources.successful_installation
 import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
-import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.request.*
@@ -15,8 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import net.lingala.zip4j.ZipFile
-import net.lingala.zip4j.exception.ZipException
 import org.jetbrains.compose.resources.getString
 
 class Downloader(
@@ -66,13 +66,16 @@ class Downloader(
                 onSuccess = { hash ->
                     file.collect { resultProgress ->
                         if (resultProgress is ResultProgress.Result) {
-                            resultProgress.result.onFailure {
-                                emit(ResultProgress.failure(it))
-                            }.onSuccess {
-                                emit(ResultProgress.success(getString(Res.string.download_succeeded)))
-                                preferences.saveString("DISK_INSTALLED", "true")
-                                preferences.saveString("CURRENT_DISK_HASH", hash)
-                            }
+                            resultProgress.result.fold(
+                                onSuccess = {
+                                    emit(ResultProgress.success(getString(Res.string.download_succeeded)))
+                                    preferences.saveString("DISK_INSTALLED", "true")
+                                    preferences.saveString("CURRENT_DISK_HASH", hash)
+                                },
+                                onFailure = {
+                                    emit(ResultProgress.failure(it))
+                                }
+                            )
                         } else {
                             emit(
                                 ResultProgress.proceed(
@@ -105,11 +108,10 @@ class Downloader(
                     onSuccess = { hash ->
                         file.collect { resultProgress ->
                             if (resultProgress is ResultProgress.Result) {
-                                resultProgress.result.onSuccess { zipFile ->
-                                    val zip = ZipFile(zipFile)
-                                    try {
-                                        logger.debug { "Extracting ${zipFile.name}" }
-                                        zip.extractAll(fileManager.getFile("qemu").absolutePath)
+                                resultProgress.result.fold(
+                                    onSuccess = { zipFile ->
+                                        fileManager.extractZip(zipFile, fileManager.getFile("qemu"))
+                                            .onFailure { emit(ResultProgress.failure(it)) }
                                         preferences.saveString("QEMU_INSTALLED", "true")
                                         preferences.saveString("CURRENT_QEMU_HASH", hash)
                                         emit(
@@ -120,23 +122,11 @@ class Downloader(
                                                 )
                                             )
                                         )
-                                    } catch (e: ZipException) {
-                                        logger.error { "Error occurred while extracting ${zipFile.name}: ${e.message}" }
-                                        emit(
-                                            ResultProgress.failure(
-                                                ZipExtractionException(
-                                                    getString(
-                                                        Res.string.error_while_zip_extraction,
-                                                        zipFile.name,
-                                                        e.localizedMessage
-                                                    )
-                                                )
-                                            )
-                                        )
+                                    },
+                                    onFailure = {
+                                        emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
                                     }
-                                }.onFailure {
-                                    emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
-                                }
+                                )
                             } else {
                                 emit(
                                     ResultProgress.proceed(
