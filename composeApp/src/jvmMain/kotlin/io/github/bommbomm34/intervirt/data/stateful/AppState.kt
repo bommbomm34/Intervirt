@@ -5,14 +5,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
-import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
-import kotlin.fold
 
-class AppState {
+class AppState(configuration: IntervirtConfiguration) {
     val logs = mutableStateListOf<String>()
     var showLogs by mutableStateOf(false)
     var dialogState: DialogState by mutableStateOf(DialogState.Default)

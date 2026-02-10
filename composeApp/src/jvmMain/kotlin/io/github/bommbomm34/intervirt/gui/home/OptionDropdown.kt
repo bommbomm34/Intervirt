@@ -10,7 +10,6 @@ import compose.icons.tablericons.*
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HELP_URL
 import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.stateful.AppState
@@ -41,6 +40,7 @@ fun OptionDropdown(
     val appEnv = koinInject<AppEnv>()
     val guestManager = koinInject<GuestManager>()
     val appState = koinInject<AppState>()
+    val configuration = koinInject<IntervirtConfiguration>()
     val scope = rememberCoroutineScope()
     val writeConf: (PlatformFile) -> Unit = { file ->
         scope.launch {

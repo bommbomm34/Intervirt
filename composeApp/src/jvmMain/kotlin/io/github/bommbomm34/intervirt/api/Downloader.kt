@@ -4,12 +4,12 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_succeeded
 import intervirt.composeapp.generated.resources.downloading
 import intervirt.composeapp.generated.resources.successful_installation
-import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -22,7 +22,8 @@ import org.jetbrains.compose.resources.getString
 class Downloader(
     private val preferences: Preferences,
     private val fileManager: FileManager,
-    private val appEnv: AppEnv
+    private val appEnv: AppEnv,
+    private val client: HttpClient
 ) {
     private val logger = KotlinLogging.logger { }
 

@@ -13,7 +13,7 @@ import kotlin.io.encoding.Base64
 // Virtual Guest Manager
 class VirtualGuestManager : GuestManager {
     private val containers = mutableListOf<Container>()
-    private val connections = mutableListOf<DeviceConnection>()
+    private val connections = mutableListOf<ContainerConnection>()
 
     override suspend fun addContainer(
         id: String,
@@ -43,14 +43,14 @@ class VirtualGuestManager : GuestManager {
     override suspend fun connect(id1: String, id2: String): Result<Unit> {
         if (!id1.exists()) return Result.failure(NotFoundException("Container $id1 doesn't exist."))
         if (!id2.exists()) return Result.failure(NotFoundException("Container $id2 doesn't exist."))
-        connections.add(id1.toDevice() connect id2.toDevice())
+        connections.add(ContainerConnection(id1, id2))
         return Result.success(Unit)
     }
 
     override suspend fun disconnect(id1: String, id2: String): Result<Unit> {
         if (!id1.exists()) return Result.failure(NotFoundException("Container $id1 doesn't exist."))
         if (!id2.exists()) return Result.failure(NotFoundException("Container $id2 doesn't exist."))
-        connections.remove(id1.toDevice() connect id2.toDevice())
+        connections.remove(ContainerConnection(id1, id2))
         return Result.success(Unit)
     }
 
@@ -124,4 +124,9 @@ private data class Container(
     val image: String,
     val portForwardings: MutableList<PortForwarding> = mutableListOf(),
     var running: Boolean = false
+)
+
+private data class ContainerConnection(
+    val id1: String,
+    val id2: String
 )

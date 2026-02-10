@@ -2,9 +2,9 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.api.impl.VirtualContainerIOClient
-import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.connect
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -17,6 +17,7 @@ class DeviceManager(
     private val qemuClient: QemuClient,
     private val executor: Executor,
     private val fileManager: FileManager,
+    private val configuration: IntervirtConfiguration,
     appEnv: AppEnv,
 ) : AutoCloseable {
     private val logger = KotlinLogging.logger { }
@@ -73,7 +74,7 @@ class DeviceManager(
 
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Connecting device $device1 to $device2" }
-        configuration.connections.add(device1 connect device2)
+        configuration.connections.add(configuration.connect(device1, device2))
         if (enableAgent) {
             val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
             device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
@@ -88,7 +89,7 @@ class DeviceManager(
 
     suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Disconnecting device $device1 to $device2" }
-        configuration.connections.removeIf { it == device1 connect device2 }
+        configuration.connections.removeIf { it == configuration.connect(device1, device2) }
         if (enableAgent) {
             val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
             device2.getConnectedComputers(configuration.connections).forEach { computer1 ->

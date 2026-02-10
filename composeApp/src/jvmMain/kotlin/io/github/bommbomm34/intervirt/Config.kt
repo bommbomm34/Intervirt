@@ -20,7 +20,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
-import io.ktor.utils.io.CancellationException
+import io.ktor.utils.io.*
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds
@@ -38,7 +38,7 @@ val mainModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(get()))
+        (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(get(), get()))
     }.binds(arrayOf(GuestManager::class))
     singleOf(::DeviceManager)
     singleOf(::FileManager)
@@ -46,47 +46,52 @@ val mainModule = module {
     singleOf(::QemuClient)
     singleOf(::AppState)
     single { get<Preferences>().getAppEnv() }
+    single {
+        HttpClient(CIO) {
+            engine {
+                requestTimeout = 0
+            }
+            install(WebSockets) {
+                contentConverter = KotlinxWebsocketSerializationConverter(Json)
+            }
+        }
+    }
+    single {
+        IntervirtConfiguration(
+            version = CURRENT_VERSION,
+            author = "",
+            devices = mutableListOf(
+                Device.Switch(
+                    id = "switch-88888",
+                    name = "My Switch",
+                    x = 300,
+                    y = 300
+                ),
+                Device.Computer(
+                    id = "computer-67676",
+                    image = "intervirtos/1",
+                    name = "My Debian",
+                    x = 500,
+                    y = 500,
+                    ipv4 = "192.168.0.20",
+                    ipv6 = "fd00:6767:6767:6767:0808:abcd:abcd:aaaa",
+                    mac = "fd:67:67:67:67:67",
+                    internetEnabled = false,
+                    portForwardings = mutableListOf(
+                        PortForwarding("tcp", 67, 25565)
+                    )
+                )
+            ),
+            connections = mutableListOf()
+        ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
+    }
 }
 val AVAILABLE_LANGUAGES = listOf(
     Locale.US
 )
 val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
-val client = HttpClient(CIO) {
-    engine {
-        requestTimeout = 0
-    }
-    install(WebSockets){
-        contentConverter = KotlinxWebsocketSerializationConverter(Json)
-    }
-}
+
 lateinit var density: Density
-val configuration = IntervirtConfiguration(
-    version = CURRENT_VERSION,
-    author = "",
-    devices = mutableListOf(
-        Device.Switch(
-            id = "switch-88888",
-            name = "My Switch",
-            x = 300,
-            y = 300
-        ),
-        Device.Computer(
-            id = "computer-67676",
-            image = "intervirtos/1",
-            name = "My Debian",
-            x = 500,
-            y = 500,
-            ipv4 = "192.168.0.20",
-            ipv6 = "fd00:6767:6767:6767:0808:abcd:abcd:aaaa",
-            mac = "fd:67:67:67:67:67",
-            internetEnabled = false,
-            portForwardings = mutableListOf(
-                PortForwarding("tcp", 67, 25565)
-            )
-        )
-    ),
-    connections = mutableListOf()
-).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id)) }
 fun String.versionCode() = replace(".", "").toInt()
 
 fun String.result() = Result.success(this)
@@ -106,12 +111,13 @@ fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
 suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> {
     return try {
         Result.success(block())
-    } catch (e: CancellationException){
+    } catch (e: CancellationException) {
         throw e
-    } catch (e: Throwable){
+    } catch (e: Throwable) {
         Result.failure(e)
     }
 }
+
 fun <T> List<T>.addFirst(element: T): List<T> {
     val mutableList = toMutableList()
     mutableList.addFirst(element)
@@ -147,7 +153,8 @@ fun Preferences.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConf
 val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
-@Composable fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
+@Composable
+fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
 

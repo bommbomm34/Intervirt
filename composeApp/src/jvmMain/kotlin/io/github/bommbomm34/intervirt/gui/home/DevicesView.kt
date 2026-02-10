@@ -27,6 +27,7 @@ import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
@@ -51,6 +52,7 @@ fun DevicesView() {
     val deviceManager = koinInject<DeviceManager>()
     val appEnv = koinInject<AppEnv>()
     val appState = koinInject<AppState>()
+    val configuration = koinInject<IntervirtConfiguration>()
     val statefulConf = appState.statefulConf
     AlignedBox(Alignment.Center) {
         Canvas(
@@ -134,7 +136,7 @@ fun DevicesView() {
                 if (copy != null) {
                     if (copy.id != it.id) {
                         scope.launch {
-                            if (copy.canConnect() && it.canConnect()) {
+                            if (copy.canConnect(configuration) && it.canConnect(configuration)) {
                                 statefulConf.connections.add(copy connect it)
                                 deviceManager.connectDevice(copy.device, it.device)
                             } else appState.openDialog(

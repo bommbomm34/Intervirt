@@ -1,11 +1,11 @@
 package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.result
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.serialization.*
@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
 
 class AgentClient(
-    appEnv: AppEnv
+    appEnv: AppEnv,
+    private val client: HttpClient
 ) : GuestManager {
     private val logger = KotlinLogging.logger { }
     private lateinit var session: DefaultClientWebSocketSession

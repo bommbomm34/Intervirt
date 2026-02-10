@@ -11,8 +11,8 @@ import androidx.compose.ui.text.font.FontWeight
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.canPortBind
-import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
@@ -39,6 +39,7 @@ fun AddPortForwardingDialog(
         var result by remember { mutableStateOf(Result.success(Unit)) }
         val scope = rememberCoroutineScope()
         val deviceManager = koinInject<DeviceManager>()
+        val configuration = koinInject<IntervirtConfiguration>()
         Row(verticalAlignment = Alignment.CenterVertically) {
             SelectionDropdown(
                 options = protocols,
@@ -62,7 +63,7 @@ fun AddPortForwardingDialog(
             )
         }
         LaunchedEffect(internalPort, externalPort) {
-            result = lint(device, internalPort, externalPort, protocol.lowercase())
+            result = configuration.lint(device, internalPort, externalPort, protocol.lowercase())
         }
         if (result.isFailure) {
             result.exceptionOrNull()?.let { exp ->
@@ -108,7 +109,7 @@ fun AddPortForwardingDialog(
 }
 
 
-private suspend fun lint(
+private suspend fun IntervirtConfiguration.lint(
     device: ViewDevice.Computer,
     internalPort: Int,
     externalPort: Int,
@@ -117,7 +118,7 @@ private suspend fun lint(
     val bindResult = externalPort.canPortBind()
     return when {
         device.portForwardings.any { it.guestPort == internalPort } -> Result.failure(IllegalArgumentException(getString(Res.string.internal_port_already_exposed)))
-        configuration.devices.any { device -> if (device is Device.Computer) device.portForwardings.any { it.hostPort == externalPort && it.protocol == protocol } else false } -> Result.failure(
+        devices.any { device -> if (device is Device.Computer) device.portForwardings.any { it.hostPort == externalPort && it.protocol == protocol } else false } -> Result.failure(
             IllegalArgumentException(getString(Res.string.external_port_already_bound))
         )
         bindResult.isFailure -> Result.failure(bindResult.exceptionOrNull()!!)

@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.data.stateful
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
@@ -9,8 +8,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
-import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.PortForwarding
 
 sealed class ViewDevice {
@@ -36,7 +35,7 @@ sealed class ViewDevice {
             mutableListOf<PortForwarding>().apply { addAll(device.portForwardings) } // internalPort:externalPort
 
         override fun getVector() = TablerIcons.DevicesPc
-        override fun canConnect() = configuration.connections.count { it.containsDevice(device) } == 0
+        override fun canConnect(configuration: IntervirtConfiguration) = configuration.connections.count { it.containsDevice(device) } == 0
     }
 
     data class Switch(override val device: Device.Switch,
@@ -46,11 +45,11 @@ sealed class ViewDevice {
         override var x by mutableStateOf(device.x)
         override var y by mutableStateOf(device.y)
         override fun getVector() = TablerIcons.Switch
-        override fun canConnect() = true
+        override fun canConnect(configuration: IntervirtConfiguration) = true
     }
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
-    abstract fun canConnect(): Boolean
+    abstract fun canConnect(configuration: IntervirtConfiguration): Boolean
 }
 
 fun Device.toViewDevice() = when (this) {

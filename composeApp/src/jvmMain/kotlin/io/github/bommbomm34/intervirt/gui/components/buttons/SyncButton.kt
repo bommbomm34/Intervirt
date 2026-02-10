@@ -11,9 +11,8 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.sync_guest
 import intervirt.composeapp.generated.resources.syncing
 import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.api.QemuClient
-import io.github.bommbomm34.intervirt.configuration
 import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.cancel
@@ -24,10 +23,11 @@ import org.koin.compose.koinInject
 @Composable
 fun SyncButton(running: Boolean) {
     val appState = koinInject<AppState>()
+    val guestManager = koinInject<GuestManager>()
+    val configuration = koinInject<IntervirtConfiguration>()
     val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
-    val guestManager = koinInject<GuestManager>()
     if (running){
         IconButton(
             onClick = {

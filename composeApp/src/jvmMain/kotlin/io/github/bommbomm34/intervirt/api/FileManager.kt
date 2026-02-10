@@ -3,11 +3,11 @@ package io.github.bommbomm34.intervirt.api
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_failed
 import intervirt.composeapp.generated.resources.error_while_zip_extraction
-import io.github.bommbomm34.intervirt.client
 import io.github.bommbomm34.intervirt.data.*
 import io.github.bommbomm34.intervirt.exceptions.UnsupportedOsException
 import io.github.bommbomm34.intervirt.exceptions.ZipExtractionException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.HttpClient
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
@@ -28,7 +28,10 @@ import org.jetbrains.compose.resources.getString
 import java.io.File
 import java.util.zip.ZipException
 
-class FileManager(appEnv: AppEnv) {
+class FileManager(
+    appEnv: AppEnv,
+    private val client: HttpClient
+) {
     private val logger = KotlinLogging.logger { }
     private val dataDir = appEnv.dataDir
 
@@ -112,7 +115,6 @@ class FileManager(appEnv: AppEnv) {
         return when (getOS()) {
             OS.WINDOWS -> getFile("qemu/qemu-system-x86_64")
             OS.LINUX -> getFile("qemu/usr/local/bin/qemu-system-x86_64")
-            null -> throw UnsupportedOsException()
         }
     }
 
