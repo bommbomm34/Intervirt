@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt
 
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -13,9 +12,11 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.terminal_window_title
-import io.github.bommbomm34.intervirt.api.*
+import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.api.GuestManager
+import io.github.bommbomm34.intervirt.api.Preferences
+import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.Device
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
@@ -28,7 +29,6 @@ import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
 import javafx.application.Platform
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -45,23 +45,23 @@ fun main() = application {
         val qemuClient = koinInject<QemuClient>()
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
-        remember {
+        LaunchedEffect(Unit) {
             // These things shouldn't be only called once
             Locale.setDefault(appEnv.language)
             FileKit.init("intervirt")
-            initJfx()
+            Platform.startup { }
+            // Add shutdown hook
+            Runtime.getRuntime().addShutdownHook(Thread {
+                println("Registered shutdown hook")
+                gracefulShutdown(deviceManager, guestManager, qemuClient)
+            })
         }
         density = LocalDensity.current
-        val scope = rememberCoroutineScope()
         // Main Window
         Window(
             onCloseRequest = {
-                scope.launch {
-                    deviceManager.close()
-                    guestManager.close()
-                    qemuClient.close()
-                    exitApplication()
-                }
+                gracefulShutdown(deviceManager, guestManager, qemuClient)
+                exitApplication()
             },
             onKeyEvent = {
                 appState.isCtrlPressed = it.isCtrlPressed
@@ -113,6 +113,12 @@ fun main() = application {
     }
 }
 
-private fun initJfx() {
-    Platform.startup { }
+private fun gracefulShutdown(
+    deviceManager: DeviceManager,
+    guestManager: GuestManager,
+    qemuClient: QemuClient
+) {
+    deviceManager.close()
+    guestManager.close()
+    qemuClient.close()
 }
