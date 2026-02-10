@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.filename
 import intervirt.composeapp.generated.resources.save
+import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -22,7 +23,7 @@ fun FileSaveView(
 ){
     var currentFilename by remember { mutableStateOf(filename) }
     GeneralSpacer()
-    Row {
+    CenterRow {
         OutlinedTextField(
             value = currentFilename,
             onValueChange = { currentFilename = it },

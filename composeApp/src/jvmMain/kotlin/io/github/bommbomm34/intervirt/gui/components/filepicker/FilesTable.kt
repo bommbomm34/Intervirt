@@ -2,14 +2,14 @@ package io.github.bommbomm34.intervirt.gui.components.filepicker
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.hoverable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.onClick
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -31,36 +31,43 @@ private val headers = listOf("", "Filename")
 @Composable
 fun FilesTable(
     files: List<File>,
+    selectable: Boolean,
     onClick: (File) -> Unit
 ) {
-    DataTable(
-        columns = {
-            headerBackground {
-                Box(Modifier.background(MaterialTheme.colorScheme.onBackground))
-            }
-            headers.forEach {
-                column { VisibleText(it, true) }
-            }
-        }
-    ) {
-        files.forEach {
-            row(
-                Modifier
-                    .onClick {
-                        onClick(it)
-                    }
-                    .pointerHoverIcon(PointerIcon.Hand)
-            ) {
-                val isFile = it.isFile
-                // File/Directory icon
-                cell {
-                    GeneralIcon(
-                        imageVector = if (isFile) TablerIcons.File else TablerIcons.Folder,
-                        contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder)
-                    )
+    val scrollState = rememberScrollState()
+    Box(Modifier.fillMaxHeight(0.8f)){
+        DataTable(
+            columns = {
+                headerBackground {
+                    Box(Modifier.background(MaterialTheme.colorScheme.onBackground))
                 }
-                // Filename
-                cell { VisibleText(it.name) }
+                headers.forEach {
+                    column { VisibleText(it, true) }
+                }
+            },
+            modifier = Modifier.verticalScroll(scrollState)
+        ) {
+            files.forEach {
+                row(
+                    if (selectable)
+                        Modifier
+                            .onClick {
+                                onClick(it)
+                            }
+                            .pointerHoverIcon(PointerIcon.Hand)
+                    else Modifier
+                ) {
+                    val isFile = it.isFile
+                    // File/Directory icon
+                    cell {
+                        GeneralIcon(
+                            imageVector = if (isFile) TablerIcons.File else TablerIcons.Folder,
+                            contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder)
+                        )
+                    }
+                    // Filename
+                    cell { VisibleText(it.name) }
+                }
             }
         }
     }
