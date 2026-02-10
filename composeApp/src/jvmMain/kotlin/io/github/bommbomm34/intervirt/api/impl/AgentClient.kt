@@ -159,6 +159,6 @@ class AgentClient(
 
     override fun close() = runBlocking(Dispatchers.IO) {
         listenJob?.cancel()
-        session.close()
+        if (this@AgentClient::session.isInitialized) session.close()
     }
 }
