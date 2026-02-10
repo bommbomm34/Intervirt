@@ -114,7 +114,7 @@
     <string name="terminal_description">Run commands with the text</string>
     <string name="terminal_init_failed">Failure during terminal initialization</string>
     <string name="waiting_for_container_proxy">Waiting for container proxy...</string>
-    <string name="failed_to_load_proxy">Failed to load proxy :%1$s</string>
+    <string name="failed_to_load_proxy">Failed to load proxy: %1$s</string>
     <string name="class_name">Class</string>
     <string name="type">Type</string>
     <string name="data">Data</string>
@@ -122,4 +122,9 @@
     <string name="file">File</string>
     <string name="folder">Folder</string>
     <string name="filename">Filename</string>
+    <string name="vm_disk_url">VM Disk URL</string>
+    <string name="vm_disk_hash_url">VM Disk Hash URL</string>
+    <string name="validate_urls">Validate URLs</string>
+    <string name="disk_url_validation_failure">Disk URL validation failure: %1$s</string>
+    <string name="disk_hash_url_validation_failure">Disk Hash URL validation failure: %1$s</string>
 </resources>

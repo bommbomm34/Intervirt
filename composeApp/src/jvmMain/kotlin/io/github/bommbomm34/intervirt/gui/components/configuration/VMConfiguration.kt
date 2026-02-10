@@ -36,5 +36,7 @@ fun VMConfiguration(
             name = stringResource(Res.string.enable_kvm),
             tooltip = stringResource(Res.string.enable_kvm_tooltip)
         )
+        GeneralSpacer()
+        DiskUrlConfiguration(conf, onConfChange)
     }
 }

@@ -31,7 +31,9 @@ fun Setup() {
             VMConfigurationData(
                 ram = 2048,
                 cpu = Runtime.getRuntime().availableProcessors() / 2,
-                kvm = false
+                kvm = false,
+                diskUrl = appEnv.vmDiskUrl,
+                diskHashUrl = appEnv.vmDiskHashUrl
             )
         )
     }

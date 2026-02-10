@@ -49,7 +49,9 @@ fun Settings() {
             VMConfigurationData(
                 ram = appEnv.vmRam,
                 cpu = appEnv.vmCpu,
-                kvm = appEnv.vmEnableKvm
+                kvm = appEnv.vmEnableKvm,
+                diskUrl = appEnv.vmDiskUrl,
+                diskHashUrl = appEnv.vmDiskHashUrl
             )
         )
     }

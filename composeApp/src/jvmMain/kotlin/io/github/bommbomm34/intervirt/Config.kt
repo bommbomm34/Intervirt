@@ -142,6 +142,8 @@ fun Preferences.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConf
     saveString("VM_RAM", vmConf.ram.toString())
     saveString("VM_CPU", vmConf.cpu.toString())
     saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
+    saveString("VM_DISK_URL", vmConf.diskUrl)
+    saveString("VM_DISK_HASH_URL", vmConf.diskHashUrl)
     saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
     saveString("AGENT_PORT", appConf.agentPort.toString())
     saveString("DATA_DIR", appConf.intervirtFolder)
