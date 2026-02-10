@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.api.GuestManager
 import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.api.QemuClient
 import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
@@ -29,6 +30,7 @@ import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
 import javafx.application.Platform
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -55,6 +57,7 @@ fun main() = application {
                 println("Registered shutdown hook")
                 gracefulShutdown(deviceManager, guestManager, qemuClient)
             })
+            appState.setDefaultExceptionHandler()
         }
         density = LocalDensity.current
         // Main Window
@@ -121,4 +124,14 @@ private fun gracefulShutdown(
     deviceManager.close()
     guestManager.close()
     qemuClient.close()
+}
+
+private fun AppState.setDefaultExceptionHandler() {
+    Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+        System.err.println("UNCAUGHT EXCEPTION: ${throwable.stackTraceToString()}")
+        openDialog(
+            importance = Importance.ERROR,
+            message = "An unexpected error occurred: ${throwable.localizedMessage}"
+        )
+    }
 }
