@@ -11,7 +11,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 import kotlin.io.path.notExists
 import kotlin.io.path.readLines
-import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 private val json = Json {
@@ -40,7 +39,7 @@ class IntervirtOSClient(
             onSuccess = { flow ->
                 val (output, statusCode) = flow.getCommandResult()
                 logger.debug { "Received during DNS lookup:\n$output" }
-                if (statusCode == 0){
+                if (statusCode == 0) {
                     val resolverOutput = json.decodeFromString<DnsResolverOutput>(output)
                     resolverOutput.responses
                         .getOrNull(0)
@@ -99,18 +98,16 @@ class IntervirtOSClient(
                 if (statusCode != 0) {
                     logger.error { "Failed to list mail users: $output" }
                     Result.failure(ContainerExecutionException(output))
-                } else {
-                    runCatching {
-                        output.lines().map {
-                            val name = it.split(":")[3]
-                            val addressFile = ioClient.getPath("/home/$name/.intervirt_mail_address")
-                            if (addressFile.notExists()) {
-                                val error = "Missing mail address file for user $name"
-                                logger.error { error }
-                                error(error)
-                            }
-                            MailUser(name, addressFile.readLines()[0])
+                } else runCatching {
+                    output.lines().map {
+                        val name = it.split(":")[3]
+                        val addressFile = ioClient.getPath("/home/$name/.intervirt_mail_address")
+                        if (addressFile.notExists()) {
+                            val error = "Missing mail address file for user $name"
+                            logger.error { error }
+                            error(error)
                         }
+                        MailUser(name, addressFile.readLines()[0])
                     }
                 }
             },
@@ -127,6 +124,29 @@ class IntervirtOSClient(
                     logger.error { "Error during removing user $name: $output" }
                     Result.failure(ContainerExecutionException(output))
                 } else Result.success(Unit)
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    // TODO: Accept password in a more secure way
+    suspend fun addMailUser(user: MailUser, password: String): Result<Unit> {
+        logger.debug { "Add mail user ${user.username} with email ${user.address}" }
+        val command = listOf(
+            "useradd",
+            "-m",
+            "-p", "$(openssl passwd -6 \"$password\")",
+            user.username
+        )
+        return ioClient.exec(command).fold(
+            onSuccess = { flow ->
+                val (output, statusCode) = flow.getCommandResult()
+                if (statusCode != 0) {
+                    logger.error { "Error during adding mail user ${user.username}: $output" }
+                    Result.failure(ContainerExecutionException(output))
+                } else runCatching {
+                    ioClient.getPath("/home/${user.username}/.intervirt_mail_address").writeText(user.address)
+                }
             },
             onFailure = { Result.failure(it) }
         )

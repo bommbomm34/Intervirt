@@ -129,4 +129,6 @@
     <string name="disk_hash_url_validation_failure">Disk Hash URL validation failure: %1$s</string>
     <string name="username">Username</string>
     <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="add_user">Add user</string>
 </resources>
