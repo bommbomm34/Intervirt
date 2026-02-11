@@ -18,8 +18,8 @@ class IntervirtOSClient(
     private val ioClient: ContainerIOClient,
     private val computer: Device.Computer
 ) {
+    val serviceManager = SystemServiceManager(ioClient)
     private val logger = KotlinLogging.logger { }
-    private val serviceManager = SystemServiceManager(ioClient)
 
     suspend fun lookupDns(
         name: String,
@@ -64,13 +64,6 @@ class IntervirtOSClient(
         ).map { Address("127.0.0.1", port) }
     }
 
-    // HTTP
-    suspend fun enableHttpServer(
-        enabled: Boolean
-    ): Result<Unit> {
-        return if (enabled) serviceManager.start("apache2") else serviceManager.stop("apache2")
-    }
-
     suspend fun loadHttpConf(conf: String): Result<Unit> {
         logger.debug { "Loading Apache2 configuration" }
         logger.debug { "Uploading Apache2 configuration" }
@@ -91,13 +84,5 @@ class IntervirtOSClient(
             },
             onFailure = { Result.failure(it) }
         )
-    }
-
-    suspend fun isHttpServerActive(): Result<Boolean> = serviceManager.status("apache2").map { it.active }
-
-    suspend fun enableSshServer(
-        enabled: Boolean
-    ): Result<Unit> {
-        return if (enabled) serviceManager.start("ssh") else serviceManager.stop("ssh")
     }
 }
