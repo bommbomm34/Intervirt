@@ -2,12 +2,16 @@ package io.github.bommbomm34.intervirt.api
 
 import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.data.MailUser
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.data.getCommandResult
 import io.github.bommbomm34.intervirt.exceptions.ContainerExecutionException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
+import kotlin.io.path.notExists
+import kotlin.io.path.readLines
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 private val json = Json {
@@ -81,6 +85,48 @@ class IntervirtOSClient(
                     logger.debug { "Reloading Apache2 configuration" }
                     serviceManager.restart("apache2")
                 }
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    // Mail Server
+    suspend fun listMailUsers(): Result<List<MailUser>> {
+        logger.debug { "Listing mail users" }
+        return ioClient.exec(listOf("/usr/bin/getent", "group", "intervirt_mail")).fold(
+            onSuccess = { flow ->
+                val (output, statusCode) = flow.getCommandResult()
+                if (statusCode != 0) {
+                    logger.error { "Failed to list mail users: $output" }
+                    Result.failure(ContainerExecutionException(output))
+                } else {
+                    runCatching {
+                        output.lines().map {
+                            val name = it.split(":")[3]
+                            val addressFile = ioClient.getPath("/home/$name/.intervirt_mail_address")
+                            if (addressFile.notExists()) {
+                                val error = "Missing mail address file for user $name"
+                                logger.error { error }
+                                error(error)
+                            }
+                            MailUser(name, addressFile.readLines()[0])
+                        }
+                    }
+                }
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    suspend fun removeMailUser(name: String): Result<Unit> {
+        logger.debug { "Remove mail user $name" }
+        return ioClient.exec(listOf("deluser", name)).fold(
+            onSuccess = { flow ->
+                val (output, statusCode) = flow.getCommandResult()
+                if (statusCode != 0) {
+                    logger.error { "Error during removing user $name: $output" }
+                    Result.failure(ContainerExecutionException(output))
+                } else Result.success(Unit)
             },
             onFailure = { Result.failure(it) }
         )

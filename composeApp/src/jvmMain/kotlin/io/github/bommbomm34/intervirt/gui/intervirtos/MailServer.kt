@@ -1,15 +1,10 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import io.github.bommbomm34.intervirt.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.MultipleAnimatedVisibility
 import io.github.bommbomm34.intervirt.gui.intervirtos.components.NamedSystemServiceView
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.server.MailServerUserManager
 
