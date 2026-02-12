@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.data
+package io.github.bommbomm34.intervirt.data.agent
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

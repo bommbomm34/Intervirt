@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.data
+package io.github.bommbomm34.intervirt.data.agent
 
 import io.github.bommbomm34.intervirt.exceptions.*
 import kotlinx.serialization.SerialName
@@ -26,6 +26,8 @@ sealed class ResponseBody {
                 6 -> NotFoundException(error!!)
                 7 -> NotSupportedOperationException()
                 8 -> IllegalArgumentException(error!!)
+                // Error codes reserved internally for Intervirt Client
+                100 -> AgentTimeoutException(refID)
                 0 -> null
                 else -> error("Invalid status code $code")
             }
@@ -38,4 +40,6 @@ sealed class ResponseBody {
         override val refID: String,
         val version: String
     ) : ResponseBody()
+
+
 }

@@ -1,11 +1,15 @@
 package io.github.bommbomm34.intervirt.api.impl
 
 import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.data.*
+import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.data.ResultProgress
+import io.github.bommbomm34.intervirt.data.agent.RequestBody
+import io.github.bommbomm34.intervirt.data.agent.ResponseBody
+import io.github.bommbomm34.intervirt.data.agent.commandBody
 import io.github.bommbomm34.intervirt.result
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.serialization.*
@@ -13,16 +17,18 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Duration.Companion.milliseconds
 
 class AgentClient(
     appEnv: AppEnv,
     private val client: HttpClient
 ) : GuestManager {
     private val logger = KotlinLogging.logger { }
-    private lateinit var session: DefaultClientWebSocketSession
+    private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
     private val agentPort = appEnv.agentPort
+    private val timeout = appEnv.agentWebSocketTimeout.milliseconds
 
     override suspend fun addContainer(
         id: String,
@@ -116,23 +122,40 @@ class AgentClient(
         if (!failed) emit(ResultProgress.success(Unit))
     }
 
+    @OptIn(FlowPreview::class)
     @Suppress("UNCHECKED_CAST")
     private suspend fun <T : ResponseBody> send(body: RequestBody): Result<Flow<T>> {
         logger.debug { "Checking connection with agent" }
         listen().fold(
             onSuccess = {
                 requests[body.uuid] = MutableSharedFlow()
-                session.sendSerialized(body)
-                return Result.success(requests[body.uuid]!!.onCompletion {
-                    requests.remove(body.uuid)
-                }.map { it as T })
+                session!!.sendSerialized(body)
+                return Result.success(
+                    requests[body.uuid]!!
+                        .onCompletion {
+                            requests.remove(body.uuid)
+                        }
+                        .map { it as T }
+                        .timeout(timeout)
+                        .catch { exception ->
+                            if (exception is TimeoutCancellationException) {
+                                // TODO: Handle timeout situations also for ResponseBody.Version
+                                emit(
+                                    ResponseBody.General(
+                                        refID = body.uuid,
+                                        code = 100
+                                    ) as T
+                                )
+                            } else throw exception
+                        }
+                )
             },
             onFailure = { return Result.failure(it) }
         )
     }
 
     private suspend fun listen(): Result<Unit> {
-        if (!this::session.isInitialized) {
+        session?.let { ws ->
             val result = runSuspendingCatching {
                 session = client.webSocketSession(
                     method = HttpMethod.Get,
@@ -145,21 +168,23 @@ class AgentClient(
                 listenJob = CoroutineScope(Dispatchers.IO).launch {
                     while (true) {
                         try {
-                            val response = session.receiveDeserialized<ResponseBody>()
-                            requests[response.refID]!!.emit(response)
+                            val response = ws.receiveDeserialized<ResponseBody>()
+                            requests[response.refID]?.emit(response)
+                                ?: logger.error { "Received response without corresponding request: $response" }
                         } catch (e: WebsocketDeserializeException) {
-                            if (e.frame is Frame.Close) break
+                            if (e.frame is Frame.Close) break else throw e
                         }
                     }
                 }
             }
             return result
         }
+
         return Result.success(Unit)
     }
 
-    override fun close() = runBlocking(Dispatchers.IO) {
+    override fun close(): Unit = runBlocking(Dispatchers.IO) {
         listenJob?.cancel()
-        if (this@AgentClient::session.isInitialized) session.close()
+        session?.close()
     }
 }

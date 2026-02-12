@@ -62,7 +62,8 @@ class Preferences {
         vmDiskUrl = env("VM_DISK_URL") ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2",
         vmDiskHashUrl = env("VM_DISK_HASH_URL") ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2.sha256",
         qemuZipUrl = env("QEMU_ZIP_URL") ?: defaultQemuZipUrl,
-        qemuZipHashUrl = env("QEMU_ZIP_HASH_URL") ?: "$defaultQemuZipUrl.sha256"
+        qemuZipHashUrl = env("QEMU_ZIP_HASH_URL") ?: "$defaultQemuZipUrl.sha256",
+        agentWebSocketTimeout = env("AGENT_WEBSOCKET_TIMEOUT")?.toLong() ?: 10_000L
     )
     
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)

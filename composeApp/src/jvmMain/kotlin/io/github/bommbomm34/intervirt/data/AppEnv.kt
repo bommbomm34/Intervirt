@@ -35,5 +35,6 @@ data class AppEnv(
     val vmDiskUrl: String,
     val vmDiskHashUrl: String,
     val qemuZipUrl: String,
-    val qemuZipHashUrl: String
+    val qemuZipHashUrl: String,
+    val agentWebSocketTimeout: Long
 )
