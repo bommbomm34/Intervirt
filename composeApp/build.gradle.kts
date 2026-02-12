@@ -65,6 +65,7 @@ kotlin {
             implementation(libs.sshd.sftp)
             implementation(libs.kommand)
             implementation(libs.compose.table)
+            implementation(kotlin("reflect"))
             // JavaFX
             implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")
             implementation("org.openjfx:javafx-graphics:$javaFXVersion:${javaFXSuffix}")

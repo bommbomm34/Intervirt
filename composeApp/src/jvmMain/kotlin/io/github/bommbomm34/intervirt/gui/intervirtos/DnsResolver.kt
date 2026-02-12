@@ -4,7 +4,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
@@ -12,6 +13,7 @@ import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
+import io.github.bommbomm34.intervirt.rememberClient
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -30,8 +32,9 @@ val DNS_RECORD_TYPES = listOf(
 
 @Composable
 fun DnsResolver(
-    osClient: IntervirtOSClient
+    bundle: ContainerClientBundle
 ) {
+    val dnsResolver = bundle.rememberClient(::DnsResolverManager)
     val appEnv = koinInject<AppEnv>()
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
@@ -78,7 +81,7 @@ fun DnsResolver(
                     records.clear()
                     scope.launch {
                         records.addAll(
-                            osClient.lookupDns(
+                            dnsResolver.lookupDns(
                                 name = domain,
                                 type = dnsRecordType,
                                 nameserver = dnsServer,

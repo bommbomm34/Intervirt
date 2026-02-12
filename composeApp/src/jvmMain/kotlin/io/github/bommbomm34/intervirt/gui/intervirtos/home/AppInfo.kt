@@ -8,7 +8,7 @@ import compose.icons.tablericons.CloudFog
 import compose.icons.tablericons.Terminal
 import compose.icons.tablericons.Window
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.intervirtos.*
 import org.jetbrains.compose.resources.StringResource
@@ -51,5 +51,5 @@ data class AppInfo(
     val name: StringResource,
     val icon: ImageVector,
     val description: StringResource,
-    val content: @Composable (IntervirtOSClient) -> Unit
+    val content: @Composable (ContainerClientBundle) -> Unit
 )

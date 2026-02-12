@@ -29,6 +29,7 @@ import java.net.ServerSocket
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.round
+import kotlin.reflect.KFunction
 
 const val CURRENT_VERSION = "0.0.1"
 const val HELP_URL = "https://docs.perhof.org/intervirt"
@@ -90,7 +91,9 @@ val AVAILABLE_LANGUAGES = listOf(
     Locale.US
 )
 val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
-
+val defaultJson = Json {
+    ignoreUnknownKeys = true
+}
 lateinit var density: Density
 fun String.versionCode() = replace(".", "").toInt()
 
@@ -159,6 +162,9 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
 fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
+
+@Composable
+fun <T> ContainerClientBundle.rememberClient(func: KFunction<T>): T = remember { func.call(this) }
 
 @Composable
 fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }

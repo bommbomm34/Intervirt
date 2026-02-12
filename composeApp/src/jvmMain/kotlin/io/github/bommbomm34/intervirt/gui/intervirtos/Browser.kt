@@ -8,23 +8,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
+import io.github.bommbomm34.intervirt.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.api.intervirtos.BrowserManager
 import io.github.bommbomm34.intervirt.data.Address
 import io.github.bommbomm34.intervirt.gui.components.*
+import io.github.bommbomm34.intervirt.rememberClient
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
 fun Browser(
-    osClient: IntervirtOSClient
+    bundle: ContainerClientBundle
 ) {
+    val browser = bundle.rememberClient(::BrowserManager)
     val deviceManager = koinInject<DeviceManager>()
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
     var proxyUrl: Result<Address>? by remember { mutableStateOf(null) }
     LaunchedEffect(Unit) {
-        proxyUrl = osClient.getProxyUrl(deviceManager)
+        proxyUrl = browser.getProxyUrl(deviceManager)
     }
     CenterColumn {
         CenterRow {

@@ -8,7 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.email_address
 import intervirt.composeapp.generated.resources.username
-import io.github.bommbomm34.intervirt.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.data.MailUser
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.SimpleTable
@@ -23,17 +23,17 @@ private val headers = listOf(
 )
 
 @Composable
-fun MailServerUserManager(osClient: IntervirtOSClient){
+fun MailServerUserManager(mailServer: MailServerManager){
     val users = remember { mutableStateListOf<MailUser>() }
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit){
         runSuspendingCatching {
-            val newUsers = osClient.listMailUsers().getOrThrow()
+            val newUsers = mailServer.listMailUsers().getOrThrow()
             users.clear()
             users.addAll(newUsers)
         }
     }
-    AddMailUserView(osClient)
+    AddMailUserView(mailServer)
     GeneralSpacer()
     SimpleTable(
         headers = headers.map { stringResource(it) },
@@ -43,7 +43,7 @@ fun MailServerUserManager(osClient: IntervirtOSClient){
                 RemoveButton {
                     scope.launch {
                         runSuspendingCatching {
-                            osClient.removeMailUser(it.username).getOrThrow()
+                            mailServer.removeMailUser(it.username).getOrThrow()
                         }
                     }
                 }

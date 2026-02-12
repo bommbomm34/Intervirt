@@ -2,14 +2,14 @@ package io.github.bommbomm34.intervirt.gui.intervirtos
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.awt.SwingPanel
-import io.github.bommbomm34.intervirt.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.api.ContainerClientBundle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.awt.Component
 
 @Composable
 fun Terminal(
-    osClient: IntervirtOSClient
+    bundle: ContainerClientBundle
 ) {
     var terminalFactory: (() -> Component)? by remember { mutableStateOf(null) }
     LaunchedEffect(Unit) {

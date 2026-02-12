@@ -3,8 +3,8 @@ package io.github.bommbomm34.intervirt.gui.intervirtos
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import io.github.bommbomm34.intervirt.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
@@ -17,15 +17,17 @@ import org.koin.compose.koinInject
 fun Main(computer: ViewDevice.Computer) {
     val appState = koinInject<AppState>()
     val deviceManager = koinInject<DeviceManager>()
-    var osClient: IntervirtOSClient? by remember { mutableStateOf(null) }
+    var bundle: ContainerClientBundle? by remember { mutableStateOf(null) }
     var appInfo: AppInfo? by remember { mutableStateOf(null) }
     LaunchedEffect(Unit) {
         appState.runDialogCatching {
-            val ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
-            osClient = IntervirtOSClient(ioClient, computer.device)
+            bundle = ContainerClientBundle(
+                computer = computer.device,
+                ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
+            )
         }
     }
-    osClient?.let { client ->
+    bundle?.let { bundle ->
         AnimatedVisibility(appInfo == null) {
             Home {
                 appInfo = it
@@ -36,7 +38,7 @@ fun Main(computer: ViewDevice.Computer) {
             AlignedBox(Alignment.TopStart) {
                 CloseButton { appInfo = null }
             }
-            appInfo?.content(client)
+            appInfo?.content(bundle)
         }
     }
 }
