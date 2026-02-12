@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.data
 
 import kotlinx.coroutines.flow.Flow
+import kotlin.reflect.KFunction
 
 sealed class CommandStatus {
     data class Running(val message: String) : CommandStatus()
@@ -10,7 +11,9 @@ sealed class CommandStatus {
 data class CommandResult(
     val output: String,
     val statusCode: Int
-)
+) {
+    fun asResult() = if (statusCode != 0) Result.failure(Exception(output)) else Result.success(output)
+}
 
 /**
  * Collects the flow and returns a `CommandResult`.
@@ -20,11 +23,12 @@ suspend fun Flow<CommandStatus>.getCommandResult(iterate: suspend (CommandStatus
     var statusCode: Int? = null
     val totalOutput = StringBuilder()
     collect {
-        when (it){
+        when (it) {
             is CommandStatus.Running -> {
                 totalOutput.append(it.message + "\n")
                 iterate(it)
             }
+
             is CommandStatus.End -> {
                 statusCode = it.statusCode
                 return@collect
