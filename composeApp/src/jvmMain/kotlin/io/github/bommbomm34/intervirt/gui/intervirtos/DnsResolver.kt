@@ -8,6 +8,7 @@ import io.github.bommbomm34.intervirt.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.data.AppEnv
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
+import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -36,6 +37,7 @@ fun DnsResolver(
 ) {
     val dnsResolver = bundle.rememberClient(::DnsResolverManager)
     val appEnv = koinInject<AppEnv>()
+    val appState = koinInject<AppState>()
     var domain by remember { mutableStateOf("perhof.org") }
     var expanded by remember { mutableStateOf(false) }
     var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }
@@ -80,14 +82,16 @@ fun DnsResolver(
                 onClick = {
                     records.clear()
                     scope.launch {
-                        records.addAll(
-                            dnsResolver.lookupDns(
-                                name = domain,
-                                type = dnsRecordType,
-                                nameserver = dnsServer,
-                                reverse = reverseLookup
+                        appState.runDialogCatching {
+                            records.addAll(
+                                dnsResolver.lookupDns(
+                                    name = domain,
+                                    type = dnsRecordType,
+                                    nameserver = dnsServer,
+                                    reverse = reverseLookup
+                                ).getOrThrow()
                             )
-                        )
+                        }
                     }
                 }
             ) {

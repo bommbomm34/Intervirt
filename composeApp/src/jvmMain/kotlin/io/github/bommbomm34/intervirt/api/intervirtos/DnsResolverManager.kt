@@ -1,7 +1,6 @@
 package io.github.bommbomm34.intervirt.api.intervirtos
 
 import io.github.bommbomm34.intervirt.api.ContainerClientBundle
-import io.github.bommbomm34.intervirt.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.data.getCommandResult
@@ -19,29 +18,24 @@ class DnsResolverManager(
         type: String,
         nameserver: String,
         reverse: Boolean
-    ): List<DnsRecord> {
+    ): Result<List<DnsRecord>> {
         val baseCommandList = listOf("/usr/bin/doggo", name, "--type", type, "--nameserver", nameserver, "--json")
         val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
         logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
         return ioClient.exec(
             commands = commandList
-        ).fold(
-            onSuccess = { flow ->
-                val (output, statusCode) = flow.getCommandResult()
-                logger.debug { "Received during DNS lookup:\n$output" }
-                if (statusCode == 0) {
+        ).mapCatching { flow ->
+            flow.getCommandResult()
+                .asResult()
+                .mapCatching { output ->
                     val resolverOutput = defaultJson.decodeFromString<DnsResolverOutput>(output)
                     resolverOutput.responses
                         .getOrNull(0)
                         ?.answers
                         ?.map { it.toDnsRecord() }
-                        ?: emptyList()
-                } else {
-                    logger.error { "Unexpected status code during DNS lookup: $statusCode" }
-                    emptyList()
+                        ?: throw IllegalStateException("DNS Resolver responded with invalid JSON schema: $output")
                 }
-            },
-            onFailure = { emptyList() }
-        )
+                .getOrThrow()
+        }
     }
 }
