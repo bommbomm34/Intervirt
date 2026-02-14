@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.slf4j.reload4j)
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
     implementation(libs.zip4j)
     implementation(libs.jediterm.core)
     implementation(libs.jediterm.ui)

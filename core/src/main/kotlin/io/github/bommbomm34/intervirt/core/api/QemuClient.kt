@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
+import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
@@ -10,14 +11,23 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
+import kotlin.fold
 
 class QemuClient(
-    private val fileManager: io.github.bommbomm34.intervirt.core.api.FileManager,
-    private val guestManager: io.github.bommbomm34.intervirt.core.api.GuestManager,
+    private val fileManager: FileManager,
+    private val guestManager: GuestManager,
     private val appEnv: AppEnv
 ) : AutoCloseable {
 
@@ -141,7 +151,7 @@ class QemuClient(
 
     @Suppress("UNCHECKED_CAST")
     suspend fun qmpSend(json: JsonElement, session: QemuMonitorSession? = qemuMonitorSession): Result<JsonElement> {
-        val payload = Json.encodeToString(json)
+        val payload = defaultJson.encodeToString(json)
         session?.withLock {
             logger.debug { "Send to QMP: $payload" }
             writeLine(payload)
@@ -150,12 +160,12 @@ class QemuClient(
                 while (true) {
                     readLine()?.let { line ->
                         logger.debug { "Received answer: $line" }
-                        val obj = Json.decodeFromString<JsonObject>(line)
+                        val obj = defaultJson.decodeFromString<JsonObject>(line)
                         val returnObj = obj["return"]
                         val errorObj = obj["error"]
                         return@withTimeoutOrNull when {
                             returnObj != null -> Result.success(returnObj)
-                            errorObj != null -> Result.failure(QmpException(Json.decodeFromJsonElement(errorObj.jsonObject)))
+                            errorObj != null -> Result.failure(QmpException(defaultJson.decodeFromJsonElement(errorObj.jsonObject)))
                             else -> Result.failure(SerializationException("Received JSON is not QMP-conform: $line"))
                         }
                     }

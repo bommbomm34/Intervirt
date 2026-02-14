@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
@@ -37,7 +38,7 @@ import java.util.*
 
 fun main() = application {
     KoinApplication(application = {
-        modules(mainModule)
+        modules(coreModule, uiModule)
     }) {
         val preferences = koinInject <Preferences>()
         val appEnv = koinInject<AppEnv>()

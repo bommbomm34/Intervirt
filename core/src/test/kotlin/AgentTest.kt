@@ -1,22 +1,14 @@
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
+import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import org.koin.core.context.startKoin
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
 import kotlin.test.Test
-
-// TODO: Split Koin modules and complete the this module
-private val testModule = module {
-    singleOf(::DeviceManager)
-    singleOf(::AgentClient)
-}
 
 class AgentTest : KoinTest {
     val logger = KotlinLogging.logger { }
@@ -28,7 +20,7 @@ class AgentTest : KoinTest {
             // Create test computers
             logger.info { "----- START INTERVIRT AGENT TEST -----" }
             startKoin {
-                modules(testModule)
+                modules(coreModule)
             }
             val deviceManager = get<DeviceManager>()
             val guestManager = get<GuestManager>()

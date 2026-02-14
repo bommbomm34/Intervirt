@@ -3,8 +3,8 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getOS
+import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -66,12 +66,12 @@ class Preferences {
     
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
 
-    private fun flush() = Files.writeString(dataFile, Json.encodeToString(data))
+    private fun flush() = Files.writeString(dataFile, defaultJson.encodeToString(data))
 
     private fun load() {
         if (dataFile.exists()){
             data.clear()
-            data.putAll(Json.Default.decodeFromString(Files.readString(dataFile)))
+            data.putAll(defaultJson.decodeFromString(Files.readString(dataFile)))
         }
     }
 }
