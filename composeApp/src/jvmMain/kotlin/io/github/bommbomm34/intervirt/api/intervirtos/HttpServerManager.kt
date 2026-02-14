@@ -11,7 +11,7 @@ import kotlin.io.path.writeText
 class HttpServerManager(
     bundle: ContainerClientBundle
 ) {
-    private val serviceManager = bundle.serviceManager
+    val serviceManager = bundle.serviceManager
     private val ioClient = bundle.ioClient
     private val logger = KotlinLogging.logger {  }
 

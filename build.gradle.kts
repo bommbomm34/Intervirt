@@ -1,4 +1,5 @@
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
+import nl.littlerobots.vcu.plugin.versionCatalogUpdate
 
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
@@ -9,10 +10,10 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.aboutLibraries) apply false
-    alias(libs.plugins.osdetector)
+    alias(libs.plugins.osdetector) apply false
     alias(libs.plugins.versionCatalogUpdate)
 }
 
 versionCatalogUpdate {
-    versionSelector(VersionSelectors.STABLE)
+    versionSelector(VersionSelectors.PREFER_STABLE)
 }
