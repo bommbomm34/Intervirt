@@ -11,10 +11,10 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.toViewDevice
+import io.github.bommbomm34.intervirt.data.toViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.imagepicker.ImagePicker
 import kotlinx.coroutines.launch

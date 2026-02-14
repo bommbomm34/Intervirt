@@ -8,8 +8,8 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.add_user
 import intervirt.composeapp.generated.resources.email_address
 import intervirt.composeapp.generated.resources.username
-import io.github.bommbomm34.intervirt.api.intervirtos.MailServerManager
-import io.github.bommbomm34.intervirt.data.MailUser
+import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
+import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.PasswordTextField

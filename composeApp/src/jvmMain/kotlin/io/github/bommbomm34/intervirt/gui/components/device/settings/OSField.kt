@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.os
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

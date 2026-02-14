@@ -3,16 +3,16 @@ package io.github.bommbomm34.intervirt.gui.components
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import io.github.bommbomm34.intervirt.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.job
 
 @Composable
 fun <T> FlowProgressView(
-    flow: Flow<ResultProgress<T>>,
+    flow: Flow<io.github.bommbomm34.intervirt.core.data.ResultProgress<T>>,
     onJobChange: ((Job?) -> Unit),
-    onMessage: ((ResultProgress<T>) -> Unit)?
+    onMessage: ((io.github.bommbomm34.intervirt.core.data.ResultProgress<T>) -> Unit)?
 ) {
     val defaultMessageColor = MaterialTheme.colors.onBackground
     var message by remember { mutableStateOf("") }

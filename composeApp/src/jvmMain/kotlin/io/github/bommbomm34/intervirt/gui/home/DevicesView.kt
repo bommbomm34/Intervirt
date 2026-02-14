@@ -23,13 +23,13 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.are_you_sure_to_remove_connection
 import intervirt.composeapp.generated.resources.too_many_devices_connected
 import io.github.bommbomm34.intervirt.Secondary
-import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.Device
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddDeviceButton
@@ -49,7 +49,7 @@ var deviceSettingsVisible by mutableStateOf(false)
 fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject<DeviceManager>()
+    val deviceManager = koinInject <DeviceManager>()
     val appEnv = koinInject<AppEnv>()
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()

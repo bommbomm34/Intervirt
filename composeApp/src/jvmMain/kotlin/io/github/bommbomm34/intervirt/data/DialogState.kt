@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.data
 
 import androidx.compose.runtime.Composable
 
+
 sealed class DialogState(
     open val visible: Boolean
 ) {

@@ -2,8 +2,8 @@ package io.github.bommbomm34.intervirt.gui.components.configuration
 
 import androidx.compose.runtime.Composable
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.vinceglb.filekit.absolutePath
 import org.jetbrains.compose.resources.stringResource

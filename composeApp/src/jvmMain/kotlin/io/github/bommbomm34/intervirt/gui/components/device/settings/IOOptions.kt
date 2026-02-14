@@ -12,14 +12,14 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.download_file
 import intervirt.composeapp.generated.resources.terminal
 import intervirt.composeapp.generated.resources.upload_file
-import io.github.bommbomm34.intervirt.api.ContainerIOClient
-import io.github.bommbomm34.intervirt.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.filepicker.ContainerFilePicker
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
@@ -35,7 +35,7 @@ import kotlin.io.path.name
 fun IOOptions(device: ViewDevice.Computer){
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()
-    val deviceManager = koinInject<DeviceManager>()
+    val deviceManager = koinInject <DeviceManager>()
     val logger = rememberLogger("IOOptions")
     var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
     var containerFilePath: Path? by remember { mutableStateOf(null) }

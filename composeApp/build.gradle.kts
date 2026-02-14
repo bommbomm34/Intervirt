@@ -44,10 +44,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.koin.test)
-        }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
@@ -60,10 +56,8 @@ kotlin {
             implementation(libs.commons.validator)
             implementation(libs.jediterm.core)
             implementation(libs.jediterm.ui)
-            implementation(libs.sshd.core)
-            implementation(libs.sshd.sftp)
-            implementation(libs.kommand)
             implementation(libs.compose.table)
+            implementation(projects.core)
             implementation(kotlin("reflect"))
             // JavaFX
             implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")

@@ -1,10 +1,8 @@
 package io.github.bommbomm34.intervirt.data
 
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.getString
-
 
 data class Image(
     val name: String,

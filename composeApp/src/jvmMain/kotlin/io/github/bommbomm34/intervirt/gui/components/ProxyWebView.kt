@@ -1,15 +1,9 @@
 package io.github.bommbomm34.intervirt.gui.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.awt.SwingPanel
-import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.data.Address
-import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.rememberLogger
 import javafx.application.Platform
 import javafx.embed.swing.JFXPanel

@@ -8,17 +8,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.Downloader
-import io.github.bommbomm34.intervirt.api.FileManager
-import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.core.api.Downloader
+import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.FlowProgressView
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.rememberLogger
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -32,9 +31,9 @@ fun Installation(
     applyConfiguration: () -> Unit
 ) {
     val logger = rememberLogger("Installation")
-    val downloader = koinInject<Downloader>()
-    val preferences = koinInject<Preferences>()
-    val fileManager = koinInject<FileManager>()
+    val downloader = koinInject <Downloader>()
+    val preferences = koinInject <Preferences>()
+    val fileManager = koinInject <FileManager>()
     val appState = koinInject<AppState>()
     var allowInstallation by remember { mutableStateOf(false) }
     var flow: Flow<ResultProgress<String>>? by remember { mutableStateOf(null) }

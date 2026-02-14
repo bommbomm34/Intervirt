@@ -1,15 +1,11 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos.mail.server
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.email_address
 import intervirt.composeapp.generated.resources.username
-import io.github.bommbomm34.intervirt.api.intervirtos.MailServerManager
-import io.github.bommbomm34.intervirt.data.MailUser
+import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
+import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.SimpleTable
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton

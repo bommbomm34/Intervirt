@@ -8,7 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.data.AppEnv
+import androidx.compose.ui.unit.sp
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import org.koin.compose.koinInject
 
 @Composable
@@ -27,7 +28,7 @@ fun NamedCheckbox(
         GeneralSpacer(2.dp)
         Column {
             Text(name)
-            tooltip?.let { Text(tooltip, fontSize = appEnv.tooltipFontSize, color = Color.Gray) }
+            tooltip?.let { Text(tooltip, fontSize = appEnv.tooltipFontSize.sp, color = Color.Gray) }
         }
     }
 }

@@ -5,8 +5,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.enable_virtual_hosts
-import io.github.bommbomm34.intervirt.api.ContainerClientBundle
-import io.github.bommbomm34.intervirt.api.intervirtos.HttpServerManager
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox

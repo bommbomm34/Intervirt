@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.gui
 
 import androidx.compose.runtime.Composable
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.data.ViewDevice
 
 @Composable
 fun ShellView(computer: ViewDevice.Computer) {

@@ -5,7 +5,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.mac_address
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -9,12 +9,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.DeviceManager
 import io.github.bommbomm34.intervirt.canPortBind
-import io.github.bommbomm34.intervirt.data.Device
-import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.data.PortForwarding
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.IntegerTextField

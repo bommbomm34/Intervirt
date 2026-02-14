@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
@@ -31,7 +31,7 @@ fun ImagePicker(
     }
     AlignedBox(Alignment.Center, 64.dp){
         LazyVerticalGrid(
-            columns = GridCells.FixedSize(appEnv.osIconSize * 1.2f)
+            columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.2f)
         ){
             items(images){ image ->
                 ImageItem(image){

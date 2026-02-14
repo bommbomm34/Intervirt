@@ -8,10 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
-import io.github.bommbomm34.intervirt.api.ContainerClientBundle
-import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.intervirtos.BrowserManager
-import io.github.bommbomm34.intervirt.data.Address
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.BrowserManager
+import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.rememberClient
 import org.jetbrains.compose.resources.stringResource
@@ -22,7 +22,7 @@ fun Browser(
     bundle: ContainerClientBundle
 ) {
     val browser = bundle.rememberClient(::BrowserManager)
-    val deviceManager = koinInject<DeviceManager>()
+    val deviceManager = koinInject <DeviceManager>()
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
     var proxyUrl: Result<Address>? by remember { mutableStateOf(null) }

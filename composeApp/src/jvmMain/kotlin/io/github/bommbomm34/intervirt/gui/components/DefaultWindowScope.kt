@@ -15,8 +15,7 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.isDarkMode
 import org.koin.compose.koinInject
 

@@ -12,14 +12,14 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.terminal_window_title
-import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.api.Preferences
-import io.github.bommbomm34.intervirt.api.QemuClient
-import io.github.bommbomm34.intervirt.data.AppEnv
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
-import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.ShellView
@@ -30,7 +30,6 @@ import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
 import javafx.application.Platform
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -40,11 +39,11 @@ fun main() = application {
     KoinApplication(application = {
         modules(mainModule)
     }) {
-        val preferences = koinInject<Preferences>()
+        val preferences = koinInject <Preferences>()
         val appEnv = koinInject<AppEnv>()
-        val deviceManager = koinInject<DeviceManager>()
-        val guestManager = koinInject<GuestManager>()
-        val qemuClient = koinInject<QemuClient>()
+        val deviceManager = koinInject <DeviceManager>()
+        val guestManager = koinInject <GuestManager>()
+        val qemuClient = koinInject <QemuClient>()
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         LaunchedEffect(Unit) {

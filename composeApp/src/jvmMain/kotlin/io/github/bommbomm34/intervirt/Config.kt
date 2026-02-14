@@ -10,11 +10,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import intervirt.composeapp.generated.resources.Res
-import io.github.bommbomm34.intervirt.api.*
-import io.github.bommbomm34.intervirt.api.impl.AgentClient
-import io.github.bommbomm34.intervirt.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.data.*
-import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.core.api.*
+import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
+import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
+import io.github.bommbomm34.intervirt.core.data.*
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -27,8 +27,6 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 import java.net.ServerSocket
 import java.util.*
-import kotlin.math.pow
-import kotlin.math.round
 import kotlin.reflect.KFunction
 
 const val CURRENT_VERSION = "0.0.1"
@@ -39,7 +37,10 @@ val mainModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(get(), get()))
+        (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(
+            get(),
+            get()
+        ))
     }.binds(arrayOf(GuestManager::class))
     singleOf(::DeviceManager)
     singleOf(::FileManager)
@@ -91,22 +92,12 @@ val AVAILABLE_LANGUAGES = listOf(
     Locale.US
 )
 val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
-val defaultJson = Json {
-    ignoreUnknownKeys = true
-}
 lateinit var density: Density
 fun String.versionCode() = replace(".", "").toInt()
 
 fun String.result() = Result.success(this)
 
 fun <T> Exception.result() = Result.failure<T>(this)
-
-fun Float.roundBy(num: Int = 2): Float {
-    val factor = 10f.pow(num)
-    return round(times(factor)) / factor
-}
-
-fun Float.readablePercentage() = "${(times(100f)).roundBy()}%"
 
 @Composable
 fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
@@ -119,12 +110,6 @@ suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> 
     } catch (e: Throwable) {
         Result.failure(e)
     }
-}
-
-fun <T> List<T>.addFirst(element: T): List<T> {
-    val mutableList = toMutableList()
-    mutableList.addFirst(element)
-    return mutableList
 }
 
 fun Int.isValidPort() = this in 1..65535

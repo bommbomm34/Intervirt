@@ -3,7 +3,8 @@ package io.github.bommbomm34.intervirt.gui.imagepicker
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.bommbomm34.intervirt.data.AppEnv
+import androidx.compose.ui.unit.dp
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Image
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -14,6 +15,6 @@ fun ImageIcon(image: Image) {
     androidx.compose.foundation.Image(
         painter = painterResource(image.icon),
         contentDescription = image.toReadableName(),
-        modifier = Modifier.size(appEnv.osIconSize)
+        modifier = Modifier.size(appEnv.osIconSize.dp)
     )
 }

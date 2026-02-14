@@ -6,10 +6,9 @@ import androidx.compose.runtime.*
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.reboot
 import intervirt.composeapp.generated.resources.rebooting
-import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -17,7 +16,7 @@ import org.koin.compose.koinInject
 @Composable
 fun RebootButton(running: Boolean){
     val appState = koinInject<AppState>()
-    val guestManager = koinInject<GuestManager>()
+    val guestManager = koinInject <GuestManager>()
     val scope = rememberCoroutineScope()
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)

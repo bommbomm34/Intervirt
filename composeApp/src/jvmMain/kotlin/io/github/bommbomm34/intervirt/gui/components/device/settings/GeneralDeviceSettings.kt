@@ -11,9 +11,9 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.are_you_sure_to_remove_device
 import intervirt.composeapp.generated.resources.delete
 import intervirt.composeapp.generated.resources.name
-import io.github.bommbomm34.intervirt.api.DeviceManager
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ fun GeneralDeviceSettings(
     device: ViewDevice,
     onClose: () -> Unit
 ) {
-    val deviceManager = koinInject<DeviceManager>()
+    val deviceManager = koinInject <DeviceManager>()
     val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope()
     OutlinedTextField(

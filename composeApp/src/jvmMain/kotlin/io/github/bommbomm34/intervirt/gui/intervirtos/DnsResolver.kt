@@ -4,11 +4,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.api.ContainerClientBundle
-import io.github.bommbomm34.intervirt.api.intervirtos.DnsResolverManager
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer

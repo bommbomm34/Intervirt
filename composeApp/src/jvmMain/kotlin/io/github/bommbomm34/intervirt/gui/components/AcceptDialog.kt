@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.no
 import intervirt.composeapp.generated.resources.yes
-import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.data.AppState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

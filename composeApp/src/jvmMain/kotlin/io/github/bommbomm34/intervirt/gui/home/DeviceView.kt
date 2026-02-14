@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.Secondary
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import org.koin.compose.koinInject
@@ -39,7 +39,7 @@ fun DeviceView(
     val appEnv = koinInject<AppEnv>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceSizePx = dpToPx(appEnv.deviceSize)
+    val deviceSizePx = dpToPx(appEnv.deviceSize.dp)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -76,7 +76,7 @@ fun DeviceView(
         Icon(
             imageVector = device.getVector(),
             contentDescription = device.name,
-            modifier = Modifier.size(appEnv.deviceSize, appEnv.deviceSize),
+            modifier = Modifier.size(appEnv.deviceSize.dp, appEnv.deviceSize.dp),
             tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f)
         )
         GeneralSpacer(2.dp)

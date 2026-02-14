@@ -3,7 +3,7 @@ package io.github.bommbomm34.intervirt.gui.components.configuration
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import intervirt.composeapp.generated.resources.*
-import io.github.bommbomm34.intervirt.data.VMConfigurationData
+import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.IntegerTextField

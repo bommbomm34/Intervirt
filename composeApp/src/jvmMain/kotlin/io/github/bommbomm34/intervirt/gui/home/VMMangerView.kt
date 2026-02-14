@@ -1,15 +1,10 @@
 package io.github.bommbomm34.intervirt.gui.home
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -20,7 +15,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun VMManagerView() {
-    val qemuClient = koinInject<QemuClient>()
+    val qemuClient = koinInject <QemuClient>()
     var running by remember { mutableStateOf(false) }
     LaunchedEffect(Unit){
         qemuClient.onRunningChange { running = it }

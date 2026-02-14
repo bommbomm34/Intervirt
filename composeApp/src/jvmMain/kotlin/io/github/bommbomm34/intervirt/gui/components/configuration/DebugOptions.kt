@@ -6,12 +6,11 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
-import io.github.bommbomm34.intervirt.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.stateful.AppState
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberLogger
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
@@ -19,7 +18,7 @@ import org.koin.compose.koinInject
 @Composable
 fun DebugOptions() {
     val appState = koinInject<AppState>()
-    val qemuClient = koinInject<QemuClient>()
+    val qemuClient = koinInject <QemuClient>()
     val scope = rememberCoroutineScope()
     val logger = rememberLogger("DebugOptions")
     Text("Debugging enabled")

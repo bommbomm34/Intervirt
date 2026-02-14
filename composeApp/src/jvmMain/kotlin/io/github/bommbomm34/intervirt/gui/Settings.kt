@@ -7,12 +7,12 @@ import androidx.compose.ui.Alignment
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.restart_necessary_to_apply_changes
 import intervirt.composeapp.generated.resources.save_changes
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.applyConfiguration
-import io.github.bommbomm34.intervirt.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.VMConfigurationData
-import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
@@ -30,7 +30,7 @@ import kotlin.system.exitProcess
 @Composable
 fun Settings() {
     val appEnv = koinInject<AppEnv>()
-    val preferences = koinInject<Preferences>()
+    val preferences = koinInject <Preferences>()
     val appState = koinInject<AppState>()
     val isDarkMode = appEnv.isDarkMode()
     var appConf by remember {

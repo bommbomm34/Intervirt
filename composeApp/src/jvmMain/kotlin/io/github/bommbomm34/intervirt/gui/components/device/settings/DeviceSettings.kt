@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.hide_port_forwardings
 import intervirt.composeapp.generated.resources.show_port_forwardings
-import io.github.bommbomm34.intervirt.data.stateful.ViewDevice
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import org.jetbrains.compose.resources.stringResource

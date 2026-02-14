@@ -5,11 +5,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.api.Preferences
 import io.github.bommbomm34.intervirt.applyConfiguration
-import io.github.bommbomm34.intervirt.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.VMConfigurationData
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.MultipleAnimatedVisibility
 import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
@@ -23,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 fun Setup() {
     val appEnv = koinInject<AppEnv>()
-    val preferences = koinInject<Preferences>()
+    val preferences = koinInject <Preferences>()
     val isDarkMode = appEnv.isDarkMode()
     var currentSetupScreenIndex by remember { mutableStateOf(0) }
     var vmConf by remember {

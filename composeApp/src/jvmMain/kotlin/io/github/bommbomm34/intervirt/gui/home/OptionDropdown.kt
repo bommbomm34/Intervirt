@@ -9,11 +9,11 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import intervirt.composeapp.generated.resources.*
 import io.github.bommbomm34.intervirt.HELP_URL
-import io.github.bommbomm34.intervirt.api.GuestManager
-import io.github.bommbomm34.intervirt.data.AppEnv
-import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.data.stateful.AppState
-import io.github.bommbomm34.intervirt.data.stateful.ViewConfiguration
+import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.ViewConfiguration
 import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.PlatformFile
@@ -38,7 +38,7 @@ fun OptionDropdown(
 ) {
     val logger = rememberLogger("OptionDropdown")
     val appEnv = koinInject<AppEnv>()
-    val guestManager = koinInject<GuestManager>()
+    val guestManager = koinInject <GuestManager>()
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()
     val scope = rememberCoroutineScope()

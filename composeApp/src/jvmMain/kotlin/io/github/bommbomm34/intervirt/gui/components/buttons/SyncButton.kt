@@ -10,11 +10,11 @@ import compose.icons.tablericons.RefreshAlert
 import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.sync_guest
 import intervirt.composeapp.generated.resources.syncing
-import io.github.bommbomm34.intervirt.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.data.ResultProgress
-import io.github.bommbomm34.intervirt.data.stateful.AppState
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -23,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SyncButton(running: Boolean) {
     val appState = koinInject<AppState>()
-    val guestManager = koinInject<GuestManager>()
+    val guestManager = koinInject <GuestManager>()
     val configuration = koinInject<IntervirtConfiguration>()
     val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }

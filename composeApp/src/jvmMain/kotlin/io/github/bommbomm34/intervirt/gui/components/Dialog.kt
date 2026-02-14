@@ -20,9 +20,9 @@ import intervirt.composeapp.generated.resources.Res
 import intervirt.composeapp.generated.resources.error
 import intervirt.composeapp.generated.resources.info
 import intervirt.composeapp.generated.resources.warning
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
-import io.github.bommbomm34.intervirt.data.stateful.AppState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

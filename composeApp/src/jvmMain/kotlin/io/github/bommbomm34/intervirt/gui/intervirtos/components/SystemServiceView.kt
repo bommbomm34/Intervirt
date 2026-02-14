@@ -1,8 +1,8 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos.components
 
 import androidx.compose.runtime.*
-import io.github.bommbomm34.intervirt.api.SystemServiceManager
-import io.github.bommbomm34.intervirt.data.stateful.AppState
+import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
