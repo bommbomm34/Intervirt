@@ -259,7 +259,7 @@ fn create_webview_inner(
         builder = builder.with_user_agent(ua);
     }
     if let Some(conf) = proxy { 
-        builder = builder.with_proxy_config(wry::ProxyConfig::Http(ProxyEndpoint { host: conf.host.to_string(), port: conf.port.to_string() }));
+        builder = builder.with_proxy_config(wry::ProxyConfig::Socks5(ProxyEndpoint { host: conf.host.to_string(), port: conf.port.to_string() }));
     }
 
     let webview = builder
