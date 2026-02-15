@@ -15,9 +15,7 @@ class MailSender(
     private val password: String? = null,
     private val proxy: Address? = null
 ) {
-    fun sendMail(mail: Mail){
-        Greeter("Hello").use { greeting ->
-            println(greeting.greet("Rust"))
-        }
+    fun sendMail(mail: Mail): Result<Unit> {
+        TODO("Not yet implemented")
     }
 }
