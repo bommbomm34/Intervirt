@@ -2,8 +2,7 @@ package io.github.bommbomm34.intervirt.mail
 
 import io.github.bommbomm34.intervirt.mail.data.Address
 import io.github.bommbomm34.intervirt.mail.data.Mail
-import uniffi.mail.Greeter
-import uniffi.mail.add
+import uniffi.mail.NativeMailSender
 
 /**
  * Class for sending mails via SMTP through an optional proxy.

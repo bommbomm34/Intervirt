@@ -2,46 +2,52 @@ use lettre::message::{Mailbox, header::ContentType};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 
+#[derive(Debug, thiserror::Error, uniffi::Error)]
+pub enum GenericError {
+    #[error("{0}")]
+    Generic(String),
+}
+
 #[derive(uniffi::Record)]
-struct Address {
-    host: String,
-    port: u16,
+pub struct Address {
+    pub host: String,
+    pub port: u16,
 }
 
 #[derive(uniffi::Object)]
-struct NativeMailSender {
-    mailer: SmtpTransport,
+pub struct NativeMailSender {
+    pub mailer: SmtpTransport,
 }
 
 #[derive(uniffi::Enum)]
-enum MailBodyType {
+pub enum MailBodyType {
     TEXT,
     HTML,
 }
 
 #[derive(uniffi::Record)]
-struct Mail {
-    sender: String,
-    receiver: String,
-    subject: String,
-    body_type: MailBodyType,
-    body: String,
+pub struct Mail {
+    pub sender: String,
+    pub receiver: String,
+    pub subject: String,
+    pub body_type: MailBodyType,
+    pub body: String,
 }
 
 #[derive(uniffi::Record)]
-struct SmtpCredentials {
-    username: String,
-    password: String,
+pub struct SmtpCredentials {
+    pub username: String,
+    pub password: String,
 }
 
 #[uniffi::export]
 impl NativeMailSender {
     #[uniffi::constructor]
-    fn new(
+    pub fn new(
         host: Address,
         credentials: Option<SmtpCredentials>,
         _proxy: Option<Address>,
-    ) -> Result<Self, String> {
+    ) -> Result<Self, GenericError> {
         let mailer_builder = SmtpTransport::relay(host.host.as_str());
         match mailer_builder {
             Ok(mailer_builder) => match credentials {
@@ -55,11 +61,11 @@ impl NativeMailSender {
                     mailer: mailer_builder.build(),
                 }),
             },
-            Err(error) => Err(error.to_string()),
+            Err(error) => Err(GenericError::Generic(error.to_string())),
         }
     }
 
-    fn send_mail(&self, mail: &Mail) -> Result<(), String> {
+    pub fn send_mail(&self, mail: &Mail) -> Result<(), GenericError> {
         let email = Message::builder()
             .from(Mailbox::new(
                 Some(mail.sender.clone()),
@@ -76,7 +82,7 @@ impl NativeMailSender {
         self.mailer
             .send(&email)
             .map(|_| ())
-            .map_err(|err| err.to_string())
+            .map_err(|err| GenericError::Generic(err.to_string()))
     }
 }
 
