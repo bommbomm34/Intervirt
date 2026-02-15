@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
@@ -7,7 +8,7 @@ import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 class DnsResolverManager(
-    bundle: io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+    bundle: ContainerClientBundle
 ) {
     private val ioClient = bundle.ioClient
     private val logger = KotlinLogging.logger { }

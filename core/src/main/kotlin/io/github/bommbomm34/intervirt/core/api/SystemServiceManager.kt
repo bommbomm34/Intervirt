@@ -7,7 +7,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 
 // Simple wrapper for systemd
 class SystemServiceManager(
-    private val ioClient: io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+    private val ioClient: ContainerIOClient
 ) {
     private val logger = KotlinLogging.logger {  }
 

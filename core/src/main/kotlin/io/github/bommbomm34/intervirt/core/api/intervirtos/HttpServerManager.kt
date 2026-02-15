@@ -1,12 +1,13 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.io.path.writeText
 
 class HttpServerManager(
-    bundle: io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+    bundle: ContainerClientBundle
 ) {
     val serviceManager = bundle.serviceManager
     private val ioClient = bundle.ioClient

@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.RequestBody
@@ -21,7 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class AgentClient(
     appEnv: AppEnv,
     private val client: HttpClient
-) : io.github.bommbomm34.intervirt.core.api.GuestManager {
+) : GuestManager {
     private val logger = KotlinLogging.logger { }
     private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null

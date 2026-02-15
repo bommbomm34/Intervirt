@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -18,11 +19,11 @@ import java.nio.file.Path
 private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
-class ContainerSshClient(port: Int) : io.github.bommbomm34.intervirt.core.api.ContainerIOClient {
+class ContainerSshClient(port: Int) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
-            _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.HOST, port,
-            _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.USERNAME, ""),
+            HOST, port,
+            USERNAME, ""),
         emptyMap<String, Any>()
     )
     private val sshClient = SshClient.setUpDefaultClient()
@@ -32,7 +33,7 @@ class ContainerSshClient(port: Int) : io.github.bommbomm34.intervirt.core.api.Co
     init {
         val factory = SftpClientFactory.instance()
         sshClient.start()
-        session = sshClient.connect(_root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.USERNAME, _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.HOST, port).verify().session
+        session = sshClient.connect(USERNAME, HOST, port).verify().session
         session.auth().verify()
     }
 

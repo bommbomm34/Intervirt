@@ -1,15 +1,16 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
+import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 // Virtual Guest Manager
-class VirtualGuestManager : io.github.bommbomm34.intervirt.core.api.GuestManager {
-    private val containers = mutableListOf<io.github.bommbomm34.intervirt.core.api.impl.Container>()
-    private val connections = mutableListOf<io.github.bommbomm34.intervirt.core.api.impl.ContainerConnection>()
+class VirtualGuestManager : GuestManager {
+    private val containers = mutableListOf<Container>()
+    private val connections = mutableListOf<ContainerConnection>()
 
     override suspend fun addContainer(
         id: String,
@@ -19,7 +20,7 @@ class VirtualGuestManager : io.github.bommbomm34.intervirt.core.api.GuestManager
         internet: Boolean,
         image: String
     ): Result<Unit> {
-        containers.add(_root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.Container(id, initialIpv4, initialIpv6, mac, internet, image))
+        containers.add(Container(id, initialIpv4, initialIpv6, mac, internet, image))
         return Result.success(Unit)
     }
 
@@ -39,14 +40,14 @@ class VirtualGuestManager : io.github.bommbomm34.intervirt.core.api.GuestManager
     override suspend fun connect(id1: String, id2: String): Result<Unit> {
         if (!id1.exists()) return Result.failure(NotFoundException("Container $id1 doesn't exist."))
         if (!id2.exists()) return Result.failure(NotFoundException("Container $id2 doesn't exist."))
-        connections.add(_root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.ContainerConnection(id1, id2))
+        connections.add(ContainerConnection(id1, id2))
         return Result.success(Unit)
     }
 
     override suspend fun disconnect(id1: String, id2: String): Result<Unit> {
         if (!id1.exists()) return Result.failure(NotFoundException("Container $id1 doesn't exist."))
         if (!id2.exists()) return Result.failure(NotFoundException("Container $id2 doesn't exist."))
-        connections.remove(_root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.ContainerConnection(id1, id2))
+        connections.remove(ContainerConnection(id1, id2))
         return Result.success(Unit)
     }
 

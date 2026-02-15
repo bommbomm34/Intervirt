@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -8,17 +9,17 @@ import kotlin.random.Random
 
 
 class DeviceManager(
-    private val guestManager: io.github.bommbomm34.intervirt.core.api.GuestManager,
-    private val qemuClient: io.github.bommbomm34.intervirt.core.api.QemuClient,
-    private val executor: io.github.bommbomm34.intervirt.core.api.Executor,
-    private val fileManager: io.github.bommbomm34.intervirt.core.api.FileManager,
+    private val guestManager: GuestManager,
+    private val qemuClient: QemuClient,
+    private val executor: Executor,
+    private val fileManager: FileManager,
     private val configuration: IntervirtConfiguration,
     appEnv: AppEnv,
 ) : AutoCloseable {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
     private val virtualContainerIO = appEnv.virtualContainerIO
-    private val containerIOClients = mutableMapOf<Device.Computer, io.github.bommbomm34.intervirt.core.api.ContainerIOClient>()
+    private val containerIOClients = mutableMapOf<Device.Computer, ContainerIOClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -167,20 +168,20 @@ class DeviceManager(
         } else Result.success(Unit)
     }
 
-    suspend fun getIOClient(computer: Device.Computer): Result<io.github.bommbomm34.intervirt.core.api.ContainerIOClient> =
+    suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
         containerIOClients[computer]?.let { Result.success(it) } ?: if (virtualContainerIO) Result.success(
             initVirtualIOClient(computer)
         ) else initSshClient(computer)
 
-    suspend fun initSshClient(computer: Device.Computer): Result<io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient> {
-        val port = _root_ide_package_.io.github.bommbomm34.intervirt.core.api.getFreePort()
+    suspend fun initSshClient(computer: Device.Computer): Result<ContainerSshClient> {
+        val port = getFreePort()
         return addPortForwarding(
             device = computer,
             internalPort = 22,
             externalPort = port,
             protocol = "tcp"
         ).map {
-            val sshClient = _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient(port)
+            val sshClient = ContainerSshClient(port)
             containerIOClients[computer] = sshClient
             sshClient
         }

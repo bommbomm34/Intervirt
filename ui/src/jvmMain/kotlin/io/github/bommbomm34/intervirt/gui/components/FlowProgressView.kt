@@ -10,9 +10,9 @@ import kotlinx.coroutines.job
 
 @Composable
 fun <T> FlowProgressView(
-    flow: Flow<io.github.bommbomm34.intervirt.core.data.ResultProgress<T>>,
+    flow: Flow<ResultProgress<T>>,
     onJobChange: ((Job?) -> Unit),
-    onMessage: ((io.github.bommbomm34.intervirt.core.data.ResultProgress<T>) -> Unit)?
+    onMessage: ((ResultProgress<T>) -> Unit)?
 ) {
     val defaultMessageColor = MaterialTheme.colors.onBackground
     var message by remember { mutableStateOf("") }

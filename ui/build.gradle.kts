@@ -58,6 +58,7 @@ kotlin {
             implementation(libs.jediterm.ui)
             implementation(libs.compose.table)
             implementation(projects.core)
+            implementation(projects.webview)
             implementation(kotlin("reflect"))
             // JavaFX
             implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")

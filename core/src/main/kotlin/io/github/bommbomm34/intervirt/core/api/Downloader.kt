@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 class Downloader(
-    private val preferences: io.github.bommbomm34.intervirt.core.api.Preferences,
-    private val fileManager: io.github.bommbomm34.intervirt.core.api.FileManager,
+    private val preferences: Preferences,
+    private val fileManager: FileManager,
     private val appEnv: AppEnv,
     private val client: HttpClient
 ) {

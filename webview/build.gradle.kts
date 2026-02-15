@@ -3,6 +3,7 @@ import gobley.gradle.cargo.dsl.jvm
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.compose")
     alias(libs.plugins.gobleyCargo)
     alias(libs.plugins.gobleyUniffi)
     alias(libs.plugins.atomicfu)
@@ -15,6 +16,7 @@ dependencies {
     implementation(libs.jna)
     implementation(libs.skiko.awt)
     implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     testImplementation(kotlin("test"))

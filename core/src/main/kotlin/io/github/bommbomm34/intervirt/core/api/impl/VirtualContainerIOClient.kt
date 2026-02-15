@@ -1,15 +1,18 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.addFirst
+import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.Executor
+import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
 class VirtualContainerIOClient(
     id: String,
-    private val executor: io.github.bommbomm34.intervirt.core.api.Executor,
-    fileManager: io.github.bommbomm34.intervirt.core.api.FileManager
-) : io.github.bommbomm34.intervirt.core.api.ContainerIOClient {
+    private val executor: Executor,
+    fileManager: FileManager
+) : ContainerIOClient {
     private val virtualRoot = fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath()
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =

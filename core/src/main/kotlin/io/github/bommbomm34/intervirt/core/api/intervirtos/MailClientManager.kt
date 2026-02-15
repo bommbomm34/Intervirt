@@ -1,12 +1,13 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 
 // TODO: Use SMTP/IMAP instead of terminal commands
 class MailClientManager(
-    bundle: io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+    bundle: ContainerClientBundle
 ) {
     private val ioClient = bundle.ioClient
 
