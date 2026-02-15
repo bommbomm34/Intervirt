@@ -9,7 +9,7 @@ pub enum GenericError {
 }
 
 #[derive(uniffi::Record)]
-pub struct Address {
+pub struct NativeAddress {
     pub host: String,
     pub port: u16,
 }
@@ -26,7 +26,7 @@ pub enum MailBodyType {
 }
 
 #[derive(uniffi::Record)]
-pub struct Mail {
+pub struct NativeMail {
     pub sender: String,
     pub receiver: String,
     pub subject: String,
@@ -44,9 +44,9 @@ pub struct SmtpCredentials {
 impl NativeMailSender {
     #[uniffi::constructor]
     pub fn new(
-        host: Address,
+        host: NativeAddress,
         credentials: Option<SmtpCredentials>,
-        _proxy: Option<Address>,
+        _proxy: Option<NativeAddress>,
     ) -> Result<Self, GenericError> {
         let mailer_builder = SmtpTransport::relay(host.host.as_str());
         match mailer_builder {
@@ -65,7 +65,7 @@ impl NativeMailSender {
         }
     }
 
-    pub fn send_mail(&self, mail: &Mail) -> Result<(), GenericError> {
+    pub fn send_mail(&self, mail: &NativeMail) -> Result<(), GenericError> {
         let email = Message::builder()
             .from(Mailbox::new(
                 Some(mail.sender.clone()),

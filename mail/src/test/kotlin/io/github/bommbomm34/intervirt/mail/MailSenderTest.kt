@@ -14,10 +14,17 @@ class MailSenderTest {
             bodyType = Mail.BodyType.TEXT,
             body = "Hello, this is a test message from the Intervirt.mail module"
         )
-        val sender = MailSender(
-            host = Address("127.0.0.1", 25)
-        )
-        val result = sender.sendMail(exampleMail)
-        assert(result.isSuccess) { "Failed to send mail: ${result.exceptionOrNull()!!.stackTraceToString()}" }
+        MailSender(
+            host = Address(
+                System.getenv("INTERVIRT_TEST_MAIL_HOST"),
+                System.getenv("INTERVIRT_TEST_MAIL_PORT").toInt()
+            ),
+            username = System.getenv("INTERVIRT_TEST_MAIL_USERNAME"),
+            password = System.getenv("INTERVIRT_TEST_MAIL_PASSWORD")
+        ).use { sender ->
+            sender.init()
+            val result = sender.sendMail(exampleMail)
+            assert(result.isSuccess) { "Failed to send mail: ${result.exceptionOrNull()!!.stackTraceToString()}" }
+        }
     }
 }
