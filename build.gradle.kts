@@ -11,6 +11,9 @@ plugins {
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.aboutLibraries) apply false
     alias(libs.plugins.osdetector) apply false
+    alias(libs.plugins.gobleyCargo) apply false
+    alias(libs.plugins.gobleyUniffi) apply false
+    alias(libs.plugins.atomicfu) apply false
     alias(libs.plugins.versionCatalogUpdate)
 }
 

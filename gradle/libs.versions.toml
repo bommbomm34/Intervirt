@@ -21,6 +21,7 @@ slf4j = "2.0.17"
 sshd = "3.0.0-M2"
 version-catalog-update = "1.0.1"
 zip4j = "2.11.6"
+gobley = "0.3.7"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -65,3 +66,6 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
+gobleyCargo = { id = "dev.gobley.cargo", version.ref = "gobley" }
+gobleyUniffi = { id = "dev.gobley.uniffi", version.ref = "gobley" }
+atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }

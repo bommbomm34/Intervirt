@@ -1,0 +1,11 @@
+[package]
+name = "mail"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+uniffi = "0.29.4"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/main/rust/lib.rs"
