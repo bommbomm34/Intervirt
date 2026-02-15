@@ -24,6 +24,7 @@ zip4j = "2.11.6"
 gobley = "0.3.7"
 skiko = "0.9.37.3"
 jna = "5.18.1"
+jakarta-mail = "2.0.2"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -60,6 +61,7 @@ sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "sshd" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 skiko-awt = { module = "org.jetbrains.skiko:skiko-awt", version.ref = "skiko" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+jakarta-mail = { module = "com.sun.mail:jakarta.mail", version.ref = "jakarta-mail" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

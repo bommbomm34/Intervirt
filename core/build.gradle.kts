@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.zip4j)
     implementation(libs.jediterm.core)
     implementation(libs.jediterm.ui)
+    implementation(libs.jakarta.mail)
     testImplementation(libs.koin.test)
     testImplementation(libs.kotlin.test)
 }
