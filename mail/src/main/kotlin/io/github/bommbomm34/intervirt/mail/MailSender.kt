@@ -2,8 +2,8 @@ package io.github.bommbomm34.intervirt.mail
 
 import io.github.bommbomm34.intervirt.mail.data.Address
 import io.github.bommbomm34.intervirt.mail.data.Mail
+import uniffi.mail.MailCredentials
 import uniffi.mail.NativeMailSender
-import uniffi.mail.SmtpCredentials
 
 /**
  * Class for sending mails via SMTP through an optional proxy.
@@ -23,7 +23,7 @@ class MailSender(
      */
     fun init(): Result<Unit> = runCatching {
         val credentials = if (username != null && password != null)
-            SmtpCredentials(username, password) else null
+            MailCredentials(username, password) else null
         nativeMailSender = NativeMailSender(
             host = host.toNative(),
             credentials = credentials,
