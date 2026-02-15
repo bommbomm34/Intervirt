@@ -11,4 +11,3 @@ build/
 out/
 .fleet/
 .kotlin
-mail/target
