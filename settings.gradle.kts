@@ -35,4 +35,4 @@ plugins {
 
 include(":ui")
 include(":core")
-include(":mail")
+include(":webview")
