@@ -14,6 +14,9 @@ version = "0.0.1"
 dependencies {
     implementation(libs.jna)
     implementation(libs.skiko.awt)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material3)
     testImplementation(kotlin("test"))
 }
 

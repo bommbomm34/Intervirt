@@ -19,11 +19,11 @@ import kotlin.concurrent.thread
 
 class WebViewPanel(
     initialUrl: String,
-    proxy: Proxy,
+    proxy: Proxy?,
     private val bridgeLogger: (String) -> Unit = { System.err.println(it) }
 ) : JPanel() {
     private val host = SkikoInterop.createHost()
-    private val proxyConfig = proxy.toConfig()
+    private val proxyConfig = proxy?.toConfig()
     private var webviewId: ULong? = null
     private var parentHandle: ULong = 0UL
     private var parentIsWindow: Boolean = false
