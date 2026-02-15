@@ -6,7 +6,7 @@ import io.github.bommbomm34.intervirt.core.api.getFreePort
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 
-class BrowserManager(
+class ProxyManager(
     appEnv: AppEnv,
     bundle: ContainerClientBundle
 ) {
