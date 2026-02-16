@@ -133,5 +133,12 @@
     <string name="add_user">Add user</string>
     <string name="refresh">Refresh</string>
     <string name="receiver">Receiver</string>
+    <string name="sender">Sender</string>
     <string name="subject">Subject</string>
+    <string name="mail_client_description">Simple mail client for sending and receiving emails</string>
+    <string name="server_address">%1$s Server Address</string>
+    <string name="login">Login</string>
+    <string name="invalid_server_address">Invalid %1$s address</string>
+    <string name="save_login_details">Remember login details</string>
+    <string name="save_login_details_warning">WARNING: Your password will be saved in plaintext!</string>
 </resources>

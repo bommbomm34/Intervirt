@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Browser
 import compose.icons.tablericons.CloudFog
+import compose.icons.tablericons.Mailbox
 import compose.icons.tablericons.Terminal
 import compose.icons.tablericons.Window
 import intervirt.ui.generated.resources.*
@@ -43,6 +44,12 @@ val INTERVIRTOS_APPS = listOf(
         icon = TablerIcons.Terminal,
         description = Res.string.terminal_description,
         content = ::Terminal
+    ),
+    AppInfo(
+        name = Res.string.mail_client,
+        icon = TablerIcons.Mailbox,
+        description = Res.string.mail_client_description,
+        content = ::MailClient
     )
 )
 

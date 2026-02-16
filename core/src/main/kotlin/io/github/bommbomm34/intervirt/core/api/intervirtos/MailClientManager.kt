@@ -3,63 +3,87 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.Mail
+import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
+import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
 import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.mail.Authenticator
-import jakarta.mail.Flags
-import jakarta.mail.Folder
-import jakarta.mail.PasswordAuthentication
-import jakarta.mail.Session
-import jakarta.mail.Store
-import jakarta.mail.Transport
-import jakarta.mail.URLName
+import jakarta.mail.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
 class MailClientManager(
     bundle: ContainerClientBundle
-) : AutoCloseable {
+) {
 
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
     private var smtpSession: Session? = null
     private var imapStore: Store? = null
+    val isInitialized: Boolean
+        get() = smtpSession != null && imapStore != null
 
     suspend fun init(
-        host: Address,
-        proxy: Address,
-        username: String,
-        password: String
+        mailConnectionDetails: MailConnectionDetails,
+        proxy: Address
     ): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
+            fun Properties.putDefaultProperties(
+                ref: String,
+                addr: Address,
+                safety: MailConnectionSafety
+            ) {
+                when (safety) {
+                    MailConnectionSafety.STARTTLS -> {
+                        put("mail.$ref.starttls.enable", true)
+                        put("mail.$ref.starttls.required", true)
+                    }
+
+                    MailConnectionSafety.SECURE -> put("mail.$ref.ssl.enable", true)
+                    else -> {}
+                }
+                put("mail.$ref.auth", true)
+                put("mail.$ref.host", addr.host)
+                put("mail.$ref.port", addr.port)
+                put("mail.$ref.socks.host", proxy.host)
+                put("mail.$ref.socks.port", proxy.port)
+            }
+            val (smtp, smtpSafety, imap, imapSafety, username, password) = mailConnectionDetails
             // Init SMTP
+            logger.debug { "Initializing connection via SMTP with $smtp" }
             val authenticator = getAuthenticator(username, password)
             val smtpProperties = Properties().apply {
-                put("mail.smtp.auth", "true")
-                put("mail.smtp.host", host.host)
-                put("mail.smtp.port", host.port.toString())
-                put("mail.smtp.socks.host", proxy.host)
-                put("mail.smtp.socks.port", proxy.port.toString())
+                val ref = when (smtpSafety) {
+                    MailConnectionSafety.SECURE -> "smtps"
+                    else -> "smtp"
+                }
+                putDefaultProperties(ref, smtp, smtpSafety)
             }
             smtpSession = Session.getInstance(smtpProperties, authenticator)
+            logger.debug { "Initializing connection via IMAP with $imap" }
+            val imapRef = when (imapSafety) {
+                MailConnectionSafety.SECURE -> "imaps"
+                else -> "imap"
+            }
             // Init IMAP
             val imapProperties = Properties().apply {
-                put("mail.imap.auth", "true")
-                put("mail.imap.host", host.host)
-                put("mail.imap.port", host.port.toString())
-                put("mail.imap.socks.host", proxy.host)
-                put("mail.imap.socks.port", proxy.port.toString())
+
+                if (imapSafety == MailConnectionSafety.STARTTLS) {
+                    put("mail.$imapRef.starttls.enable", true)
+                    put("mail.$imapRef.starttls.required", true)
+                }
+                putDefaultProperties(imapRef, imap, imapSafety)
             }
             val imapSession = Session.getInstance(imapProperties)
-            val store = imapSession.getStore("imap")
+            val store = imapSession.getStore(imapRef)
             store.connect(username, password)
             imapStore = store
+            logger.debug { "Successfully initialized both SMTP and IMAP" }
         }
     }
 
     suspend fun sendMail(mail: Mail): Result<Unit> {
         val session = smtpSession
-        require(session != null) { "SMTP session isn't successfully initialized" }
+        check(session != null) { "SMTP session isn't successfully initialized" }
         return withContext(Dispatchers.IO) {
             runCatching {
                 Transport.send(mail.getMimeMessage(session))
@@ -69,16 +93,19 @@ class MailClientManager(
 
     suspend fun getMails(): Result<List<Mail>> {
         val store = imapStore
-        require(store != null) { "IMAP session isn't successfully initialized" }
-        return withContext(Dispatchers.IO){
+        check(store != null) { "IMAP session isn't successfully initialized" }
+        return withContext(Dispatchers.IO) {
             runCatching {
                 store.useInbox {
                     messages.mapIndexedNotNull { i, msg ->
                         val mail = msg.toMail(i)
                         mail.fold(
-                            onSuccess = { it },
+                            onSuccess = {
+                                logger.debug { "Received mail: $it" }
+                                it
+                            },
                             onFailure = {
-                                logger.error(it){ "Invalid email: $msg" }
+                                logger.error(it) { "Invalid email: $msg" }
                                 null
                             }
                         )
@@ -90,9 +117,9 @@ class MailClientManager(
 
     suspend fun deleteMail(mail: Mail): Result<Unit> {
         val store = imapStore
-        require(store != null) { "IMAP session isn't successfully initialized" }
+        check(store != null) { "IMAP session isn't successfully initialized" }
         require(mail.index != null) { "Mail doesn't include an index" }
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             runCatching {
                 store.useInbox {
                     messages[mail.index].setFlag(Flags.Flag.DELETED, true)
@@ -121,7 +148,10 @@ class MailClientManager(
         }
     }
 
-    override fun close() {
+    fun close() = runCatching {
+        logger.debug { "Closing SMTP session" }
         smtpSession?.transport?.close()
+        logger.debug { "Closing IMAP session" }
+        imapStore?.close()
     }
 }

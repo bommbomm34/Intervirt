@@ -12,8 +12,10 @@ import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.rememberClient
+import io.github.bommbomm34.intervirt.rememberProxyManager
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -21,7 +23,8 @@ import org.koin.compose.koinInject
 fun Browser(
     bundle: ContainerClientBundle
 ) {
-    val browser = bundle.rememberClient(::ProxyManager)
+    val appEnv = koinInject<AppEnv>()
+    val browser = rememberProxyManager(appEnv, bundle)
     val deviceManager = koinInject <DeviceManager>()
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually

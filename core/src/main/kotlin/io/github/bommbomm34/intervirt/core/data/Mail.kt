@@ -39,6 +39,6 @@ fun Message.toMail(index: Int? = null): Result<Mail> {
 }
 
 private fun Address.toMailUser(): MailUser? = if (this is InternetAddress) MailUser(
-    username = personal,
+    username = personal ?: address,
     address = address
 ) else null

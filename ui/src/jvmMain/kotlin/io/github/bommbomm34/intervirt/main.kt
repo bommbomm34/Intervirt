@@ -20,7 +20,6 @@ import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
-import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
@@ -42,11 +41,11 @@ fun main() = application {
     KoinApplication(application = {
         modules(coreModule, uiModule)
     }) {
-        val preferences = koinInject <Preferences>()
+        val preferences = koinInject<Preferences>()
         val appEnv = koinInject<AppEnv>()
-        val deviceManager = koinInject <DeviceManager>()
-        val guestManager = koinInject <GuestManager>()
-        val qemuClient = koinInject <QemuClient>()
+        val deviceManager = koinInject<DeviceManager>()
+        val guestManager = koinInject<GuestManager>()
+        val qemuClient = koinInject<QemuClient>()
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         LaunchedEffect(Unit) {
@@ -56,7 +55,6 @@ fun main() = application {
             Platform.startup { }
             // Add shutdown hook
             Runtime.getRuntime().addShutdownHook(Thread {
-                println("Registered shutdown hook")
                 gracefulShutdown(deviceManager, guestManager, qemuClient)
             })
             appState.setDefaultExceptionHandler()
@@ -118,11 +116,11 @@ fun main() = application {
         Window(
             onCloseRequest = appState::closeDialog,
             visible = appState.dialogState.visible,
-            title = when (appState.dialogState){
+            title = when (appState.dialogState) {
                 is DialogState.Regular -> (appState.dialogState as DialogState.Regular).message
                 is DialogState.Custom -> "Dialog"
             }
-        ){
+        ) {
             DefaultWindowScope {
                 Dialog()
             }

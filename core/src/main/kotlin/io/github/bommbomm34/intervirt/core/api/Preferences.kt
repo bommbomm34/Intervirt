@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.defaultJson
+import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.nio.file.Files
@@ -27,6 +28,12 @@ class Preferences {
     fun saveString(key: String, value: String) {
         logger.debug { "Saving string $key with $value" }
         data[key] = value
+        flush()
+    }
+
+    fun removeString(key: String){
+        logger.debug { "Removing string $key" }
+        data.remove(key)
         flush()
     }
 
@@ -61,7 +68,11 @@ class Preferences {
         vmDiskHashUrl = env("VM_DISK_HASH_URL") ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2.sha256",
         qemuZipUrl = env("QEMU_ZIP_URL") ?: defaultQemuZipUrl,
         qemuZipHashUrl = env("QEMU_ZIP_HASH_URL") ?: "$defaultQemuZipUrl.sha256",
-        agentWebSocketTimeout = env("AGENT_WEBSOCKET_TIMEOUT")?.toLong() ?: 10_000L
+        agentWebSocketTimeout = env("AGENT_WEBSOCKET_TIMEOUT")?.toLong() ?: 10_000L,
+        mailUsername = env("MAIL_USERNAME") ?: "",
+        mailPassword = env("MAIL_PASSWORD") ?: "",
+        smtpServerAddress = env("SMTP_SERVER_ADDRESS") ?: "",
+        imapServerAddress = env("IMAP_SERVER_ADDRESS") ?: "",
     )
     
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)

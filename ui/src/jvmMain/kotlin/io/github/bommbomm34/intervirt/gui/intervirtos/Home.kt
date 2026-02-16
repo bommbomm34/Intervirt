@@ -30,7 +30,7 @@ fun Home(
         GeneralSpacer()
         AlignedBox(Alignment.Center){
             LazyVerticalGrid(
-                columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.2f)
+                columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.5f)
             ){
                 items(INTERVIRTOS_APPS){ appInfo ->
                     AppItem(

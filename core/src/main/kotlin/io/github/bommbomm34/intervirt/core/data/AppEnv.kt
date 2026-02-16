@@ -34,5 +34,9 @@ data class AppEnv(
     val vmDiskHashUrl: String,
     val qemuZipUrl: String,
     val qemuZipHashUrl: String,
-    val agentWebSocketTimeout: Long
+    val agentWebSocketTimeout: Long,
+    val mailUsername: String,
+    val mailPassword: String,
+    val smtpServerAddress: String,
+    val imapServerAddress: String
 )

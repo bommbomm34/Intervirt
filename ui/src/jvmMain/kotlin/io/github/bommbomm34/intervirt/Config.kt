@@ -10,20 +10,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import intervirt.ui.generated.resources.Res
-import io.github.bommbomm34.intervirt.core.api.*
-import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
-import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.*
+import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
+import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.serialization.kotlinx.*
 import io.ktor.utils.io.*
-import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.binds
 import org.koin.dsl.module
 import java.net.ServerSocket
 import java.util.*
@@ -102,5 +98,8 @@ fun <T> ContainerClientBundle.rememberClient(func: KFunction<T>): T = remember {
 
 @Composable
 fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
+
+@Composable
+fun rememberProxyManager(appEnv: AppEnv, bundle: ContainerClientBundle) = remember { ProxyManager(appEnv, bundle) }
 
 internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()

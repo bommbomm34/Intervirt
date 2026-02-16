@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core
 
+import io.github.bommbomm34.intervirt.core.data.Address
 import io.ktor.utils.io.*
 import kotlin.math.pow
 import kotlin.math.round
@@ -29,3 +30,5 @@ fun <T> List<T>.addFirst(element: T): List<T> {
     mutableList.addFirst(element)
     return mutableList
 }
+
+fun String.parseAddress() = Address(substringBefore(":"), substringAfter(":").toInt())

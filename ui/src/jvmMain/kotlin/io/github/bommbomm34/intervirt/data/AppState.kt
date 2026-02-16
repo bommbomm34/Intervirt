@@ -49,6 +49,7 @@ class AppState(configuration: IntervirtConfiguration) {
      * Open error dialog if result is failed, otherwise call `onSuccess`
      */
     suspend inline fun <T> runDialogCatching(block: suspend () -> T): Result<T> = runSuspendingCatching(block).onFailure {
+        it.printStackTrace()
         openDialog(
             importance = Importance.ERROR,
             message = it.localizedMessage
