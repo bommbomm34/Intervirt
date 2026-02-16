@@ -94,7 +94,7 @@ fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
 fun Dp.toPx() = density.run { toPx() }
 
 @Composable
-fun <T> ContainerClientBundle.rememberClient(func: KFunction<T>): T = remember { func.call(this) }
+fun <T> ContainerClientBundle.rememberClient(func: (ContainerClientBundle) -> T): T = remember { func(this) }
 
 @Composable
 fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
