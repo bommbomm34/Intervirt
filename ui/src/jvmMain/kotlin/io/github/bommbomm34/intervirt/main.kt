@@ -51,7 +51,7 @@ fun main() = application {
         val appState = koinInject<AppState>()
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         LaunchedEffect(Unit) {
-            // These things shouldn't be only called once
+            // These things should be only called once
             Locale.setDefault(appEnv.language)
             FileKit.init("intervirt")
             // Add shutdown hook
