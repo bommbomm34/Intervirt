@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.gui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -29,44 +28,40 @@ import org.koin.compose.koinInject
 @Composable
 fun Dialog() {
     val appState = koinInject<AppState>()
-    AnimatedVisibility(appState.dialogState.visible) {
-        Overlay {
-            AlignedBox(Alignment.Center) {
-                Surface(
-                    modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-                    color = MaterialTheme.colors.background.copy(blue = 0.05f)
-                ) {
-                    Box(Modifier.padding(16.dp)){
-                        when (appState.dialogState) {
-                            is DialogState.Custom -> (appState.dialogState as DialogState.Custom).customContent()
-                            is DialogState.Regular -> {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    val state = appState.dialogState as DialogState.Regular
-                                    Text(
-                                        text = when (state.importance) {
-                                            Importance.INFO -> stringResource(Res.string.info)
-                                            Importance.ERROR -> stringResource(Res.string.error)
-                                            Importance.WARNING -> stringResource(Res.string.warning)
-                                        },
-                                        color = when (state.importance) {
-                                            Importance.INFO -> MaterialTheme.colors.onSecondary
-                                            Importance.ERROR -> MaterialTheme.colors.error
-                                            Importance.WARNING -> Color.Yellow
-                                        }
-                                    )
-                                    GeneralSpacer()
-                                    SelectionContainer {
-                                        Text(state.message)
-                                    }
-                                    GeneralSpacer()
-                                    Button(
-                                        onClick = { appState.dialogState = state.copy(visible = false) }
-                                    ) {
-                                        Text("OK")
-                                    }
+    AlignedBox(Alignment.Center) {
+        Surface(
+            modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+            color = MaterialTheme.colors.background.copy(blue = 0.05f)
+        ) {
+            Box(Modifier.padding(16.dp)) {
+                when (appState.dialogState) {
+                    is DialogState.Custom -> (appState.dialogState as DialogState.Custom).customContent()
+                    is DialogState.Regular -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            val state = appState.dialogState as DialogState.Regular
+                            Text(
+                                text = when (state.importance) {
+                                    Importance.INFO -> stringResource(Res.string.info)
+                                    Importance.ERROR -> stringResource(Res.string.error)
+                                    Importance.WARNING -> stringResource(Res.string.warning)
+                                },
+                                color = when (state.importance) {
+                                    Importance.INFO -> MaterialTheme.colors.onSecondary
+                                    Importance.ERROR -> MaterialTheme.colors.error
+                                    Importance.WARNING -> Color.Yellow
                                 }
+                            )
+                            GeneralSpacer()
+                            SelectionContainer {
+                                Text(state.message)
+                            }
+                            GeneralSpacer()
+                            Button(
+                                onClick = { appState.dialogState = state.copy(visible = false) }
+                            ) {
+                                Text("OK")
                             }
                         }
                     }

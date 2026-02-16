@@ -19,6 +19,7 @@ import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.gui.App
@@ -35,6 +36,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import java.util.*
+import kotlin.system.exitProcess
 
 fun main() = application {
     KoinApplication(application = {
@@ -83,7 +85,6 @@ fun main() = application {
         ) {
             DefaultWindowScope(onPointerEvent = { appState.mousePosition = it.changes.first().position }) {
                 App()
-                Dialog()
             }
         }
         // Logs Window
@@ -113,6 +114,19 @@ fun main() = application {
                 }
             }
         }
+        // Dialog Window
+        Window(
+            onCloseRequest = appState::closeDialog,
+            visible = appState.dialogState.visible,
+            title = when (appState.dialogState){
+                is DialogState.Regular -> (appState.dialogState as DialogState.Regular).message
+                is DialogState.Custom -> "Dialog"
+            }
+        ){
+            DefaultWindowScope {
+                Dialog()
+            }
+        }
     }
 }
 
@@ -129,9 +143,6 @@ private fun gracefulShutdown(
 private fun AppState.setDefaultExceptionHandler() {
     Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
         System.err.println("UNCAUGHT EXCEPTION: ${throwable.stackTraceToString()}")
-        openDialog(
-            importance = Importance.ERROR,
-            message = "An unexpected error occurred: ${throwable.localizedMessage}"
-        )
+        exitProcess(1)
     }
 }
