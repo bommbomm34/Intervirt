@@ -1,24 +1,25 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.getFreePort
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 class ProxyManager(
     appEnv: AppEnv,
-    bundle: ContainerClientBundle
-) {
+    private val deviceManager: DeviceManager,
+    osClient: IntervirtOSClient
+) : AsyncCloseable {
+    private val client = osClient.getClient(this)
     private val logger = KotlinLogging.logger {  }
-    private val computer = bundle.computer
+    private val computer = client.computer
     private val virtual = appEnv.virtualContainerIO
     private var proxyUrl: Address? = null
 
-    suspend fun getProxyUrl(
-        deviceManager: DeviceManager
-    ) = if (virtual) Result.success(Address("127.0.0.1", 1080)) else {
+    suspend fun getProxyUrl() = if (virtual) Result.success(Address("127.0.0.1", 1080)) else {
         val url = proxyUrl
         if (url != null) Result.success(url) else {
             logger.debug { "Initializing proxy" }
@@ -38,9 +39,7 @@ class ProxyManager(
         }
     }
 
-    suspend fun close(
-        deviceManager: DeviceManager
-    ) = if (virtual) Result.success(Unit) else {
+    override suspend fun close() = if (virtual) Result.success(Unit) else {
         val url = proxyUrl
         if (url == null) Result.success(Unit) else {
             deviceManager.removePortForwarding(

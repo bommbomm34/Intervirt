@@ -1,19 +1,21 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.io.path.notExists
 import kotlin.io.path.readLines
 import kotlin.io.path.writeText
 
 class MailServerManager(
-    bundle: ContainerClientBundle
+    osClient: IntervirtOSClient
 ) {
-    val serviceManager = bundle.serviceManager
-    private val ioClient = bundle.ioClient
+    private val client = osClient.getClient()
+    val serviceManager = client.serviceManager
+    private val ioClient = client.ioClient
     private val logger = KotlinLogging.logger {  }
 
     suspend fun listMailUsers(): Result<List<MailUser>> {

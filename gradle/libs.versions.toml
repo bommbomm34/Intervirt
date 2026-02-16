@@ -1,6 +1,7 @@
 [versions]
 aboutLibraries = "13.2.1"
 androidx-lifecycle = "2.9.6"
+bossterm = "1.0.90"
 commons-validator = "1.10.1"
 compose-material3 = "1.9.0"
 compose-table = "0.2.3"
@@ -15,7 +16,7 @@ jna = "5.18.1"
 koin = "4.1.1"
 kommand = "2.3.0"
 kotlin = "2.3.10"
-kotlin-logging = "7.0.14"
+kotlin-logging = "8.0.01"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization-json = "1.10.0"
 ktor = "3.4.0"
@@ -31,6 +32,8 @@ aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3",
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+bossterm-compose = { module = "com.risaboss:bossterm-compose", version.ref = "bossterm" }
+bossterm-core = { module = "com.risaboss:bossterm-core", version.ref = "bossterm" }
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commons-validator" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }

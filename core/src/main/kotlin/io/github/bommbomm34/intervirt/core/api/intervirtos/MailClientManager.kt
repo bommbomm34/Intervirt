@@ -1,11 +1,12 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.mail.*
 import kotlinx.coroutines.Dispatchers
@@ -13,9 +14,9 @@ import kotlinx.coroutines.withContext
 import java.util.*
 
 class MailClientManager(
-    bundle: ContainerClientBundle
-) {
-
+    osClient: IntervirtOSClient
+) : AsyncCloseable {
+    private val client = osClient.getClient(this)
     private val logger = KotlinLogging.logger { }
     private var smtpSession: Session? = null
     private var imapStore: Store? = null
@@ -148,10 +149,13 @@ class MailClientManager(
         }
     }
 
-    fun close() = runCatching {
-        logger.debug { "Closing SMTP session" }
-        smtpSession?.transport?.close()
-        logger.debug { "Closing IMAP session" }
-        imapStore?.close()
+    override suspend fun close() = withContext(Dispatchers.IO){
+        runCatching {
+            logger.debug { "Closing SMTP session" }
+            smtpSession?.transport?.close()
+            logger.debug { "Closing IMAP session" }
+            imapStore?.close()
+            Unit
+        }
     }
 }

@@ -10,13 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
-import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.*
-import io.github.bommbomm34.intervirt.rememberClient
 import io.github.bommbomm34.intervirt.rememberProxyManager
 import io.github.bommbomm34.intervirt.webview.Proxy
 import io.github.bommbomm34.intervirt.webview.WebView
@@ -26,16 +24,16 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Browser(
-    bundle: ContainerClientBundle
+    osClient: IntervirtOSClient
 ) {
     val appEnv = koinInject<AppEnv>()
-    val browser = rememberProxyManager(appEnv, bundle)
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
+    val browser = rememberProxyManager(appEnv, deviceManager, osClient)
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
     var proxyUrl: Result<Address>? by remember { mutableStateOf(null) }
     LaunchedEffect(Unit) {
-        proxyUrl = browser.getProxyUrl(deviceManager)
+        proxyUrl = browser.getProxyUrl()
     }
     CenterColumn {
         CenterRow {

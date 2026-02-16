@@ -3,6 +3,8 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.*
+import io.github.bommbomm34.intervirt.core.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.ServerSocket
 import kotlin.random.Random
@@ -15,11 +17,12 @@ class DeviceManager(
     private val fileManager: FileManager,
     private val configuration: IntervirtConfiguration,
     appEnv: AppEnv,
-) : AutoCloseable {
+) : AsyncCloseable {
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
     private val virtualContainerIO = appEnv.virtualContainerIO
-    private val containerIOClients = mutableMapOf<Device.Computer, ContainerIOClient>()
+    private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
+    private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -60,8 +63,10 @@ class DeviceManager(
         logger.debug { "Removing device $device" }
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
-        containerIOClients[device]?.close()
-        containerIOClients.remove(device)
+        intervirtOSClients[device.id]?.close()
+        intervirtOSClients.remove(device.id)
+        containerIOClients[device.id]?.close()
+        containerIOClients.remove(device.id)
         return if (device is Device.Computer && enableAgent) {
             val res = guestManager.removeContainer(device.id)
             res.check(Unit)
@@ -169,7 +174,7 @@ class DeviceManager(
     }
 
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
-        containerIOClients[computer]?.let { Result.success(it) } ?: if (virtualContainerIO) Result.success(
+        containerIOClients[computer.id]?.let { Result.success(it) } ?: if (virtualContainerIO) Result.success(
             initVirtualIOClient(computer)
         ) else initSshClient(computer)
 
@@ -182,15 +187,24 @@ class DeviceManager(
             protocol = "tcp"
         ).map {
             val sshClient = ContainerSshClient(port)
-            containerIOClients[computer] = sshClient
+            containerIOClients[computer.id] = sshClient
             sshClient
         }
     }
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
         val client = VirtualContainerIOClient(computer.id, executor, fileManager)
-        containerIOClients[computer] = client
+        containerIOClients[computer.id] = client
         return client
+    }
+
+    suspend fun getIntervirtOSClient(computer: Device.Computer) = runSuspendingCatching {
+        val osClient = IntervirtOSClient(
+            computer = computer,
+            ioClient = getIOClient(computer).getOrThrow()
+        )
+        intervirtOSClients[computer.id] = osClient
+        osClient
     }
 
     private fun generateID(prefix: String): String {
@@ -229,7 +243,8 @@ class DeviceManager(
         }
     }
 
-    override fun close() {
+    override suspend fun close() = runSuspendingCatching {
+        intervirtOSClients.forEach { (_, client) -> client.close().getOrThrow() }
         containerIOClients.forEach { (_, client) -> client.close() }
     }
 }

@@ -45,6 +45,8 @@ kotlin {
             implementation(libs.jediterm.core)
             implementation(libs.jediterm.ui)
             implementation(libs.compose.table)
+            implementation(libs.bossterm.core)
+            implementation(libs.bossterm.compose)
             implementation(projects.core)
             implementation(projects.webview)
         }

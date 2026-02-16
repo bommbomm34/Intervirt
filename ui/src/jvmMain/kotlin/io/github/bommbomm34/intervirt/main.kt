@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -30,6 +31,8 @@ import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -53,7 +56,9 @@ fun main() = application {
             FileKit.init("intervirt")
             // Add shutdown hook
             Runtime.getRuntime().addShutdownHook(Thread {
-                gracefulShutdown(deviceManager, guestManager, qemuClient)
+                runBlocking {
+                    gracefulShutdown(deviceManager, guestManager, qemuClient)
+                }
             })
             appState.setDefaultExceptionHandler()
         }
@@ -61,7 +66,6 @@ fun main() = application {
         // Main Window
         Window(
             onCloseRequest = {
-                gracefulShutdown(deviceManager, guestManager, qemuClient)
                 exitApplication()
             },
             onKeyEvent = {
@@ -126,7 +130,7 @@ fun main() = application {
     }
 }
 
-private fun gracefulShutdown(
+private suspend fun gracefulShutdown(
     deviceManager: DeviceManager,
     guestManager: GuestManager,
     qemuClient: QemuClient

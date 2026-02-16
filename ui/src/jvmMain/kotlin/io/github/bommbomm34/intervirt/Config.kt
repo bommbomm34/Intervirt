@@ -10,7 +10,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import intervirt.ui.generated.resources.Res
-import io.github.bommbomm34.intervirt.core.api.ContainerClientBundle
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
@@ -23,7 +24,6 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import java.net.ServerSocket
 import java.util.*
-import kotlin.reflect.KFunction
 
 const val CURRENT_VERSION = "0.0.1"
 const val HELP_URL = "https://docs.perhof.org/intervirt"
@@ -94,12 +94,16 @@ fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
 fun Dp.toPx() = density.run { toPx() }
 
 @Composable
-fun <T> ContainerClientBundle.rememberClient(func: (ContainerClientBundle) -> T): T = remember { func(this) }
+fun <T> IntervirtOSClient.rememberManager(func: (IntervirtOSClient) -> T): T = remember { func(this) }
 
 @Composable
 fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 
 @Composable
-fun rememberProxyManager(appEnv: AppEnv, bundle: ContainerClientBundle) = remember { ProxyManager(appEnv, bundle) }
+fun rememberProxyManager(
+    appEnv: AppEnv,
+    deviceManager: DeviceManager,
+    osClient: IntervirtOSClient
+) = remember { ProxyManager(appEnv, deviceManager, osClient) }
 
 internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()
