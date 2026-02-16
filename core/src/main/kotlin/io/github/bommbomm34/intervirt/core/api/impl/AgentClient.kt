@@ -183,8 +183,11 @@ class AgentClient(
         return Result.success(Unit)
     }
 
-    override fun close(): Unit = runBlocking(Dispatchers.IO) {
-        listenJob?.cancel()
-        session?.close()
+    override suspend fun close() = withContext(Dispatchers.IO) {
+        runSuspendingCatching {
+            listenJob?.cancel()
+            session?.close()
+            Unit
+        }
     }
 }

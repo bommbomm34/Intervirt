@@ -60,7 +60,7 @@ fun main() = application {
                     gracefulShutdown(deviceManager, guestManager, qemuClient)
                 }
             })
-            appState.setDefaultExceptionHandler()
+            setDefaultExceptionHandler()
         }
         density = LocalDensity.current
         // Main Window
@@ -140,7 +140,7 @@ private suspend fun gracefulShutdown(
     qemuClient.close()
 }
 
-private fun AppState.setDefaultExceptionHandler() {
+private fun setDefaultExceptionHandler() {
     Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
         System.err.println("UNCAUGHT EXCEPTION: ${throwable.stackTraceToString()}")
         exitProcess(1)

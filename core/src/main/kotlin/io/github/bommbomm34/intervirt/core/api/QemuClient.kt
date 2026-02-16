@@ -6,6 +6,7 @@ import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -29,7 +30,7 @@ class QemuClient(
     private val fileManager: FileManager,
     private val guestManager: GuestManager,
     private val appEnv: AppEnv
-) : AutoCloseable {
+) : AsyncCloseable {
 
     var running = false
         set(value) {
@@ -214,8 +215,10 @@ class QemuClient(
         }
     }
 
-    override fun close() = runBlocking(Dispatchers.IO) {
-        isRunningLoopJob?.cancel()
-        shutdownAlpine()
+    override suspend fun close() = withContext(Dispatchers.IO) {
+        runSuspendingCatching {
+            isRunningLoopJob?.cancel()
+            shutdownAlpine()
+        }
     }
 }

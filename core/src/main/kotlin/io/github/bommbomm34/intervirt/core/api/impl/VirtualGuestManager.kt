@@ -109,7 +109,7 @@ class VirtualGuestManager : GuestManager {
 
     private fun String.exists() = containers.any { it.id == this }
 
-    override fun close() {} // Nothing to close
+    override suspend fun close() = Result.success(Unit) // Nothing to close
 }
 
 private data class Container(

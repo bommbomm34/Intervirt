@@ -1,9 +1,10 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 
-interface GuestManager : AutoCloseable {
+interface GuestManager : AsyncCloseable {
     suspend fun addContainer(
         id: String,
         initialIpv4: String,
