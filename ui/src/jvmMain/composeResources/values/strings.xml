@@ -141,4 +141,7 @@
     <string name="invalid_server_address">Invalid %1$s address</string>
     <string name="save_login_details">Remember login details</string>
     <string name="save_login_details_warning">WARNING: Your password will be saved in plaintext!</string>
+    <string name="from">From: %1$s</string>
+    <string name="to">To: %1$s</string>
+    <string name="reply">Reply</string>
 </resources>
