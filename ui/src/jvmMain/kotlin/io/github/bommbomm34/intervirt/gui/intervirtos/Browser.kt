@@ -1,10 +1,12 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
@@ -16,6 +18,9 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.rememberClient
 import io.github.bommbomm34.intervirt.rememberProxyManager
+import io.github.bommbomm34.intervirt.webview.Proxy
+import io.github.bommbomm34.intervirt.webview.WebView
+import io.github.bommbomm34.intervirt.webview.rememberWebViewNavigator
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -55,9 +60,11 @@ fun Browser(
         if (res != null) {
             res.fold(
                 onSuccess = {
-                    ProxyWebView(
+                    WebView(
                         url = currentUrl,
-                        proxyAddress = it
+                        navigator = rememberWebViewNavigator(),
+                        modifier = Modifier.fillMaxSize(),
+                        proxy = Proxy(it.host, it.port)
                     )
                 },
                 onFailure = {

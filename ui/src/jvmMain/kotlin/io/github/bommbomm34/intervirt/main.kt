@@ -30,7 +30,6 @@ import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
-import javafx.application.Platform
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -52,7 +51,6 @@ fun main() = application {
             // These things shouldn't be only called once
             Locale.setDefault(appEnv.language)
             FileKit.init("intervirt")
-            Platform.startup { }
             // Add shutdown hook
             Runtime.getRuntime().addShutdownHook(Thread {
                 gracefulShutdown(deviceManager, guestManager, qemuClient)

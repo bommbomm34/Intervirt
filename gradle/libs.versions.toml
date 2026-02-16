@@ -8,7 +8,10 @@ compose-tabler-icons = "1.1.1"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.1"
 filekit = "0.12.0"
+gobley = "0.3.7"
+jakarta-mail = "2.0.2"
 jediterm = "3.63"
+jna = "5.18.1"
 koin = "4.1.1"
 kommand = "2.3.0"
 kotlin = "2.3.10"
@@ -17,14 +20,11 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization-json = "1.10.0"
 ktor = "3.4.0"
 osdetector = "1.7.3"
+skiko = "0.9.41"
 slf4j = "2.0.17"
 sshd = "3.0.0-M2"
 version-catalog-update = "1.0.1"
 zip4j = "2.11.6"
-gobley = "0.3.7"
-skiko = "0.9.37.3"
-jna = "5.18.1"
-jakarta-mail = "2.0.2"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -41,8 +41,10 @@ compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons"
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
+jakarta-mail = { module = "com.sun.mail:jakarta.mail", version.ref = "jakarta-mail" }
 jediterm-core = { module = "org.jetbrains.jediterm:jediterm-core", version.ref = "jediterm" }
 jediterm-ui = { module = "org.jetbrains.jediterm:jediterm-ui", version.ref = "jediterm" }
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
@@ -55,23 +57,21 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+skiko-awt = { module = "org.jetbrains.skiko:skiko-awt", version.ref = "skiko" }
 slf4j-reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref = "slf4j" }
 sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "sshd" }
 sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "sshd" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
-skiko-awt = { module = "org.jetbrains.skiko:skiko-awt", version.ref = "skiko" }
-jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
-jakarta-mail = { module = "com.sun.mail:jakarta.mail", version.ref = "jakarta-mail" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
+atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+gobleyCargo = { id = "dev.gobley.cargo", version.ref = "gobley" }
+gobleyUniffi = { id = "dev.gobley.uniffi", version.ref = "gobley" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
-gobleyCargo = { id = "dev.gobley.cargo", version.ref = "gobley" }
-gobleyUniffi = { id = "dev.gobley.uniffi", version.ref = "gobley" }
-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }

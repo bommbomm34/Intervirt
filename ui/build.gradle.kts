@@ -1,7 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
-val javaFXVersion = "21"
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
@@ -16,16 +14,6 @@ kotlin {
     jvm()
 
     sourceSets {
-        // https://stackoverflow.com/questions/73187027/use-javafx-in-kotlin-multiplatform
-        val javaFXSuffix = when (osdetector.classifier){
-            "linux-x86_64" -> "linux"
-            "linux-aarch_64" -> "linux-aarch64"
-            "windows-x86_64" -> "win"
-            "osx-x86_64" -> "mac"
-            "osx-aarch_64" -> "mac-aarch64"
-            else -> throw IllegalStateException("Unknown OS: ${osdetector.classifier}")
-        }
-
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -59,16 +47,7 @@ kotlin {
             implementation(libs.compose.table)
             implementation(projects.core)
             implementation(projects.webview)
-            implementation(kotlin("reflect"))
-            // JavaFX
-            implementation("org.openjfx:javafx-base:$javaFXVersion:${javaFXSuffix}")
-            implementation("org.openjfx:javafx-graphics:$javaFXVersion:${javaFXSuffix}")
-            implementation("org.openjfx:javafx-controls:$javaFXVersion:${javaFXSuffix}")
-            implementation("org.openjfx:javafx-web:$javaFXVersion:${javaFXSuffix}")
-            implementation("org.openjfx:javafx-swing:$javaFXVersion:${javaFXSuffix}")
-            implementation("org.openjfx:javafx-media:$javaFXVersion:${javaFXSuffix}")
         }
-
     }
 }
 
