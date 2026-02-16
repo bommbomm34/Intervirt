@@ -200,8 +200,10 @@ class DeviceManager(
 
     suspend fun getIntervirtOSClient(computer: Device.Computer) = runSuspendingCatching {
         val osClient = IntervirtOSClient(
-            computer = computer,
-            ioClient = getIOClient(computer).getOrThrow()
+            IntervirtOSClient.Client(
+                computer = computer,
+                ioClient = getIOClient(computer).getOrThrow()
+            )
         )
         intervirtOSClients[computer.id] = osClient
         osClient
