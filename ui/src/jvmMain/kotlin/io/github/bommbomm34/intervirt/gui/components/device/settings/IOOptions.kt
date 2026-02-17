@@ -10,6 +10,7 @@ import compose.icons.tablericons.FileUpload
 import compose.icons.tablericons.Terminal
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.download_file
+import intervirt.ui.generated.resources.file_already_exists
 import intervirt.ui.generated.resources.terminal
 import intervirt.ui.generated.resources.upload_file
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
@@ -17,12 +18,14 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Importance
 import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
+import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.name
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -67,14 +70,14 @@ fun IOOptions(device: ViewDevice.Computer){
                     appState.closeDialog()
                     path?.let { _ ->
                         scope.launch {
-                            try {
-                                file.file.toPath().copyTo(path)
-                            } catch (e: Exception){
-                                logger.error(e){ "Error occurred during file upload" }
-                                appState.openDialog(
-                                    importance = Importance.ERROR,
-                                    message = e.localizedMessage
-                                )
+                            appState.runDialogCatching {
+                                if (file.exists()){
+                                    appState.openDialog {
+                                        AcceptDialog(
+                                            message = stringResource(Res.string.file_already_exists)
+                                        ){ file.file.toPath().copyTo(path, true) }
+                                    }
+                                }
                             }
                         }
                     }

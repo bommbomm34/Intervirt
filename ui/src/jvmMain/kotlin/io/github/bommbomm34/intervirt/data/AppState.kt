@@ -54,7 +54,7 @@ class AppState(configuration: IntervirtConfiguration) {
         it.printStackTrace()
         openDialog(
             importance = Importance.ERROR,
-            message = it.localizedMessage
+            message = it.stackTraceToString()
         )
     }
 }
