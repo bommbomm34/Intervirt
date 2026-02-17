@@ -1,12 +1,13 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -31,13 +32,14 @@ import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
 import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import java.util.*
 import kotlin.system.exitProcess
+
+private val dialogSize = DpSize(700.dp, 600.dp)
 
 fun main() = application {
     KoinApplication(application = {
@@ -121,7 +123,8 @@ fun main() = application {
             title = when (appState.dialogState) {
                 is DialogState.Regular -> (appState.dialogState as DialogState.Regular).message
                 is DialogState.Custom -> "Dialog"
-            }
+            },
+            state = rememberWindowState(size = dialogSize)
         ) {
             DefaultWindowScope {
                 Dialog()
