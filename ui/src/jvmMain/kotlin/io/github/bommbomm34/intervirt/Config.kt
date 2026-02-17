@@ -5,7 +5,10 @@ import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.pointer.PointerButton
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -22,6 +25,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import java.awt.datatransfer.StringSelection
 import java.io.File
 import java.net.ServerSocket
 import java.util.*
@@ -106,5 +110,10 @@ fun rememberProxyManager(
     deviceManager: DeviceManager,
     osClient: IntervirtOSClient
 ) = remember { ProxyManager(appEnv, deviceManager, osClient) }
+
+@OptIn(ExperimentalComposeUiApi::class)
+suspend fun Clipboard.copyToClipboard(text: String) {
+    setClipEntry(ClipEntry(StringSelection(text)))
+}
 
 internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()
