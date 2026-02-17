@@ -205,6 +205,7 @@ class DeviceManager(
                 ioClient = getIOClient(computer).getOrThrow()
             )
         )
+        osClient.init().getOrThrow()
         intervirtOSClients[computer.id] = osClient
         osClient
     }

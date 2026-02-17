@@ -15,11 +15,15 @@ class IntervirtOSClient(private val client: Client) : AsyncCloseable {
         val serviceManager: SystemServiceManager = SystemServiceManager(ioClient)
     )
 
+    suspend fun init(): Result<Unit> = runSuspendingCatching {
+        client.store.init().getOrThrow()
+    }
+
     fun getClient(
         manager: AsyncCloseable? = null
     ): Client {
         manager?.let { managers.add(it) }
-        return Client(client.computer, client.ioClient, client.store, client.serviceManager)
+        return client
     }
 
     override suspend fun close(): Result<Unit> = runSuspendingCatching {

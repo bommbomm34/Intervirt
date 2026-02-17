@@ -81,7 +81,7 @@ fun MailClient(
                     }
                 }
                 GeneralSpacer(2.dp)
-                MailListView(client, mails) {
+                MailListView(mails) {
                     logger.debug { "Clicked on mail \"${it.subject}\"" }
                 }
             }
