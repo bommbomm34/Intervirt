@@ -2,9 +2,10 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.OS
+import io.github.bommbomm34.intervirt.core.data.Preference
+import io.github.bommbomm34.intervirt.core.data.PreferenceAccessor
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.nio.file.Files
@@ -22,6 +23,8 @@ class Preferences {
     }
 
     init { load() }
+
+    operator fun <T> get(accessor: PreferenceAccessor<T>) = accessor.get(::env)
 
     fun loadString(key: String): String? = data[key]
 
