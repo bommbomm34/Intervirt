@@ -140,6 +140,10 @@ data class AppEnv(
         env(it)?.toLong() ?: 10_000L
     }
 
+    var mailTitleFontSize: Int by EnvDelegate("MAIL_TITLE_FONT_SIZE", save){
+        env(it)?.toInt() ?: 24
+    }
+
     internal var diskInstalled: Boolean by EnvDelegate("DISK_INSTALLED", save){ env(it).toBoolean() }
     internal var currentDiskHash: String? by EnvDelegate("CURRENT_DISK_HASH", save){ env(it) }
     internal var qemuInstalled: Boolean by EnvDelegate("QEMU_INSTALLED", save){ env(it).toBoolean() }

@@ -25,6 +25,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailListView
+import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailView
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.bommbomm34.intervirt.rememberManager
 import io.github.bommbomm34.intervirt.rememberProxyManager
@@ -83,7 +84,20 @@ fun MailClient(
                 }
                 GeneralSpacer(2.dp)
                 MailListView(mails) {
-                    logger.debug { "Clicked on mail \"${it.subject}\"" }
+                    appState.openDialog {
+                        MailView(
+                            mail = it,
+                            onDelete = {
+                                scope.launch {
+                                    appState.runDialogCatching {
+                                        client.deleteMail(it).getOrThrow()
+                                        mails.remove(it)
+                                    }
+                                }
+                            },
+                            onReply = { TODO() }
+                        ) { appState.closeDialog() }
+                    }
                 }
             }
         } else {

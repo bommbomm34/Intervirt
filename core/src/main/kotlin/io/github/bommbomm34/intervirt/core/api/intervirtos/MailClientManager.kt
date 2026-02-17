@@ -99,7 +99,7 @@ class MailClientManager(
         val store = imapStore
         check(store != null) { "IMAP session isn't successfully initialized" }
         return withContext(Dispatchers.IO) {
-            runCatching {
+            runSuspendingCatching {
                 store.useInbox {
                     messages.mapIndexedNotNull { i, msg ->
                         val mail = msg.toMail(i)
@@ -124,7 +124,8 @@ class MailClientManager(
         check(store != null) { "IMAP session isn't successfully initialized" }
         require(mail.index != null) { "Mail doesn't include an index" }
         return withContext(Dispatchers.IO) {
-            runCatching {
+            runSuspendingCatching {
+                logger.debug { "Deleting mail '${mail.subject}'" }
                 store.useInbox {
                     messages[mail.index].setFlag(Flags.Flag.DELETED, true)
                 }
