@@ -5,14 +5,12 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.core.api.Preferences
-import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
-import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.bommbomm34.intervirt.gui.components.*
+import io.github.bommbomm34.intervirt.gui.components.textfields.AddressTextField
+import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun MailClientLogin(

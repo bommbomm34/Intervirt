@@ -12,7 +12,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.PasswordTextField
+import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 

@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.tables
 
 import androidx.compose.runtime.Composable
 

@@ -18,7 +18,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.VisibleText
+import io.github.bommbomm34.intervirt.gui.components.tables.VisibleText
 import io.github.windedge.table.DataTable
 import org.jetbrains.compose.resources.stringResource
 import java.io.File

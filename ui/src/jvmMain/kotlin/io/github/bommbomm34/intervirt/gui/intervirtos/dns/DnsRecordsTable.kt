@@ -3,7 +3,7 @@ package io.github.bommbomm34.intervirt.gui.intervirtos.dns
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.gui.components.SimpleTable
+import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

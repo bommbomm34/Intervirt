@@ -6,7 +6,7 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.IntegerTextField
+import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import org.jetbrains.compose.resources.stringResource
 

@@ -7,7 +7,7 @@ import intervirt.ui.generated.resources.username
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.SimpleTable
+import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import kotlinx.coroutines.launch

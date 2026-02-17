@@ -5,7 +5,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.destination_folder
 import intervirt.ui.generated.resources.domain
 import io.github.bommbomm34.intervirt.core.data.VirtualHost
-import io.github.bommbomm34.intervirt.gui.components.SimpleTable
+import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
 import org.jetbrains.compose.resources.stringResource
 

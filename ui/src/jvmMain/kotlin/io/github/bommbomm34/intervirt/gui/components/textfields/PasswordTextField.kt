@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.textfields
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
