@@ -42,7 +42,7 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
         return flush()
     }
 
-    operator fun <T> get(accessor: Accessor<T>): T = accessor.produce(data[accessor.name])
+    operator fun <T> get(accessor: Accessor<T>): T = accessor.get(data[accessor.name])
 
     suspend fun <T> delete(accessor: Accessor<T>): Result<Unit> {
         logger.debug { "Deleting ${accessor.name}" }
@@ -58,7 +58,9 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
 
 
     @Suppress("ClassName")
-    sealed class Accessor<T>(val produce: (String?) -> T) {
+    sealed class Accessor<T>(private val produce: (String?) -> T) {
+        var initialized = false
+        var value: T? = null
         val name = this::class.simpleName!!
 
         object MAIL_USERNAME : Accessor<String>({ it ?: "" })
@@ -72,5 +74,10 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
         object IMAP_SAFETY : Accessor<MailConnectionSafety>({ str ->
             str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
         })
+
+        fun get(env: String?): T {
+            if (!initialized) value = produce(env)
+            return value!!
+        }
     }
 }
