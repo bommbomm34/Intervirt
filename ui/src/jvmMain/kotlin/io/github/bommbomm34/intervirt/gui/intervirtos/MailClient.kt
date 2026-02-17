@@ -105,14 +105,4 @@ fun MailClient(
             }
         }
     }
-    DisposableEffect(Unit) {
-        onDispose {
-            scope.launch {
-                appState.runDialogCatching {
-                    client.close().getOrThrow()
-                    proxyClient.close().getOrThrow()
-                }
-            }
-        }
-    }
 }
