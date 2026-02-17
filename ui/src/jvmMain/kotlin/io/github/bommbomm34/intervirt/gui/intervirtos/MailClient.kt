@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
+import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
@@ -86,20 +87,34 @@ fun MailClient(
                 }
             }
         } else {
-            appState.openDialog {
-                MailClientLogin(client.loadCredentials()) { details, saveCredentials ->
-                    appState.closeDialog()
-                    scope.launch {
-                        appState.runDialogCatching {
-                            client.init(
-                                mailConnectionDetails = details,
-                                proxy = proxy
-                            ).getOrThrow()
-                            initialized = true
-                            loadMails()
-                            if (saveCredentials) client.saveCredentials(details).getOrThrow() else
-                                client.clearCredentials()
-                        }
+            fun login(details: MailConnectionDetails, saveCredentials: Boolean) {
+                scope.launch {
+                    appState.runDialogCatching {
+                        client.init(
+                            mailConnectionDetails = details,
+                            proxy = proxy
+                        ).getOrThrow()
+                        initialized = true
+                        loadMails()
+                        if (saveCredentials) client.saveCredentials(details).getOrThrow() else
+                            client.clearCredentials()
+                    }
+                }
+            }
+
+            val credentials = client.loadCredentials()
+            if (credentials.smtpAddress != Address.EXAMPLE
+                && credentials.imapAddress != Address.EXAMPLE
+                && credentials.username.isNotEmpty()
+                && credentials.password.isNotEmpty()
+            ) {
+                // Implicit login
+                login(credentials, true)
+            } else {
+                appState.openDialog {
+                    MailClientLogin(credentials) { details, saveCredentials ->
+                        appState.closeDialog()
+                        login(details, saveCredentials)
                     }
                 }
             }

@@ -17,7 +17,7 @@ fun AddressTextField(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = { onValueChange(it, it.validate()) },
+        onValueChange = { onValueChange(it, it.validateAddress()) },
         label = {
             if (valid) Text(label) else
                 Text(
@@ -28,4 +28,4 @@ fun AddressTextField(
     )
 }
 
-private fun String.validate() = ADDRESS_VALIDATION_REGEX.matches(this)
+fun String.validateAddress() = ADDRESS_VALIDATION_REGEX.matches(this)

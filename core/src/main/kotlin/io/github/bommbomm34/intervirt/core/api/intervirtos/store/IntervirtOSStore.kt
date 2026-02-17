@@ -33,7 +33,6 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
                 dataPath.createFile()
                 flush().getOrThrow()
             }
-            Unit
         }
     }
 
