@@ -1,10 +1,13 @@
 package io.github.bommbomm34.intervirt.gui.components.filepicker
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -29,12 +32,17 @@ fun FilesTable(
     selectable: Boolean,
     onClick: (File) -> Unit
 ) {
+    val bg = MaterialTheme.colorScheme.onBackground
     val scrollState = rememberScrollState()
-    Box(Modifier.fillMaxHeight(0.8f)){
+    val hoverData = files.map {
+        val interactionSource = remember { MutableInteractionSource() }
+        interactionSource to interactionSource.collectIsHoveredAsState()
+    }
+    Box(Modifier.fillMaxHeight(0.8f)) {
         DataTable(
             columns = {
                 headerBackground {
-                    Box(Modifier.background(MaterialTheme.colorScheme.onBackground))
+                    Box(Modifier.background(bg))
                 }
                 headers.forEach {
                     column { VisibleText(it, true) }
@@ -42,13 +50,16 @@ fun FilesTable(
             },
             modifier = Modifier.verticalScroll(scrollState)
         ) {
-            files.forEach {
+            files.forEachIndexed { i, it ->
+                val hover = hoverData[i]
                 row(
                     if (selectable)
                         Modifier
                             .onClick {
                                 onClick(it)
                             }
+                            .hoverable(hover.first)
+                            .background(if (hover.second.value) bg.copy(alpha = 0.5f) else bg)
                             .pointerHoverIcon(PointerIcon.Hand)
                     else Modifier
                 ) {
