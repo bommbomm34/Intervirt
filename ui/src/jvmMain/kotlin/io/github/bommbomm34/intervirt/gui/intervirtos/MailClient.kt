@@ -12,8 +12,8 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.Refresh
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
@@ -24,8 +24,8 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailListView
-import io.github.bommbomm34.intervirt.rememberManager
 import io.github.bommbomm34.intervirt.rememberLogger
+import io.github.bommbomm34.intervirt.rememberManager
 import io.github.bommbomm34.intervirt.rememberProxyManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -87,7 +87,7 @@ fun MailClient(
             }
         } else {
             appState.openDialog {
-                MailClientLogin { details ->
+                MailClientLogin(client.loadCredentials()) { details, saveCredentials ->
                     appState.closeDialog()
                     scope.launch {
                         appState.runDialogCatching {
@@ -97,6 +97,8 @@ fun MailClient(
                             ).getOrThrow()
                             initialized = true
                             loadMails()
+                            if (saveCredentials) client.saveCredentials(details).getOrThrow() else
+                                client.clearCredentials()
                         }
                     }
                 }

@@ -140,22 +140,6 @@ data class AppEnv(
         env(it)?.toLong() ?: 10_000L
     }
 
-    var mailUsername: String by EnvDelegate("MAIL_USERNAME", save) {
-        env(it) ?: ""
-    }
-
-    var mailPassword: String by EnvDelegate("MAIL_PASSWORD", save) {
-        env(it) ?: ""
-    }
-
-    var smtpServerAddress: String by EnvDelegate("SMTP_SERVER_ADDRESS", save) {
-        env(it) ?: ""
-    }
-
-    var imapServerAddress: String by EnvDelegate("IMAP_SERVER_ADDRESS", save) {
-        env(it) ?: ""
-    }
-
     internal var diskInstalled: Boolean by EnvDelegate("DISK_INSTALLED", save){ env(it).toBoolean() }
     internal var currentDiskHash: String? by EnvDelegate("CURRENT_DISK_HASH", save){ env(it) }
     internal var qemuInstalled: Boolean by EnvDelegate("QEMU_INSTALLED", save){ env(it).toBoolean() }

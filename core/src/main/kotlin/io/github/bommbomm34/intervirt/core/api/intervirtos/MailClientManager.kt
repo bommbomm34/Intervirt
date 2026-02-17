@@ -1,11 +1,14 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.store.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
+import io.github.bommbomm34.intervirt.core.parseAddress
+import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.mail.*
@@ -16,7 +19,7 @@ import java.util.*
 class MailClientManager(
     osClient: IntervirtOSClient
 ) : AsyncCloseable {
-    private val client = osClient.getClient(this)
+    private val store = osClient.getClient(this).store
     private val logger = KotlinLogging.logger { }
     private var smtpSession: Session? = null
     private var imapStore: Store? = null
@@ -127,6 +130,27 @@ class MailClientManager(
                 }
             }
         }
+    }
+
+    suspend fun saveCredentials(details: MailConnectionDetails) = runSuspendingCatching {
+        store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.MAIL_PASSWORD, details.password).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress.toString()).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress.toString()).getOrThrow()
+    }
+
+    fun loadCredentials() = MailConnectionDetails(
+        smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS].parseAddress(),
+        imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS].parseAddress(),
+        username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
+        password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD]
+    )
+
+    suspend fun clearCredentials(): Result<Unit> = runSuspendingCatching {
+        store.delete(IntervirtOSStore.Accessor.MAIL_USERNAME).getOrThrow()
+        store.delete(IntervirtOSStore.Accessor.MAIL_PASSWORD).getOrThrow()
+        store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS).getOrThrow()
+        store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS).getOrThrow()
     }
 
     private suspend inline fun <T> Store.useInbox(

@@ -16,18 +16,17 @@ import org.koin.compose.koinInject
 
 @Composable
 fun MailClientLogin(
-    onLogin: (MailConnectionDetails) -> Unit
+    credentials: MailConnectionDetails,
+    onLogin: (MailConnectionDetails, saveCredentials: Boolean) -> Unit
 ) {
-    val appEnv = koinInject<AppEnv>()
-    val preferences = koinInject<Preferences>()
-    var smtpAddress by remember { mutableStateOf(appEnv.smtpServerAddress) }
-    var imapAddress by remember { mutableStateOf(appEnv.imapServerAddress) }
-    var smtpSafety by remember { mutableStateOf(MailConnectionSafety.SECURE) }
-    var imapSafety by remember { mutableStateOf(MailConnectionSafety.SECURE) }
+    var smtpAddress by remember { mutableStateOf(credentials.smtpAddress.toString()) }
+    var imapAddress by remember { mutableStateOf(credentials.imapAddress.toString()) }
+    var smtpSafety by remember { mutableStateOf(credentials.smtpSafety) }
+    var imapSafety by remember { mutableStateOf(credentials.imapSafety) }
     var isSmtpAddressValid by remember { mutableStateOf(true) }
     var isImapAddressValid by remember { mutableStateOf(true) }
-    var username by remember { mutableStateOf(appEnv.mailUsername) }
-    var password by remember { mutableStateOf(appEnv.mailPassword) }
+    var username by remember { mutableStateOf(credentials.username) }
+    var password by remember { mutableStateOf(credentials.password) }
     var saveDetails by remember { mutableStateOf(false) }
     CenterColumn {
         // SMTP Address
@@ -93,9 +92,6 @@ fun MailClientLogin(
         GeneralSpacer()
         Button(
             onClick = {
-                if (saveDetails) {
-                    appEnv.saveCredentials(smtpAddress, imapAddress, username, password)
-                } else preferences.clearCredentials()
                 onLogin(
                     MailConnectionDetails(
                         smtpAddress = smtpAddress.parseAddress(),
@@ -104,7 +100,8 @@ fun MailClientLogin(
                         imapSafety = imapSafety,
                         username = username,
                         password = password
-                    )
+                    ),
+                    saveDetails
                 )
             },
             enabled = isSmtpAddressValid && smtpAddress.isNotBlank() &&
@@ -114,23 +111,3 @@ fun MailClientLogin(
         }
     }
 }
-
-private fun AppEnv.saveCredentials(
-    smtpAddress: String,
-    imapAddress: String,
-    username: String,
-    password: String
-) {
-    smtpServerAddress = smtpAddress
-    imapServerAddress = imapAddress
-    mailUsername = username
-    mailPassword = password
-}
-
-private fun Preferences.clearCredentials() {
-    removeString("SMTP_SERVER_ADDRESS")
-    removeString("IMAP_SERVER_ADDRESS")
-    removeString("MAIL_USERNAME")
-    removeString("MAIL_PASSWORD")
-}
-
