@@ -55,7 +55,7 @@ class Downloader(
         logger.debug { "Downloading disk" }
         if (!preferences.env("DISK_INSTALLED").toBoolean() || update) {
             // Invalidate previous installation
-            preferences.saveString("DISK_INSTALLED", "false")
+            appEnv.diskInstalled = false
             val hashRes = appEnv.vmDiskHashUrl.fetch()
             val file = fileManager.downloadFile(appEnv.vmDiskUrl, "alpine-linux.qcow2", fileManager.getFile("disk"))
             hashRes.fold(
@@ -65,8 +65,8 @@ class Downloader(
                             resultProgress.result.fold(
                                 onSuccess = {
                                     emit(ResultProgress.success("Download succeeded"))
-                                    preferences.saveString("DISK_INSTALLED", "true")
-                                    preferences.saveString("CURRENT_DISK_HASH", hash)
+                                    appEnv.diskInstalled = true
+                                    appEnv.currentDiskHash = hash
                                 },
                                 onFailure = {
                                     emit(ResultProgress.failure(it))
@@ -96,7 +96,7 @@ class Downloader(
                 // Wipe previous installation if available
                 fileManager.getFile("qemu").listFiles().forEach { it.delete() }
                 // Invalidate previous installation
-                preferences.saveString("QEMU_INSTALLED", "false")
+                appEnv.qemuInstalled = false
                 // Install fresh QEMU
                 val hashRes = appEnv.qemuZipHashUrl.fetch()
                 val file = fileManager.downloadFile(appEnv.qemuZipUrl, "qemu-portable.zip")
@@ -108,8 +108,8 @@ class Downloader(
                                     onSuccess = { zipFile ->
                                         fileManager.extractZip(zipFile, fileManager.getFile("qemu"))
                                             .onFailure { emit(ResultProgress.failure(it)) }
-                                        preferences.saveString("QEMU_INSTALLED", "true")
-                                        preferences.saveString("CURRENT_QEMU_HASH", hash)
+                                        appEnv.qemuInstalled = true
+                                        appEnv.currentQemuHash = hash
                                         emit(
                                             ResultProgress.success("Successfully downloaded QEMU")
                                         )

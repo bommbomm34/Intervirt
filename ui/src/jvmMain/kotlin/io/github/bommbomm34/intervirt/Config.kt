@@ -22,6 +22,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import java.io.File
 import java.net.ServerSocket
 import java.util.*
 
@@ -71,17 +72,17 @@ fun Int.canPortBind(): Result<Unit> {
 
 fun Preferences.checkSetupStatus() = env("INSTALLED").toBoolean()
 
-fun Preferences.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
-    saveString("VM_RAM", vmConf.ram.toString())
-    saveString("VM_CPU", vmConf.cpu.toString())
-    saveString("VM_ENABLE_KVM", vmConf.kvm.toString())
-    saveString("VM_DISK_URL", vmConf.diskUrl)
-    saveString("VM_DISK_HASH_URL", vmConf.diskHashUrl)
-    saveString("VM_SHUTDOWN_TIMEOUT", appConf.vmShutdownTimeout.toString())
-    saveString("AGENT_PORT", appConf.agentPort.toString())
-    saveString("DATA_DIR", appConf.intervirtFolder)
-    saveString("DARK_MODE", appConf.darkMode.toString())
-    saveString("LANGUAGE", appConf.language)
+fun AppEnv.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
+    vmRam = vmConf.ram
+    vmCpu = vmConf.cpu
+    vmEnableKvm = vmConf.kvm
+    vmDiskUrl = vmConf.diskUrl
+    vmDiskHashUrl = vmConf.diskHashUrl
+    vmShutdownTimeout = appConf.vmShutdownTimeout.toLong()
+    agentPort = appConf.agentPort
+    dataDir = File(appConf.intervirtFolder)
+    darkMode = appConf.darkMode
+    language = Locale.forLanguageTag(appConf.language)
 }
 
 @OptIn(ExperimentalFoundationApi::class)

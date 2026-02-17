@@ -11,6 +11,7 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
@@ -32,7 +33,7 @@ fun Installation(
 ) {
     val logger = rememberLogger("Installation")
     val downloader = koinInject <Downloader>()
-    val preferences = koinInject <Preferences>()
+    val appEnv = koinInject<AppEnv>()
     val fileManager = koinInject <FileManager>()
     val appState = koinInject<AppState>()
     var allowInstallation by remember { mutableStateOf(false) }
@@ -79,7 +80,7 @@ fun Installation(
                             emit(it.clone(percentage = it.percentage * 0.5f + 0.5f))
                             if (it is ResultProgress.Result && it.result.isFailure) job!!.cancel()
                         }
-                        preferences.saveString("INTERVIRT_INSTALLED", "true")
+                        appEnv.intervirtInstalled = true
                         appState.currentScreenIndex = 1
                     }
                 }

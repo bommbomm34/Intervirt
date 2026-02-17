@@ -94,7 +94,7 @@ fun MailClientLogin(
         Button(
             onClick = {
                 if (saveDetails) {
-                    preferences.saveCredentials(smtpAddress, imapAddress, username, password)
+                    appEnv.saveCredentials(smtpAddress, imapAddress, username, password)
                 } else preferences.clearCredentials()
                 onLogin(
                     MailConnectionDetails(
@@ -115,16 +115,16 @@ fun MailClientLogin(
     }
 }
 
-private fun Preferences.saveCredentials(
+private fun AppEnv.saveCredentials(
     smtpAddress: String,
     imapAddress: String,
     username: String,
     password: String
 ) {
-    saveString("SMTP_SERVER_ADDRESS", smtpAddress)
-    saveString("IMAP_SERVER_ADDRESS", imapAddress)
-    saveString("MAIL_USERNAME", username)
-    saveString("MAIL_PASSWORD", password)
+    smtpServerAddress = smtpAddress
+    imapServerAddress = imapAddress
+    mailUsername = username
+    mailPassword = password
 }
 
 private fun Preferences.clearCredentials() {
