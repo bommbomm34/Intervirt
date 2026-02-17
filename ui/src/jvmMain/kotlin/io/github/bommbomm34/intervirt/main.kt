@@ -28,8 +28,6 @@ import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.ShellView
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
-import io.github.bommbomm34.intervirt.gui.home.deviceSettingsVisible
-import io.github.bommbomm34.intervirt.gui.home.drawingConnectionSource
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.runBlocking
@@ -73,11 +71,11 @@ fun main() = application {
             onKeyEvent = {
                 appState.isCtrlPressed = it.isCtrlPressed
                 if (it.key == Key.Escape) {
-                    if (drawingConnectionSource != null) {
-                        drawingConnectionSource = null
+                    if (appState.drawingConnectionSource != null) {
+                        appState.drawingConnectionSource = null
                         true
-                    } else if (deviceSettingsVisible) {
-                        deviceSettingsVisible = false
+                    } else if (appState.deviceSettingsVisible) {
+                        appState.deviceSettingsVisible = false
                         true
                     } else false
                 } else false

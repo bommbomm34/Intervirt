@@ -41,9 +41,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.math.sqrt
 
-var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
-var deviceSettingsVisible by mutableStateOf(false)
-
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DevicesView() {
@@ -62,10 +59,10 @@ fun DevicesView() {
                     val delta = it.changes.first().scrollDelta.y * -appEnv.zoomSpeed
                     if (appState.isCtrlPressed && appState.devicesViewZoom + delta > 0.1f) appState.devicesViewZoom += delta
                 }
-                .onClick(matcher = PointerMatcher.Primary) { drawingConnectionSource = null }
-                .onClick(matcher = PointerMatcher.Secondary) { drawingConnectionSource = null }
+                .onClick(matcher = PointerMatcher.Primary) { appState.drawingConnectionSource = null }
+                .onClick(matcher = PointerMatcher.Secondary) { appState.drawingConnectionSource = null }
                 .onPointerEvent(PointerEventType.Press) { event ->
-                    if (event.button?.equals(PointerButton.Secondary) ?: false && drawingConnectionSource == null) {
+                    if (event.button?.equals(PointerButton.Secondary) ?: false && appState.drawingConnectionSource == null) {
                         val position = event.changes.first().position
                         statefulConf.connections.firstOrNull { (device1, device2) ->
                             isPointOnLine(
@@ -97,7 +94,7 @@ fun DevicesView() {
                 }
         ) {
             scale(appState.devicesViewZoom) {
-                drawingConnectionSource?.let {
+                appState.drawingConnectionSource?.let {
                     drawConnection(
                         offset1 = it.fittingOffset(appState.devicesViewZoom),
                         offset2 = appState.mousePosition,
@@ -119,20 +116,20 @@ fun DevicesView() {
 
     // This block will most likely be triggered if a file is opened
     selectedDevice?.let { if (!statefulConf.exists(it)) selectedDevice = null }
-    drawingConnectionSource?.let { if (!statefulConf.exists(it)) drawingConnectionSource = null }
-    if (selectedDevice == null) deviceSettingsVisible = false
+    appState.drawingConnectionSource?.let { if (!statefulConf.exists(it)) appState.drawingConnectionSource = null }
+    if (selectedDevice == null) appState.deviceSettingsVisible = false
 
     statefulConf.devices.forEach { device ->
         DeviceView(
             device = device,
             onClickDevice = {
-                if (selectedDevice != it || !deviceSettingsVisible) {
+                if (selectedDevice != it || !appState.deviceSettingsVisible) {
                     selectedDevice = it
-                    deviceSettingsVisible = true
-                } else deviceSettingsVisible = false
+                    appState.deviceSettingsVisible = true
+                } else appState.deviceSettingsVisible = false
             },
             onSecondaryClick = {
-                val copy = drawingConnectionSource
+                val copy = appState.drawingConnectionSource
                 if (copy != null) {
                     if (copy.id != it.id) {
                         scope.launch {
@@ -145,18 +142,18 @@ fun DevicesView() {
                             )
                         }
                     }
-                    drawingConnectionSource = null
-                } else drawingConnectionSource = it
+                    appState.drawingConnectionSource = null
+                } else appState.drawingConnectionSource = it
             }
         )
     }
-    AnimatedVisibility(deviceSettingsVisible) {
+    AnimatedVisibility(appState.deviceSettingsVisible) {
         selectedDevice?.let {
             AlignedBox(Alignment.BottomStart) {
                 Column {
                     DeviceSettings(
                         device = it
-                    ) { deviceSettingsVisible = false }
+                    ) { appState.deviceSettingsVisible = false }
                 }
             }
         }
