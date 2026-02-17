@@ -67,7 +67,7 @@ fun Settings() {
             GeneralSpacer()
             Button(
                 onClick = {
-                    preferences.applyConfiguration(vmConf, appConf)
+                    appEnv.applyConfiguration(vmConf, appConf)
                     appState.openDialog {
                         AcceptDialog(
                             message = stringResource(Res.string.restart_necessary_to_apply_changes),

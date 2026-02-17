@@ -51,7 +51,7 @@ fun Setup() {
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(vmConf) { vmConf = it } },
         { AppConfiguration(appConf) { appConf = it } },
-        { Installation { preferences.applyConfiguration(vmConf, appConf) } }
+        { Installation { appEnv.applyConfiguration(vmConf, appConf) } }
     )
     AlignedBox(Alignment.TopCenter) {
         Text(

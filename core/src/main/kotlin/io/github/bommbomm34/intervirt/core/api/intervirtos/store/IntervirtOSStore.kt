@@ -1,7 +1,10 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.store
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.defaultJson
+import io.github.bommbomm34.intervirt.core.parseAddress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.io.path.writeText
@@ -33,12 +36,19 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
 
 
     @Suppress("ClassName")
-    sealed class Accessor<T>(val produce: (String?) -> T){
+    sealed class Accessor<T>(val produce: (String?) -> T) {
         val name = this::class.simpleName!!
 
         object MAIL_USERNAME : Accessor<String>({ it ?: "" })
         object MAIL_PASSWORD : Accessor<String>({ it ?: "" })
-        object SMTP_SERVER_ADDRESS : Accessor<String>({ it ?: "" })
-        object IMAP_SERVER_ADDRESS : Accessor<String>({ it ?: "" })
+        object SMTP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
+        object IMAP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
+        object SMTP_SAFETY : Accessor<MailConnectionSafety>({ str ->
+            str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
+        })
+
+        object IMAP_SAFETY : Accessor<MailConnectionSafety>({ str ->
+            str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
+        })
     }
 }

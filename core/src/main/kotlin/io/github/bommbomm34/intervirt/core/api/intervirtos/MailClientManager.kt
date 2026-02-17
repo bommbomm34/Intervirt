@@ -135,15 +135,19 @@ class MailClientManager(
     suspend fun saveCredentials(details: MailConnectionDetails) = runSuspendingCatching {
         store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).getOrThrow()
         store.set(IntervirtOSStore.Accessor.MAIL_PASSWORD, details.password).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress.toString()).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress.toString()).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.IMAP_SAFETY, details.imapSafety).getOrThrow()
     }
 
     fun loadCredentials() = MailConnectionDetails(
-        smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS].parseAddress(),
-        imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS].parseAddress(),
+        smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS],
+        imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS],
         username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
-        password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD]
+        password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD],
+        smtpSafety = store[IntervirtOSStore.Accessor.SMTP_SAFETY],
+        imapSafety = store[IntervirtOSStore.Accessor.IMAP_SAFETY]
     )
 
     suspend fun clearCredentials(): Result<Unit> = runSuspendingCatching {
@@ -151,6 +155,8 @@ class MailClientManager(
         store.delete(IntervirtOSStore.Accessor.MAIL_PASSWORD).getOrThrow()
         store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS).getOrThrow()
         store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS).getOrThrow()
+        store.delete(IntervirtOSStore.Accessor.SMTP_SAFETY).getOrThrow()
+        store.delete(IntervirtOSStore.Accessor.IMAP_SAFETY).getOrThrow()
     }
 
     private suspend inline fun <T> Store.useInbox(
