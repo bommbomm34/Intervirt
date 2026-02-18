@@ -90,9 +90,14 @@ class MailClientManager(
         check(session != null) { "SMTP session isn't successfully initialized" }
         return withContext(Dispatchers.IO) {
             runCatching {
-                Transport.send(mail.getMimeMessage(session))
+                Transport.send(mail.getMessage(session))
             }
         }
+    }
+
+    fun getReplyMail(mail: Mail): Result<Mail> {
+        require(mail.message != null) { "Mail doesn't contain original message" }
+        return mail.message.reply(false).toMail()
     }
 
     suspend fun getMails(): Result<List<Mail>> {
@@ -178,6 +183,12 @@ class MailClientManager(
         override fun getPasswordAuthentication(): PasswordAuthentication {
             return PasswordAuthentication(username, password)
         }
+    }
+
+    private fun checkSmtpSession(): Session {
+        val session = smtpSession
+        check(session != null) { "SMTP session isn't successfully initialized" }
+        return session
     }
 
     override suspend fun close() = withContext(Dispatchers.IO){

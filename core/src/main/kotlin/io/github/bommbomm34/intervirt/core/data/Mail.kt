@@ -13,9 +13,10 @@ data class Mail(
     val receiver: MailUser,
     val subject: String,
     val content: String,
-    val index: Int? = null
+    val index: Int? = null,
+    val message: Message? = null
 ) {
-    fun getMimeMessage(session: Session): MimeMessage = MimeMessage(session).apply {
+    fun getMessage(session: Session): Message = message ?: MimeMessage(session).apply {
         setFrom(InternetAddress(this@Mail.sender.address))
         setRecipient(Message.RecipientType.TO, InternetAddress(receiver.address))
         subject = this@Mail.subject
@@ -34,7 +35,8 @@ fun Message.toMail(index: Int? = null): Result<Mail> {
             receiver = receiver,
             subject = subject,
             content = content.getString(),
-            index = index
+            index = index,
+            message = this
         )
     )
 }
