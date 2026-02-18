@@ -22,10 +22,13 @@ import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
+import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.buttons.SendButton
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailClientLogin
+import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailListView
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailView
 import io.github.bommbomm34.intervirt.rememberLogger
@@ -61,6 +64,24 @@ fun MailClient(
     }
     proxyUrl?.let { proxy ->
         if (initialized) {
+            // Send button
+            AlignedBox(Alignment.BottomEnd){
+                SendButton {
+                    appState.openDialog {
+                        MailEditor(
+                            sender = client.mailUser!!,
+                            onCancel = appState::closeDialog
+                        ) {
+                            appState.closeDialog()
+                            scope.launch {
+                                appState.runDialogCatching {
+                                    client.sendMail(it).getOrThrow()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             CenterColumn {
                 Column(
                     horizontalAlignment = Alignment.End,

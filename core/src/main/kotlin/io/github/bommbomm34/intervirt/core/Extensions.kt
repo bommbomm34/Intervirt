@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.core
 
 import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.ktor.utils.io.*
 import kotlin.math.pow
 import kotlin.math.round
@@ -23,6 +24,8 @@ fun Float.roundBy(num: Int = 2): Float {
     val factor = 10f.pow(num)
     return round(times(factor)) / factor
 }
+
+fun String.parseMailAddress() = MailUser(substringBefore("@"), this)
 
 
 fun <T> List<T>.addFirst(element: T): List<T> {

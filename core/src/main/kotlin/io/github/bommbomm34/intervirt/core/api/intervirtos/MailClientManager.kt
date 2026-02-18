@@ -4,10 +4,12 @@ import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.store.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.Mail
+import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
 import io.github.bommbomm34.intervirt.core.parseAddress
+import io.github.bommbomm34.intervirt.core.parseMailAddress
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -23,8 +25,7 @@ class MailClientManager(
     private val logger = KotlinLogging.logger { }
     private var smtpSession: Session? = null
     private var imapStore: Store? = null
-    val isInitialized: Boolean
-        get() = smtpSession != null && imapStore != null
+    var mailUser: MailUser? = null
 
     suspend fun init(
         mailConnectionDetails: MailConnectionDetails,
@@ -81,6 +82,7 @@ class MailClientManager(
             val store = imapSession.getStore(imapRef)
             store.connect(username, password)
             imapStore = store
+            mailUser = username.parseMailAddress()
             logger.debug { "Successfully initialized both SMTP and IMAP" }
         }
     }
@@ -90,6 +92,7 @@ class MailClientManager(
         check(session != null) { "SMTP session isn't successfully initialized" }
         return withContext(Dispatchers.IO) {
             runCatching {
+                logger.debug { "Sending mail $mail" }
                 Transport.send(mail.getMessage(session))
             }
         }
