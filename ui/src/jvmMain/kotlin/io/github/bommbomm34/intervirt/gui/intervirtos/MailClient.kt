@@ -12,6 +12,7 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.Refresh
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
+import intervirt.ui.generated.resources.sure_to_delete_mail
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
@@ -20,6 +21,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
@@ -89,10 +91,16 @@ fun MailClient(
                             mail = it,
                             onDelete = {
                                 appState.closeDialog()
-                                scope.launch {
-                                    appState.runDialogCatching {
-                                        client.deleteMail(it).getOrThrow()
-                                        mails.remove(it)
+                                appState.openDialog {
+                                    AcceptDialog(
+                                        message = stringResource(Res.string.sure_to_delete_mail),
+                                    ) {
+                                        scope.launch {
+                                            appState.runDialogCatching {
+                                                client.deleteMail(it).getOrThrow()
+                                                mails.remove(it)
+                                            }
+                                        }
                                     }
                                 }
                             },

@@ -146,4 +146,5 @@
     <string name="reply">Reply</string>
     <string name="file_already_exists">The file already exists. Do you want to overwrite it?</string>
     <string name="copy">Copy</string>
+    <string name="sure_to_delete_mail">Are you sure to delete this mail?</string>
 </resources>
