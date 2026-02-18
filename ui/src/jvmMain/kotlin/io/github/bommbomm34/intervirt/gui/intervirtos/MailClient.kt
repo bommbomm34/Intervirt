@@ -62,25 +62,26 @@ fun MailClient(
         mails.clear()
         mails.addAll(client.getMails().getOrThrow())
     }
+    fun openMailEditor(mail: Mail? = null){
+        appState.openDialog {
+            MailEditor(
+                sender = client.mailUser!!,
+                onCancel = appState::closeDialog
+            ) {
+                appState.closeDialog()
+                scope.launch {
+                    appState.runDialogCatching {
+                        client.sendMail(it).getOrThrow()
+                    }
+                }
+            }
+        }
+    }
     proxyUrl?.let { proxy ->
         if (initialized) {
             // Send button
             AlignedBox(Alignment.BottomEnd){
-                SendButton {
-                    appState.openDialog {
-                        MailEditor(
-                            sender = client.mailUser!!,
-                            onCancel = appState::closeDialog
-                        ) {
-                            appState.closeDialog()
-                            scope.launch {
-                                appState.runDialogCatching {
-                                    client.sendMail(it).getOrThrow()
-                                }
-                            }
-                        }
-                    }
-                }
+                SendButton { openMailEditor() }
             }
             CenterColumn {
                 Column(
@@ -125,7 +126,15 @@ fun MailClient(
                                     }
                                 }
                             },
-                            onReply = { TODO() }
+                            onReply = {
+                                appState.closeDialog()
+                                scope.launch {
+                                    appState.runDialogCatching {
+                                        val mail = client.getReplyMail(it).getOrThrow()
+                                        openMailEditor(mail)
+                                    }
+                                }
+                            }
                         ) { appState.closeDialog() }
                     }
                 }

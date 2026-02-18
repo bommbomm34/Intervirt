@@ -24,14 +24,14 @@ data class Mail(
     }
 }
 
-fun Message.toMail(index: Int? = null): Result<Mail> {
-    val sender = from[0].toMailUser()
-    val receiver = allRecipients[0].toMailUser()
-    if (sender == null) return Result.failure(InvalidMailException("No sender is specified"))
+fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): Result<Mail> = runCatching {
+    val sender = from?.get(0)?.toMailUser()
+    val receiver = allRecipients?.get(0)?.toMailUser()
+    if (sender == null && !senderOptional) return Result.failure(InvalidMailException("No sender is specified"))
     if (receiver == null) return Result.failure(InvalidMailException("No receiver is specified"))
     return Result.success(
         Mail(
-            sender = sender,
+            sender = sender ?: MailUser.UNDEFINED,
             receiver = receiver,
             subject = subject,
             content = content.getString(),

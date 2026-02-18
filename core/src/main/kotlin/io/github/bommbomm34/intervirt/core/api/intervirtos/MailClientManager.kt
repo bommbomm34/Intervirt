@@ -88,8 +88,7 @@ class MailClientManager(
     }
 
     suspend fun sendMail(mail: Mail): Result<Unit> {
-        val session = smtpSession
-        check(session != null) { "SMTP session isn't successfully initialized" }
+        val session = getSmtpSession()
         return withContext(Dispatchers.IO) {
             runCatching {
                 logger.debug { "Sending mail $mail" }
@@ -98,14 +97,21 @@ class MailClientManager(
         }
     }
 
-    fun getReplyMail(mail: Mail): Result<Mail> {
-        require(mail.message != null) { "Mail doesn't contain original message" }
-        return mail.message.reply(false).toMail()
+    suspend fun getReplyMail(mail: Mail): Result<Mail> {
+        val imapStore = getImapStore()
+        require(mail.index != null) { "Mail doesn't include an index" }
+        return runCatching {
+            logger.debug { "Generating reply mail of $mail" }
+            imapStore.useInbox {
+                messages[mail.index].reply(false)
+                    .toMail(senderOptional = true)
+                    .getOrThrow()
+            }
+        }
     }
 
     suspend fun getMails(): Result<List<Mail>> {
-        val store = imapStore
-        check(store != null) { "IMAP session isn't successfully initialized" }
+        val store = getImapStore()
         return withContext(Dispatchers.IO) {
             runSuspendingCatching {
                 store.useInbox {
@@ -188,10 +194,16 @@ class MailClientManager(
         }
     }
 
-    private fun checkSmtpSession(): Session {
+    private fun getSmtpSession(): Session {
         val session = smtpSession
         check(session != null) { "SMTP session isn't successfully initialized" }
         return session
+    }
+
+    private fun getImapStore(): Store {
+        val store = imapStore
+        check(store != null) { "IMAP session isn't successfully initialized" }
+        return store
     }
 
     override suspend fun close() = withContext(Dispatchers.IO){
