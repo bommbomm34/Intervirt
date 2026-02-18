@@ -22,6 +22,9 @@ dependencies {
     implementation(libs.jediterm.core)
     implementation(libs.jediterm.ui)
     implementation(libs.jakarta.mail)
+    implementation(libs.docker.java.core)
+    implementation(libs.docker.java.transport.httpclient5)
+    // Test
     testImplementation(libs.koin.test)
     testImplementation(libs.kotlin.test)
 }

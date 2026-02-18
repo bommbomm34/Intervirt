@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.core.api.intervirtos.store
+package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.Address

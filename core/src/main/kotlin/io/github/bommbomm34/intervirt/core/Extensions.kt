@@ -3,6 +3,9 @@ package io.github.bommbomm34.intervirt.core
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.ktor.utils.io.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -35,3 +38,12 @@ fun <T> List<T>.addFirst(element: T): List<T> {
 }
 
 fun String.parseAddress() = Address(substringBefore(":"), substringAfter(":").toInt())
+
+suspend fun <T> withCatchingContext(
+    context: CoroutineContext,
+    block: suspend CoroutineScope.() -> T
+): Result<T> = withContext(context){
+    runCatching {
+        block()
+    }
+}

@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api
 
-import io.github.bommbomm34.intervirt.core.api.intervirtos.store.IntervirtOSStore
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
