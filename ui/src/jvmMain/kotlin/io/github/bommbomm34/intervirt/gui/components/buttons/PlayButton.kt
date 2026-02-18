@@ -14,14 +14,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PlayButton(
     playing: Boolean,
-    onClick: (Boolean) -> Unit
-){
+    onClick: (Boolean) -> Unit,
+) {
     IconButton(
-        onClick = { onClick(!playing) }
-    ){
+        onClick = { onClick(!playing) },
+    ) {
         GeneralIcon(
             imageVector = if (playing) TablerIcons.PlayerStop else TablerIcons.PlayerPlay,
-            contentDescription = stringResource(if (playing) Res.string.stop else Res.string.start)
+            contentDescription = stringResource(if (playing) Res.string.stop else Res.string.start),
         )
     }
 }

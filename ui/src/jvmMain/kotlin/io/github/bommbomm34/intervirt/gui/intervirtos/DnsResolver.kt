@@ -28,12 +28,12 @@ val DNS_RECORD_TYPES = listOf(
     "NS",
     "SOA",
     "SRV",
-    "PTR"
+    "PTR",
 )
 
 @Composable
 fun DnsResolver(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     val dnsResolver = osClient.rememberManager(::DnsResolverManager)
     val appEnv = koinInject<AppEnv>()
@@ -50,16 +50,16 @@ fun DnsResolver(
             OutlinedTextField(
                 value = domain,
                 onValueChange = { domain = it },
-                label = { Text(stringResource(Res.string.domain)) }
+                label = { Text(stringResource(Res.string.domain)) },
             )
             GeneralSpacer()
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
             ) {
                 DNS_RECORD_TYPES.forEach { type ->
                     DropdownMenuItem(
-                        onClick = { dnsRecordType = type }
+                        onClick = { dnsRecordType = type },
                     ) {
                         Text(dnsRecordType)
                     }
@@ -69,13 +69,13 @@ fun DnsResolver(
             OutlinedTextField(
                 value = dnsServer,
                 onValueChange = { dnsServer = it },
-                label = { Text(stringResource(Res.string.dns_server)) }
+                label = { Text(stringResource(Res.string.dns_server)) },
             )
             GeneralSpacer()
             NamedCheckbox(
                 checked = reverseLookup,
                 onCheckedChange = { reverseLookup = it },
-                name = stringResource(Res.string.reverse_lookup)
+                name = stringResource(Res.string.reverse_lookup),
             )
             GeneralSpacer()
             Button(
@@ -88,12 +88,12 @@ fun DnsResolver(
                                     name = domain,
                                     type = dnsRecordType,
                                     nameserver = dnsServer,
-                                    reverse = reverseLookup
-                                ).getOrThrow()
+                                    reverse = reverseLookup,
+                                ).getOrThrow(),
                             )
                         }
                     }
-                }
+                },
             ) {
                 Text(stringResource(Res.string.lookup))
             }

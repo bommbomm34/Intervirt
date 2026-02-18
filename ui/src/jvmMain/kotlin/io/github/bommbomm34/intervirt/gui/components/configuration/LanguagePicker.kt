@@ -12,22 +12,22 @@ import java.util.*
 @Composable
 fun LanguagePicker(
     language: Locale,
-    onChangeLanguage: (Locale) -> Unit
-){
+    onChangeLanguage: (Locale) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
     Column {
-        Button(onClick = { expanded = true }){
+        Button(onClick = { expanded = true }) {
             Text(language.displayLanguage)
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ){
+            onDismissRequest = { expanded = false },
+        ) {
             AVAILABLE_LANGUAGES.forEach {
                 DropdownMenuItem(
                     onClick = { onChangeLanguage(it) },
-                    enabled = language.toLanguageTag() != it.toLanguageTag()
-                ){
+                    enabled = language.toLanguageTag() != it.toLanguageTag(),
+                ) {
                     Text(it.displayLanguage)
                 }
             }

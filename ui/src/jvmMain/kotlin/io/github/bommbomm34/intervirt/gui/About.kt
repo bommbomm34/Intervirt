@@ -12,7 +12,7 @@ import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
 import org.koin.compose.koinInject
 
 @Composable
-fun About(){
+fun About() {
     val appState = koinInject<AppState>()
     val libraries by produceLibraries {
         Res.readBytes("files/libraries.json").decodeToString()

@@ -5,7 +5,8 @@ import org.jetbrains.skiko.HardwareLayer;
 import java.awt.*;
 
 final class SkikoInterop {
-    private SkikoInterop() {}
+    private SkikoInterop() {
+    }
 
     static Canvas createHost() {
         if (isWindows()) {

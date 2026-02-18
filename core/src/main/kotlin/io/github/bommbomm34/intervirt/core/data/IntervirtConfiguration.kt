@@ -13,7 +13,7 @@ data class IntervirtConfiguration(
     val version: String,
     var author: String,
     val devices: MutableList<Device>,
-    val connections: MutableList<DeviceConnection>
+    val connections: MutableList<DeviceConnection>,
 ) {
     fun syncConfiguration(guestManager: GuestManager): Flow<ResultProgress<Unit>> = flow {
         guestManager.getVersion()
@@ -24,21 +24,21 @@ data class IntervirtConfiguration(
                     emit(
                         ResultProgress.proceed(
                             percentage = 0f,
-                            message = "Starting synchronisation..."
-                        )
+                            message = "Starting synchronisation...",
+                        ),
                     )
                     emit(
                         ResultProgress.proceed(
                             percentage = 0f,
-                            message = "Wiping old data..."
-                        )
+                            message = "Wiping old data...",
+                        ),
                     )
                     guestManager.wipe().collect { emit(it.clone(percentage = it.percentage * 0.2f)) }
                     emit(
                         ResultProgress.proceed(
                             percentage = 0.2f,
-                            message = "Creating devices..."
-                        )
+                            message = "Creating devices...",
+                        ),
                     )
                     devices.forEachIndexed { i, device ->
                         if (device is Device.Computer) {
@@ -46,8 +46,8 @@ data class IntervirtConfiguration(
                             emit(
                                 ResultProgress.proceed(
                                     percentage = progress,
-                                    message = "Creating device ${device.name} with id ${device.id}"
-                                )
+                                    message = "Creating device ${device.name} with id ${device.id}",
+                                ),
                             )
                             guestManager.addContainer(
                                 id = device.id,
@@ -55,32 +55,37 @@ data class IntervirtConfiguration(
                                 initialIpv6 = device.ipv6,
                                 mac = device.mac,
                                 internet = device.internetEnabled,
-                                image = device.image
+                                image = device.image,
                             )
                             device.portForwardings.forEach { portForwarding ->
                                 emit(
                                     ResultProgress.proceed(
                                         percentage = progress,
-                                        message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}"
-                                    )
+                                        message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}",
+                                    ),
                                 )
-                                guestManager.addPortForwarding(device.id, portForwarding.guestPort, portForwarding.hostPort, portForwarding.protocol)
+                                guestManager.addPortForwarding(
+                                    device.id,
+                                    portForwarding.guestPort,
+                                    portForwarding.hostPort,
+                                    portForwarding.protocol,
+                                )
                             }
                         }
                     }
                     emit(
                         ResultProgress.proceed(
                             percentage = 0.8f,
-                            message = "Connecting devices..."
-                        )
+                            message = "Connecting devices...",
+                        ),
                     )
 
                     connections.forEachIndexed { i, conn ->
                         emit(
                             ResultProgress.proceed(
                                 percentage = 0.8f + (i.toFloat() / connections.size) * 0.2f,
-                                message = "Connecting device ${conn.device1.name} with ${conn.device2.name}"
-                            )
+                                message = "Connecting device ${conn.device1.name} with ${conn.device2.name}",
+                            ),
                         )
                         when (conn) {
                             is DeviceConnection.Computer -> guestManager.connect(conn.device1.id, conn.device2.id)
@@ -90,7 +95,7 @@ data class IntervirtConfiguration(
                                     switch1ConnectedComputers.forEach { computer2 ->
                                         guestManager.connect(
                                             computer1.id,
-                                            computer2.id
+                                            computer2.id,
                                         )
                                     }
                                 }
@@ -103,8 +108,8 @@ data class IntervirtConfiguration(
                     emit(
                         ResultProgress.proceed(
                             percentage = 1f,
-                            message = "Synchronisation successfully completed"
-                        )
+                            message = "Synchronisation successfully completed",
+                        ),
                     )
                 }
             }
@@ -113,7 +118,7 @@ data class IntervirtConfiguration(
             }
     }
 
-    fun update(configuration: IntervirtConfiguration){
+    fun update(configuration: IntervirtConfiguration) {
         author = configuration.author
         devices.clear()
         devices.addAll(configuration.devices)

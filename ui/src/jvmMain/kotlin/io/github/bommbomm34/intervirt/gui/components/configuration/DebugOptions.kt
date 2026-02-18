@@ -18,17 +18,19 @@ import org.koin.compose.koinInject
 @Composable
 fun DebugOptions() {
     val appState = koinInject<AppState>()
-    val qemuClient = koinInject <QemuClient>()
+    val qemuClient = koinInject<QemuClient>()
     val scope = rememberCoroutineScope()
     val logger = rememberLogger("DebugOptions")
     Text("Debugging enabled")
     Text("Current version: $CURRENT_VERSION")
-    Button(onClick = {
-        appState.openDialog(
-            importance = Importance.INFO,
-            message = "Debug with: ./gradlew"
-        )
-    }) {
+    Button(
+        onClick = {
+            appState.openDialog(
+                importance = Importance.INFO,
+                message = "Debug with: ./gradlew",
+            )
+        },
+    ) {
         Text("Debug Agent")
     }
     GeneralSpacer()
@@ -37,7 +39,7 @@ fun DebugOptions() {
         OutlinedTextField(
             value = command,
             onValueChange = { command = it },
-            placeholder = { Text("Command for QEMU Monitor") }
+            placeholder = { Text("Command for QEMU Monitor") },
         )
         Button(
             onClick = {
@@ -47,8 +49,8 @@ fun DebugOptions() {
                     logger.debug { "Command result of $command: $res" }
                 }
 
-            }
-        ){
+            },
+        ) {
             Text("Send")
         }
     }
@@ -59,11 +61,11 @@ fun DebugOptions() {
                 qemuClient.addPortForwarding(
                     protocol = "tcp",
                     hostPort = 8999,
-                    guestPort = 22
-                ).onFailure { logger.error(it){ "Example port forwarding creation failed" } }
+                    guestPort = 22,
+                ).onFailure { logger.error(it) { "Example port forwarding creation failed" } }
             }
-        }
-    ){
+        },
+    ) {
         Text("Add example port forwarding")
     }
     Button(
@@ -71,11 +73,11 @@ fun DebugOptions() {
             scope.launch {
                 qemuClient.removePortForwarding(
                     protocol = "tcp",
-                    hostPort = 8999
-                ).onFailure { logger.error(it){ "Example port forwarding creation failed" } }
+                    hostPort = 8999,
+                ).onFailure { logger.error(it) { "Example port forwarding creation failed" } }
             }
-        }
-    ){
+        },
+    ) {
         Text("Remove example port forwarding")
     }
 }

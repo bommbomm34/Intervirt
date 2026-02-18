@@ -18,25 +18,29 @@ fun AcceptDialog(
     message: String,
     onCancel: () -> Unit = {},
     onAccept: () -> Unit,
-){
+) {
     val appState = koinInject<AppState>()
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(message)
         GeneralSpacer()
         Row {
-            Button(onClick = {
-                appState.closeDialog()
-                onAccept()
-            }){
+            Button(
+                onClick = {
+                    appState.closeDialog()
+                    onAccept()
+                },
+            ) {
                 Text(stringResource(Res.string.yes))
             }
             GeneralSpacer()
-            Button(onClick = {
-                appState.closeDialog()
-                onCancel()
-            }){
+            Button(
+                onClick = {
+                    appState.closeDialog()
+                    onCancel()
+                },
+            ) {
                 Text(stringResource(Res.string.no))
             }
         }

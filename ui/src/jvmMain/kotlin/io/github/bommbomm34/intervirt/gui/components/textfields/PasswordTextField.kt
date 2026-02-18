@@ -13,14 +13,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PasswordTextField(
     value: String,
-    onValueChange: (String) -> Unit
-){
+    onValueChange: (String) -> Unit,
+) {
     // TODO: Add visibility toggle field
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(stringResource(Res.string.password)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        visualTransformation = VisualTransformation.None
+        visualTransformation = VisualTransformation.None,
     )
 }

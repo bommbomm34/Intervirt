@@ -8,7 +8,7 @@ data class MailConnectionDetails(
     val imapAddress: Address = Address.EXAMPLE,
     val imapSafety: MailConnectionSafety = MailConnectionSafety.SECURE,
     val username: String = "",
-    val password: String = ""
+    val password: String = "",
 )
 
 

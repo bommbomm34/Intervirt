@@ -9,11 +9,11 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun Overlay(
     alpha: Float = 0.5f,
-    content: @Composable () -> Unit
-){
+    content: @Composable () -> Unit,
+) {
     Surface(
         modifier = Modifier.safeContentPadding(),
         color = Color.Black.copy(alpha = alpha),
-        content = content
+        content = content,
     )
 }

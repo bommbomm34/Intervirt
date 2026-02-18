@@ -35,10 +35,12 @@ sealed class ViewDevice {
             mutableListOf<PortForwarding>().apply { addAll(device.portForwardings) } // internalPort:externalPort
 
         override fun getVector() = TablerIcons.DevicesPc
-        override fun canConnect(configuration: IntervirtConfiguration) = configuration.connections.count { it.containsDevice(device) } == 0
+        override fun canConnect(configuration: IntervirtConfiguration) =
+            configuration.connections.count { it.containsDevice(device) } == 0
     }
 
-    data class Switch(override val device: Device.Switch,
+    data class Switch(
+        override val device: Device.Switch,
     ) : ViewDevice() {
         override val id = device.id
         override var name by mutableStateOf(device.name)
@@ -47,6 +49,7 @@ sealed class ViewDevice {
         override fun getVector() = TablerIcons.Switch
         override fun canConnect(configuration: IntervirtConfiguration) = true
     }
+
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
     abstract fun canConnect(configuration: IntervirtConfiguration): Boolean

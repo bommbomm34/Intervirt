@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun DeviceSettings(
     device: ViewDevice,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     var showPortForwardings by remember { mutableStateOf(false) }
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
@@ -33,7 +33,7 @@ fun DeviceSettings(
             if (device is ViewDevice.Computer) {
                 // All other device settings except port forwardings
                 // Device settings specific for computers
-                AnimatedVisibility(!showPortForwardings){
+                AnimatedVisibility(!showPortForwardings) {
                     Column {
                         OSField(device)
                         GeneralSpacer()
@@ -49,12 +49,12 @@ fun DeviceSettings(
                         GeneralSpacer()
                     }
                 }
-                AnimatedVisibility(showPortForwardings){
+                AnimatedVisibility(showPortForwardings) {
                     PortForwardingSettings(device)
                 }
                 // Show/Hide port forwardings
                 Button(
-                    onClick = { showPortForwardings = !showPortForwardings }
+                    onClick = { showPortForwardings = !showPortForwardings },
                 ) {
                     Text(stringResource(if (showPortForwardings) Res.string.hide_port_forwardings else Res.string.show_port_forwardings))
                 }

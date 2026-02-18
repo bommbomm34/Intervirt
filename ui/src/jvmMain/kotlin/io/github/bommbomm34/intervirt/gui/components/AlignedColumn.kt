@@ -8,5 +8,5 @@ import androidx.compose.ui.Alignment
 @Composable
 fun AlignedColumn(alignment: Alignment.Horizontal, content: @Composable ColumnScope.() -> Unit) = Column(
     horizontalAlignment = alignment,
-    content = content
+    content = content,
 )

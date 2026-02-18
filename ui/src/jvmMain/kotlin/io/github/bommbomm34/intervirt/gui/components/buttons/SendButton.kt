@@ -12,15 +12,15 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SendButton(
     enabled: Boolean = true,
-    onClick: () -> Unit
-){
+    onClick: () -> Unit,
+) {
     IconButton(
         onClick = onClick,
-        enabled = enabled
-    ){
+        enabled = enabled,
+    ) {
         GeneralIcon(
             imageVector = TablerIcons.Send,
-            contentDescription = stringResource(Res.string.send)
+            contentDescription = stringResource(Res.string.send),
         )
     }
 }

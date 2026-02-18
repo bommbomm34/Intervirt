@@ -11,7 +11,7 @@ interface GuestManager : AsyncCloseable {
         initialIpv6: String,
         mac: String,
         internet: Boolean,
-        image: String
+        image: String,
     ): Result<Unit>
 
     suspend fun removeContainer(id: String): Result<Unit>

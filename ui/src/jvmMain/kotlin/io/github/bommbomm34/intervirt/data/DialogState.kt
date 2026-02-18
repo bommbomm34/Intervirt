@@ -4,25 +4,25 @@ import androidx.compose.runtime.Composable
 
 
 sealed class DialogState(
-    open val visible: Boolean
+    open val visible: Boolean,
 ) {
     companion object {
         val Default = Regular(
             importance = Importance.INFO,
             message = "",
-            visible = false
+            visible = false,
         )
     }
 
     data class Regular(
         val importance: Importance,
         val message: String,
-        override val visible: Boolean
+        override val visible: Boolean,
     ) : DialogState(visible)
 
     data class Custom(
         val customContent: @Composable () -> Unit,
-        override val visible: Boolean
+        override val visible: Boolean,
     ) : DialogState(visible)
 }
 

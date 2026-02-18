@@ -2,7 +2,8 @@ package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.data.*
+import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,7 +19,7 @@ class VirtualGuestManager : GuestManager {
         initialIpv6: String,
         mac: String,
         internet: Boolean,
-        image: String
+        image: String,
     ): Result<Unit> {
         containers.add(Container(id, initialIpv4, initialIpv6, mac, internet, image))
         return Result.success(Unit)
@@ -59,20 +60,20 @@ class VirtualGuestManager : GuestManager {
         id: String,
         internalPort: Int,
         externalPort: Int,
-        protocol: String
+        protocol: String,
     ): Result<Unit> = runCatching {
         getContainerByID(id).portForwardings.add(
             PortForwarding(
                 protocol = protocol,
                 hostPort = externalPort,
-                guestPort = internalPort
-            )
+                guestPort = internalPort,
+            ),
         )
     }
 
     override suspend fun removePortForwarding(
         externalPort: Int,
-        protocol: String
+        protocol: String,
     ): Result<Unit> = runCatching {
         containers.forEach { container ->
             container.portForwardings.removeIf { it.hostPort == externalPort && it.protocol == protocol }
@@ -99,7 +100,8 @@ class VirtualGuestManager : GuestManager {
         emit(ResultProgress.success(Unit))
     }
 
-    override suspend fun shutdown() = Result.failure<Unit>(NotImplementedError("Shutdown through VirtualGuestManager isn't possible."))
+    override suspend fun shutdown() =
+        Result.failure<Unit>(NotImplementedError("Shutdown through VirtualGuestManager isn't possible."))
 
     override suspend fun reboot() = Result.success(Unit)
 
@@ -120,10 +122,10 @@ private data class Container(
     var internet: Boolean,
     val image: String,
     val portForwardings: MutableList<PortForwarding> = mutableListOf(),
-    var running: Boolean = false
+    var running: Boolean = false,
 )
 
 private data class ContainerConnection(
     val id1: String,
-    val id2: String
+    val id2: String,
 )

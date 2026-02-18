@@ -10,7 +10,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SystemServiceView(
     serviceName: String,
-    serviceManager: SystemServiceManager
+    serviceManager: SystemServiceManager,
 ) {
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()

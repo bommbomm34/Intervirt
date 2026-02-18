@@ -13,10 +13,10 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ImageItem(image: Image, onShowImage: () -> Unit){
-    Column (
+fun ImageItem(image: Image, onShowImage: () -> Unit) {
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.onClick(onClick = onShowImage)
+        modifier = Modifier.onClick(onClick = onShowImage),
     ) {
         ImageIcon(image)
         GeneralSpacer(2.dp)

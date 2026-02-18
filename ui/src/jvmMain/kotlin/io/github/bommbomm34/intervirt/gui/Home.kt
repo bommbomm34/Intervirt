@@ -16,7 +16,7 @@ import org.koin.compose.koinInject
 fun Home() {
     val appState = koinInject<AppState>()
     var devicesViewRenderKey by remember { mutableStateOf(0) }
-    key (devicesViewRenderKey) { DevicesView() }
+    key(devicesViewRenderKey) { DevicesView() }
     VMManagerView()
     AlignedBox(Alignment.BottomCenter) {
         Text("${appState.devicesViewZoom.roundBy(1)}x")
@@ -26,7 +26,7 @@ fun Home() {
         OptionsButton { showOptions = true }
         OptionDropdown(
             expanded = showOptions,
-            onConfChange = { devicesViewRenderKey++ }
+            onConfChange = { devicesViewRenderKey++ },
         ) { showOptions = false }
     }
 }

@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 @Stable
 class WebViewNavigator(
-    val coroutineScope: CoroutineScope
+    val coroutineScope: CoroutineScope,
 ) {
     private sealed interface NavigationEvent {
         data object Back : NavigationEvent
@@ -24,7 +24,7 @@ class WebViewNavigator(
 
         data class EvaluateJavaScript(
             val script: String,
-            val callback: ((String) -> Unit)? = null
+            val callback: ((String) -> Unit)? = null,
         ) : NavigationEvent
     }
 
@@ -41,6 +41,7 @@ class WebViewNavigator(
                     is NavigationEvent.LoadUrl -> {
                         loadUrl(event.url, event.additionalHttpHeaders)
                     }
+
                     is NavigationEvent.EvaluateJavaScript -> evaluateJavaScript(event.script, event.callback)
                 }
             }
@@ -63,7 +64,7 @@ class WebViewNavigator(
 
     fun evaluateJavaScript(
         script: String,
-        callback: ((String) -> Unit)? = null
+        callback: ((String) -> Unit)? = null,
     ) {
         coroutineScope.launch { navigationEvents.emit(NavigationEvent.EvaluateJavaScript(script, callback)) }
     }
@@ -87,6 +88,6 @@ class WebViewNavigator(
 
 @Composable
 fun rememberWebViewNavigator(
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): WebViewNavigator =
     remember(coroutineScope) { WebViewNavigator(coroutineScope) }

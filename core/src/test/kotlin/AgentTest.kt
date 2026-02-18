@@ -26,7 +26,12 @@ class AgentTest : KoinTest {
             val guestManager = get<GuestManager>()
 
             assertResult(guestManager.getVersion(), "VERSION TEST")
-            val (computer1, computer2, computer3, computer4, computer5, switch) = assertResult(createDevices(deviceManager), "DEVICE CREATION TEST")
+            val (computer1, computer2, computer3, computer4, computer5, switch) = assertResult(
+                createDevices(
+                    deviceManager,
+                ),
+                "DEVICE CREATION TEST",
+            )
             assertResult(deviceManager.removeDevice(computer5), "DEVICE REMOVAL TEST")
             assertResult(deviceManager.connectDevice(computer3, computer4), "COMPUTER CONNECTION TEST")
             assertResult(deviceManager.connectDevice(computer1, switch), "SWITCH CONNECTION TEST")
@@ -59,14 +64,14 @@ class AgentTest : KoinTest {
                 name = "My Computer no. $num",
                 x = 120,
                 y = 240,
-                image = "debian/13"
+                image = "debian/13",
             )
             res.getOrElse { return Result.failure(it) }
         }
         val switch = deviceManager.addSwitch(
             name = "My Switch",
             x = 140,
-            y = 270
+            y = 270,
         )
         return Result.success(
             SampleAgentData(
@@ -75,8 +80,8 @@ class AgentTest : KoinTest {
                 computer3 = computers[2],
                 computer4 = computers[3],
                 computer5 = computers[4],
-                switch = switch
-            )
+                switch = switch,
+            ),
         )
     }
 
@@ -88,7 +93,7 @@ class AgentTest : KoinTest {
             },
             onFailure = {
                 throw AssertionError("FAILED $test: $it")
-            }
+            },
         )
     }
 }

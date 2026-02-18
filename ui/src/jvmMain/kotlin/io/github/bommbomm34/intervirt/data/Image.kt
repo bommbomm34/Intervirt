@@ -8,7 +8,7 @@ data class Image(
     val name: String,
     val tag: String,
     val description: String,
-    val icon: DrawableResource
+    val icon: DrawableResource,
 ) {
     val fullName = "$name/$tag"
 
@@ -18,7 +18,7 @@ data class Image(
         suspend fun getImages() = listOf(
             Image("debian", "trixie", getString(Res.string.debian_description), Res.drawable.debian),
             Image("fedora", "43", getString(Res.string.fedora_description), Res.drawable.fedora),
-            Image("archlinux", "current", getString(Res.string.archlinux_description), Res.drawable.archlinux)
+            Image("archlinux", "current", getString(Res.string.archlinux_description), Res.drawable.archlinux),
             // Other images are coming soon!
         )
     }

@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 fun SimpleTable(
     headers: List<String>,
     content: List<List<Any>>,
-    customElements: List<@Composable () -> Unit> = emptyList()
-){
+    customElements: List<@Composable () -> Unit> = emptyList(),
+) {
     CustomTable(
         headers = headers,
         content = content.mapIndexed { i, row ->
@@ -15,6 +15,6 @@ fun SimpleTable(
                 addAll(row.map { { VisibleText(it) } })
                 customElements.getOrNull(i)?.let { element -> add(element) }
             }
-        }
+        },
     )
 }

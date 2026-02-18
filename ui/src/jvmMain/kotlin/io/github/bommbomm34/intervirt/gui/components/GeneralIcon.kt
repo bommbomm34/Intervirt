@@ -8,11 +8,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @Composable
 fun GeneralIcon(
     imageVector: ImageVector,
-    contentDescription: String
+    contentDescription: String,
 ) {
     Icon(
         imageVector = imageVector,
         contentDescription = contentDescription,
-        tint = MaterialTheme.colors.onBackground
+        tint = MaterialTheme.colors.onBackground,
     )
 }

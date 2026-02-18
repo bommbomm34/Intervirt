@@ -10,7 +10,7 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 fun NamedSystemServiceView(
     displayName: String,
     serviceName: String,
-    serviceManager: SystemServiceManager
+    serviceManager: SystemServiceManager,
 ) {
     CenterRow {
         Text(displayName)

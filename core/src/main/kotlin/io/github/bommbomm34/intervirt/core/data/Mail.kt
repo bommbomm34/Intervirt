@@ -14,7 +14,7 @@ data class Mail(
     val subject: String,
     val content: String,
     val index: Int? = null,
-    val message: Message? = null
+    val message: Message? = null,
 ) {
     fun getMessage(session: Session): Message = message ?: MimeMessage(session).apply {
         setFrom(InternetAddress(this@Mail.sender.address))
@@ -36,16 +36,16 @@ fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): Result<
             subject = subject,
             content = content.getString(),
             index = index,
-            message = this
-        )
+            message = this,
+        ),
     )
 }
 
 private fun Any.getString(): String {
-    when (this){
+    when (this) {
         is String -> return this
         is Multipart -> {
-            for (i in 0 until count){
+            for (i in 0 until count) {
                 val part = getBodyPart(i)
                 return when {
                     part.isMimeType("text/plain") || part.isMimeType("text/html") -> part.content.toString()
@@ -60,5 +60,5 @@ private fun Any.getString(): String {
 
 private fun Address.toMailUser(): MailUser? = if (this is InternetAddress) MailUser(
     username = personal ?: address,
-    address = address
+    address = address,
 ) else null

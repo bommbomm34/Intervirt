@@ -10,10 +10,10 @@ fun IntegerTextField(
     value: Int,
     onValueChange: (Int) -> Unit,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) = OutlinedTextField(
     value = value.toString(),
     onValueChange = { newValue -> newValue.toIntOrNull()?.let { onValueChange(it) } },
     label = { Text(label) },
-    modifier = modifier
+    modifier = modifier,
 )

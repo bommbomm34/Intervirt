@@ -19,14 +19,14 @@ fun AddVirtualHostView(onAdd: (VirtualHost) -> Unit) {
     OutlinedTextField(
         value = serverName,
         onValueChange = { serverName = it },
-        label = { Text(stringResource(Res.string.domain)) }
+        label = { Text(stringResource(Res.string.domain)) },
     )
     GeneralSpacer()
     // DocumentRoot TextField
     OutlinedTextField(
         value = documentRoot,
         onValueChange = { documentRoot = it },
-        label = { Text(stringResource(Res.string.destination_folder)) }
+        label = { Text(stringResource(Res.string.destination_folder)) },
     )
     GeneralSpacer()
     AddButton {

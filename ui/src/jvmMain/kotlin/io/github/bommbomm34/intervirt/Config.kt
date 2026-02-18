@@ -39,7 +39,7 @@ val uiModule = module {
 }
 
 val AVAILABLE_LANGUAGES = listOf(
-    Locale.US
+    Locale.US,
 )
 val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
 lateinit var density: Density
@@ -108,7 +108,7 @@ fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 fun rememberProxyManager(
     appEnv: AppEnv,
     deviceManager: DeviceManager,
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) = remember { ProxyManager(appEnv, deviceManager, osClient) }
 
 @OptIn(ExperimentalComposeUiApi::class)

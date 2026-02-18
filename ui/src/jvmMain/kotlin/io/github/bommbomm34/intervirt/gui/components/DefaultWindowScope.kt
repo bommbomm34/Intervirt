@@ -23,8 +23,8 @@ import org.koin.compose.koinInject
 @Composable
 fun DefaultWindowScope(
     onPointerEvent: AwaitPointerEventScope.(PointerEvent) -> Unit = {},
-    content: @Composable BoxScope.() -> Unit
-){
+    content: @Composable BoxScope.() -> Unit,
+) {
     val appEnv = koinInject<AppEnv>()
     val colors = if (appEnv.isDarkMode()) darkColors() else lightColors()
     MaterialTheme(
@@ -42,8 +42,8 @@ fun DefaultWindowScope(
             body2 = MaterialTheme.typography.body2.copy(colors.onBackground),
             button = MaterialTheme.typography.button.copy(colors.onPrimary),
             caption = MaterialTheme.typography.caption.copy(colors.onBackground),
-            overline = MaterialTheme.typography.overline.copy(colors.onBackground)
-        )
+            overline = MaterialTheme.typography.overline.copy(colors.onBackground),
+        ),
     ) {
         Box(
             modifier = Modifier
@@ -52,9 +52,9 @@ fun DefaultWindowScope(
                 .background(colors.background)
                 .onPointerEvent(
                     eventType = PointerEventType.Move,
-                    onEvent = onPointerEvent
+                    onEvent = onPointerEvent,
                 ),
-            content = content
+            content = content,
         )
     }
 }

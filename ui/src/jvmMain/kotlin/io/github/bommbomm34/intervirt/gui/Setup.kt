@@ -23,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 fun Setup() {
     val appEnv = koinInject<AppEnv>()
-    val preferences = koinInject <Preferences>()
+    val preferences = koinInject<Preferences>()
     val isDarkMode = appEnv.isDarkMode()
     var currentSetupScreenIndex by remember { mutableStateOf(0) }
     var vmConf by remember {
@@ -33,8 +33,8 @@ fun Setup() {
                 cpu = Runtime.getRuntime().availableProcessors() / 2,
                 kvm = false,
                 diskUrl = appEnv.vmDiskUrl,
-                diskHashUrl = appEnv.vmDiskHashUrl
-            )
+                diskHashUrl = appEnv.vmDiskHashUrl,
+            ),
         )
     }
     var appConf by remember {
@@ -44,25 +44,25 @@ fun Setup() {
                 agentPort = appEnv.agentPort,
                 intervirtFolder = appEnv.dataDir.absolutePath,
                 darkMode = isDarkMode,
-                language = appEnv.language.toLanguageTag()
-            )
+                language = appEnv.language.toLanguageTag(),
+            ),
         )
     }
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(vmConf) { vmConf = it } },
         { AppConfiguration(appConf) { appConf = it } },
-        { Installation { appEnv.applyConfiguration(vmConf, appConf) } }
+        { Installation { appEnv.applyConfiguration(vmConf, appConf) } },
     )
     AlignedBox(Alignment.TopCenter) {
         Text(
             text = "Intervirt Setup",
-            fontSize = 40.sp
+            fontSize = 40.sp,
         )
     }
     AlignedBox(Alignment.Center) {
         MultipleAnimatedVisibility(
             visible = currentSetupScreenIndex,
-            screens = setupScreens
+            screens = setupScreens,
         )
     }
     AlignedBox(Alignment.BottomStart) {
@@ -73,7 +73,7 @@ fun Setup() {
     AlignedBox(Alignment.BottomCenter) {
         Text(
             text = (currentSetupScreenIndex + 1).toString(),
-            fontSize = 25.sp
+            fontSize = 25.sp,
         )
     }
     AlignedBox(Alignment.BottomEnd) {

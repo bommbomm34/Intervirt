@@ -8,14 +8,14 @@ fun MultipleAnimatedVisibility(
     visible: Int,
     enter: EnterTransition = fadeIn(),
     exit: ExitTransition = fadeOut(),
-    screens: List<@Composable (AnimatedVisibilityScope.() -> Unit)>
+    screens: List<@Composable (AnimatedVisibilityScope.() -> Unit)>,
 ) {
     screens.forEachIndexed { i, it ->
         AnimatedVisibility(
             visible = i == visible,
             enter = enter,
             exit = exit,
-            content = it
+            content = it,
         )
     }
 }

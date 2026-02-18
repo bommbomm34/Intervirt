@@ -5,5 +5,5 @@ data class VMConfigurationData(
     val cpu: Int,
     val kvm: Boolean, // Only available on Linux with root
     val diskUrl: String,
-    val diskHashUrl: String
+    val diskHashUrl: String,
 )

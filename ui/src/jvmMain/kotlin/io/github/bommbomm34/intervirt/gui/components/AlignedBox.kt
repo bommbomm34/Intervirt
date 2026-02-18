@@ -14,11 +14,11 @@ import androidx.compose.ui.unit.dp
 fun AlignedBox(
     alignment: Alignment,
     padding: Dp = if (alignment != Alignment.Center) 16.dp else 0.dp,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) = Box(
     modifier = Modifier
         .fillMaxSize()
         .padding(padding),
     contentAlignment = alignment,
-    content = content
+    content = content,
 )

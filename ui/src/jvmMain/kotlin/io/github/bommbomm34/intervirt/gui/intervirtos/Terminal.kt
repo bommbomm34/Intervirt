@@ -9,7 +9,7 @@ import java.awt.Component
 
 @Composable
 fun Terminal(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     var terminalFactory: (() -> Component)? by remember { mutableStateOf(null) }
     LaunchedEffect(Unit) {
@@ -19,7 +19,7 @@ fun Terminal(
     }
     terminalFactory?.let {
         SwingPanel(
-            factory = it
+            factory = it,
         )
     }
 }

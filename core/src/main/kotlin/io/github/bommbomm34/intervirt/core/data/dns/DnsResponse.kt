@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DnsResponse(
-    val answers: List<DnsRecordAnswer>
+    val answers: List<DnsRecordAnswer>,
 )

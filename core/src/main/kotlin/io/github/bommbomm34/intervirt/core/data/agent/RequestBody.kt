@@ -10,88 +10,88 @@ sealed class RequestBody {
 
     @SerialName("AddContainer")
     @Serializable
-    data class AddContainer (
+    data class AddContainer(
         val id: String,
         val ipv4: String,
         val ipv6: String,
         val mac: String,
         val internet: Boolean,
-        val image: String
+        val image: String,
     ) : RequestBody()
 
     @SerialName("IDWithNewIpv4")
     @Serializable
-    data class IDWithNewIpv4 (
+    data class IDWithNewIpv4(
         val id: String,
         val newIpv4: String,
     ) : RequestBody()
 
     @SerialName("IDWithNewIpv6")
     @Serializable
-    data class IDWithNewIpv6 (
+    data class IDWithNewIpv6(
         val id: String,
         val newIpv6: String,
     ) : RequestBody()
 
     @SerialName("Connect")
     @Serializable
-    data class Connect (
+    data class Connect(
         val id1: String,
-        val id2: String
+        val id2: String,
     ) : RequestBody()
 
     @SerialName("Disconnect")
     @Serializable
-    data class Disconnect (
+    data class Disconnect(
         val id1: String,
-        val id2: String
+        val id2: String,
     ) : RequestBody()
 
     @SerialName("SetInternetAccess")
     @Serializable
-    data class SetInternetAccess (
+    data class SetInternetAccess(
         val id: String,
-        val enabled: Boolean
+        val enabled: Boolean,
     ) : RequestBody()
 
     @SerialName("AddPortForwarding")
     @Serializable
-    data class AddPortForwarding (
+    data class AddPortForwarding(
         val id: String,
         val internalPort: Int,
         val externalPort: Int,
-        val protocol: String
+        val protocol: String,
     ) : RequestBody()
 
     @SerialName("RemovePortForwarding")
     @Serializable
-    data class RemovePortForwarding (
+    data class RemovePortForwarding(
         val externalPort: Int,
-        val protocol: String
+        val protocol: String,
     ) : RequestBody()
 
     @SerialName("Command")
     @Serializable
     data class Command(
-        val command: String
+        val command: String,
     ) : RequestBody()
 
     @SerialName("RemoveContainer")
     @Serializable
-    data class RemoveContainer (
-        val id: String
+    data class RemoveContainer(
+        val id: String,
     ) : RequestBody()
 
     @SerialName("StartContainer")
     @Serializable
-    data class StartContainer (
-        val id: String
+    data class StartContainer(
+        val id: String,
     ) : RequestBody()
 
     @SerialName("StopContainer")
     @Serializable
-    data class StopContainer (
-        val id: String
+    data class StopContainer(
+        val id: String,
     ) : RequestBody()
 }
 

@@ -4,19 +4,18 @@ import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.io.path.notExists
 import kotlin.io.path.readLines
 import kotlin.io.path.writeText
 
 class MailServerManager(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     private val client = osClient.getClient()
     val serviceManager = client.serviceManager
     private val ioClient = client.ioClient
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     suspend fun listMailUsers(): Result<List<MailUser>> {
         logger.debug { "Listing mail users" }
@@ -39,7 +38,7 @@ class MailServerManager(
                     }
                 }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { Result.failure(it) },
         )
     }
 
@@ -53,7 +52,7 @@ class MailServerManager(
                     Result.failure(ContainerExecutionException(output))
                 } else Result.success(Unit)
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { Result.failure(it) },
         )
     }
 
@@ -64,7 +63,7 @@ class MailServerManager(
             "useradd",
             "-m",
             "-p", "$(openssl passwd -6 \"$password\")",
-            user.username
+            user.username,
         )
         return ioClient.exec(command).fold(
             onSuccess = { flow ->
@@ -76,7 +75,7 @@ class MailServerManager(
                     ioClient.getPath("/home/${user.username}/.intervirt_mail_address").writeText(user.address)
                 }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { Result.failure(it) },
         )
     }
 }

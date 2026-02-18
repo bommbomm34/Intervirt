@@ -10,7 +10,7 @@ import kotlinx.coroutines.sync.withLock
 
 data class QemuMonitorSession(
     private val selector: ActorSelectorManager,
-    private val socket: Socket
+    private val socket: Socket,
 ) : AutoCloseable {
     val socketLock = Mutex()
     private val readChannel = socket.openReadChannel()
@@ -19,13 +19,13 @@ data class QemuMonitorSession(
     suspend inline fun <T> withLock(action: QemuMonitorSession.() -> T): T = socketLock.withLock { action() }
 
     suspend fun writeLine(line: String) {
-        if (!writeChannel.isClosedForWrite){
+        if (!writeChannel.isClosedForWrite) {
             writeChannel.writeString(line + "\n")
         }
     }
 
     suspend fun readLine(): String? {
-        return if (!readChannel.isClosedForRead){
+        return if (!readChannel.isClosedForRead) {
             readChannel.readLine()
         } else null
     }

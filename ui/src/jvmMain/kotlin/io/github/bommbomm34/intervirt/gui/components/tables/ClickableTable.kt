@@ -18,7 +18,7 @@ import io.github.windedge.table.DataTable
 fun ClickableTable(
     headers: List<String>,
     data: List<List<@Composable BoxScope.() -> Unit>>,
-    onClick: (Int) -> Unit // Parameter is the index of data list
+    onClick: (Int) -> Unit, // Parameter is the index of data list
 ) {
     val bg = MaterialTheme.colorScheme.onBackground
     val scrollState = rememberScrollState()
@@ -35,7 +35,7 @@ fun ClickableTable(
                 column { VisibleText(it, true) }
             }
         },
-        modifier = Modifier.verticalScroll(scrollState)
+        modifier = Modifier.verticalScroll(scrollState),
     ) {
         data.forEachIndexed { i, composables ->
             val hover = hoverData[i]
@@ -44,7 +44,7 @@ fun ClickableTable(
                     .onClick { onClick(i) }
                     .hoverable(hover.first)
                     .background(if (hover.second.value) bg.copy(alpha = 0.5f) else bg)
-                    .pointerHoverIcon(PointerIcon.Hand)
+                    .pointerHoverIcon(PointerIcon.Hand),
             ) {
                 composables.forEach {
                     cell { it() }

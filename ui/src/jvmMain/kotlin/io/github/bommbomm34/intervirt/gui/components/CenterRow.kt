@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 @Composable
 fun CenterRow(
     modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
-) = Row (
+    content: @Composable RowScope.() -> Unit,
+) = Row(
     verticalAlignment = Alignment.CenterVertically,
-    content = content
+    content = content,
 )

@@ -17,8 +17,8 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.gui.components.SelectionDropdown
+import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.isValidPort
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -30,7 +30,7 @@ private val protocols = listOf("TCP", "UDP")
 @Composable
 fun AddPortForwardingDialog(
     device: ViewDevice.Computer,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     CenterColumn {
         var internalPort by remember { mutableStateOf(1) }
@@ -44,22 +44,22 @@ fun AddPortForwardingDialog(
             SelectionDropdown(
                 options = protocols,
                 selected = protocol,
-                onSelect = { protocol = it }
+                onSelect = { protocol = it },
             )
             GeneralSpacer()
             IntegerTextField(
                 value = internalPort,
                 onValueChange = { if (it.isValidPort()) internalPort = it },
-                label = stringResource(Res.string.internal_port)
+                label = stringResource(Res.string.internal_port),
             )
             Text(
                 text = ":",
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.ExtraBold,
             )
             IntegerTextField(
                 value = externalPort,
                 onValueChange = { if (it.isValidPort()) externalPort = it },
-                label = stringResource(Res.string.external_port)
+                label = stringResource(Res.string.external_port),
             )
         }
         LaunchedEffect(internalPort, externalPort) {
@@ -70,7 +70,7 @@ fun AddPortForwardingDialog(
                 GeneralSpacer()
                 Text(
                     text = exp.localizedMessage,
-                    color = Color.Red
+                    color = Color.Red,
                 )
             }
         }
@@ -78,11 +78,11 @@ fun AddPortForwardingDialog(
         Row {
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
             ) {
                 Text(
                     text = "Cancel",
-                    color = Color.White
+                    color = Color.White,
                 )
             }
             GeneralSpacer()
@@ -93,14 +93,14 @@ fun AddPortForwardingDialog(
                             PortForwarding(
                                 protocol = protocol.lowercase(),
                                 hostPort = externalPort,
-                                guestPort = internalPort
-                            )
+                                guestPort = internalPort,
+                            ),
                         )
                         deviceManager.addPortForwarding(device.device, internalPort, externalPort, protocol.lowercase())
                         onCancel()
                     }
                 },
-                enabled = result.isSuccess
+                enabled = result.isSuccess,
             ) {
                 Text(stringResource(Res.string.add_port_forwarding))
             }
@@ -113,14 +113,22 @@ private suspend fun IntervirtConfiguration.lint(
     device: ViewDevice.Computer,
     internalPort: Int,
     externalPort: Int,
-    protocol: String
+    protocol: String,
 ): Result<Unit> {
     val bindResult = externalPort.canPortBind()
     return when {
-        device.portForwardings.any { it.guestPort == internalPort } -> Result.failure(IllegalArgumentException(getString(Res.string.internal_port_already_exposed)))
-        devices.any { device -> if (device is Device.Computer) device.portForwardings.any { it.hostPort == externalPort && it.protocol == protocol } else false } -> Result.failure(
-            IllegalArgumentException(getString(Res.string.external_port_already_bound))
+        device.portForwardings.any { it.guestPort == internalPort } -> Result.failure(
+            IllegalArgumentException(
+                getString(
+                    Res.string.internal_port_already_exposed,
+                ),
+            ),
         )
+
+        devices.any { device -> if (device is Device.Computer) device.portForwardings.any { it.hostPort == externalPort && it.protocol == protocol } else false } -> Result.failure(
+            IllegalArgumentException(getString(Res.string.external_port_already_bound)),
+        )
+
         bindResult.isFailure -> Result.failure(bindResult.exceptionOrNull()!!)
         else -> Result.success(Unit)
     }

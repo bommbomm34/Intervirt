@@ -21,6 +21,7 @@ sealed class DeviceConnection {
         get() = id1.toDevice(configuration)
     val device2: Device
         get() = id2.toDevice(configuration)
+
     /**
      * Connection between two switches
      */
@@ -28,8 +29,8 @@ sealed class DeviceConnection {
     data class Switch(
         override val id1: String,
         override val id2: String,
-        override val configuration: IntervirtConfiguration
-    ): DeviceConnection() {
+        override val configuration: IntervirtConfiguration,
+    ) : DeviceConnection() {
         val switch1
             get() = id1.toDevice(configuration) as Device.Switch
         val switch2
@@ -43,8 +44,8 @@ sealed class DeviceConnection {
     data class Computer(
         override val id1: String,
         override val id2: String,
-        override val configuration: IntervirtConfiguration
-    ): DeviceConnection() {
+        override val configuration: IntervirtConfiguration,
+    ) : DeviceConnection() {
         val computer1
             get() = id1.toDevice(configuration) as Device.Computer
         val computer2
@@ -58,12 +59,12 @@ sealed class DeviceConnection {
     data class SwitchComputer(
         override val id1: String, // Switch
         override val id2: String, // Computer
-        override val configuration: IntervirtConfiguration
-    ): DeviceConnection() {
+        override val configuration: IntervirtConfiguration,
+    ) : DeviceConnection() {
         val switch
             get() = id1.toDevice(configuration) as Device.Switch
         val computer
-            get () = id2.toDevice(configuration) as Device.Computer
+            get() = id2.toDevice(configuration) as Device.Computer
     }
 
     /**

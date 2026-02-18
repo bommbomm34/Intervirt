@@ -21,7 +21,7 @@ fun FilePicker(
     label: String? = null,
     directory: Boolean = false,
     defaultPath: String = "",
-    onResult: (PlatformFile) -> Unit
+    onResult: (PlatformFile) -> Unit,
 ) {
     var path by remember { mutableStateOf(defaultPath) }
     val scope: (PlatformFile?) -> Unit = { file ->

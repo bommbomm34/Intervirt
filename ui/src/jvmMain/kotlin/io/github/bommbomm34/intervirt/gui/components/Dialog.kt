@@ -7,11 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -22,11 +18,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Copy
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.copy
-import intervirt.ui.generated.resources.error
-import intervirt.ui.generated.resources.info
-import intervirt.ui.generated.resources.warning
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.copyToClipboard
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
@@ -43,7 +35,7 @@ fun Dialog() {
     AlignedBox(Alignment.Center) {
         Surface(
             modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-            color = MaterialTheme.colors.background.copy(blue = 0.05f)
+            color = MaterialTheme.colors.background.copy(blue = 0.05f),
         ) {
             Box(Modifier.padding(16.dp)) {
                 when (appState.dialogState) {
@@ -51,7 +43,7 @@ fun Dialog() {
                     is DialogState.Regular -> {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.verticalScroll(rememberScrollState())
+                            modifier = Modifier.verticalScroll(rememberScrollState()),
                         ) {
                             val state = appState.dialogState as DialogState.Regular
                             Text(
@@ -64,7 +56,7 @@ fun Dialog() {
                                     Importance.INFO -> MaterialTheme.colors.onSecondary
                                     Importance.ERROR -> MaterialTheme.colors.error
                                     Importance.WARNING -> Color.Yellow
-                                }
+                                },
                             )
                             GeneralSpacer()
                             SelectionContainer {
@@ -73,7 +65,7 @@ fun Dialog() {
                             GeneralSpacer()
                             CenterRow {
                                 Button(
-                                    onClick = { appState.dialogState = state.copy(visible = false) }
+                                    onClick = { appState.dialogState = state.copy(visible = false) },
                                 ) {
                                     Text("OK")
                                 }
@@ -82,11 +74,11 @@ fun Dialog() {
                                 IconButton(
                                     onClick = {
                                         scope.launch { clipboard.copyToClipboard(state.message) }
-                                    }
-                                ){
+                                    },
+                                ) {
                                     GeneralIcon(
                                         imageVector = TablerIcons.Copy,
-                                        contentDescription = stringResource(Res.string.copy)
+                                        contentDescription = stringResource(Res.string.copy),
                                     )
                                 }
                             }

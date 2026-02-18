@@ -5,5 +5,5 @@ data class DnsRecord(
     val ttl: Int,
     val dnsClass: String,
     val type: String,
-    val data: String
+    val data: String,
 )

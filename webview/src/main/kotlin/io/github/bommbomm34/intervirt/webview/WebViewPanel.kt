@@ -1,13 +1,7 @@
 package io.github.bommbomm34.intervirt.webview
 
 import com.sun.jna.Native
-import uniffi.composewebview_wry.HttpHeader
-import uniffi.composewebview_wry.JavaScriptCallback
-import uniffi.composewebview_wry.NativeLogger
-import uniffi.composewebview_wry.NavigationHandler
-import uniffi.composewebview_wry.ProxyConfig
-import uniffi.composewebview_wry.WebViewCookie
-import uniffi.composewebview_wry.setNativeLogger
+import uniffi.composewebview_wry.*
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.MouseAdapter
@@ -20,7 +14,7 @@ import kotlin.concurrent.thread
 class WebViewPanel(
     initialUrl: String,
     proxy: Proxy?,
-    private val bridgeLogger: (String) -> Unit = { System.err.println(it) }
+    private val bridgeLogger: (String) -> Unit = { System.err.println(it) },
 ) : JPanel() {
     private val host = SkikoInterop.createHost()
     private val proxyConfig = proxy?.toConfig()
@@ -51,11 +45,13 @@ class WebViewPanel(
         layout = BorderLayout()
         add(host, BorderLayout.CENTER)
         // Request focus when clicked to capture keyboard events
-        host.addMouseListener(object : MouseAdapter() {
-            override fun mousePressed(e: MouseEvent?) {
-                requestWebViewFocus()
-            }
-        })
+        host.addMouseListener(
+            object : MouseAdapter() {
+                override fun mousePressed(e: MouseEvent?) {
+                    requestWebViewFocus()
+                }
+            },
+        )
         log("init url=$initialUrl")
     }
 
@@ -190,11 +186,14 @@ class WebViewPanel(
         }
         log("evaluateJavaScript bytes=${script.length} webviewId=$id")
         try {
-            NativeBindings.evaluateJavaScript(id, script, object : JavaScriptCallback {
-                override fun onResult(result: String) {
-                    callback(result)
-                }
-            })
+            NativeBindings.evaluateJavaScript(
+                id, script,
+                object : JavaScriptCallback {
+                    override fun onResult(result: String) {
+                        callback(result)
+                    }
+                },
+            )
         } catch (e: Exception) {
             log("evaluateJavaScript failed: ${e.message}")
             callback("")
@@ -350,7 +349,8 @@ class WebViewPanel(
         val handleSnapshot = parentHandle
         if (!IS_MAC) {
             return try {
-                webviewId = NativeBindings.createWebview(handleSnapshot, width, height, initialUrl, handler, proxyConfig)
+                webviewId =
+                    NativeBindings.createWebview(handleSnapshot, width, height, initialUrl, handler, proxyConfig)
                 updateBounds()
                 startGtkPumpIfNeeded()
                 startWindowsPumpIfNeeded()
@@ -574,9 +574,9 @@ class WebViewPanel(
                 log(
                     "resolveParentHandle skiko content=0x${contentHandle.toString(16)} window=0x${
                         windowHandle.toString(
-                            16
+                            16,
                         )
-                    } (macOS content)"
+                    } (macOS content)",
                 )
                 return ParentHandle(contentHandle.toULong(), false)
             }
@@ -593,9 +593,9 @@ class WebViewPanel(
                 log(
                     "resolveParentHandle skiko content=0x${contentHandle.toString(16)} window=0x${
                         windowHandle.toString(
-                            16
+                            16,
                         )
-                    }"
+                    }",
                 )
                 return ParentHandle(contentHandle.toULong(), false)
             }
@@ -675,7 +675,7 @@ class WebViewPanel(
                             NATIVE_LOGGER(data)
                         }
                     }
-                }
+                },
             )
         }
     }
@@ -683,7 +683,14 @@ class WebViewPanel(
 
 private object NativeBindings {
 
-    fun createWebview(parentHandle: ULong, width: Int, height: Int, url: String, handler: NavigationHandler, proxy: ProxyConfig?): ULong {
+    fun createWebview(
+        parentHandle: ULong,
+        width: Int,
+        height: Int,
+        url: String,
+        handler: NavigationHandler,
+        proxy: ProxyConfig?,
+    ): ULong {
         return uniffi.composewebview_wry.createWebview(parentHandle, width, height, url, proxy, handler)
     }
 

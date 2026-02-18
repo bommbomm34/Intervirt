@@ -9,5 +9,5 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun GeneralSpacer(
-    space: Dp = 8.dp
+    space: Dp = 8.dp,
 ) = Spacer(Modifier.padding(space))

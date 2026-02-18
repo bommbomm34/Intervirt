@@ -40,9 +40,11 @@ import kotlin.system.exitProcess
 private val dialogSize = DpSize(700.dp, 600.dp)
 
 fun main() = application {
-    KoinApplication(application = {
-        modules(coreModule, uiModule)
-    }) {
+    KoinApplication(
+        application = {
+            modules(coreModule, uiModule)
+        },
+    ) {
         val preferences = koinInject<Preferences>()
         val appEnv = koinInject<AppEnv>()
         val deviceManager = koinInject<DeviceManager>()
@@ -55,11 +57,13 @@ fun main() = application {
             Locale.setDefault(appEnv.language)
             FileKit.init("intervirt")
             // Add shutdown hook
-            Runtime.getRuntime().addShutdownHook(Thread {
-                runBlocking {
-                    gracefulShutdown(deviceManager, guestManager, qemuClient)
-                }
-            })
+            Runtime.getRuntime().addShutdownHook(
+                Thread {
+                    runBlocking {
+                        gracefulShutdown(deviceManager, guestManager, qemuClient)
+                    }
+                },
+            )
             setDefaultExceptionHandler()
         }
         density = LocalDensity.current
@@ -92,7 +96,7 @@ fun main() = application {
             onCloseRequest = { appState.showLogs = false },
             visible = appState.showLogs,
             title = "Intervirt Logs",
-            state = rememberWindowState(position = WindowPosition.Aligned(Alignment.CenterEnd))
+            state = rememberWindowState(position = WindowPosition.Aligned(Alignment.CenterEnd)),
         ) {
             DefaultWindowScope {
                 LogsView(appState.logs)
@@ -104,8 +108,8 @@ fun main() = application {
             visible = appState.openComputerShell != null,
             title = appState.osWindowTitle ?: stringResource(
                 Res.string.terminal_window_title,
-                appState.openComputerShell?.name ?: ""
-            )
+                appState.openComputerShell?.name ?: "",
+            ),
         ) {
             DefaultWindowScope {
                 appState.openComputerShell?.let {
@@ -122,7 +126,7 @@ fun main() = application {
                 is DialogState.Regular -> (appState.dialogState as DialogState.Regular).message
                 is DialogState.Custom -> "Dialog"
             },
-            state = rememberWindowState(size = dialogSize)
+            state = rememberWindowState(size = dialogSize),
         ) {
             DefaultWindowScope {
                 Dialog()
@@ -134,7 +138,7 @@ fun main() = application {
 private suspend fun gracefulShutdown(
     deviceManager: DeviceManager,
     guestManager: GuestManager,
-    qemuClient: QemuClient
+    qemuClient: QemuClient,
 ) {
     deviceManager.close()
     guestManager.close()

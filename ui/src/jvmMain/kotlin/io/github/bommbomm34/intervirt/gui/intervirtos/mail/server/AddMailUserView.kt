@@ -18,8 +18,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AddMailUserView(
-    mailServer: MailServerManager
-){
+    mailServer: MailServerManager,
+) {
     // TODO: Save the password more secure
     val scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
@@ -29,18 +29,18 @@ fun AddMailUserView(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text(stringResource(Res.string.username)) }
+            label = { Text(stringResource(Res.string.username)) },
         )
         GeneralSpacer()
         OutlinedTextField(
             value = emailAddress,
             onValueChange = { emailAddress = it },
-            label = { Text(stringResource(Res.string.email_address)) }
+            label = { Text(stringResource(Res.string.email_address)) },
         )
         GeneralSpacer()
         PasswordTextField(
             value = password,
-            onValueChange = { password = it }
+            onValueChange = { password = it },
         )
         GeneralSpacer()
         Button(
@@ -51,8 +51,8 @@ fun AddMailUserView(
                     emailAddress = ""
                     password = ""
                 }
-            }
-        ){
+            },
+        ) {
             Text(stringResource(Res.string.add_user))
         }
     }

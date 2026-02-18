@@ -5,11 +5,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.content
-import intervirt.ui.generated.resources.receiver
-import intervirt.ui.generated.resources.sender
-import intervirt.ui.generated.resources.subject
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.parseMailAddress
@@ -25,7 +21,7 @@ fun MailEditor(
     sender: MailUser,
     mail: Mail? = null,
     onCancel: () -> Unit = {},
-    onSend: (Mail) -> Unit
+    onSend: (Mail) -> Unit,
 ) {
     var receiverAddress by remember { mutableStateOf(mail?.receiver?.address ?: "") }
     var subject by remember { mutableStateOf(mail?.subject ?: "") }
@@ -39,7 +35,7 @@ fun MailEditor(
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(Res.string.sender)) },
-            singleLine = true
+            singleLine = true,
         )
         GeneralSpacer()
         OutlinedTextField(
@@ -47,32 +43,32 @@ fun MailEditor(
             onValueChange = { receiverAddress = it },
             label = { Text(stringResource(Res.string.receiver)) },
             singleLine = true,
-            isError = !receiverAddress.validateMailAddress()
+            isError = !receiverAddress.validateMailAddress(),
         )
         GeneralSpacer()
         OutlinedTextField(
             value = subject,
             onValueChange = { subject = it },
             label = { Text(stringResource(Res.string.subject)) },
-            singleLine = true
+            singleLine = true,
         )
         GeneralSpacer(16.dp)
         OutlinedTextField(
             value = content,
             onValueChange = { content = it },
             label = { Text(stringResource(Res.string.content)) },
-            minLines = 5
+            minLines = 5,
         )
     }
-    AlignedBox(Alignment.BottomEnd){
+    AlignedBox(Alignment.BottomEnd) {
         SendButton(receiverAddress.validateMailAddress()) {
             onSend(
                 Mail(
                     sender = sender,
                     receiver = receiverAddress.parseMailAddress(),
                     subject = subject,
-                    content = content
-                )
+                    content = content,
+                ),
             )
             receiverAddress = ""
             subject = ""

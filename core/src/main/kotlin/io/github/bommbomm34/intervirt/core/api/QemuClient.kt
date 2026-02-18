@@ -12,24 +12,15 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.boolean
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonObject
+import kotlinx.serialization.json.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
-import kotlin.fold
 
 class QemuClient(
     private val fileManager: FileManager,
     private val guestManager: GuestManager,
-    private val appEnv: AppEnv
+    private val appEnv: AppEnv,
 ) : AsyncCloseable {
 
     var running = false
@@ -54,8 +45,8 @@ class QemuClient(
                 "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${appEnv.agentPort}-:55436,dns=9.9.9.9",
                 "-qmp", "tcp:127.0.0.1:${appEnv.qemuMonitorPort},server,nowait",
                 "-device", "e1000,netdev=net0",
-                "-nographic"
-            )
+                "-nographic",
+            ),
         )
     }
 
@@ -100,7 +91,7 @@ class QemuClient(
         runSuspendingCatching {
             guestManager.shutdown()
                 .onFailure {
-                    withContext(Dispatchers.IO){
+                    withContext(Dispatchers.IO) {
                         logger.error(it) { "Shutdown attempt through agent failed" }
                         currentProcess.destroy()
                         logger.debug { "Waiting for Alpine VM to shutdown" }
@@ -122,32 +113,36 @@ class QemuClient(
     }
 
     suspend fun addPortForwarding(protocol: String, hostPort: Int, guestPort: Int): Result<Unit> {
-        qmpSend(buildJsonObject {
-            put("execute", "human-monitor-command")
-            putJsonObject("arguments") {
-                put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$hostPort-:$guestPort")
-            }
-        }).fold(
+        qmpSend(
+            buildJsonObject {
+                put("execute", "human-monitor-command")
+                putJsonObject("arguments") {
+                    put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$hostPort-:$guestPort")
+                }
+            },
+        ).fold(
             onSuccess = { return Result.success(Unit) },
-            onFailure = { return Result.failure(it) }
+            onFailure = { return Result.failure(it) },
         )
     }
 
     suspend fun removePortForwarding(protocol: String, hostPort: Int): Result<Unit> {
-        qmpSend(buildJsonObject {
-            put("execute", "human-monitor-command")
-            putJsonObject("arguments") {
-                put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$hostPort")
-            }
-        }).fold(
+        qmpSend(
+            buildJsonObject {
+                put("execute", "human-monitor-command")
+                putJsonObject("arguments") {
+                    put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$hostPort")
+                }
+            },
+        ).fold(
             onSuccess = { return Result.success(Unit) },
-            onFailure = { return Result.failure(it) }
+            onFailure = { return Result.failure(it) },
         )
     }
 
     suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession) = qmpSend(
         json = buildJsonObject { put("execute", command) },
-        session = session
+        session = session,
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -190,7 +185,7 @@ class QemuClient(
                         logger.debug { "Result of query-status: $result" }
                         result.fold(
                             onSuccess = { it.jsonObject["running"]!!.jsonPrimitive.boolean },
-                            onFailure = { false }
+                            onFailure = { false },
                         )
                     } ?: false
                     delay(2500)

@@ -12,16 +12,16 @@ fun WebView(
     url: String,
     navigator: WebViewNavigator,
     modifier: Modifier,
-    proxy: Proxy? = null
-){
+    proxy: Proxy? = null,
+) {
     val panel = remember { WebViewPanel(url, proxy) }
     SwingPanel(
         background = MaterialTheme.colorScheme.background,
         factory = { panel },
-        modifier = modifier
+        modifier = modifier,
     )
-    LaunchedEffect(Unit){
-        with(navigator){
+    LaunchedEffect(Unit) {
+        with(navigator) {
             panel.handleNavigationEvents()
         }
     }

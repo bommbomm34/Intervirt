@@ -9,17 +9,13 @@ import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.io.path.createFile
-import kotlin.io.path.createParentDirectories
-import kotlin.io.path.exists
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
+import kotlin.io.path.*
 
 /**
  * Saves data of IntervirtOS
  */
 class IntervirtOSStore(ioClient: ContainerIOClient) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
     private val dataPath = ioClient.getPath("/opt/intervirt/data.json")
     private val data = mutableMapOf<String, String>()
 
@@ -67,13 +63,17 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
         object MAIL_PASSWORD : Accessor<String>({ it ?: "" })
         object SMTP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
         object IMAP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
-        object SMTP_SAFETY : Accessor<MailConnectionSafety>({ str ->
-            str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
-        })
+        object SMTP_SAFETY : Accessor<MailConnectionSafety>(
+            { str ->
+                str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
+            },
+        )
 
-        object IMAP_SAFETY : Accessor<MailConnectionSafety>({ str ->
-            str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
-        })
+        object IMAP_SAFETY : Accessor<MailConnectionSafety>(
+            { str ->
+                str?.let { MailConnectionSafety.valueOf(it) } ?: MailConnectionSafety.SECURE
+            },
+        )
 
         fun get(env: String?): T {
             if (!initialized) value = produce(env)

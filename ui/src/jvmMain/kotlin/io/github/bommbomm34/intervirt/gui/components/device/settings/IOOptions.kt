@@ -8,11 +8,7 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.FileDownload
 import compose.icons.tablericons.FileUpload
 import compose.icons.tablericons.Terminal
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.download_file
-import intervirt.ui.generated.resources.file_already_exists
-import intervirt.ui.generated.resources.terminal
-import intervirt.ui.generated.resources.upload_file
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
@@ -35,14 +31,14 @@ import kotlin.io.path.copyTo
 import kotlin.io.path.name
 
 @Composable
-fun IOOptions(device: ViewDevice.Computer){
+fun IOOptions(device: ViewDevice.Computer) {
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
     val logger = rememberLogger("IOOptions")
     var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
     var containerFilePath: Path? by remember { mutableStateOf(null) }
-    LaunchedEffect(device.id){
+    LaunchedEffect(device.id) {
         ioClient = deviceManager.getIOClient(device.device).getOrElse {
             logger.error(it) { "Failure during obtaining a IOClient for ${device.id}" }
             null
@@ -54,10 +50,10 @@ fun IOOptions(device: ViewDevice.Computer){
                 // containerFilePath must be valid if this launcher is called
                 try {
                     containerFilePath!!.copyTo(file.file.toPath())
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     appState.openDialog(
                         importance = Importance.ERROR,
-                        message = e.localizedMessage
+                        message = e.localizedMessage,
                     )
                 }
             }
@@ -66,16 +62,16 @@ fun IOOptions(device: ViewDevice.Computer){
     val filePickerLauncher = rememberFilePickerLauncher { file ->
         file?.let { _ ->
             appState.openDialog {
-                ContainerFilePicker(ioClient!!, file.name){ path ->
+                ContainerFilePicker(ioClient!!, file.name) { path ->
                     appState.closeDialog()
                     path?.let { _ ->
                         scope.launch {
                             appState.runDialogCatching {
-                                if (file.exists()){
+                                if (file.exists()) {
                                     appState.openDialog {
                                         AcceptDialog(
-                                            message = stringResource(Res.string.file_already_exists)
-                                        ){ file.file.toPath().copyTo(path, true) }
+                                            message = stringResource(Res.string.file_already_exists),
+                                        ) { file.file.toPath().copyTo(path, true) }
                                     }
                                 }
                             }
@@ -85,39 +81,39 @@ fun IOOptions(device: ViewDevice.Computer){
             }
         }
     }
-    Row (verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         ioClient?.let { client ->
             IconButton(
                 onClick = {
                     appState.openDialog {
-                        ContainerFilePicker(client){ path ->
+                        ContainerFilePicker(client) { path ->
                             appState.closeDialog()
                             path?.let {
                                 containerFilePath = it
                                 val fullFileName = path.name
                                 fileSaverLauncher.launch(
                                     suggestedName = fullFileName.substringBefore("."),
-                                    extension = fullFileName.substringAfterLast(".")
+                                    extension = fullFileName.substringAfterLast("."),
                                 )
                             }
                         }
                     }
-                }
-            ){
+                },
+            ) {
                 GeneralIcon(
                     imageVector = TablerIcons.FileDownload,
-                    contentDescription = stringResource(Res.string.download_file)
+                    contentDescription = stringResource(Res.string.download_file),
                 )
             }
             GeneralSpacer()
             IconButton(
                 onClick = {
                     filePickerLauncher.launch()
-                }
-            ){
+                },
+            ) {
                 GeneralIcon(
                     imageVector = TablerIcons.FileUpload,
-                    contentDescription = stringResource(Res.string.upload_file)
+                    contentDescription = stringResource(Res.string.upload_file),
                 )
             }
             GeneralSpacer()
@@ -125,11 +121,11 @@ fun IOOptions(device: ViewDevice.Computer){
         IconButton(
             onClick = {
                 appState.openComputerShell = device
-            }
-        ){
+            },
+        ) {
             GeneralIcon(
                 imageVector = TablerIcons.Terminal,
-                contentDescription =  stringResource(Res.string.terminal)
+                contentDescription = stringResource(Res.string.terminal),
             )
         }
     }

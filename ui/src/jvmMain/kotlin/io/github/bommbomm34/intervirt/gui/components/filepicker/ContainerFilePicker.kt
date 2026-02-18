@@ -19,7 +19,7 @@ import java.nio.file.Path
 fun ContainerFilePicker(
     ioClient: ContainerIOClient,
     saveFilename: String? = null, // If provided, a save dialog will be shown
-    onPick: (Path?) -> Unit
+    onPick: (Path?) -> Unit,
 ) {
     var currentPath by remember { mutableStateOf(ioClient.getPath("/")) }
     val files = currentPath.toFile().listFiles().toList()
@@ -27,7 +27,7 @@ fun ContainerFilePicker(
     Column(
         modifier = Modifier
             .fillMaxHeight(0.8f)
-            .fillMaxWidth(0.9f)
+            .fillMaxWidth(0.9f),
     ) {
         CenterRow {
             CloseButton {
@@ -40,7 +40,7 @@ fun ContainerFilePicker(
         GeneralSpacer()
         FilesTable(
             files = files,
-            selectable = saveFilename == null
+            selectable = saveFilename == null,
         ) {
             if (it.isDirectory) currentPath = it.toPath() else {
                 logger.debug { "Selected ${it.absolutePath}" }
@@ -48,7 +48,7 @@ fun ContainerFilePicker(
             }
         }
         saveFilename?.let { default ->
-            AlignedBox(Alignment.BottomCenter){
+            AlignedBox(Alignment.BottomCenter) {
                 FileSaveView(default) { onPick(currentPath.resolve(it)) }
             }
         }

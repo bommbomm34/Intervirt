@@ -11,12 +11,12 @@ import intervirt.ui.generated.resources.close
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CloseButton(onClose: () -> Unit){
+fun CloseButton(onClose: () -> Unit) {
     IconButton(onClick = onClose) {
         Icon(
             imageVector = TablerIcons.X,
             contentDescription = stringResource(Res.string.close),
-            tint = MaterialTheme.colors.onBackground
+            tint = MaterialTheme.colors.onBackground,
         )
     }
 }

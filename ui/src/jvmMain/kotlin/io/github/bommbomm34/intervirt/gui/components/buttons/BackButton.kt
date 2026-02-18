@@ -10,16 +10,16 @@ import compose.icons.tablericons.ArrowLeft
 @Composable
 fun BackButton(
     visible: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-    if (visible){
+    if (visible) {
         IconButton(
-            onClick = onClick
+            onClick = onClick,
         ) {
             Icon(
                 imageVector = TablerIcons.ArrowLeft,
                 contentDescription = "Back",
-                tint = MaterialTheme.colors.onBackground
+                tint = MaterialTheme.colors.onBackground,
             )
         }
     }

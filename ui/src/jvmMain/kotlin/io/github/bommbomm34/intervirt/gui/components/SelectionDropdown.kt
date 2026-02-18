@@ -11,25 +11,25 @@ import androidx.compose.runtime.*
 fun SelectionDropdown(
     options: List<String>,
     selected: String,
-    onSelect: (String) -> Unit
+    onSelect: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ){
+        onDismissRequest = { expanded = false },
+    ) {
         options.forEach {
             DropdownMenuItem(
                 onClick = {
                     onSelect(it)
                     expanded = false
-                }
-            ){
+                },
+            ) {
                 Text(it)
             }
         }
     }
-    Button(onClick = { expanded = true }){
+    Button(onClick = { expanded = true }) {
         Text(selected)
     }
 }

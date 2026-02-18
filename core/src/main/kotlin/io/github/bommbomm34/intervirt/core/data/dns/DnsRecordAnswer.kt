@@ -12,13 +12,13 @@ data class DnsRecordAnswer(
     val ttl: String,
     val address: String,
     val status: String,
-    val nameserver: String
-){
+    val nameserver: String,
+) {
     fun toDnsRecord(): DnsRecord = DnsRecord(
         name = name,
         ttl = ttl.substringBefore("s").toInt(),
         dnsClass = dnsClass,
         type = type,
-        data = address
+        data = address,
     )
 }

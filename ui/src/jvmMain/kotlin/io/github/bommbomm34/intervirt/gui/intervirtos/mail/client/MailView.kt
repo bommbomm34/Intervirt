@@ -39,34 +39,34 @@ fun MailView(
     mail: Mail,
     onDelete: () -> Unit,
     onReply: () -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     val appEnv = koinInject<AppEnv>()
     // Subject, From, To and Content
     SelectionContainer {
         Column(
             horizontalAlignment = Alignment.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 text = mail.subject,
-                fontSize = appEnv.mailTitleFontSize.sp
+                fontSize = appEnv.mailTitleFontSize.sp,
             )
             GeneralSpacer()
             Text(
                 text = stringResource(Res.string.from, mail.sender),
-                color = FROM_TO_COLOR
+                color = FROM_TO_COLOR,
             )
             GeneralSpacer(2.dp)
             Text(
                 text = stringResource(Res.string.to, mail.receiver),
-                color = FROM_TO_COLOR
+                color = FROM_TO_COLOR,
             )
             GeneralSpacer()
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .background(MaterialTheme.colors.primarySurface)
+                    .background(MaterialTheme.colors.primarySurface),
             ) {
                 Text(mail.content)
             }
@@ -82,7 +82,7 @@ fun MailView(
             IconButton(onReply) {
                 GeneralIcon(
                     imageVector = TablerIcons.Send,
-                    contentDescription = stringResource(Res.string.reply)
+                    contentDescription = stringResource(Res.string.reply),
                 )
             }
             GeneralSpacer()

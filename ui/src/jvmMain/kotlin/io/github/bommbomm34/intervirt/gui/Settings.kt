@@ -30,7 +30,7 @@ import kotlin.system.exitProcess
 @Composable
 fun Settings() {
     val appEnv = koinInject<AppEnv>()
-    val preferences = koinInject <Preferences>()
+    val preferences = koinInject<Preferences>()
     val appState = koinInject<AppState>()
     val isDarkMode = appEnv.isDarkMode()
     var appConf by remember {
@@ -40,8 +40,8 @@ fun Settings() {
                 agentPort = appEnv.agentPort,
                 intervirtFolder = appEnv.dataDir.absolutePath,
                 darkMode = appEnv.darkMode ?: isDarkMode,
-                language = appEnv.language.toLanguageTag()
-            )
+                language = appEnv.language.toLanguageTag(),
+            ),
         )
     }
     var vmConf by remember {
@@ -51,19 +51,19 @@ fun Settings() {
                 cpu = appEnv.vmCpu,
                 kvm = appEnv.vmEnableKvm,
                 diskUrl = appEnv.vmDiskUrl,
-                diskHashUrl = appEnv.vmDiskHashUrl
-            )
+                diskHashUrl = appEnv.vmDiskHashUrl,
+            ),
         )
     }
     val confHash = remember { Objects.hash(appConf, vmConf) }
-    AlignedBox(Alignment.TopStart){
+    AlignedBox(Alignment.TopStart) {
         BackButton { appState.currentScreenIndex = 1 }
     }
-    AlignedBox(Alignment.Center){
+    AlignedBox(Alignment.Center) {
         CenterColumn {
-            AppConfiguration(appConf){ appConf = it }
+            AppConfiguration(appConf) { appConf = it }
             GeneralSpacer()
-            VMConfiguration(vmConf){ vmConf = it }
+            VMConfiguration(vmConf) { vmConf = it }
             GeneralSpacer()
             Button(
                 onClick = {
@@ -71,13 +71,13 @@ fun Settings() {
                     appState.openDialog {
                         AcceptDialog(
                             message = stringResource(Res.string.restart_necessary_to_apply_changes),
-                        ){
+                        ) {
                             exitProcess(0)
                         }
                     }
                 },
-                enabled = confHash != Objects.hash(appConf, vmConf)
-            ){
+                enabled = confHash != Objects.hash(appConf, vmConf),
+            ) {
                 Text(stringResource(Res.string.save_changes))
             }
             GeneralSpacer()

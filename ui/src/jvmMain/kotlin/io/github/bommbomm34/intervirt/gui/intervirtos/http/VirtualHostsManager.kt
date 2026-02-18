@@ -13,11 +13,11 @@ import org.koin.compose.koinInject
 fun VirtualHostsManager(httpServer: HttpServerManager) {
     val virtualHosts = remember { mutableStateListOf<VirtualHost>() }
     val appState = koinInject<AppState>()
-    LaunchedEffect(virtualHosts){
+    LaunchedEffect(virtualHosts) {
         appState.runDialogCatching {
             httpServer.loadHttpConf(VirtualHost.generateConfiguration(virtualHosts))
         }
     }
     AddVirtualHostView { virtualHosts.add(it) }
-    VirtualHostsTable(virtualHosts){ virtualHosts.remove(it) }
+    VirtualHostsTable(virtualHosts) { virtualHosts.remove(it) }
 }

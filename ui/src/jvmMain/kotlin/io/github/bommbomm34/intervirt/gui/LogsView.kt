@@ -14,21 +14,21 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import org.koin.compose.koinInject
 
 @Composable
-fun LogsView(logs: List<String>){
+fun LogsView(logs: List<String>) {
     val appEnv = koinInject<AppEnv>()
     CenterColumn {
         Text(
             text = "Logs",
-            fontSize = 64.sp
+            fontSize = 64.sp,
         )
         GeneralSpacer()
         SelectionContainer {
             LazyColumn {
-                items(logs){
+                items(logs) {
                     Text(
                         text = it,
                         color = Color.Gray,
-                        fontSize = appEnv.tooltipFontSize.sp
+                        fontSize = appEnv.tooltipFontSize.sp,
                     )
                     HorizontalDivider()
                 }

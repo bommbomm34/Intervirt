@@ -3,8 +3,8 @@ package io.github.bommbomm34.intervirt.gui.intervirtos
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox

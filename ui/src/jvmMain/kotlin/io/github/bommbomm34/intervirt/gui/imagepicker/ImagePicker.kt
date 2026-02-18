@@ -16,37 +16,37 @@ import org.koin.compose.koinInject
 @Composable
 fun ImagePicker(
     onDismiss: () -> Unit,
-    onInstall: (Image) -> Unit
+    onInstall: (Image) -> Unit,
 ) {
     val appEnv = koinInject<AppEnv>()
     val images = remember { mutableStateListOf<Image>() }
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
-    AlignedBox(Alignment.TopStart){
+    AlignedBox(Alignment.TopStart) {
         CloseButton(onDismiss)
     }
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         images.clear()
         images.addAll(Image.getImages())
     }
-    AlignedBox(Alignment.Center, 64.dp){
+    AlignedBox(Alignment.Center, 64.dp) {
         LazyVerticalGrid(
-            columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.2f)
-        ){
-            items(images){ image ->
-                ImageItem(image){
+            columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.2f),
+        ) {
+            items(images) { image ->
+                ImageItem(image) {
                     showImageInfo = true
                     selectedImage = image
                 }
             }
         }
     }
-    AnimatedVisibility(showImageInfo){
+    AnimatedVisibility(showImageInfo) {
         selectedImage?.let {
             ImageInfo(
                 image = it,
                 onDismiss = { showImageInfo = false },
-                onInstall = { onInstall(it) }
+                onInstall = { onInstall(it) },
             )
         }
     }

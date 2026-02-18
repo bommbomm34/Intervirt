@@ -21,7 +21,7 @@ sealed class Device {
         var ipv6: String,
         val mac: String,
         var internetEnabled: Boolean,
-        val portForwardings: MutableList<PortForwarding> // internalPort:externalPort
+        val portForwardings: MutableList<PortForwarding>, // internalPort:externalPort
     ) : Device()
 
     @Serializable
@@ -29,7 +29,7 @@ sealed class Device {
         override val id: String,
         override var name: String,
         override var x: Int,
-        override var y: Int
+        override var y: Int,
     ) : Device()
 
     fun getConnectedDevices(totalConnections: List<DeviceConnection>) =
@@ -37,7 +37,7 @@ sealed class Device {
 
     fun getConnectedComputers(
         totalConnections: List<DeviceConnection>,
-        exceptDevices: Set<Device> = emptySet()
+        exceptDevices: Set<Device> = emptySet(),
     ): List<Computer> {
         val connected = getConnectedDevices(totalConnections)
         val connectedComputers = mutableSetOf<Computer>() // Usage of a set is important because duplicates can occur

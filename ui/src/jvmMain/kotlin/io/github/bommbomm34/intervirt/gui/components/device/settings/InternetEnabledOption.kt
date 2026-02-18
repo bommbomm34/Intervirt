@@ -12,9 +12,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun InternetEnabledOption(device: ViewDevice.Computer){
+fun InternetEnabledOption(device: ViewDevice.Computer) {
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
     NamedCheckbox(
         checked = device.internetEnabled,
         onCheckedChange = {
@@ -23,6 +23,6 @@ fun InternetEnabledOption(device: ViewDevice.Computer){
                 deviceManager.setInternetEnabled(device.device, it)
             }
         },
-        name = stringResource(Res.string.internet_access)
+        name = stringResource(Res.string.internet_access),
     )
 }

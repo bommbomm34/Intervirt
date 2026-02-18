@@ -12,13 +12,13 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RemoveButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     IconButton(onClick = onClick) {
         Icon(
             imageVector = TablerIcons.Trash,
             contentDescription = stringResource(Res.string.delete),
-            tint = Color.Red
+            tint = Color.Red,
         )
     }
 }

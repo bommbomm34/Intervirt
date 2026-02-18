@@ -11,7 +11,7 @@ import java.nio.file.Path
 class VirtualContainerIOClient(
     id: String,
     private val executor: Executor,
-    fileManager: FileManager
+    fileManager: FileManager,
 ) : ContainerIOClient {
     private val virtualRoot = fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath()
 

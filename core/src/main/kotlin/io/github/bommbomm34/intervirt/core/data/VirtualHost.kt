@@ -2,7 +2,7 @@ package io.github.bommbomm34.intervirt.core.data
 
 class VirtualHost(
     val serverName: String,
-    val documentRoot: String
+    val documentRoot: String,
 ) {
     companion object {
         fun generateConfiguration(virtualHosts: List<VirtualHost>): String {
@@ -15,7 +15,7 @@ class VirtualHost(
                         DocumentRoot ${it.documentRoot}
                     </VirtualHost>
     
-                    """.trimIndent()
+                    """.trimIndent(),
                 )
             }
             return builder.toString()

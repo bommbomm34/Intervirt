@@ -9,7 +9,7 @@ sealed class CommandStatus {
 
 data class CommandResult(
     val output: String,
-    val statusCode: Int
+    val statusCode: Int,
 ) {
     fun asResult() = if (statusCode != 0) Result.failure(Exception(output)) else Result.success(output)
 }

@@ -34,11 +34,11 @@ import java.net.URI
 fun OptionDropdown(
     expanded: Boolean,
     onConfChange: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val logger = rememberLogger("OptionDropdown")
     val appEnv = koinInject<AppEnv>()
-    val guestManager = koinInject <GuestManager>()
+    val guestManager = koinInject<GuestManager>()
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()
     val scope = rememberCoroutineScope()
@@ -51,10 +51,10 @@ fun OptionDropdown(
         if (file != null) writeConf(file)
     }
     val filePickerLauncher = rememberFilePickerLauncher(
-        type = FileKitType.File(extensions = listOf("ivrt"))
+        type = FileKitType.File(extensions = listOf("ivrt")),
     ) { file ->
-        if (file != null){
-            scope.launch (Dispatchers.IO) {
+        if (file != null) {
+            scope.launch(Dispatchers.IO) {
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
@@ -71,18 +71,18 @@ fun OptionDropdown(
     Column {
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = onDismiss
+            onDismissRequest = onDismiss,
         ) {
             // Open
             DropdownMenuItem(
                 onClick = {
                     filePickerLauncher.launch()
                     onDismiss()
-                }
-            ){
+                },
+            ) {
                 IconText(
                     imageVector = TablerIcons.Folder,
-                    text = stringResource(Res.string.open)
+                    text = stringResource(Res.string.open),
                 )
             }
             // Save
@@ -91,14 +91,14 @@ fun OptionDropdown(
                     val file = appState.currentFile // Copy delegated state variable
                     if (file != null) writeConf(file) else fileSaverLauncher.launch(
                         suggestedName = appEnv.suggestedFilename,
-                        extension = "ivrt"
+                        extension = "ivrt",
                     )
                     onDismiss()
-                }
+                },
             ) {
                 IconText(
                     imageVector = TablerIcons.DeviceFloppy,
-                    text = stringResource(Res.string.save)
+                    text = stringResource(Res.string.save),
                 )
             }
             // Save As
@@ -106,32 +106,32 @@ fun OptionDropdown(
                 onClick = {
                     fileSaverLauncher.launch(
                         suggestedName = appEnv.suggestedFilename,
-                        extension = "ivrt"
+                        extension = "ivrt",
                     )
                     onDismiss()
-                }
+                },
             ) {
                 IconText(
                     imageVector = TablerIcons.DeviceFloppy,
-                    text = stringResource(Res.string.save_as)
+                    text = stringResource(Res.string.save_as),
                 )
             }
             // Settings
             DropdownMenuItem(
-                onClick = { appState.currentScreenIndex = 2 }
+                onClick = { appState.currentScreenIndex = 2 },
             ) {
                 IconText(
                     imageVector = TablerIcons.Settings,
-                    text = stringResource(Res.string.settings)
+                    text = stringResource(Res.string.settings),
                 )
             }
             // About
             DropdownMenuItem(
-                onClick = { appState.currentScreenIndex = 3 }
+                onClick = { appState.currentScreenIndex = 3 },
             ) {
                 IconText(
                     imageVector = TablerIcons.InfoCircle,
-                    text = stringResource(Res.string.about)
+                    text = stringResource(Res.string.about),
                 )
             }
             // Help
@@ -139,11 +139,11 @@ fun OptionDropdown(
                 onClick = {
                     Desktop.getDesktop().browse(URI(HELP_URL))
                     onDismiss()
-                }
-            ){
+                },
+            ) {
                 IconText(
                     imageVector = TablerIcons.Help,
-                    text = stringResource(Res.string.help)
+                    text = stringResource(Res.string.help),
                 )
             }
         }

@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class ResponseBody {
     abstract val refID: String
+
     @SerialName("General")
     @Serializable
     data class General(
@@ -38,7 +39,7 @@ sealed class ResponseBody {
     @Serializable
     data class Version(
         override val refID: String,
-        val version: String
+        val version: String,
     ) : ResponseBody()
 
 

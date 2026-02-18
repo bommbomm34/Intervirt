@@ -7,9 +7,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 
 // Simple wrapper for systemd
 class SystemServiceManager(
-    private val ioClient: ContainerIOClient
+    private val ioClient: ContainerIOClient,
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     suspend fun start(name: String): Result<Unit> = exec("systemctl", "start", name).map { }
 
@@ -22,7 +22,7 @@ class SystemServiceManager(
             .associate { it.substringBefore("=") to it.substringAfter("=") }
         val status = SystemServiceStatus(
             enabled = map["UnitFileState"] == "enabled",
-            active = map["ActiveState"] == "active"
+            active = map["ActiveState"] == "active",
         )
         logger.debug { "Status of $name: Active: ${status.active}, Enabled: ${status.enabled}" }
         status
@@ -35,7 +35,7 @@ class SystemServiceManager(
                 val (output, statusCode) = it.getCommandResult()
                 if (statusCode == 0) Result.success(output) else Result.failure(ContainerExecutionException(output))
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { Result.failure(it) },
         )
     }
 }

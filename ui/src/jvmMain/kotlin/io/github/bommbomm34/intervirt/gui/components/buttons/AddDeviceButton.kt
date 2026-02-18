@@ -33,7 +33,7 @@ fun AddDeviceButton() {
     Column {
         DropdownMenu(
             expanded = dropdownExpanded,
-            onDismissRequest = { dropdownExpanded = false }
+            onDismissRequest = { dropdownExpanded = false },
         ) {
             DropdownMenuItem(
                 onClick = {
@@ -44,7 +44,7 @@ fun AddDeviceButton() {
                             onDismiss = {
                                 appState.openDialog(
                                     message = osIsNeededText,
-                                    importance = Importance.ERROR
+                                    importance = Importance.ERROR,
                                 )
                             },
                             onInstall = { image ->
@@ -52,7 +52,7 @@ fun AddDeviceButton() {
                                     deviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
-                                        image = image.fullName
+                                        image = image.fullName,
                                     )
                                         .onSuccess {
                                             appState.statefulConf.devices.add(it.toViewDevice())
@@ -63,19 +63,19 @@ fun AddDeviceButton() {
                                                 importance = Importance.ERROR,
                                                 message = getString(
                                                     Res.string.error_during_device_creation,
-                                                    it.localizedMessage
-                                                )
+                                                    it.localizedMessage,
+                                                ),
                                             )
                                         }
                                 }
-                            }
+                            },
                         )
                     }
-                }
+                },
             ) {
                 Icon(
                     imageVector = TablerIcons.DevicesPc,
-                    contentDescription = stringResource(Res.string.computer)
+                    contentDescription = stringResource(Res.string.computer),
                 )
                 GeneralSpacer(5.dp)
                 Text(stringResource(Res.string.computer))
@@ -86,14 +86,14 @@ fun AddDeviceButton() {
                     // Add switch
                     val device = deviceManager.addSwitch(
                         x = Random.nextInt(300, 600),
-                        y = Random.nextInt(300, 600)
+                        y = Random.nextInt(300, 600),
                     )
                     appState.statefulConf.devices.add(device.toViewDevice())
-                }
+                },
             ) {
                 Icon(
                     imageVector = TablerIcons.Switch,
-                    contentDescription = stringResource(Res.string.computer)
+                    contentDescription = stringResource(Res.string.computer),
                 )
                 GeneralSpacer(5.dp)
                 Text(stringResource(Res.string.switch))

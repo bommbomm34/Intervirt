@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 @Composable
 fun CenterColumn(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) = Column (
+    content: @Composable ColumnScope.() -> Unit,
+) = Column(
     modifier = modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally,
-    content = content
+    content = content,
 )

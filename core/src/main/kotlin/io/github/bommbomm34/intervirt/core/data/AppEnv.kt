@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty
 data class AppEnv(
     private val env: (String) -> String?,
     private val save: (String, String) -> Unit,
-    private val custom: AppEnv.() -> Unit = {}
+    private val custom: AppEnv.() -> Unit = {},
 ) {
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
@@ -140,21 +140,21 @@ data class AppEnv(
         env(it)?.toLong() ?: 10_000L
     }
 
-    var mailTitleFontSize: Int by EnvDelegate("MAIL_TITLE_FONT_SIZE", save){
+    var mailTitleFontSize: Int by EnvDelegate("MAIL_TITLE_FONT_SIZE", save) {
         env(it)?.toInt() ?: 24
     }
 
-    internal var diskInstalled: Boolean by EnvDelegate("DISK_INSTALLED", save){ env(it).toBoolean() }
-    internal var currentDiskHash: String? by EnvDelegate("CURRENT_DISK_HASH", save){ env(it) }
-    internal var qemuInstalled: Boolean by EnvDelegate("QEMU_INSTALLED", save){ env(it).toBoolean() }
-    internal var currentQemuHash: String? by EnvDelegate("CURRENT_QEMU_HASH", save){ env(it) }
-    var intervirtInstalled: Boolean by EnvDelegate("INSTALLED", save){ env(it).toBoolean() }
+    internal var diskInstalled: Boolean by EnvDelegate("DISK_INSTALLED", save) { env(it).toBoolean() }
+    internal var currentDiskHash: String? by EnvDelegate("CURRENT_DISK_HASH", save) { env(it) }
+    internal var qemuInstalled: Boolean by EnvDelegate("QEMU_INSTALLED", save) { env(it).toBoolean() }
+    internal var currentQemuHash: String? by EnvDelegate("CURRENT_QEMU_HASH", save) { env(it) }
+    var intervirtInstalled: Boolean by EnvDelegate("INSTALLED", save) { env(it).toBoolean() }
 }
 
 private class EnvDelegate<T>(
     private val env: String,
     private val save: (env: String, new: String) -> Unit,
-    producer: (env: String) -> T
+    producer: (env: String) -> T,
 ) {
     private val value = producer(env)
 

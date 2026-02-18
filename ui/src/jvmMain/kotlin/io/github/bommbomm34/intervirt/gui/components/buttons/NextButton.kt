@@ -10,16 +10,16 @@ import compose.icons.tablericons.ArrowRight
 @Composable
 fun NextButton(
     visible: Boolean,
-    onClick: () -> Unit
-){
-    if (visible){
+    onClick: () -> Unit,
+) {
+    if (visible) {
         IconButton(
-            onClick = onClick
-        ){
+            onClick = onClick,
+        ) {
             Icon(
                 imageVector = TablerIcons.ArrowRight,
                 contentDescription = "Next",
-                tint = MaterialTheme.colors.onBackground
+                tint = MaterialTheme.colors.onBackground,
             )
         }
     }

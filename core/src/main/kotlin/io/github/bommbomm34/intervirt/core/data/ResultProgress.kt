@@ -8,15 +8,16 @@ sealed class ResultProgress<T> {
 
     data class Result<T>(
         override val percentage: Float,
-        val result: kotlin.Result<T>
+        val result: kotlin.Result<T>,
     ) : ResultProgress<T>() {
         fun getResultStatusMessage() =
             if (result.isFailure) "Failed: ${result.exceptionOrNull()!!.message}" else "Success"
 
         override fun log() = result.fold(
             onSuccess = { "Success" },
-            onFailure = { "Failure: ${it.localizedMessage}" }
+            onFailure = { "Failure: ${it.localizedMessage}" },
         )
+
         override fun message() = result.exceptionOrNull()?.localizedMessage
         override fun clone(percentage: Float) = Result(percentage, result)
     }
@@ -29,7 +30,7 @@ sealed class ResultProgress<T> {
 
     data class Message<T>(
         override val percentage: Float,
-        val message: String
+        val message: String,
     ) : ResultProgress<T>() {
         override fun log() = "$message | ${percentage.readablePercentage()}"
         override fun message() = message

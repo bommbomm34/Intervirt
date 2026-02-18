@@ -15,9 +15,9 @@ import org.koin.compose.koinInject
 
 @Composable
 fun VMManagerView() {
-    val qemuClient = koinInject <QemuClient>()
+    val qemuClient = koinInject<QemuClient>()
     var running by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         qemuClient.onRunningChange { running = it }
     }
     AlignedBox(Alignment.TopStart, padding = 16.dp) {

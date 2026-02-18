@@ -10,11 +10,11 @@ import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 @Composable
 fun IconText(
     imageVector: ImageVector,
-    text: String
-){
+    text: String,
+) {
     GeneralIcon(
         imageVector = imageVector,
-        contentDescription = text
+        contentDescription = text,
     )
     GeneralSpacer(2.dp)
     Text(text)

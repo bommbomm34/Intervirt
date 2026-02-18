@@ -19,7 +19,7 @@ private val headers = listOf("", "Filename")
 fun FilesTable(
     files: List<File>,
     selectable: Boolean,
-    onClick: (File) -> Unit
+    onClick: (File) -> Unit,
 ) = ClickableTable(
     headers = headers,
     data = files.map { file ->
@@ -29,15 +29,15 @@ fun FilesTable(
                 // Icon
                 GeneralIcon(
                     imageVector = if (isFile) TablerIcons.File else TablerIcons.Folder,
-                    contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder)
+                    contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder),
                 )
             },
             {
                 // Filename
                 VisibleText(file.name)
-            }
+            },
         )
-    }
+    },
 ) {
     val file = files[it]
     if (selectable || file.isDirectory) onClick(files[it])

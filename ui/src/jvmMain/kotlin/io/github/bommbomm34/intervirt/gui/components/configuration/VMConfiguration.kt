@@ -6,14 +6,14 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun VMConfiguration(
     conf: VMConfigurationData,
-    onConfChange: (VMConfigurationData) -> Unit
+    onConfChange: (VMConfigurationData) -> Unit,
 ) {
     CenterColumn {
         Text(stringResource(Res.string.vm_setup_introduction))
@@ -21,20 +21,20 @@ fun VMConfiguration(
         IntegerTextField(
             value = conf.ram,
             onValueChange = { onConfChange(conf.copy(ram = it)) },
-            label = stringResource(Res.string.ram_in_mb)
+            label = stringResource(Res.string.ram_in_mb),
         )
         GeneralSpacer()
         IntegerTextField(
             value = conf.cpu,
             onValueChange = { onConfChange(conf.copy(cpu = it)) },
-            label = stringResource(Res.string.amount_of_cpu_cores)
+            label = stringResource(Res.string.amount_of_cpu_cores),
         )
         GeneralSpacer()
         NamedCheckbox(
             checked = conf.kvm,
             onCheckedChange = { onConfChange(conf.copy(kvm = it)) },
             name = stringResource(Res.string.enable_kvm),
-            tooltip = stringResource(Res.string.enable_kvm_tooltip)
+            tooltip = stringResource(Res.string.enable_kvm_tooltip),
         )
         GeneralSpacer()
         DiskUrlConfiguration(conf, onConfChange)

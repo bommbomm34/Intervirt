@@ -18,7 +18,7 @@ class Downloader(
     private val preferences: Preferences,
     private val fileManager: FileManager,
     private val appEnv: AppEnv,
-    private val client: HttpClient
+    private val client: HttpClient,
 ) {
     private val logger = KotlinLogging.logger { }
 
@@ -70,19 +70,19 @@ class Downloader(
                                 },
                                 onFailure = {
                                     emit(ResultProgress.failure(it))
-                                }
+                                },
                             )
                         } else {
                             emit(
                                 ResultProgress.proceed(
                                     resultProgress.percentage,
-                                    "Downloading VM..."
-                                )
+                                    "Downloading VM...",
+                                ),
                             )
                         }
                     }
                 },
-                onFailure = { emit(ResultProgress.failure(it)) }
+                onFailure = { emit(ResultProgress.failure(it)) },
             )
         } else {
             logger.debug { "Already installed disk" }
@@ -111,24 +111,24 @@ class Downloader(
                                         appEnv.qemuInstalled = true
                                         appEnv.currentQemuHash = hash
                                         emit(
-                                            ResultProgress.success("Successfully downloaded QEMU")
+                                            ResultProgress.success("Successfully downloaded QEMU"),
                                         )
                                     },
                                     onFailure = {
                                         emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
-                                    }
+                                    },
                                 )
                             } else {
                                 emit(
                                     ResultProgress.proceed(
                                         resultProgress.percentage,
-                                        "Downloading QEMU..."
-                                    )
+                                        "Downloading QEMU...",
+                                    ),
                                 )
                             }
                         }
                     },
-                    onFailure = { emit(ResultProgress.failure(it)) }
+                    onFailure = { emit(ResultProgress.failure(it)) },
                 )
             }
         } else {

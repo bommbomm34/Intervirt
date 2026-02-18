@@ -1,23 +1,13 @@
 package io.github.bommbomm34.intervirt.core
 
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.Downloader
-import io.github.bommbomm34.intervirt.core.api.Executor
-import io.github.bommbomm34.intervirt.core.api.FileManager
-import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.Preferences
-import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.DeviceConnection
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import io.github.bommbomm34.intervirt.core.data.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.serialization.kotlinx.*
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds
@@ -36,7 +26,7 @@ val coreModule = module {
     single {
         (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(
             get(),
-            get()
+            get(),
         ))
     }.binds(arrayOf(GuestManager::class))
     singleOf(::DeviceManager)
@@ -63,7 +53,7 @@ val coreModule = module {
                     id = "switch-88888",
                     name = "My Switch",
                     x = 300,
-                    y = 300
+                    y = 300,
                 ),
                 Device.Computer(
                     id = "computer-67676",
@@ -76,11 +66,11 @@ val coreModule = module {
                     mac = "fd:67:67:67:67:67",
                     internetEnabled = false,
                     portForwardings = mutableListOf(
-                        PortForwarding("tcp", 67, 25565)
-                    )
-                )
+                        PortForwarding("tcp", 67, 25565),
+                    ),
+                ),
             ),
-            connections = mutableListOf()
+            connections = mutableListOf(),
         ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
     }
 }

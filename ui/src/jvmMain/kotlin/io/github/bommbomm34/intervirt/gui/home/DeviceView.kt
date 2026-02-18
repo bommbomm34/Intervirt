@@ -33,7 +33,7 @@ import org.koin.compose.koinInject
 fun DeviceView(
     device: ViewDevice,
     onClickDevice: (ViewDevice) -> Unit,
-    onSecondaryClick: (ViewDevice) -> Unit
+    onSecondaryClick: (ViewDevice) -> Unit,
 ) {
     val appState = koinInject<AppState>()
     val appEnv = koinInject<AppEnv>()
@@ -45,18 +45,18 @@ fun DeviceView(
         modifier = Modifier
             .offset { IntOffset(offset.x.toInt(), offset.y.toInt()) }
             .onClick(
-                matcher = PointerMatcher.Primary
+                matcher = PointerMatcher.Primary,
             ) { onClickDevice(device) }
             .onDrag(
                 matcher = PointerMatcher.Primary,
                 onDragStart = { overlay = true },
-                onDragEnd = { overlay = false }
+                onDragEnd = { overlay = false },
             ) {
                 val newOffset = offset + it
                 if (newOffset.isOn(
                         dpSize = appState.windowState.size,
                         imageSize = Offset(deviceSizePx, deviceSizePx),
-                        minimumPadding = 140f
+                        minimumPadding = 140f,
                     )
                 ) {
                     offset = newOffset
@@ -68,16 +68,16 @@ fun DeviceView(
             }
             .onClick(
                 matcher = PointerMatcher.Secondary,
-                onClick = { onSecondaryClick(device) }
+                onClick = { onSecondaryClick(device) },
             )
             .clip(RoundedCornerShape(16f))
-            .background(MaterialTheme.colors.background)
+            .background(MaterialTheme.colors.background),
     ) {
         Icon(
             imageVector = device.getVector(),
             contentDescription = device.name,
             modifier = Modifier.size(appEnv.deviceSize.dp, appEnv.deviceSize.dp),
-            tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f)
+            tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
         )
         GeneralSpacer(2.dp)
         Text(device.name)

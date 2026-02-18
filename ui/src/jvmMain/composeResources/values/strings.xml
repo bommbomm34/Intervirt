@@ -13,13 +13,17 @@
     <string name="amount_of_cpu_cores">Amount of CPU cores</string>
     <string name="enable_kvm">Enable KVM</string>
     <string name="enable_kvm_tooltip">Requires Linux and a KVM group membership</string>
-    <string name="vm_setup_introduction">Intervirt needs to set up a virtual machine to run the container secure and rootless.</string>
+    <string name="vm_setup_introduction">Intervirt needs to set up a virtual machine to run the container secure and
+        rootless.
+    </string>
     <string name="vm_shutdown_timeout">VM Shutdown Timeout in ms</string>
     <string name="intervirt_folder">Intervirt Folder Path</string>
     <string name="agent_port">Agent Port</string>
     <string name="pick_file">Pick file</string>
     <string name="pick_directory">Pick directory</string>
-    <string name="allow_to_install_intervirt">I allow to install Intervirt on my computer with the configuration I selected.</string>
+    <string name="allow_to_install_intervirt">I allow to install Intervirt on my computer with the configuration I
+        selected.
+    </string>
     <string name="creating_intervirt_folder">Creating Intervirt folder structure...</string>
     <string name="applying_configuration">Applying configuration...</string>
     <string name="show_logs">Show logs</string>
@@ -67,9 +71,23 @@
     <string name="no">No</string>
     <string name="are_you_sure_to_remove_device">Are you sure to remove device %1$s?</string>
     <!-- Image descriptions -->
-    <string name="debian_description">Debian is a free and open source Linux distribution, developed by the Debian Project, which was established by Ian Murdock in August 1993. Debian is one of the oldest operating systems based on the Linux kernel, and is the basis of many other Linux distributions. Source: Wikipedia (description), Debian Project (logo)</string>
-    <string name="fedora_description">Fedora Linux is a free and open-source Linux distribution developed by the Fedora Project. It was originally developed in 2003 as a continuation of the Red Hat Linux project. It contains software distributed under various free and open-source licenses and aims to be on the leading edge of open-source technologies. It is now the upstream source for CentOS Stream and Red Hat Enterprise Linux. Source: Wikipedia (description), Red Hat (logo)</string>
-    <string name="archlinux_description">Arch Linux is an open source, rolling release Linux distribution. Arch Linux is kept up-to-date by regularly updating the individual pieces of software that it comprises. It provides monthly "snapshots" which are used as installation media. Arch Linux is intentionally minimal, and is meant to be configured by the user during installation so they may add only what they require. Source: Wikipedia (description), Judd Vinet, Aaron Griffin and Levente Polyák (logo)</string>
+    <string name="debian_description">Debian is a free and open source Linux distribution, developed by the Debian
+        Project, which was established by Ian Murdock in August 1993. Debian is one of the oldest operating systems
+        based on the Linux kernel, and is the basis of many other Linux distributions. Source: Wikipedia (description),
+        Debian Project (logo)
+    </string>
+    <string name="fedora_description">Fedora Linux is a free and open-source Linux distribution developed by the Fedora
+        Project. It was originally developed in 2003 as a continuation of the Red Hat Linux project. It contains
+        software distributed under various free and open-source licenses and aims to be on the leading edge of
+        open-source technologies. It is now the upstream source for CentOS Stream and Red Hat Enterprise Linux. Source:
+        Wikipedia (description), Red Hat (logo)
+    </string>
+    <string name="archlinux_description">Arch Linux is an open source, rolling release Linux distribution. Arch Linux is
+        kept up-to-date by regularly updating the individual pieces of software that it comprises. It provides monthly
+        "snapshots" which are used as installation media. Arch Linux is intentionally minimal, and is meant to be
+        configured by the user during installation so they may add only what they require. Source: Wikipedia
+        (description), Judd Vinet, Aaron Griffin and Levente Polyák (logo)
+    </string>
 
     <string name="os_is_needed">An OS is required to create a computer</string>
     <string name="install_os">Install OS</string>
@@ -83,7 +101,8 @@
     <string name="save_as">Save As</string>
     <string name="open">Open</string>
     <string name="dark_mode">Dark Mode</string>
-    <string name="are_you_sure_to_remove_connection">Are you sure to remove the connection between %1$s and %2$s?</string>
+    <string name="are_you_sure_to_remove_connection">Are you sure to remove the connection between %1$s and %2$s?
+    </string>
     <string name="too_many_devices_connected">You cannot connect a computer with more than one device.</string>
     <string name="help">Help</string>
     <string name="error_during_device_creation">Error during device creation: %1$s</string>

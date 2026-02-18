@@ -19,23 +19,23 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Home(
-    onAppChange: (AppInfo) -> Unit
-){
+    onAppChange: (AppInfo) -> Unit,
+) {
     val appEnv = koinInject<AppEnv>()
     CenterColumn {
         Text(
             text = "IntervirtOS",
-            fontSize = appEnv.titleFontSize.sp
+            fontSize = appEnv.titleFontSize.sp,
         )
         GeneralSpacer()
-        AlignedBox(Alignment.Center){
+        AlignedBox(Alignment.Center) {
             LazyVerticalGrid(
-                columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.5f)
-            ){
-                items(INTERVIRTOS_APPS){ appInfo ->
+                columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.5f),
+            ) {
+                items(INTERVIRTOS_APPS) { appInfo ->
                     AppItem(
                         appInfo = appInfo,
-                        onClick = onAppChange
+                        onClick = onAppChange,
                     )
                 }
             }

@@ -3,17 +3,16 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.io.path.writeText
 
 class HttpServerManager(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     private val client = osClient.getClient()
     val serviceManager = client.serviceManager
     private val ioClient = client.ioClient
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     suspend fun loadHttpConf(conf: String): Result<Unit> {
         logger.debug { "Loading Apache2 configuration" }
@@ -33,7 +32,7 @@ class HttpServerManager(
                     serviceManager.restart("apache2")
                 }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { Result.failure(it) },
         )
     }
 }

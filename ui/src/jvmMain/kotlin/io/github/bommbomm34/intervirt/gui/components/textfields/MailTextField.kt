@@ -13,7 +13,7 @@ fun AddressTextField(
     valid: Boolean,
     onValueChange: (String, Boolean) -> Unit,
     label: String,
-    errorLabel: String
+    errorLabel: String,
 ) {
     OutlinedTextField(
         value = value,
@@ -22,9 +22,9 @@ fun AddressTextField(
             if (valid) Text(label) else
                 Text(
                     color = MaterialTheme.colors.error,
-                    text = errorLabel
+                    text = errorLabel,
                 )
-        }
+        },
     )
 }
 

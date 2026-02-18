@@ -10,13 +10,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun ShutdownButton(){
+fun ShutdownButton() {
     val scope = rememberCoroutineScope()
     val bootText = stringResource(Res.string.boot)
     val shutdownText = stringResource(Res.string.shutdown)
     val shuttingDownText = stringResource(Res.string.shutting_down)
     val bootingText = stringResource(Res.string.booting)
-    val qemuClient = koinInject <QemuClient>()
+    val qemuClient = koinInject<QemuClient>()
     var powerButtonText by remember { mutableStateOf(bootText) }
     Button(
         onClick = {
@@ -31,7 +31,7 @@ fun ShutdownButton(){
                     powerButtonText = shutdownText
                 }
             }
-        }
+        },
     ) {
         Text(powerButtonText)
     }

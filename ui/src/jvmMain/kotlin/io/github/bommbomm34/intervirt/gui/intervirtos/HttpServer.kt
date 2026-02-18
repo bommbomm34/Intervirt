@@ -17,21 +17,21 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HttpServer(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     val httpServer = osClient.rememberManager(::HttpServerManager)
     var enableVirtualHosts by remember { mutableStateOf(false) }
     AlignedBox(Alignment.TopEnd) {
         SystemServiceView(
             serviceName = "apache2",
-            serviceManager = httpServer.serviceManager
+            serviceManager = httpServer.serviceManager,
         )
     }
     GeneralSpacer()
     NamedCheckbox(
         checked = enableVirtualHosts,
         onCheckedChange = { enableVirtualHosts = it },
-        name = stringResource(Res.string.enable_virtual_hosts)
+        name = stringResource(Res.string.enable_virtual_hosts),
     )
     AnimatedVisibility(enableVirtualHosts) {
         VirtualHostsManager(httpServer)

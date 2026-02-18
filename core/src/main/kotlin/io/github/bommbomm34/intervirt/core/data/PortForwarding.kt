@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class PortForwarding(
     val protocol: String,
     val hostPort: Int,
-    val guestPort: Int
+    val guestPort: Int,
 )

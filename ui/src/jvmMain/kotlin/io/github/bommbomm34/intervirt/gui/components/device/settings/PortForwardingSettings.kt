@@ -20,13 +20,13 @@ import org.koin.compose.koinInject
 @Composable
 fun PortForwardingSettings(device: ViewDevice.Computer) {
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
     val appState = koinInject<AppState>()
     Column {
         AddButton {
             appState.openDialog {
                 AddPortForwardingDialog(
-                    device
+                    device,
                 ) { appState.dialogState = (appState.dialogState as DialogState.Custom).copy(visible = false) }
             }
         }

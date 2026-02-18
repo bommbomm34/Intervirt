@@ -18,17 +18,17 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AppItem(
     appInfo: AppInfo,
-    onClick: (AppInfo) -> Unit
+    onClick: (AppInfo) -> Unit,
 ) {
-    Column (
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(16.dp)
-            .onClick(onClick = { onClick(appInfo) })
+            .onClick(onClick = { onClick(appInfo) }),
     ) {
         GeneralIcon(
             imageVector = appInfo.icon,
-            contentDescription = stringResource(appInfo.description)
+            contentDescription = stringResource(appInfo.description),
         )
         GeneralSpacer(2.dp)
         Text(stringResource(appInfo.name))

@@ -46,7 +46,7 @@ import kotlin.math.sqrt
 fun DevicesView() {
     var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
     val appEnv = koinInject<AppEnv>()
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()
@@ -69,7 +69,7 @@ fun DevicesView() {
                                 point = position,
                                 start = device1.fittingOffset(appState.devicesViewZoom),
                                 end = device2.fittingOffset(appState.devicesViewZoom),
-                                strokeWidth = appEnv.connectionStrokeWidth
+                                strokeWidth = appEnv.connectionStrokeWidth,
                             )
                         }?.let {
                             appState.openDialog {
@@ -77,21 +77,21 @@ fun DevicesView() {
                                     message = stringResource(
                                         Res.string.are_you_sure_to_remove_connection,
                                         it.device1.name,
-                                        it.device2.name
-                                    )
+                                        it.device2.name,
+                                    ),
                                 ) {
                                     statefulConf.connections.remove(it)
                                     scope.launch {
                                         deviceManager.disconnectDevice(
                                             it.device1.device,
-                                            it.device2.device
+                                            it.device2.device,
                                         )
                                     }
                                 }
                             }
                         }
                     }
-                }
+                },
         ) {
             scale(appState.devicesViewZoom) {
                 appState.drawingConnectionSource?.let {
@@ -99,7 +99,7 @@ fun DevicesView() {
                         offset1 = it.fittingOffset(appState.devicesViewZoom),
                         offset2 = appState.mousePosition,
                         color = appEnv.deviceConnectionColor,
-                        strokeWidth = appEnv.connectionStrokeWidth
+                        strokeWidth = appEnv.connectionStrokeWidth,
                     )
                 }
                 statefulConf.connections.forEach {
@@ -107,7 +107,7 @@ fun DevicesView() {
                         offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
                         offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
                         color = appEnv.deviceConnectionColor,
-                        strokeWidth = appEnv.connectionStrokeWidth
+                        strokeWidth = appEnv.connectionStrokeWidth,
                     )
                 }
             }
@@ -138,13 +138,13 @@ fun DevicesView() {
                                 deviceManager.connectDevice(copy.device, it.device)
                             } else appState.openDialog(
                                 importance = Importance.WARNING,
-                                message = getString(Res.string.too_many_devices_connected)
+                                message = getString(Res.string.too_many_devices_connected),
                             )
                         }
                     }
                     appState.drawingConnectionSource = null
                 } else appState.drawingConnectionSource = it
-            }
+            },
         )
     }
     AnimatedVisibility(appState.deviceSettingsVisible) {
@@ -152,7 +152,7 @@ fun DevicesView() {
             AlignedBox(Alignment.BottomStart) {
                 Column {
                     DeviceSettings(
-                        device = it
+                        device = it,
                     ) { appState.deviceSettingsVisible = false }
                 }
             }
@@ -168,13 +168,13 @@ fun DrawScope.drawConnection(
     offset1: Offset,
     offset2: Offset,
     color: Long,
-    strokeWidth: Float
+    strokeWidth: Float,
 ) {
     drawLine(
         start = offset1,
         end = offset2,
         color = Color(color),
-        strokeWidth = strokeWidth
+        strokeWidth = strokeWidth,
     )
 }
 
@@ -182,7 +182,7 @@ fun isPointOnLine(
     point: Offset,
     start: Offset,
     end: Offset,
-    strokeWidth: Float
+    strokeWidth: Float,
 ): Boolean {
     val dx = end.x - start.x
     val dy = end.y - start.y

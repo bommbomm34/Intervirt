@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
-import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
@@ -29,12 +28,12 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Installation(
-    applyConfiguration: () -> Unit
+    applyConfiguration: () -> Unit,
 ) {
     val logger = rememberLogger("Installation")
-    val downloader = koinInject <Downloader>()
+    val downloader = koinInject<Downloader>()
     val appEnv = koinInject<AppEnv>()
-    val fileManager = koinInject <FileManager>()
+    val fileManager = koinInject<FileManager>()
     val appState = koinInject<AppState>()
     var allowInstallation by remember { mutableStateOf(false) }
     var flow: Flow<ResultProgress<String>>? by remember { mutableStateOf(null) }
@@ -58,16 +57,16 @@ fun Installation(
                         emit(
                             ResultProgress.proceed(
                                 percentage = 0.05f,
-                                message = getString(Res.string.creating_intervirt_folder)
-                            )
+                                message = getString(Res.string.creating_intervirt_folder),
+                            ),
                         )
                         fileManager.init()
                         // Applying configuration
                         emit(
                             ResultProgress.proceed(
                                 percentage = 0.1f,
-                                message = getString(Res.string.applying_configuration)
-                            )
+                                message = getString(Res.string.applying_configuration),
+                            ),
                         )
                         applyConfiguration()
                         // Downloading QEMU
@@ -86,22 +85,22 @@ fun Installation(
                 }
             },
             enabled = allowInstallation,
-            colors = if (job != null) ButtonDefaults.buttonColors(backgroundColor = Color.Red) else ButtonDefaults.buttonColors()
+            colors = if (job != null) ButtonDefaults.buttonColors(backgroundColor = Color.Red) else ButtonDefaults.buttonColors(),
         ) {
             if (job != null) Text(
                 text = stringResource(Res.string.cancel_intervirt_installation),
-                color = Color.White
+                color = Color.White,
             ) else Text(
-                text = stringResource(Res.string.install_intervirt)
+                text = stringResource(Res.string.install_intervirt),
             )
         }
         AnimatedVisibility(
-            visible = flow != null
+            visible = flow != null,
         ) {
             GeneralSpacer(8.dp)
             FlowProgressView(
                 flow = flow ?: flowOf(),
-                onJobChange = { job = it }
+                onJobChange = { job = it },
             ) { resultProgress ->
                 logger.debug { "SETUP: $resultProgress" }
                 appState.logs.add(resultProgress.log())

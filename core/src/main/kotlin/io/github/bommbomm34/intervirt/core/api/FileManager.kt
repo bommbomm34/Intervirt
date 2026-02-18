@@ -28,7 +28,7 @@ import java.util.zip.ZipException
 
 class FileManager(
     appEnv: AppEnv,
-    private val client: HttpClient
+    private val client: HttpClient,
 ) {
     private val logger = KotlinLogging.logger { }
     private val dataDir = appEnv.dataDir
@@ -64,10 +64,10 @@ class FileManager(
                         ResultProgress.result(
                             Result.failure(
                                 Exception(
-                                    "Download failed ${response.status.description}"
-                                )
-                            )
-                        )
+                                    "Download failed ${response.status.description}",
+                                ),
+                            ),
+                        ),
                     )
                 } else {
                     val channel: ByteReadChannel = response.body()
@@ -99,8 +99,8 @@ class FileManager(
                             InputProvider { file.inputStream().asInput().buffered() },
                         )
                     },
-                    boundary = "FileUploadBoundary"
-                )
+                    boundary = "FileUploadBoundary",
+                ),
             )
             onUpload { bytesSentTotal, contentLength ->
                 val progress = contentLength?.let { bytesSentTotal / it.toFloat() }
@@ -128,8 +128,8 @@ class FileManager(
             logger.error { "Error occurred while extracting ${file.name}: ${e.message}" }
             Result.failure(
                 ZipExtractionException(
-                    "Error during ZIP extraction of ${file.name}: ${e.localizedMessage}"
-                )
+                    "Error during ZIP extraction of ${file.name}: ${e.localizedMessage}",
+                ),
             )
         }
     }

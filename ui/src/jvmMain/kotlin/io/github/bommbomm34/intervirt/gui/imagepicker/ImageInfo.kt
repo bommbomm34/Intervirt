@@ -23,28 +23,28 @@ import org.jetbrains.compose.resources.stringResource
 fun ImageInfo(
     image: Image,
     onInstall: () -> Unit,
-    onDismiss: () -> Unit
-){
-    Overlay (0.8f) {
-        AlignedBox(Alignment.TopStart){
+    onDismiss: () -> Unit,
+) {
+    Overlay(0.8f) {
+        AlignedBox(Alignment.TopStart) {
             ImageIcon(image)
         }
-        AlignedBox(Alignment.TopCenter){
+        AlignedBox(Alignment.TopCenter) {
             Text(
                 text = image.toReadableName(),
-                fontSize = 24.sp
+                fontSize = 24.sp,
             )
         }
-        AlignedBox(Alignment.TopEnd){
+        AlignedBox(Alignment.TopEnd) {
             CloseButton(onDismiss)
         }
-        AlignedBox(Alignment.Center){
-            CenterColumn (Modifier.padding(64.dp)) {
+        AlignedBox(Alignment.Center) {
+            CenterColumn(Modifier.padding(64.dp)) {
                 SelectionContainer {
                     Text(image.description)
                 }
                 GeneralSpacer()
-                Button(onInstall){
+                Button(onInstall) {
                     Text(stringResource(Res.string.install_os))
                 }
             }

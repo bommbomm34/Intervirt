@@ -21,11 +21,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.gui.components.buttons.SendButton
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailEditor
@@ -40,7 +36,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun MailClient(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     val logger = rememberLogger("MailClient")
     val appState = koinInject<AppState>()
@@ -62,11 +58,12 @@ fun MailClient(
         mails.clear()
         mails.addAll(client.getMails().getOrThrow())
     }
-    fun openMailEditor(mail: Mail? = null){
+
+    fun openMailEditor(mail: Mail? = null) {
         appState.openDialog {
             MailEditor(
                 sender = client.mailUser!!,
-                onCancel = appState::closeDialog
+                onCancel = appState::closeDialog,
             ) {
                 appState.closeDialog()
                 scope.launch {
@@ -80,7 +77,7 @@ fun MailClient(
     proxyUrl?.let { proxy ->
         if (initialized) {
             // Send button
-            AlignedBox(Alignment.BottomEnd){
+            AlignedBox(Alignment.BottomEnd) {
                 SendButton { openMailEditor() }
             }
             CenterColumn {
@@ -88,7 +85,7 @@ fun MailClient(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp),
                 ) {
                     // Refresh button
                     IconButton(
@@ -98,11 +95,11 @@ fun MailClient(
                                     loadMails()
                                 }
                             }
-                        }
+                        },
                     ) {
                         GeneralIcon(
                             imageVector = TablerIcons.Refresh,
-                            contentDescription = stringResource(Res.string.refresh)
+                            contentDescription = stringResource(Res.string.refresh),
                         )
                     }
                 }
@@ -134,7 +131,7 @@ fun MailClient(
                                         openMailEditor(mail)
                                     }
                                 }
-                            }
+                            },
                         ) { appState.closeDialog() }
                     }
                 }
@@ -145,7 +142,7 @@ fun MailClient(
                     appState.runDialogCatching {
                         client.init(
                             mailConnectionDetails = details,
-                            proxy = proxy
+                            proxy = proxy,
                         ).getOrThrow()
                         initialized = true
                         loadMails()

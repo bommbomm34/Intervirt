@@ -12,13 +12,13 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AddButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     IconButton(onClick = onClick) {
         Icon(
             imageVector = TablerIcons.Plus,
             contentDescription = stringResource(Res.string.add),
-            tint = MaterialTheme.colors.onBackground
+            tint = MaterialTheme.colors.onBackground,
         )
     }
 }

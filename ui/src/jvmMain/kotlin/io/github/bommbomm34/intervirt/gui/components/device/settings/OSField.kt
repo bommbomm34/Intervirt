@@ -11,13 +11,13 @@ import io.github.bommbomm34.intervirt.data.ViewDevice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun OSField(device: ViewDevice.Computer){
+fun OSField(device: ViewDevice.Computer) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             value = device.image,
             onValueChange = {},
             label = { Text(stringResource(Res.string.os)) },
-            enabled = false
+            enabled = false,
         )
     }
 }

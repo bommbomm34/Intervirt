@@ -23,12 +23,12 @@ import org.koin.compose.koinInject
 @Composable
 fun SyncButton(running: Boolean) {
     val appState = koinInject<AppState>()
-    val guestManager = koinInject <GuestManager>()
+    val guestManager = koinInject<GuestManager>()
     val configuration = koinInject<IntervirtConfiguration>()
     val scope = rememberCoroutineScope()
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
-    if (running){
+    if (running) {
         IconButton(
             onClick = {
                 scope.launch {
@@ -39,7 +39,7 @@ fun SyncButton(running: Boolean) {
                         if (syncFailed) {
                             appState.openDialog(
                                 importance = Importance.ERROR,
-                                message = it.log()
+                                message = it.log(),
                             )
                             coroutineContext.cancel()
                         }
@@ -47,12 +47,12 @@ fun SyncButton(running: Boolean) {
                     syncing = false
                 }
             },
-            enabled = !syncing
+            enabled = !syncing,
         ) {
             Icon(
                 imageVector = if (syncFailed) TablerIcons.RefreshAlert else TablerIcons.Refresh,
                 contentDescription = stringResource(if (syncing) Res.string.syncing else Res.string.sync_guest),
-                tint = MaterialTheme.colors.onBackground
+                tint = MaterialTheme.colors.onBackground,
             )
         }
     }

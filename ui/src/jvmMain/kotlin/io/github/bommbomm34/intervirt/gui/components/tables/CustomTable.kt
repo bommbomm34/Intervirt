@@ -17,8 +17,8 @@ import org.koin.compose.koinInject
 @Composable
 fun CustomTable(
     headers: List<String>,
-    content: List<List<@Composable () -> Unit>>
-){
+    content: List<List<@Composable () -> Unit>>,
+) {
     SelectionContainer {
         DataTable(
             columns = {
@@ -28,8 +28,8 @@ fun CustomTable(
                 headers.forEach {
                     column { VisibleText(it, true) }
                 }
-            }
-        ){
+            },
+        ) {
             content.forEach { row ->
                 row {
                     row.forEach {
@@ -44,11 +44,11 @@ fun CustomTable(
 }
 
 @Composable
-fun VisibleText(text: Any, bold: Boolean = false){
+fun VisibleText(text: Any, bold: Boolean = false) {
     val appEnv = koinInject<AppEnv>()
     Text(
         text = text.toString(),
         color = if (appEnv.isDarkMode()) Color.White else Color.Black,
-        fontWeight = if (bold) FontWeight.ExtraBold else null
+        fontWeight = if (bold) FontWeight.ExtraBold else null,
     )
 }

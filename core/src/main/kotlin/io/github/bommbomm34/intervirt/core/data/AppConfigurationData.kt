@@ -5,5 +5,5 @@ data class AppConfigurationData(
     val agentPort: Int,
     val intervirtFolder: String,
     val darkMode: Boolean,
-    val language: String
+    val language: String,
 )

@@ -5,11 +5,10 @@ import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 class DnsResolverManager(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     private val ioClient = osClient.getClient().ioClient
     private val logger = KotlinLogging.logger { }
@@ -18,13 +17,13 @@ class DnsResolverManager(
         name: String,
         type: String,
         nameserver: String,
-        reverse: Boolean
+        reverse: Boolean,
     ): Result<List<DnsRecord>> {
         val baseCommandList = listOf("/usr/bin/doggo", name, "--type", type, "--nameserver", nameserver, "--json")
         val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
         logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
         return ioClient.exec(
-            commands = commandList
+            commands = commandList,
         ).mapCatching { flow ->
             flow.getCommandResult()
                 .asResult()

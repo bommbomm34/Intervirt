@@ -10,11 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.gui.components.*
+import io.github.bommbomm34.intervirt.gui.components.AlignedColumn
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
+import io.github.bommbomm34.intervirt.gui.components.CenterRow
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberProxyManager
 import io.github.bommbomm34.intervirt.webview.Proxy
 import io.github.bommbomm34.intervirt.webview.WebView
@@ -24,7 +27,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Browser(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) {
     val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
@@ -41,13 +44,13 @@ fun Browser(
                 OutlinedTextField(
                     value = url,
                     onValueChange = { url = it },
-                    label = { Text(stringResource(Res.string.url)) }
+                    label = { Text(stringResource(Res.string.url)) },
                 )
             }
             GeneralSpacer()
             AlignedColumn(Alignment.End) {
                 Button(
-                    onClick = { currentUrl = url }
+                    onClick = { currentUrl = url },
                 ) {
                     Text(stringResource(Res.string.browse))
                 }
@@ -62,15 +65,15 @@ fun Browser(
                         url = currentUrl,
                         navigator = rememberWebViewNavigator(),
                         modifier = Modifier.fillMaxSize(),
-                        proxy = Proxy(it.host, it.port)
+                        proxy = Proxy(it.host, it.port),
                     )
                 },
                 onFailure = {
                     Text(
                         text = stringResource(Res.string.failed_to_load_proxy, it.localizedMessage),
-                        color = Color.Red
+                        color = Color.Red,
                     )
-                }
+                },
             )
         } else Text(stringResource(Res.string.waiting_for_container_proxy))
     }

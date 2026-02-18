@@ -8,7 +8,6 @@ import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
-import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.bommbomm34.intervirt.core.parseMailAddress
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
@@ -19,7 +18,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 
 class MailClientManager(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) : AsyncCloseable {
     private val store = osClient.getClient(this).store
     private val logger = KotlinLogging.logger { }
@@ -29,13 +28,13 @@ class MailClientManager(
 
     suspend fun init(
         mailConnectionDetails: MailConnectionDetails,
-        proxy: Address
+        proxy: Address,
     ): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             fun Properties.putDefaultProperties(
                 ref: String,
                 addr: Address,
-                safety: MailConnectionSafety
+                safety: MailConnectionSafety,
             ) {
                 when (safety) {
                     MailConnectionSafety.STARTTLS -> {
@@ -125,7 +124,7 @@ class MailClientManager(
                             onFailure = {
                                 logger.error(it) { "Invalid email: $msg" }
                                 null
-                            }
+                            },
                         )
                     }
                 }
@@ -162,7 +161,7 @@ class MailClientManager(
         username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
         password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD],
         smtpSafety = store[IntervirtOSStore.Accessor.SMTP_SAFETY],
-        imapSafety = store[IntervirtOSStore.Accessor.IMAP_SAFETY]
+        imapSafety = store[IntervirtOSStore.Accessor.IMAP_SAFETY],
     )
 
     suspend fun clearCredentials(): Result<Unit> = runSuspendingCatching {
@@ -176,7 +175,7 @@ class MailClientManager(
 
     private suspend inline fun <T> Store.useInbox(
         mode: Int = Folder.READ_ONLY,
-        crossinline block: Folder.() -> T
+        crossinline block: Folder.() -> T,
     ): T = withContext(Dispatchers.IO) {
         val inbox = getFolder(URLName("INBOX"))
         inbox.open(mode)
@@ -187,7 +186,7 @@ class MailClientManager(
 
     private fun getAuthenticator(
         username: String,
-        password: String
+        password: String,
     ): Authenticator = object : Authenticator() {
         override fun getPasswordAuthentication(): PasswordAuthentication {
             return PasswordAuthentication(username, password)
@@ -206,7 +205,7 @@ class MailClientManager(
         return store
     }
 
-    override suspend fun close() = withContext(Dispatchers.IO){
+    override suspend fun close() = withContext(Dispatchers.IO) {
         runCatching {
             logger.debug { "Closing SMTP session" }
             smtpSession?.transport?.close()

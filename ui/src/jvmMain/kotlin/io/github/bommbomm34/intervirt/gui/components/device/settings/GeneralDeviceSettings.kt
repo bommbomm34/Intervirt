@@ -23,16 +23,16 @@ import org.koin.compose.koinInject
 @Composable
 fun GeneralDeviceSettings(
     device: ViewDevice,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
     val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope()
     OutlinedTextField(
         value = device.id,
         onValueChange = {}, // ID can't be changed once set
         enabled = false,
-        label = { Text("ID") }
+        label = { Text("ID") },
     )
     GeneralSpacer()
     OutlinedTextField(
@@ -41,7 +41,7 @@ fun GeneralDeviceSettings(
             device.name = newName
             deviceManager.setName(device.device, newName)
         },
-        label = { Text(stringResource(Res.string.name)) }
+        label = { Text(stringResource(Res.string.name)) },
     )
     GeneralSpacer()
     Button(
@@ -60,11 +60,11 @@ fun GeneralDeviceSettings(
             }
 
         },
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
-    ){
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+    ) {
         Text(
             text = stringResource(Res.string.delete),
-            color = Color.White
+            color = Color.White,
         )
     }
 }

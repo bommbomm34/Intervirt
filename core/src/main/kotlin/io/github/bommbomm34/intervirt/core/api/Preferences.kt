@@ -1,23 +1,22 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.OS
-import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.*
 import kotlin.io.path.exists
 
 class Preferences {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
     private val data = mutableMapOf<String, String>()
-    private val dataFile: Path = File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
+    private val dataFile: Path =
+        File(System.getProperty("user.home") + File.separator + ".intervirt.config.json").toPath()
 
-    init { load() }
+    init {
+        load()
+    }
 
     fun loadString(key: String): String? = data[key]
 
@@ -27,20 +26,20 @@ class Preferences {
         flush()
     }
 
-    fun removeString(key: String){
+    fun removeString(key: String) {
         logger.debug { "Removing string $key" }
         data.remove(key)
         flush()
     }
 
     fun getAppEnv() = AppEnv(::env, ::saveString)
-    
+
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
 
     private fun flush() = Files.writeString(dataFile, defaultJson.encodeToString(data))
 
     private fun load() {
-        if (dataFile.exists()){
+        if (dataFile.exists()) {
             data.clear()
             data.putAll(defaultJson.decodeFromString(Files.readString(dataFile)))
         }

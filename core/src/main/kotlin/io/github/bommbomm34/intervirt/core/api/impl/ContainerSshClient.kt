@@ -23,12 +23,13 @@ class ContainerSshClient(port: Int) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
             HOST, port,
-            USERNAME, ""),
-        emptyMap<String, Any>()
+            USERNAME, "",
+        ),
+        emptyMap<String, Any>(),
     )
     private val sshClient = SshClient.setUpDefaultClient()
     private var session: ClientSession
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     init {
         val factory = SftpClientFactory.instance()
@@ -37,7 +38,6 @@ class ContainerSshClient(port: Int) : ContainerIOClient {
         session.auth().verify()
     }
 
-    
 
     override fun close() {
         session.close()

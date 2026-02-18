@@ -4,9 +4,13 @@ This document contains the API specification of the *Intervirt Agent* which acts
 
 ## WebSocket Endpoints
 
-The client requires one endpoint to be available via unencrypted WebSocket (`ws://`). It should be accessible through `ws://localhost:55436/containerManagement` via `GET`.
+The client requires one endpoint to be available via unencrypted WebSocket (`ws://`). It should be accessible through
+`ws://localhost:55436/containerManagement` via `GET`.
 
-Messages from the client will always be encoded in JSON. Messages from the server will also always be encoded in JSON. The programm will also send commands to the server. Below, you will see example requests and corresponding example responses. Please keep in mind that there are some more fields in the requests/responses to fill than the example requests/responses. See the *Tips* section to find the extra fields.
+Messages from the client will always be encoded in JSON. Messages from the server will also always be encoded in JSON.
+The programm will also send commands to the server. Below, you will see example requests and corresponding example
+responses. Please keep in mind that there are some more fields in the requests/responses to fill than the example
+requests/responses. See the *Tips* section to find the extra fields.
 
 ### Add container
 
@@ -470,7 +474,7 @@ Message from server:
 Intervirt has its own error codes:
 
 | Error code | Description                                                                                                        | Error text required |
-| ---------- | ------------------------------------------------------------------------------------------------------------------ | ------------------- |
+|------------|--------------------------------------------------------------------------------------------------------------------|---------------------|
 | 1          | There is an error available, but it's not defined by the Intervirt error codes explicitly.                         | yes                 |
 | 2          | There was an unsuccessful operation, but no error was given.                                                       | no                  |
 | 3          | The operation was already performed.                                                                               | no                  |
@@ -485,10 +489,13 @@ Intervirt has its own error codes:
 - Some commands in WebSockets require a stream instead a single answer (e.g. `wipe`).
 - Every client request in WebSockets will contain the field `type`.
 - The server should listen on all interfaces on port 55436
-- Keep in mind that every request over WebSockets in JSON will contain a field named ```uuid``` which is just a random UUIDv4.
+- Keep in mind that every request over WebSockets in JSON will contain a field named ```uuid``` which is just a random
+  UUIDv4.
 - Send status code ```-1``` explicitly if the task is not completed.
 - If no status code is sent, the client will default to the status code ```0```.
-- The example responses don't include ```refID```. Please include it in production. It should contain the ```uuid``` of the request which the response refers to.
-- Always return a ```type``` field in the JSON responses. It should be ```Version``` (if the client requests the version), otherwise ```General```
+- The example responses don't include ```refID```. Please include it in production. It should contain the ```uuid``` of
+  the request which the response refers to.
+- Always return a ```type``` field in the JSON responses. It should be ```Version``` (if the client requests the
+  version), otherwise ```General```
 
 If you have questions, simply contact me and I'll answer you as soon as possible.

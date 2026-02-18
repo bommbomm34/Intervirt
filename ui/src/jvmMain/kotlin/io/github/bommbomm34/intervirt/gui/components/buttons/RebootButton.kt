@@ -14,9 +14,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun RebootButton(running: Boolean){
+fun RebootButton(running: Boolean) {
     val appState = koinInject<AppState>()
-    val guestManager = koinInject <GuestManager>()
+    val guestManager = koinInject<GuestManager>()
     val scope = rememberCoroutineScope()
     val rebootText = stringResource(Res.string.reboot)
     val rebootingText = stringResource(Res.string.rebooting)
@@ -29,14 +29,14 @@ fun RebootButton(running: Boolean){
                     .onFailure {
                         appState.openDialog(
                             importance = Importance.ERROR,
-                            message = it.localizedMessage
+                            message = it.localizedMessage,
                         )
                     }
                 rebootButtonText = rebootText
             }
         },
-        enabled = running
-    ){
+        enabled = running,
+    ) {
         Text(rebootButtonText)
     }
 }

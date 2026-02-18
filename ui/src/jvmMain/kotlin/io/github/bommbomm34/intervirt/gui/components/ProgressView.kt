@@ -13,13 +13,13 @@ import io.github.bommbomm34.intervirt.core.readablePercentage
 fun ProgressView(
     progress: Float,
     message: String = "",
-    messageColor: Color = MaterialTheme.colors.onBackground
+    messageColor: Color = MaterialTheme.colors.onBackground,
 ) {
     CenterColumn {
         SelectionContainer {
             Text(
                 text = message,
-                color = messageColor
+                color = messageColor,
             )
         }
         GeneralSpacer(4.dp)

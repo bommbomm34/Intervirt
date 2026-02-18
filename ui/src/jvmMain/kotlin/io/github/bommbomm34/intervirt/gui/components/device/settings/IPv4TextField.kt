@@ -15,10 +15,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun Ipv4TextField(device: ViewDevice.Computer){
+fun Ipv4TextField(device: ViewDevice.Computer) {
     var validIpv4 by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
-    val deviceManager = koinInject <DeviceManager>()
+    val deviceManager = koinInject<DeviceManager>()
     OutlinedTextField(
         value = device.ipv4,
         onValueChange = {
@@ -31,14 +31,14 @@ fun Ipv4TextField(device: ViewDevice.Computer){
             }
         },
         label = {
-            if (validIpv4){
+            if (validIpv4) {
                 Text(stringResource(Res.string.ipv4_address))
             } else {
                 Text(
                     text = stringResource(Res.string.invalid_ipv4_address),
-                    color = Color.Red
+                    color = Color.Red,
                 )
             }
-        }
+        },
     )
 }

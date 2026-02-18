@@ -7,7 +7,10 @@ import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.parseAddress
-import io.github.bommbomm34.intervirt.gui.components.*
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
+import io.github.bommbomm34.intervirt.gui.components.CenterRow
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.gui.components.textfields.AddressTextField
 import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
 import org.jetbrains.compose.resources.stringResource
@@ -15,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun MailClientLogin(
     credentials: MailConnectionDetails,
-    onLogin: (MailConnectionDetails, saveCredentials: Boolean) -> Unit
+    onLogin: (MailConnectionDetails, saveCredentials: Boolean) -> Unit,
 ) {
     var smtpAddress by remember { mutableStateOf(credentials.smtpAddress.toString()) }
     var imapAddress by remember { mutableStateOf(credentials.imapAddress.toString()) }
@@ -37,13 +40,13 @@ fun MailClientLogin(
                     isSmtpAddressValid = valid
                 },
                 label = stringResource(Res.string.server_address, "SMTP"),
-                errorLabel = stringResource(Res.string.invalid_server_address, "SMTP")
+                errorLabel = stringResource(Res.string.invalid_server_address, "SMTP"),
             )
             GeneralSpacer()
             MailSafetyChooser(
                 protocol = "SMTP",
                 safety = smtpSafety,
-                onSafetyChange = { smtpSafety = it }
+                onSafetyChange = { smtpSafety = it },
             )
         }
         GeneralSpacer()
@@ -57,13 +60,13 @@ fun MailClientLogin(
                     isImapAddressValid = valid
                 },
                 label = stringResource(Res.string.server_address, "IMAP"),
-                errorLabel = stringResource(Res.string.invalid_server_address, "IMAP")
+                errorLabel = stringResource(Res.string.invalid_server_address, "IMAP"),
             )
             GeneralSpacer()
             MailSafetyChooser(
                 protocol = "IMAP",
                 safety = imapSafety,
-                onSafetyChange = { imapSafety = it }
+                onSafetyChange = { imapSafety = it },
             )
         }
         GeneralSpacer()
@@ -71,13 +74,13 @@ fun MailClientLogin(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text(stringResource(Res.string.username)) }
+            label = { Text(stringResource(Res.string.username)) },
         )
         GeneralSpacer()
         // Mail password
         PasswordTextField(
             value = password,
-            onValueChange = { password = it }
+            onValueChange = { password = it },
         )
         GeneralSpacer()
         // Remember checkbox
@@ -85,7 +88,7 @@ fun MailClientLogin(
             checked = saveDetails,
             onCheckedChange = { saveDetails = it },
             name = stringResource(Res.string.save_login_details),
-            tooltip = stringResource(Res.string.save_login_details_warning)
+            tooltip = stringResource(Res.string.save_login_details_warning),
         )
         GeneralSpacer()
         Button(
@@ -97,13 +100,13 @@ fun MailClientLogin(
                         imapAddress = imapAddress.parseAddress(),
                         imapSafety = imapSafety,
                         username = username,
-                        password = password
+                        password = password,
                     ),
-                    saveDetails
+                    saveDetails,
                 )
             },
             enabled = isSmtpAddressValid && smtpAddress.isNotBlank() &&
-                    isImapAddressValid && imapAddress.isNotBlank()
+                    isImapAddressValid && imapAddress.isNotBlank(),
         ) {
             Text(stringResource(Res.string.login))
         }

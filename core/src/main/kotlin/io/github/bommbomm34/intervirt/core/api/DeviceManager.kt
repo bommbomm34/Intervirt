@@ -36,7 +36,7 @@ class DeviceManager(
             ipv6 = generateIpv6(),
             mac = generateMac(),
             internetEnabled = false,
-            portForwardings = mutableListOf()
+            portForwardings = mutableListOf(),
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
@@ -52,7 +52,7 @@ class DeviceManager(
             id = id,
             name = name ?: id,
             x = x,
-            y = y
+            y = y,
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
@@ -142,14 +142,14 @@ class DeviceManager(
         device: Device.Computer,
         internalPort: Int,
         externalPort: Int,
-        protocol: String
+        protocol: String,
     ): Result<Unit> {
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings.add(PortForwarding(protocol, externalPort, internalPort))
         qemuClient.addPortForwarding(
             protocol = "tcp", // TODO: It should be editable,
             hostPort = externalPort,
-            guestPort = externalPort // Guest is not the container itself
+            guestPort = externalPort, // Guest is not the container itself
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
             val res = guestManager.addPortForwarding(device.id, internalPort, externalPort, protocol)
@@ -165,7 +165,7 @@ class DeviceManager(
         }
         qemuClient.removePortForwarding(
             protocol = protocol,
-            hostPort = externalPort
+            hostPort = externalPort,
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
             val res = guestManager.removePortForwarding(externalPort, protocol)
@@ -175,7 +175,7 @@ class DeviceManager(
 
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
         containerIOClients[computer.id]?.let { Result.success(it) } ?: if (virtualContainerIO) Result.success(
-            initVirtualIOClient(computer)
+            initVirtualIOClient(computer),
         ) else initSshClient(computer)
 
     suspend fun initSshClient(computer: Device.Computer): Result<ContainerSshClient> {
@@ -184,7 +184,7 @@ class DeviceManager(
             device = computer,
             internalPort = 22,
             externalPort = port,
-            protocol = "tcp"
+            protocol = "tcp",
         ).map {
             val sshClient = ContainerSshClient(port)
             containerIOClients[computer.id] = sshClient
@@ -202,8 +202,8 @@ class DeviceManager(
         val osClient = IntervirtOSClient(
             IntervirtOSClient.Client(
                 computer = computer,
-                ioClient = getIOClient(computer).getOrThrow()
-            )
+                ioClient = getIOClient(computer).getOrThrow(),
+            ),
         )
         osClient.init().getOrThrow()
         intervirtOSClients[computer.id] = osClient

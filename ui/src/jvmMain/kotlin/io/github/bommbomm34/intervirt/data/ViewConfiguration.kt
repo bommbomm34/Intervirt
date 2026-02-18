@@ -9,12 +9,14 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 
 // Stateful IntervirtConfiguration for the UI
 data class ViewConfiguration(
-    private val intervirtConfiguration: IntervirtConfiguration
+    private val intervirtConfiguration: IntervirtConfiguration,
 ) {
     var version by mutableStateOf(intervirtConfiguration.version)
     var author by mutableStateOf(intervirtConfiguration.author)
-    val devices = mutableStateListOf<ViewDevice>().apply { intervirtConfiguration.devices.forEach { add(it.toViewDevice()) } }
-    val connections = mutableStateListOf<ViewConnection>().apply { intervirtConfiguration.connections.forEach { add(it.toViewConnection()) } }
+    val devices =
+        mutableStateListOf<ViewDevice>().apply { intervirtConfiguration.devices.forEach { add(it.toViewDevice()) } }
+    val connections =
+        mutableStateListOf<ViewConnection>().apply { intervirtConfiguration.connections.forEach { add(it.toViewConnection()) } }
 
     fun update(configuration: ViewConfiguration) {
         author = configuration.author

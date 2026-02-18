@@ -14,7 +14,7 @@ fun App() {
             { Setup() },
             { Home() },
             { Settings() },
-            { About() }
-        )
+            { About() },
+        ),
     )
 }

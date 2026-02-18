@@ -12,21 +12,21 @@ import io.github.bommbomm34.intervirt.rememberManager
 
 @Composable
 fun MailServer(
-    osClient: IntervirtOSClient
-){
+    osClient: IntervirtOSClient,
+) {
     val mailServer = osClient.rememberManager(::MailServerManager)
     // Controls for server
-    AlignedBox(Alignment.TopEnd){
+    AlignedBox(Alignment.TopEnd) {
         NamedSystemServiceView(
             displayName = "SMTP",
             serviceName = "postfix",
-            serviceManager = mailServer.serviceManager
+            serviceManager = mailServer.serviceManager,
         )
         GeneralSpacer()
         NamedSystemServiceView(
             displayName = "IMAP",
             serviceName = "dovecot",
-            serviceManager = mailServer.serviceManager
+            serviceManager = mailServer.serviceManager,
         )
     }
     GeneralSpacer()

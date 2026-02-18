@@ -11,10 +11,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OptionsButton(onClick: () -> Unit) {
-    IconButton(onClick){
+    IconButton(onClick) {
         GeneralIcon(
             imageVector = TablerIcons.DotsVertical,
-            contentDescription = stringResource(Res.string.options)
+            contentDescription = stringResource(Res.string.options),
         )
     }
 }

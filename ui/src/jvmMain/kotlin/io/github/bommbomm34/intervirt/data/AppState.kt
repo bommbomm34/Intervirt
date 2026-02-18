@@ -34,12 +34,12 @@ class AppState(configuration: IntervirtConfiguration) {
 
     fun openDialog(
         importance: Importance,
-        message: String
+        message: String,
     ) {
         dialogState = DialogState.Regular(
             importance = importance,
             message = message,
-            visible = true
+            visible = true,
         )
     }
 
@@ -50,11 +50,12 @@ class AppState(configuration: IntervirtConfiguration) {
     /**
      * Open error dialog if result is failed, otherwise call `onSuccess`
      */
-    suspend inline fun <T> runDialogCatching(block: suspend () -> T): Result<T> = runSuspendingCatching(block).onFailure {
-        it.printStackTrace()
-        openDialog(
-            importance = Importance.ERROR,
-            message = it.stackTraceToString()
-        )
-    }
+    suspend inline fun <T> runDialogCatching(block: suspend () -> T): Result<T> =
+        runSuspendingCatching(block).onFailure {
+            it.printStackTrace()
+            openDialog(
+                importance = Importance.ERROR,
+                message = it.stackTraceToString(),
+            )
+        }
 }

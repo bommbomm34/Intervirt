@@ -17,13 +17,13 @@ fun NamedCheckbox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     name: String,
-    tooltip: String? = null
-){
+    tooltip: String? = null,
+) {
     val appEnv = koinInject<AppEnv>()
-    Row (verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
         )
         GeneralSpacer(2.dp)
         Column {

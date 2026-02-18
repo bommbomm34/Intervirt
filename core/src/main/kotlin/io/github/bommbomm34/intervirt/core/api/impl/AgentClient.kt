@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class AgentClient(
     appEnv: AppEnv,
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : GuestManager {
     private val logger = KotlinLogging.logger { }
     private var session: DefaultClientWebSocketSession? = null
@@ -36,7 +36,7 @@ class AgentClient(
         initialIpv6: String,
         mac: String,
         internet: Boolean,
-        image: String
+        image: String,
     ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIpv4, initialIpv6, mac, internet, image))
 
     override suspend fun removeContainer(id: String): Result<Unit> = justSend(RequestBody.RemoveContainer(id))
@@ -59,7 +59,7 @@ class AgentClient(
         id: String,
         internalPort: Int,
         externalPort: Int,
-        protocol: String
+        protocol: String,
     ): Result<Unit> =
         justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort, protocol))
 
@@ -143,14 +143,14 @@ class AgentClient(
                                 emit(
                                     ResponseBody.General(
                                         refID = body.uuid,
-                                        code = 100
-                                    ) as T
+                                        code = 100,
+                                    ) as T,
                                 )
                             } else throw exception
-                        }
+                        },
                 )
             },
-            onFailure = { return Result.failure(it) }
+            onFailure = { return Result.failure(it) },
         )
     }
 
@@ -161,7 +161,7 @@ class AgentClient(
                     method = HttpMethod.Get,
                     host = "localhost",
                     port = agentPort,
-                    path = "containerManagement"
+                    path = "containerManagement",
                 )
             }
             result.onSuccess {

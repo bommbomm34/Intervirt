@@ -14,20 +14,20 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun FileSaveView(
     filename: String,
-    onSave: (String) -> Unit
-){
+    onSave: (String) -> Unit,
+) {
     var currentFilename by remember { mutableStateOf(filename) }
     GeneralSpacer()
     CenterRow {
         OutlinedTextField(
             value = currentFilename,
             onValueChange = { currentFilename = it },
-            label = { Text(stringResource(Res.string.filename)) }
+            label = { Text(stringResource(Res.string.filename)) },
         )
         GeneralSpacer()
         Button(
-            onClick = { onSave(currentFilename) }
-        ){
+            onClick = { onSave(currentFilename) },
+        ) {
             Text(stringResource(Res.string.save))
         }
     }
