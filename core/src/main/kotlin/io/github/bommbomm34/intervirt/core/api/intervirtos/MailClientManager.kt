@@ -126,7 +126,7 @@ class MailClientManager(
         return withContext(Dispatchers.IO) {
             runSuspendingCatching {
                 logger.debug { "Deleting mail '${mail.subject}'" }
-                store.useInbox {
+                store.useInbox(Folder.READ_WRITE) {
                     messages[mail.index].setFlag(Flags.Flag.DELETED, true)
                 }
             }
@@ -167,7 +167,7 @@ class MailClientManager(
         val inbox = getFolder(URLName("INBOX"))
         inbox.open(mode)
         val res = inbox.block()
-        inbox.close()
+        inbox.close(true)
         return@withContext res
     }
 
