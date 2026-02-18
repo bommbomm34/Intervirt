@@ -18,13 +18,13 @@ fun MailListView(
     mails: List<Mail>,
     onClick: (Mail) -> Unit
 ) {
-    val headers = listOf(stringResource(Res.string.sender), stringResource(Res.string.subject))
+    val headers = listOf(stringResource(Res.string.subject), stringResource(Res.string.sender))
     ClickableTable(
         headers = headers,
         data = mails.map {
             listOf(
+                { VisibleText(it.subject) },
                 { VisibleText(it.sender) },
-                { VisibleText(it.receiver) },
             )
         }
     ){ onClick(mails[it]) }

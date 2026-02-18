@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.core.data
 import io.github.bommbomm34.intervirt.core.exceptions.InvalidMailException
 import jakarta.mail.Address
 import jakarta.mail.Message
+import jakarta.mail.Multipart
 import jakarta.mail.Session
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeMessage
@@ -32,10 +33,27 @@ fun Message.toMail(index: Int? = null): Result<Mail> {
             sender = sender,
             receiver = receiver,
             subject = subject,
-            content = content.toString(),
+            content = content.getString(),
             index = index
         )
     )
+}
+
+private fun Any.getString(): String {
+    when (this){
+        is String -> return this
+        is Multipart -> {
+            for (i in 0 until count){
+                val part = getBodyPart(i)
+                return when {
+                    part.isMimeType("text/plain") || part.isMimeType("text/html") -> part.content.toString()
+                    part.content is Multipart -> getString()
+                    else -> "[Unknown mime type ${part.contentType}]"
+                }
+            }
+        }
+    }
+    return "[Empty mail]"
 }
 
 private fun Address.toMailUser(): MailUser? = if (this is InternetAddress) MailUser(

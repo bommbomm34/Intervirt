@@ -88,6 +88,7 @@ fun MailClient(
                         MailView(
                             mail = it,
                             onDelete = {
+                                appState.closeDialog()
                                 scope.launch {
                                     appState.runDialogCatching {
                                         client.deleteMail(it).getOrThrow()
