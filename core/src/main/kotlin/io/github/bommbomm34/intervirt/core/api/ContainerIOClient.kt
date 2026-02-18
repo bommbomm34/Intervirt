@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
 interface ContainerIOClient : AutoCloseable {
+    val port: Int
+
     fun exec(commands: List<String>): Result<Flow<CommandStatus>>
     fun getPath(path: String): Path
 }

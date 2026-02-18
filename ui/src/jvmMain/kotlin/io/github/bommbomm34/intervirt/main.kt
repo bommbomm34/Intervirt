@@ -25,7 +25,7 @@ import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
-import io.github.bommbomm34.intervirt.gui.ShellView
+import io.github.bommbomm34.intervirt.gui.ShellViewWindow
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.Dialog
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
@@ -114,7 +114,7 @@ fun main() = application {
             DefaultWindowScope {
                 appState.openComputerShell?.let {
                     // Check if device has IntervirtOS installed
-                    if (it.hasIntervirtOS()) Main(it) else ShellView(it)
+                    if (it.hasIntervirtOS()) Main(it) else ShellViewWindow(it)
                 }
             }
         }

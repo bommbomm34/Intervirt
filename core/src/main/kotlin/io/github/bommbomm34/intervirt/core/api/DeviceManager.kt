@@ -21,6 +21,7 @@ class DeviceManager(
     private val logger = KotlinLogging.logger { }
     private val enableAgent = appEnv.enableAgent
     private val virtualContainerIO = appEnv.virtualContainerIO
+    private val virtualContainerIOPort = appEnv.virtualContainerIOPort
     private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
     private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()
 
@@ -193,7 +194,7 @@ class DeviceManager(
     }
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
-        val client = VirtualContainerIOClient(computer.id, executor, fileManager)
+        val client = VirtualContainerIOClient(computer.id, executor, fileManager, virtualContainerIOPort)
         containerIOClients[computer.id] = client
         return client
     }

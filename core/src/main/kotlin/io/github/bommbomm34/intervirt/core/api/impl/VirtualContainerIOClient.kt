@@ -12,6 +12,7 @@ class VirtualContainerIOClient(
     id: String,
     private val executor: Executor,
     fileManager: FileManager,
+    override val port: Int,
 ) : ContainerIOClient {
     private val virtualRoot = fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath()
 

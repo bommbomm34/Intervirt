@@ -19,7 +19,7 @@ import java.nio.file.Path
 private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
-class ContainerSshClient(port: Int) : ContainerIOClient {
+class ContainerSshClient(override val port: Int) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
             HOST, port,

@@ -120,6 +120,10 @@ data class AppEnv(
         env(it).toBoolean()
     }
 
+    var virtualContainerIOPort: Int by EnvDelegate("VIRTUAL_CONTAINER_IO_PORT", save) {
+        env(it)?.toInt() ?: 22
+    }
+
     var vmDiskUrl: String by EnvDelegate("VM_DISK_URL", save) {
         env(it) ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
     }
