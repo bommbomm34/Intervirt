@@ -19,6 +19,9 @@ fun CustomTable(
     headers: List<String>,
     content: List<List<@Composable () -> Unit>>,
 ) {
+    require((content.maxOfOrNull { it.size } ?: headers.size) == headers.size){
+        "Largest content row size is not equal to headers size!"
+    }
     SelectionContainer {
         DataTable(
             columns = {
@@ -30,7 +33,8 @@ fun CustomTable(
                 }
             },
         ) {
-            content.forEach { row ->
+            content.forEachIndexed { i, row ->
+
                 row {
                     row.forEach {
                         cell {

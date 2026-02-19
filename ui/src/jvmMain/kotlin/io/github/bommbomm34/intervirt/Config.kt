@@ -108,6 +108,13 @@ fun Dp.toPx() = density.run { toPx() }
 fun <T> IntervirtOSClient.rememberManager(func: (IntervirtOSClient) -> T): T = remember { func(this) }
 
 @Composable
+fun <T> IntervirtOSClient.rememberManager(func: (AppEnv, IntervirtOSClient) -> T): T {
+    val appEnv = koinInject<AppEnv>()
+    return remember { func(appEnv, this) }
+}
+
+
+@Composable
 fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 
 @Composable

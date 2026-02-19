@@ -166,6 +166,7 @@
     <string name="file_already_exists">The file already exists. Do you want to overwrite it?</string>
     <string name="copy">Copy</string>
     <string name="sure_to_delete_mail">Are you sure to delete this mail?</string>
+    <string name="sure_to_delete_user">Are you sure to delete this user?</string>
     <string name="content">Content</string>
     <string name="send">Send</string>
     <string name="mail_server_description">Simple mail server with SMTP, IMAP, antivirus and spam protection included</string>

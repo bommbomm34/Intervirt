@@ -17,7 +17,7 @@ class HttpServerManager(
     containerName = "apache2",
     containerImage = "ubuntu/apache2",
     portForwardings = listOf(PortForwarding("tcp", 80, 80)),
-    bind = "/etc/apache2",
+    volumes = mapOf("./" to "/etc/apache2"),
 ) {
     val docker = client.docker
     private val ioClient = client.ioClient

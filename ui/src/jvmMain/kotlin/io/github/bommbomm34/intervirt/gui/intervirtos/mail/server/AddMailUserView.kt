@@ -5,15 +5,18 @@ import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.add_user
 import intervirt.ui.generated.resources.email_address
 import intervirt.ui.generated.resources.username
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -21,12 +24,16 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AddMailUserView(
     mailServer: MailServerManager,
+    onClose: () -> Unit,
 ) {
     // TODO: Save the password more secure
     val scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var emailAddress by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    AlignedBox(Alignment.TopStart){
+        CloseButton(onClose)
+    }
     CenterColumn {
         OutlinedTextField(
             value = username,
@@ -52,6 +59,7 @@ fun AddMailUserView(
                     username = ""
                     emailAddress = ""
                     password = ""
+                    onClose()
                 }
             },
         ) {

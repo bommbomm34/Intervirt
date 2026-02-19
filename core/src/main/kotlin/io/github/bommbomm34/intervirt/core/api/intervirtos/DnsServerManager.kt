@@ -18,7 +18,7 @@ class DnsServerManager(
         PortForwarding("tcp", 53, 53),
         PortForwarding("udp", 53, 53),
     ),
-    bind = "/etc/coredns/"
+    volumes = mapOf("./" to "/etc/coredns")
 ) {
     private val ioClient = client.ioClient
     val docker = client.docker

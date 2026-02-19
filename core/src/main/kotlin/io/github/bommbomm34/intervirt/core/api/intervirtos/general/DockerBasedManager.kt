@@ -10,13 +10,18 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.createDirectory
 import kotlin.io.path.createParentDirectories
 
+/**
+ * `./` in `volumes` keys will be replaced with a default host path
+ * for the container.
+ */
 abstract class DockerBasedManager(
     osClient: IntervirtOSClient,
     val containerName: String,
     val containerImage: String,
     val portForwardings: List<PortForwarding> = emptyList(),
-    val bind: String? = null,
-    val env: Map<String, String> = emptyMap()
+    val volumes: Map<String, String> = emptyMap(),
+    val env: Map<String, String> = emptyMap(),
+    val hostName: String? = null,
 ) : AsyncCloseable {
     protected val client = osClient.getClient(this)
     private var internalId: String? = null
@@ -36,13 +41,16 @@ abstract class DockerBasedManager(
             return@withCatchingContext it
         }
         // Create new container
-        val hostPath = client.ioClient.getPath("/opt/intervirt/$containerName").createDirectories()
+        val hostPath = client.ioClient.getPath("/opt/intervirt/$containerName/")
+            .createDirectories()
+            .absolutePathString()
         val newId = client.docker.addContainer(
             name = containerName,
             image = containerImage,
             portForwardings = portForwardings,
-            volumes = bind?.let { mapOf(hostPath.absolutePathString() to bind) } ?: emptyMap(),
-            env = env
+            volumes = volumes.mapKeys { it.key.replace("./", hostPath) },
+            env = env,
+            hostName = hostName,
         ).getOrThrow()
         client.docker.startContainer(newId).getOrThrow()
         internalId = newId

@@ -12,15 +12,16 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
+import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import kotlin.coroutines.CoroutineContext
 
 class DockerManager(
     private val host: String,
@@ -28,6 +29,7 @@ class DockerManager(
 ) : AsyncCloseable {
     private val port = host.substringAfterLast(":").toInt()
     private var client: DockerClient? = null
+    private val logger = KotlinLogging.logger {  }
 
     suspend fun init(): Result<Unit> = catch {
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -46,6 +48,7 @@ class DockerManager(
         portForwardings: List<PortForwarding> = emptyList(),
         volumes: Map<String, String> = emptyMap(),
         env: Map<String, String> = emptyMap(),
+        hostName: String? = null,
     ): Result<String> = withCatchingContext(Dispatchers.IO) {
         pullImage(image).getOrThrow()
         val ports = portForwardings.map {
@@ -63,13 +66,15 @@ class DockerManager(
         val hostConfig = HostConfig.newHostConfig()
             .withPortBindings(ports.map { it.first })
             .withBinds(binds)
+            .withRestartPolicy(RestartPolicy.unlessStoppedRestart())
 
-        getClient().createContainerCmd(image)
+        val cmd = getClient().createContainerCmd(image)
             .withName(name)
             .withHostConfig(hostConfig)
             .withExposedPorts(ports.map { it.second })
             .withEnv(env.map { "${it.key}=${it.value}" })
-            .exec().id
+
+        (if (hostName != null) cmd.withHostName(hostName) else cmd).exec().id
     }
 
     suspend fun removeContainer(id: String): Result<Unit> = catch {
@@ -106,6 +111,9 @@ class DockerManager(
 
     suspend fun exec(id: String, commands: List<String>): Result<Flow<CommandStatus>> =
         withCatchingContext(Dispatchers.IO) {
+            logger.debug { "Executing ${commands.joinToString(" ")} on container $id"  }
+            // Before performing any operations, check its health
+            checkHealth(id).getOrThrow()
             val client = getClient()
             val exec = client
                 .execCreateCmd(id)
@@ -149,7 +157,13 @@ class DockerManager(
             client.pullImageCmd(image)
                 .exec(PullImageResultCallback())
                 .awaitCompletion()
-        } catch (_: NotModifiedException) {} // Ignore it
+        } catch (_: NotModifiedException) {
+        } // Ignore it
+    }
+
+    suspend fun checkHealth(id: String): Result<Unit> = catch {
+        val res = getClient().inspectContainerCmd(id).exec()
+        if (res.state.exitCodeLong != 0L) throw UnhealthyDockerContainerException(res.state.error ?: "Unknown error")
     }
 
     override suspend fun close(): Result<Unit> = catch {
@@ -167,7 +181,7 @@ class DockerManager(
     }
 
     private suspend fun catch(
-        block: suspend CoroutineScope.() -> Unit
+        block: suspend CoroutineScope.() -> Unit,
     ): Result<Unit> = withCatchingContext(Dispatchers.IO, block).recoverCatching {
         if (it is NotModifiedException) Unit else throw it
     }

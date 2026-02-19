@@ -55,8 +55,7 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
 
     @Suppress("ClassName")
     sealed class Accessor<T>(private val produce: (String?) -> T) {
-        var initialized = false
-        var value: T? = null
+        var value: Any? = UNINITIALIZED
         val name = this::class.simpleName!!
 
         object MAIL_USERNAME : Accessor<String>({ it ?: "" })
@@ -75,9 +74,17 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
             },
         )
 
+        // General
+        object HOSTNAME : Accessor<String?>({ it })
+
+        private object UNINITIALIZED
+
+        @Suppress("UNCHECKED_CAST")
         fun get(env: String?): T {
-            if (!initialized) value = produce(env)
-            return value!!
+            if (value is UNINITIALIZED){
+                value = produce(env)
+            }
+            return value as T
         }
     }
 }
