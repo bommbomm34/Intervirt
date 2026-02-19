@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.gui.components.AlignedColumn

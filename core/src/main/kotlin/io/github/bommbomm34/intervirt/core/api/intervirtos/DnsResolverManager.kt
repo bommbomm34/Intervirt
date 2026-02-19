@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult

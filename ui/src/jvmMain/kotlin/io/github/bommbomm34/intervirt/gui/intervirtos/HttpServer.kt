@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.enable_virtual_hosts
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer

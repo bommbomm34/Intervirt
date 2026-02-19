@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.gui.intervirtos.*
 import org.jetbrains.compose.resources.StringResource
 

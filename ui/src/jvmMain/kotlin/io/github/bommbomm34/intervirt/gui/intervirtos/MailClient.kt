@@ -14,7 +14,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
 import intervirt.ui.generated.resources.sure_to_delete_mail
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv

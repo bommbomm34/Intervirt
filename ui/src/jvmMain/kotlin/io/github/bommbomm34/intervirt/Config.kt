@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.data.AppConfigurationData

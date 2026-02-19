@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable

@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.core.api.impl
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
+import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +40,7 @@ class ContainerSshClient(override val port: Int) : ContainerIOClient {
     }
 
 
-    override fun close() {
+    override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         session.close()
         sshClient.stop()
         fs.close()

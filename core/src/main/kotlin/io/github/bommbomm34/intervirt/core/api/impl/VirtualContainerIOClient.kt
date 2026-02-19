@@ -21,7 +21,7 @@ class VirtualContainerIOClient(
 
     override fun getPath(path: String): Path = virtualRoot.resolve(path.normalize())
 
-    override fun close() {} // Nothing to close
+    override suspend fun close() = Result.success(Unit)
 
     private fun String.normalize() = if (startsWith("/")) substringAfter("/") else this
 }

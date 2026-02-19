@@ -43,7 +43,7 @@ suspend fun <T> withCatchingContext(
     context: CoroutineContext,
     block: suspend CoroutineScope.() -> T
 ): Result<T> = withContext(context){
-    runCatching {
+    runSuspendingCatching {
         block()
     }
 }
