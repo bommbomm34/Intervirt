@@ -6,4 +6,19 @@ data class DnsRecord(
     val dnsClass: String,
     val type: String,
     val data: String,
-)
+){
+    companion object {
+        fun parse(text: String): DnsRecord {
+            val splitted = text.split(" ")
+            return DnsRecord(
+                name = splitted[0],
+                ttl = splitted[1].toInt(),
+                dnsClass = splitted[2],
+                type = splitted[3],
+                data = splitted[4],
+            )
+        }
+    }
+
+    override fun toString() = "$name $ttl $dnsClass $type $data"
+}
