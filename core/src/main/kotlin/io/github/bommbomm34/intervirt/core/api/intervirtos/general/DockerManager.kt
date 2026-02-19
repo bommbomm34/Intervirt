@@ -2,6 +2,8 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
+import com.github.dockerjava.api.command.PullImageResultCallback
+import com.github.dockerjava.api.exception.NotModifiedException
 import com.github.dockerjava.api.model.*
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
@@ -12,11 +14,13 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.withCatchingContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
+import kotlin.coroutines.CoroutineContext
 
 class DockerManager(
     private val host: String,
@@ -25,7 +29,7 @@ class DockerManager(
     private val port = host.substringAfterLast(":").toInt()
     private var client: DockerClient? = null
 
-    suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO){
+    suspend fun init(): Result<Unit> = catch {
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
             .withDockerHost(host)
             .withDockerTlsVerify(false)
@@ -42,6 +46,7 @@ class DockerManager(
         portForwardings: List<PortForwarding>,
         volumes: Map<String, String>,
     ): Result<String> = withCatchingContext(Dispatchers.IO) {
+        pullImage(image).getOrThrow()
         val ports = portForwardings.map {
             val exposedPort = when (it.protocol) {
                 "tcp" -> ExposedPort.tcp(it.guestPort)
@@ -65,15 +70,15 @@ class DockerManager(
             .exec().id
     }
 
-    suspend fun removeContainer(id: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    suspend fun removeContainer(id: String): Result<Unit> = catch {
         getClient().removeContainerCmd(id).exec()
     }
 
-    suspend fun startContainer(id: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    suspend fun startContainer(id: String): Result<Unit> = catch {
         getClient().startContainerCmd(id).exec()
     }
 
-    suspend fun stopContainer(id: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    suspend fun stopContainer(id: String): Result<Unit> = catch {
         getClient().stopContainerCmd(id).exec()
     }
 
@@ -97,49 +102,60 @@ class DockerManager(
         res.state.running ?: false
     }
 
-    suspend fun exec(id: String, commands: List<String>): Result<Flow<CommandStatus>> = withCatchingContext(Dispatchers.IO) {
-        val client = getClient()
-        val exec = client
-            .execCreateCmd(id)
-            .withCmd(*commands.toTypedArray())
-            .withAttachStdout(true)
-            .withAttachStderr(true)
-            .exec()
-        val output = PipedOutputStream()
-        val reader = PipedInputStream(output).bufferedReader()
-        val callback = object : ResultCallback.Adapter<Frame>() {
-            override fun onNext(frame: Frame) {
-                output.write(frame.payload)
-                output.flush()
-            }
-
-            override fun onError(throwable: Throwable) = throw throwable // withCatchingContext will catch it
-
-            override fun onComplete() = output.close()
-        }
-        client
-            .execStartCmd(exec.id)
-            .exec(callback)
-        flow {
-            reader.useLines { lines ->
-                lines.forEach {
-                    emit(it.toCommandStatus())
-                }
-            }
-            callback.awaitCompletion()
-            val exitCode = client
-                .inspectExecCmd(exec.id)
+    suspend fun exec(id: String, commands: List<String>): Result<Flow<CommandStatus>> =
+        withCatchingContext(Dispatchers.IO) {
+            val client = getClient()
+            val exec = client
+                .execCreateCmd(id)
+                .withCmd(*commands.toTypedArray())
+                .withAttachStdout(true)
+                .withAttachStderr(true)
                 .exec()
-                .exitCodeLong
-            emit(exitCode.toInt().toCommandStatus())
+            val output = PipedOutputStream()
+            val reader = PipedInputStream(output).bufferedReader()
+            val callback = object : ResultCallback.Adapter<Frame>() {
+                override fun onNext(frame: Frame) {
+                    output.write(frame.payload)
+                    output.flush()
+                }
+
+                override fun onError(throwable: Throwable) = throw throwable // withCatchingContext will catch it
+
+                override fun onComplete() = output.close()
+            }
+            client
+                .execStartCmd(exec.id)
+                .exec(callback)
+            flow {
+                reader.useLines { lines ->
+                    lines.forEach {
+                        emit(it.toCommandStatus())
+                    }
+                }
+                callback.awaitCompletion()
+                val exitCode = client
+                    .inspectExecCmd(exec.id)
+                    .exec()
+                    .exitCodeLong
+                emit(exitCode.toInt().toCommandStatus())
+            }
         }
+
+    // TODO: Show progress with a flow
+    suspend fun pullImage(image: String): Result<Unit> = catch {
+        val client = getClient()
+        try {
+            client.pullImageCmd(image)
+                .exec(PullImageResultCallback())
+                .awaitCompletion()
+        } catch (_: NotModifiedException) {} // Ignore it
     }
 
-    override suspend fun close(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    override suspend fun close(): Result<Unit> = catch {
         getClient().close()
         deviceManager.removePortForwarding(
             externalPort = port,
-            protocol = "tcp"
+            protocol = "tcp",
         ).getOrThrow()
     }
 
@@ -147,5 +163,11 @@ class DockerManager(
         val dockerClient = client
         require(dockerClient != null) { "Docker client is not successfully initialized" }
         return dockerClient
+    }
+
+    private suspend fun catch(
+        block: suspend CoroutineScope.() -> Unit
+    ): Result<Unit> = withCatchingContext(Dispatchers.IO, block).recoverCatching {
+        if (it is NotModifiedException) Unit else throw it
     }
 }

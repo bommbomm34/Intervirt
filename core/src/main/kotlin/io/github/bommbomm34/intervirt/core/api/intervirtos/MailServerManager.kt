@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import io.github.bommbomm34.intervirt.core.api.DockerBasedManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
@@ -14,7 +14,7 @@ class MailServerManager(
 ) : DockerBasedManager(
     osClient = osClient,
     containerName = "mailserver",
-    containerImage = "mailserver/docker-mailserver",
+    containerImage = "ghcr.io/docker-mailserver/docker-mailserver:latest",
     portForwardings = listOf(
         PortForwarding("tcp", 25, 25), // SMTP
         PortForwarding("tcp", 143, 143), // IMAP

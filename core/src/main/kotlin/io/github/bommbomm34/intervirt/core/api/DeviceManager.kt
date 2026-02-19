@@ -219,13 +219,16 @@ class DeviceManager(
 
     suspend fun getDockerManager(computer: Device.Computer): Result<DockerManager> = runSuspendingCatching {
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
-        val port = getFreePort()
-        addPortForwarding(
-            device = computer,
-            internalPort = 8666,
-            externalPort = port,
-            protocol = "tcp"
-        ).getOrThrow()
+        val port = if (!virtualContainerIO) {
+            val freePort = getFreePort()
+            addPortForwarding(
+                device = computer,
+                internalPort = 2375,
+                externalPort = freePort,
+                protocol = "tcp"
+            ).getOrThrow()
+            freePort
+        } else 2375
         val dockerManager = DockerManager("tcp://127.0.0.1:$port", this)
         dockerManagers[computer.id] = dockerManager
         dockerManager
@@ -269,7 +272,8 @@ class DeviceManager(
 
     override suspend fun close() = runSuspendingCatching {
         intervirtOSClients.forEach { (_, client) -> client.close().getOrThrow() }
-        containerIOClients.forEach { (_, client) -> client.close() }
+        dockerManagers.forEach { (_, manager) -> manager.close().getOrThrow() }
+        containerIOClients.forEach { (_, client) -> client.close().getOrThrow() }
     }
 }
 

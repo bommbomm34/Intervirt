@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import io.github.bommbomm34.intervirt.core.api.DockerBasedManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
