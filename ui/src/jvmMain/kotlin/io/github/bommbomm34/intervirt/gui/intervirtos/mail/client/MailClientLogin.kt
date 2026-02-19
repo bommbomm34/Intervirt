@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos.mail.client
 
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -27,7 +28,7 @@ fun MailClientLogin(
     var isSmtpAddressValid by remember { mutableStateOf(true) }
     var isImapAddressValid by remember { mutableStateOf(true) }
     var username by remember { mutableStateOf(credentials.username) }
-    var password by remember { mutableStateOf(credentials.password) }
+    var password = rememberTextFieldState(credentials.password)
     var saveDetails by remember { mutableStateOf(false) }
     CenterColumn {
         // SMTP Address
@@ -78,10 +79,7 @@ fun MailClientLogin(
         )
         GeneralSpacer()
         // Mail password
-        PasswordTextField(
-            value = password,
-            onValueChange = { password = it },
-        )
+        PasswordTextField(password)
         GeneralSpacer()
         // Remember checkbox
         NamedCheckbox(
@@ -100,7 +98,7 @@ fun MailClientLogin(
                         imapAddress = imapAddress.parseAddress(),
                         imapSafety = imapSafety,
                         username = username,
-                        password = password,
+                        password = password.text.toString(),
                     ),
                     saveDetails,
                 )

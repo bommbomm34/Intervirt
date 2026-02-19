@@ -1,6 +1,9 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos.mail.server
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -30,7 +33,7 @@ fun AddMailUserView(
     val scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var emailAddress by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var password = rememberTextFieldState()
     AlignedBox(Alignment.TopStart){
         CloseButton(onClose)
     }
@@ -47,18 +50,15 @@ fun AddMailUserView(
             label = { Text(stringResource(Res.string.email_address)) },
         )
         GeneralSpacer()
-        PasswordTextField(
-            value = password,
-            onValueChange = { password = it },
-        )
+        PasswordTextField(password)
         GeneralSpacer()
         Button(
             onClick = {
                 scope.launch {
-                    mailServer.addMailUser(MailUser(username, emailAddress), password).getOrThrow()
+                    mailServer.addMailUser(MailUser(username, emailAddress), password.text.toString()).getOrThrow()
                     username = ""
                     emailAddress = ""
-                    password = ""
+                    password.clearText()
                     onClose()
                 }
             },
