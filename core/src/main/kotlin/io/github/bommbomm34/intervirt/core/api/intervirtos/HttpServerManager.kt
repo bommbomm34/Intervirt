@@ -5,13 +5,9 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.createDirectory
-import kotlin.io.path.createParentDirectories
 import kotlin.io.path.writeText
 
 class HttpServerManager(
@@ -23,7 +19,6 @@ class HttpServerManager(
     portForwardings = listOf(PortForwarding("tcp", 80, 80)),
     bind = "/etc/apache2",
 ) {
-    private val client = osClient.getClient()
     val docker = client.docker
     private val ioClient = client.ioClient
     private val logger = KotlinLogging.logger { }

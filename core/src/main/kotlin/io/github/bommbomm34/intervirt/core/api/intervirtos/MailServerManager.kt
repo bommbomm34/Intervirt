@@ -20,7 +20,6 @@ class MailServerManager(
         PortForwarding("tcp", 143, 143), // IMAP
     )
 ) {
-    private val client = osClient.getClient()
     val docker = client.docker
     private val logger = KotlinLogging.logger { }
 

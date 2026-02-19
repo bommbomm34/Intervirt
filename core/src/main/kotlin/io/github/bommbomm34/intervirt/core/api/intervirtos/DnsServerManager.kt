@@ -5,7 +5,6 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlin.io.path.*
 
@@ -21,8 +20,6 @@ class DnsServerManager(
     ),
     bind = "/etc/coredns/"
 ) {
-    private val logger = KotlinLogging.logger {  }
-    private val client = osClient.getClient()
     private val ioClient = client.ioClient
     val docker = client.docker
 

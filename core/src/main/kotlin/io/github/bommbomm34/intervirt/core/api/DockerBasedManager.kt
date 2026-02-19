@@ -1,8 +1,8 @@
 package io.github.bommbomm34.intervirt.core.api
 
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 import kotlinx.coroutines.Dispatchers
 import kotlin.io.path.absolutePathString
@@ -15,7 +15,8 @@ abstract class DockerBasedManager(
     private val containerImage: String,
     private val portForwardings: List<PortForwarding> = emptyList(),
     private val bind: String? = null,
-) {
+) : AsyncCloseable {
+    protected val client = osClient.getClient(this)
     private var internalId: String? = null
     protected val id: String
         get() {
@@ -24,7 +25,6 @@ abstract class DockerBasedManager(
         }
 
     suspend fun init(): Result<String> = withCatchingContext(Dispatchers.IO) {
-        val client = osClient.getClient()
         val potentialId = client.docker.getContainer(containerName).getOrThrow()
         potentialId?.let { return@withCatchingContext it }
         // Create new container
@@ -40,4 +40,6 @@ abstract class DockerBasedManager(
         internalId = newId
         newId
     }
+
+    override suspend fun close(): Result<Unit> = Result.success(Unit)
 }
