@@ -43,8 +43,9 @@ class DockerManager(
     suspend fun addContainer(
         name: String,
         image: String,
-        portForwardings: List<PortForwarding>,
-        volumes: Map<String, String>,
+        portForwardings: List<PortForwarding> = emptyList(),
+        volumes: Map<String, String> = emptyMap(),
+        env: Map<String, String> = emptyMap(),
     ): Result<String> = withCatchingContext(Dispatchers.IO) {
         pullImage(image).getOrThrow()
         val ports = portForwardings.map {
@@ -67,6 +68,7 @@ class DockerManager(
             .withName(name)
             .withHostConfig(hostConfig)
             .withExposedPorts(ports.map { it.second })
+            .withEnv(env.map { "${it.key}=${it.value}" })
             .exec().id
     }
 

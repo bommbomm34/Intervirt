@@ -16,6 +16,7 @@ abstract class DockerBasedManager(
     val containerImage: String,
     val portForwardings: List<PortForwarding> = emptyList(),
     val bind: String? = null,
+    val env: Map<String, String> = emptyMap()
 ) : AsyncCloseable {
     protected val client = osClient.getClient(this)
     private var internalId: String? = null
@@ -41,6 +42,7 @@ abstract class DockerBasedManager(
             image = containerImage,
             portForwardings = portForwardings,
             volumes = bind?.let { mapOf(hostPath.absolutePathString() to bind) } ?: emptyMap(),
+            env = env
         ).getOrThrow()
         client.docker.startContainer(newId).getOrThrow()
         internalId = newId
