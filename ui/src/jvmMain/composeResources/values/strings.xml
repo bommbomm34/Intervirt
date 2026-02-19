@@ -168,4 +168,6 @@
     <string name="sure_to_delete_mail">Are you sure to delete this mail?</string>
     <string name="content">Content</string>
     <string name="send">Send</string>
+    <string name="mail_server_description">Simple mail server with SMTP, IMAP, antivirus and spam protection included</string>
+    <string name="dns_server_description">Simple DNS server based on CoreDNS</string>
 </resources>

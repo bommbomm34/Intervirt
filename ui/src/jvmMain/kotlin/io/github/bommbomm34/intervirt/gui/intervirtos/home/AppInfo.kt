@@ -47,6 +47,18 @@ val INTERVIRTOS_APPS = listOf(
         description = Res.string.mail_client_description,
         content = ::MailClient,
     ),
+    AppInfo(
+        name = Res.string.mail_server,
+        icon = TablerIcons.Server, // TODO: Change it to according icon
+        description = Res.string.mail_server_description,
+        content = ::MailServer,
+    ),
+    AppInfo(
+        name = Res.string.dns_server,
+        icon = TablerIcons.Server, // TODO: Change it to according icon
+        description = Res.string.dns_server_description,
+        content = ::DnsServer,
+    ),
 )
 
 data class AppInfo(
