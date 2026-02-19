@@ -57,7 +57,7 @@ class HttpServerManager(
         }
     }
 
-    fun getId(): String {
+    private fun getId(): String {
         val idClone = id
         require(idClone != null) { "HTTP server manager isn't initialized" }
         return idClone

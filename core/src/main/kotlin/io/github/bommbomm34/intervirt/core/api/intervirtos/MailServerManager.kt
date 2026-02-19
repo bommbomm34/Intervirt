@@ -86,7 +86,7 @@ class MailServerManager(
             .getOrThrow()
     }
 
-    fun getId(): String {
+    private fun getId(): String {
         val idClone = id
         require(idClone != null) { "Mail server manager isn't initialized" }
         return idClone
