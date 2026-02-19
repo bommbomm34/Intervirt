@@ -7,7 +7,10 @@ import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun DnsRecordsTable(records: List<DnsRecord>) {
+fun DnsRecordsTable(
+    records: List<DnsRecord>,
+    customElements: List<@Composable (DnsRecord) -> Unit> = emptyList(),
+) {
     SimpleTable(
         headers = listOf(
             stringResource(Res.string.name),
@@ -17,5 +20,6 @@ fun DnsRecordsTable(records: List<DnsRecord>) {
             stringResource(Res.string.data),
         ),
         content = records.map { listOf(it.name, it.ttl, it.dnsClass, it.type, it.data) },
+        customElements = customElements.mapIndexed { i, func -> { func(records[i]) } },
     )
 }

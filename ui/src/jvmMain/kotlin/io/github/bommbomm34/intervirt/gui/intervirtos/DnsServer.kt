@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
+import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.gui.components.launchDialogCatching
 import io.github.bommbomm34.intervirt.gui.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
@@ -55,7 +56,19 @@ fun DnsServer(
         }
         // Records
         CenterColumn {
-            DnsRecordsTable(records)
+            DnsRecordsTable(
+                records = records,
+                customElements = records.map {
+                    { record ->
+                        RemoveButton {
+                            scope.launchDialogCatching(appState){
+                                dnsServer.removeRecord(record).getOrThrow()
+                                records.remove(record)
+                            }
+                        }
+                    }
+                }
+            )
         }
     }
 }
