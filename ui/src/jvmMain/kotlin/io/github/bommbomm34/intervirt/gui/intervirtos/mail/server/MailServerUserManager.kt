@@ -39,7 +39,7 @@ fun MailServerUserManager(mailServer: MailServerManager) {
                 RemoveButton {
                     scope.launch {
                         runSuspendingCatching {
-                            mailServer.removeMailUser(it.username).getOrThrow()
+                            mailServer.removeMailUser(it).getOrThrow()
                         }
                     }
                 }

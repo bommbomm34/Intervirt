@@ -6,7 +6,9 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.gui.intervirtos.components.NamedSystemServiceView
+import io.github.bommbomm34.intervirt.gui.intervirtos.components.SystemServiceView
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.server.MailServerUserManager
 import io.github.bommbomm34.intervirt.rememberManager
 
@@ -17,16 +19,9 @@ fun MailServer(
     val mailServer = osClient.rememberManager(::MailServerManager)
     // Controls for server
     AlignedBox(Alignment.TopEnd) {
-        NamedSystemServiceView(
-            displayName = "SMTP",
-            serviceName = "postfix",
-            serviceManager = mailServer.serviceManager,
-        )
-        GeneralSpacer()
-        NamedSystemServiceView(
-            displayName = "IMAP",
-            serviceName = "dovecot",
-            serviceManager = mailServer.serviceManager,
+        DockerContainerView(
+            name = "mailserver",
+            dockerManager = mailServer.docker
         )
     }
     GeneralSpacer()

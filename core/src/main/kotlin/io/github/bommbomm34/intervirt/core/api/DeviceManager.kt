@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
@@ -24,6 +25,7 @@ class DeviceManager(
     private val virtualContainerIO = appEnv.virtualContainerIO
     private val virtualContainerIOPort = appEnv.virtualContainerIOPort
     private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
+    private val dockerManagers = mutableMapOf<String, DockerManager>()
     private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
@@ -61,18 +63,20 @@ class DeviceManager(
         return device
     }
 
-    suspend fun removeDevice(device: Device): Result<Unit> {
+    suspend fun removeDevice(device: Device): Result<Unit> = runSuspendingCatching {
         logger.debug { "Removing device $device" }
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
-        intervirtOSClients[device.id]?.close()
+        // Close services
+        intervirtOSClients[device.id]?.close()?.getOrThrow()
         intervirtOSClients.remove(device.id)
-        containerIOClients[device.id]?.close()
+        dockerManagers[device.id]?.close()?.getOrThrow()
+        dockerManagers.remove(device.id)
+        containerIOClients[device.id]?.close()?.getOrThrow()
         containerIOClients.remove(device.id)
-        return if (device is Device.Computer && enableAgent) {
-            val res = guestManager.removeContainer(device.id)
-            res.check(Unit)
-        } else Result.success(Unit)
+        if (device is Device.Computer && enableAgent) {
+            guestManager.removeContainer(device.id).getOrThrow()
+        }
     }
 
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> {
@@ -205,11 +209,26 @@ class DeviceManager(
             IntervirtOSClient.Client(
                 computer = computer,
                 ioClient = getIOClient(computer).getOrThrow(),
+                docker = getDockerManager(computer).getOrThrow()
             ),
         )
         osClient.init().getOrThrow()
         intervirtOSClients[computer.id] = osClient
         osClient
+    }
+
+    suspend fun getDockerManager(computer: Device.Computer): Result<DockerManager> = runSuspendingCatching {
+        dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
+        val port = getFreePort()
+        addPortForwarding(
+            device = computer,
+            internalPort = 8666,
+            externalPort = port,
+            protocol = "tcp"
+        ).getOrThrow()
+        val dockerManager = DockerManager("tcp://127.0.0.1:$port")
+        dockerManagers[computer.id] = dockerManager
+        dockerManager
     }
 
     private fun generateID(prefix: String): String {

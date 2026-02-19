@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.gui.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.gui.intervirtos.components.SystemServiceView
 import io.github.bommbomm34.intervirt.gui.intervirtos.http.VirtualHostsManager
 import io.github.bommbomm34.intervirt.rememberManager
@@ -22,9 +23,9 @@ fun HttpServer(
     val httpServer = osClient.rememberManager(::HttpServerManager)
     var enableVirtualHosts by remember { mutableStateOf(false) }
     AlignedBox(Alignment.TopEnd) {
-        SystemServiceView(
-            serviceName = "apache2",
-            serviceManager = httpServer.serviceManager,
+        DockerContainerView(
+            name = "apache2",
+            dockerManager = httpServer.docker
         )
     }
     GeneralSpacer()

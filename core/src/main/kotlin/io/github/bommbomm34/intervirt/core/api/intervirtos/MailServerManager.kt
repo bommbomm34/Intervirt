@@ -15,9 +15,8 @@ class MailServerManager(
     osClient: IntervirtOSClient,
 ) {
     private val client = osClient.getClient()
-    val serviceManager = client.serviceManager
+    val docker = client.docker
     private val ioClient = client.ioClient
-    private val docker = client.docker
     private var id: String? = null
     private val logger = KotlinLogging.logger { }
 

@@ -15,23 +15,33 @@ import org.koin.compose.koinInject
 
 @Composable
 fun DockerContainerView(
-    id: String,
+    name: String,
     dockerManager: DockerManager
 ) {
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()
+    var id: String? by remember { mutableStateOf(null) }
     var running by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         appState.runDialogCatching {
-            running = dockerManager.isContainerRunning(id).getOrThrow()
+            val newId = dockerManager
+                .getContainer(name)
+                .getOrThrow()
+            require(newId != null) { "Container $name doesn't exist" }
+            id = newId
+            running = dockerManager
+                .isContainerRunning(newId)
+                .getOrThrow()
         }
     }
-    PlayButton(running) {
-        scope.launch {
-            appState.runDialogCatching {
-                if (it) dockerManager.startContainer(id).getOrThrow()
-                else dockerManager.stopContainer(id).getOrThrow()
-                running = it
+    id?.let { idClone ->
+        PlayButton(running) {
+            scope.launch {
+                appState.runDialogCatching {
+                    if (it) dockerManager.startContainer(idClone).getOrThrow()
+                    else dockerManager.stopContainer(idClone).getOrThrow()
+                    running = it
+                }
             }
         }
     }

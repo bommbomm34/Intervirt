@@ -12,9 +12,9 @@ class IntervirtOSClient(private val client: Client) : AsyncCloseable {
     data class Client(
         val computer: Device.Computer,
         val ioClient: ContainerIOClient,
+        val docker: DockerManager,
         val store: IntervirtOSStore = IntervirtOSStore(ioClient),
         val serviceManager: SystemServiceManager = SystemServiceManager(ioClient),
-        val docker: DockerManager,
     )
 
     suspend fun init(): Result<Unit> = runSuspendingCatching {
