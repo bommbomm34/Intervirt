@@ -23,6 +23,7 @@ import io.github.bommbomm34.intervirt.copyToClipboard
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.Importance
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -86,6 +87,17 @@ fun Dialog() {
                     }
                 }
             }
+        }
+    }
+}
+
+fun CoroutineScope.launchDialogCatching(
+    appState: AppState,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    launch {
+        appState.runDialogCatching {
+            block()
         }
     }
 }
