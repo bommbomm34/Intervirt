@@ -1,15 +1,24 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import com.github.dockerjava.api.DockerClient
+import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.command.InspectContainerResponse
 import com.github.dockerjava.api.model.*
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
+import com.github.dockerjava.core.command.ExecStartResultCallback
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
+import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import java.io.BufferedInputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 
 class DockerManager(private val host: String) : AsyncCloseable {
     private var client: DockerClient? = null
@@ -80,6 +89,44 @@ class DockerManager(private val host: String) : AsyncCloseable {
             .inspectContainerCmd(id)
             .exec()
         res.state.running ?: false
+    }
+
+    suspend fun exec(id: String, commands: List<String>): Result<Flow<CommandStatus>> = withCatchingContext(Dispatchers.IO) {
+        val client = getClient()
+        val exec = client
+            .execCreateCmd(id)
+            .withCmd(*commands.toTypedArray())
+            .withAttachStdout(true)
+            .withAttachStderr(true)
+            .exec()
+        val output = PipedOutputStream()
+        val reader = PipedInputStream(output).bufferedReader()
+        val callback = object : ResultCallback.Adapter<Frame>() {
+            override fun onNext(frame: Frame) {
+                output.write(frame.payload)
+                output.flush()
+            }
+
+            override fun onError(throwable: Throwable) = throw throwable // withCatchingContext will catch it
+
+            override fun onComplete() = output.close()
+        }
+        client
+            .execStartCmd(exec.id)
+            .exec(callback)
+        flow {
+            reader.useLines { lines ->
+                lines.forEach {
+                    emit(it.toCommandStatus())
+                }
+            }
+            callback.awaitCompletion()
+            val exitCode = client
+                .inspectExecCmd(exec.id)
+                .exec()
+                .exitCodeLong
+            emit(exitCode.toInt().toCommandStatus())
+        }
     }
 
     override suspend fun close(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
