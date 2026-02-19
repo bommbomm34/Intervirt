@@ -151,7 +151,8 @@ class Downloader(
         }
     }
 
-    enum class Component {
-        VM_DISK, QEMU
+    enum class Component(val readableName: String) {
+        VM_DISK("VM Disk"),
+        QEMU("QEMU")
     }
 }

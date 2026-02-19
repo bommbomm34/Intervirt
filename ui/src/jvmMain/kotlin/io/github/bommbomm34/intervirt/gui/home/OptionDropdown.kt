@@ -116,6 +116,20 @@ fun OptionDropdown(
                     text = stringResource(Res.string.save_as),
                 )
             }
+            // Update
+            DropdownMenuItem(
+                onClick = {
+                    appState.openDialog {
+                        Updater(appState::closeDialog)
+                    }
+                    onDismiss()
+                },
+            ) {
+                IconText(
+                    imageVector = TablerIcons.Refresh,
+                    text = stringResource(Res.string.update),
+                )
+            }
             // Settings
             DropdownMenuItem(
                 onClick = { appState.currentScreenIndex = 2 },
