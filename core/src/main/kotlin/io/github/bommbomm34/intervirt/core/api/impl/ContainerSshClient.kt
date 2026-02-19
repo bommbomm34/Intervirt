@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.withCatchingContext
@@ -20,7 +21,10 @@ import java.nio.file.Path
 private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
-class ContainerSshClient(override val port: Int) : ContainerIOClient {
+class ContainerSshClient(
+    override val port: Int,
+    val deviceManager: DeviceManager
+) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
             HOST, port,
@@ -33,7 +37,6 @@ class ContainerSshClient(override val port: Int) : ContainerIOClient {
     private val logger = KotlinLogging.logger { }
 
     init {
-        val factory = SftpClientFactory.instance()
         sshClient.start()
         session = sshClient.connect(USERNAME, HOST, port).verify().session
         session.auth().verify()
@@ -44,6 +47,10 @@ class ContainerSshClient(override val port: Int) : ContainerIOClient {
         session.close()
         sshClient.stop()
         fs.close()
+        deviceManager.removePortForwarding(
+            externalPort = port,
+            protocol = "tcp"
+        ).getOrThrow()
     }
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> = runCatching {

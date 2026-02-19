@@ -2,12 +2,11 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
-import com.github.dockerjava.api.command.InspectContainerResponse
 import com.github.dockerjava.api.model.*
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
-import com.github.dockerjava.core.command.ExecStartResultCallback
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
@@ -16,11 +15,14 @@ import io.github.bommbomm34.intervirt.core.withCatchingContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.io.BufferedInputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 
-class DockerManager(private val host: String) : AsyncCloseable {
+class DockerManager(
+    private val host: String,
+    private val deviceManager: DeviceManager,
+) : AsyncCloseable {
+    private val port = host.substringAfterLast(":").toInt()
     private var client: DockerClient? = null
 
     suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO){
@@ -135,6 +137,10 @@ class DockerManager(private val host: String) : AsyncCloseable {
 
     override suspend fun close(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         getClient().close()
+        deviceManager.removePortForwarding(
+            externalPort = port,
+            protocol = "tcp"
+        ).getOrThrow()
     }
 
     private fun getClient(): DockerClient {

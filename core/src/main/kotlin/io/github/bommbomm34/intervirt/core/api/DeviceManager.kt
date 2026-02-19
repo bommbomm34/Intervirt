@@ -192,7 +192,7 @@ class DeviceManager(
             externalPort = port,
             protocol = "tcp",
         ).map {
-            val sshClient = ContainerSshClient(port)
+            val sshClient = ContainerSshClient(port, this)
             containerIOClients[computer.id] = sshClient
             sshClient
         }
@@ -226,7 +226,7 @@ class DeviceManager(
             externalPort = port,
             protocol = "tcp"
         ).getOrThrow()
-        val dockerManager = DockerManager("tcp://127.0.0.1:$port")
+        val dockerManager = DockerManager("tcp://127.0.0.1:$port", this)
         dockerManagers[computer.id] = dockerManager
         dockerManager
     }
