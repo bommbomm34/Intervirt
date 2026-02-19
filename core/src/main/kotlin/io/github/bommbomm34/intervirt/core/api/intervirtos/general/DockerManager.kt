@@ -75,6 +75,10 @@ class DockerManager(private val host: String) : AsyncCloseable {
         getClient().stopContainerCmd(id).exec()
     }
 
+    suspend fun restartContainer(id: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+        getClient().restartContainerCmd(id).exec()
+    }
+
     suspend fun getContainer(name: String): Result<String?> = withCatchingContext(Dispatchers.IO) {
         val containers = getClient()
             .listContainersCmd()
