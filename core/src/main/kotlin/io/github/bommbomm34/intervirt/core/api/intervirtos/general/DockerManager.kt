@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import com.github.dockerjava.api.DockerClient
+import com.github.dockerjava.api.command.InspectContainerResponse
 import com.github.dockerjava.api.model.*
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
@@ -63,6 +64,22 @@ class DockerManager(private val host: String) : AsyncCloseable {
 
     suspend fun stopContainer(id: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         getClient().stopContainerCmd(id).exec()
+    }
+
+    suspend fun getContainer(name: String): Result<String?> = withCatchingContext(Dispatchers.IO) {
+        val containers = getClient()
+            .listContainersCmd()
+            .withShowAll(true)
+            .withNameFilter(listOf(name))
+            .exec()
+        containers.getOrNull(0)?.id
+    }
+
+    suspend fun isContainerRunning(id: String): Result<Boolean> = withCatchingContext(Dispatchers.IO) {
+        val res = getClient()
+            .inspectContainerCmd(id)
+            .exec()
+        res.state.running ?: false
     }
 
     override suspend fun close(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
