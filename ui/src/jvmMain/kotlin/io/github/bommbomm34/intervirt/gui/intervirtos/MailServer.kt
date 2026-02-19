@@ -22,7 +22,7 @@ fun MailServer(
     AlignedBox(Alignment.TopEnd) {
         if (initialized){
             DockerContainerView(
-                name = "mailserver",
+                name = mailServer.containerName,
                 dockerManager = mailServer.docker
             )
         }

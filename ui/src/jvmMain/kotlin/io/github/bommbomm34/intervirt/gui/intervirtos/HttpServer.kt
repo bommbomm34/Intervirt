@@ -27,7 +27,7 @@ fun HttpServer(
     if (initialized){
         AlignedBox(Alignment.TopEnd) {
             DockerContainerView(
-                name = "apache2",
+                name = httpServer.containerName,
                 dockerManager = httpServer.docker
             )
         }

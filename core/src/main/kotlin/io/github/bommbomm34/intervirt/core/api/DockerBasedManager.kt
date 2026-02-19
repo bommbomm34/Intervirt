@@ -10,11 +10,11 @@ import kotlin.io.path.createDirectory
 import kotlin.io.path.createParentDirectories
 
 abstract class DockerBasedManager(
-    private val osClient: IntervirtOSClient,
-    private val containerName: String,
-    private val containerImage: String,
-    private val portForwardings: List<PortForwarding> = emptyList(),
-    private val bind: String? = null,
+    osClient: IntervirtOSClient,
+    val containerName: String,
+    val containerImage: String,
+    val portForwardings: List<PortForwarding> = emptyList(),
+    val bind: String? = null,
 ) : AsyncCloseable {
     protected val client = osClient.getClient(this)
     private var internalId: String? = null
