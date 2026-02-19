@@ -1,0 +1,15 @@
+package io.github.bommbomm34.intervirt.gui.components
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import io.github.bommbomm34.intervirt.data.AppState
+import kotlinx.coroutines.CoroutineScope
+import org.koin.compose.koinInject
+
+@Composable
+fun CatchingLaunchedEffect(block: suspend CoroutineScope.() -> Unit) {
+    val appState = koinInject<AppState>()
+    LaunchedEffect(Unit) {
+        appState.runDialogCatching { block() }
+    }
+}
