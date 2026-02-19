@@ -7,9 +7,12 @@ import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 
 @Composable
-fun CatchingLaunchedEffect(block: suspend CoroutineScope.() -> Unit) {
+fun CatchingLaunchedEffect(
+    key: Any? = Unit,
+    block: suspend CoroutineScope.() -> Unit
+) {
     val appState = koinInject<AppState>()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key) {
         appState.runDialogCatching { block() }
     }
 }

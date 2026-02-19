@@ -25,6 +25,7 @@ import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import org.koin.compose.koinInject
@@ -111,13 +112,10 @@ fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 
 @Composable
 fun DockerBasedManager.initialize(): MutableState<Boolean> {
-    val appState = koinInject<AppState>()
     val initialized = remember { mutableStateOf(false) }
-    LaunchedEffect(Unit){
-        appState.runDialogCatching {
-            init().getOrThrow()
-            initialized.value = true
-        }
+    CatchingLaunchedEffect {
+        init().getOrThrow()
+        initialized.value = true
     }
     return initialized
 }

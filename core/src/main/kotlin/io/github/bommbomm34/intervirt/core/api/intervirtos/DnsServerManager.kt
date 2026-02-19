@@ -39,7 +39,7 @@ class DnsServerManager(
         restart().getOrThrow()
     }
 
-    suspend fun listRecords(record: DnsRecord): Result<List<DnsRecord>> = withCatchingContext(Dispatchers.IO){
+    suspend fun listRecords(): Result<List<DnsRecord>> = withCatchingContext(Dispatchers.IO){
         getMainFile()
             .readText()
             .lines()
