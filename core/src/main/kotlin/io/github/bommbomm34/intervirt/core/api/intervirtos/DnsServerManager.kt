@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import io.github.bommbomm34.intervirt.core.api.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
@@ -10,32 +11,20 @@ import kotlin.io.path.*
 
 class DnsServerManager(
     osClient: IntervirtOSClient
+) : DockerBasedManager(
+    osClient = osClient,
+    containerName = "coredns",
+    containerImage = "coredns/coredns",
+    portForwardings = listOf(
+        PortForwarding("tcp", 53, 53),
+        PortForwarding("udp", 53, 53),
+    ),
+    bind = "/etc/coredns/"
 ) {
     private val logger = KotlinLogging.logger {  }
     private val client = osClient.getClient()
     private val ioClient = client.ioClient
     val docker = client.docker
-
-    private var id: String? = null
-
-    suspend fun init(): Result<String> = withCatchingContext(Dispatchers.IO) {
-        logger.debug { "Initializing DNS server manager" }
-        val potentialId = docker.getContainer("apache2").getOrThrow()
-        potentialId?.let { return@withCatchingContext it }
-        // Create new container
-        val hostPath = ioClient.getPath("/opt/intervirt/coredns")
-            .createParentDirectories()
-            .createDirectory()
-        val newId = docker.addContainer(
-            name = "coredns",
-            image = "coredns/coredns",
-            portForwardings = listOf(PortForwarding("tcp", 80, 80)),
-            volumes = mapOf(hostPath.absolutePathString() to "/etc/coredns")
-        ).getOrThrow()
-        // TODO: Setup CoreDNS
-        id = newId
-        newId
-    }
 
     suspend fun addRecord(record: DnsRecord): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         getMainFile().appendLines(listOf(record.toString()))
@@ -60,13 +49,7 @@ class DnsServerManager(
             .map { DnsRecord.parse(it) }
     }
 
-    suspend fun restart(): Result<Unit> = docker.restartContainer(getId())
-
-    private fun getId(): String {
-        val idClone = id
-        require(idClone != null) { "HTTP server manager isn't initialized" }
-        return idClone
-    }
+    suspend fun restart(): Result<Unit> = docker.restartContainer(id)
 
     private fun getMainFile() = ioClient.getPath("/opt/intervirt/coredns/main.local")
 }
