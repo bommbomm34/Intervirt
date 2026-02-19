@@ -132,7 +132,6 @@ class DockerManager(
                         emit(it.toCommandStatus())
                     }
                 }
-                callback.awaitCompletion()
                 val exitCode = client
                     .inspectExecCmd(exec.id)
                     .exec()

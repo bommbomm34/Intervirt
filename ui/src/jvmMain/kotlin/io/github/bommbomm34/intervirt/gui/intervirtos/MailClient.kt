@@ -63,6 +63,7 @@ fun MailClient(
         appState.openDialog {
             MailEditor(
                 sender = client.mailUser!!,
+                mail = mail,
                 onCancel = appState::closeDialog,
             ) {
                 appState.closeDialog()

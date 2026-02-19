@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.gui.intervirtos.mail.server
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -10,6 +11,7 @@ import intervirt.ui.generated.resources.email_address
 import intervirt.ui.generated.resources.username
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.CenterRow
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
@@ -25,7 +27,7 @@ fun AddMailUserView(
     var username by remember { mutableStateOf("") }
     var emailAddress by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    CenterRow {
+    CenterColumn {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
