@@ -3,7 +3,6 @@ import gobley.gradle.cargo.dsl.jvm
 
 plugins {
     kotlin("jvm")
-    kotlin("plugin.compose")
     alias(libs.plugins.gobleyCargo)
     alias(libs.plugins.gobleyUniffi)
     alias(libs.plugins.atomicfu)
@@ -12,22 +11,13 @@ plugins {
 group = "io.github.bommbomm34.intervirt"
 version = "0.0.1"
 
-dependencies {
-    implementation(libs.jna)
-    implementation(libs.skiko.awt)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.runtime)
-    testImplementation(kotlin("test"))
-}
-
 kotlin {
     jvmToolchain(21)
 }
 
-tasks.test {
-    useJUnitPlatform()
+dependencies {
+    implementation(libs.cryptography.core)
+    implementation(libs.cryptography.provider.optimal)
 }
 
 cargo {

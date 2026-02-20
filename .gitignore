@@ -12,3 +12,4 @@ out/
 .fleet/
 .kotlin
 webview/target
+secret/target
