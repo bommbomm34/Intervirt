@@ -1,13 +1,16 @@
 [versions]
 aboutLibraries = "13.2.1"
 androidx-lifecycle = "2.9.6"
-bossterm = "1.0.90"
+bossterm = "1.0.92"
+coil = "3.3.0"
 commons-validator = "1.10.1"
 compose-material3 = "1.9.0"
 compose-table = "0.2.3"
 compose-tabler-icons = "1.1.1"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.1"
+cryptography = "0.5.0"
+docker-java = "3.7.0"
 filekit = "0.12.0"
 gobley = "0.3.7"
 jakarta-mail = "2.0.2"
@@ -19,6 +22,7 @@ kotlin = "2.3.10"
 kotlin-logging = "8.0.01"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization-json = "1.10.0"
+ksafe = "1.6.0"
 ktor = "3.4.0"
 osdetector = "1.7.3"
 skiko = "0.9.41"
@@ -26,10 +30,6 @@ slf4j = "2.0.17"
 sshd = "3.0.0-M2"
 version-catalog-update = "1.0.1"
 zip4j = "2.11.6"
-docker-java = "3.7.0"
-coil = "3.3.0"
-ksafe = "1.6.0"
-cryptography = "0.5.0"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -38,6 +38,8 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 bossterm-compose = { module = "com.risaboss:bossterm-compose", version.ref = "bossterm" }
 bossterm-core = { module = "com.risaboss:bossterm-core", version.ref = "bossterm" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commons-validator" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
@@ -46,6 +48,10 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-table = { module = "io.github.windedge.table:table-m3", version.ref = "compose-table" }
 compose-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-tabler-icons" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography" }
+cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptography" }
+docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
+docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 jakarta-mail = { module = "com.sun.mail:jakarta.mail", version.ref = "jakarta-mail" }
@@ -60,6 +66,7 @@ kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.re
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+ksafe = { module = "eu.anifantakis:ksafe", version.ref = "ksafe" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
@@ -69,13 +76,6 @@ slf4j-reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref = "slf4j" }
 sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "sshd" }
 sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "sshd" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
-docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
-docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-ksafe = { module = "eu.anifantakis:ksafe", version.ref = "ksafe" }
-cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography" }
-cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptography" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
