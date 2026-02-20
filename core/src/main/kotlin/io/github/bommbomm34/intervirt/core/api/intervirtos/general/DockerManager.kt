@@ -11,8 +11,10 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
+import io.github.bommbomm34.intervirt.core.readablePercentage
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -20,6 +22,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
+import java.io.Closeable
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 
@@ -29,7 +33,7 @@ class DockerManager(
 ) : AsyncCloseable {
     private val port = host.substringAfterLast(":").toInt()
     private var client: DockerClient? = null
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     suspend fun init(): Result<Unit> = catch {
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -42,39 +46,47 @@ class DockerManager(
         client = DockerClientImpl.getInstance(config, httpClient)
     }
 
-    suspend fun addContainer(
+    fun addContainer(
         name: String,
         image: String,
         portForwardings: List<PortForwarding> = emptyList(),
         volumes: Map<String, String> = emptyMap(),
         env: Map<String, String> = emptyMap(),
         hostName: String? = null,
-    ): Result<String> = withCatchingContext(Dispatchers.IO) {
-        pullImage(image).getOrThrow()
-        val ports = portForwardings.map {
-            val exposedPort = when (it.protocol) {
-                "tcp" -> ExposedPort.tcp(it.guestPort)
-                "udp" -> ExposedPort.udp(it.guestPort)
-                else -> error("Invalid protocol ${it.protocol}")
+    ): Flow<ResultProgress<String>> = flow {
+        withCatchingContext(Dispatchers.IO) {
+            pullImage(image).collect {
+                when (it) {
+                    is ResultProgress.Message<*> -> emit(ResultProgress.proceed(it.percentage * 0.9f, it.message))
+                    is ResultProgress.Proceed<*> -> emit(ResultProgress.proceed(it.percentage * 0.9f))
+                    is ResultProgress.Result<*> -> {} // Do nothing
+                }
             }
-            val binding = Ports.Binding.bindPort(it.hostPort)
-            val portBinding = PortBinding(binding, exposedPort)
+            val ports = portForwardings.map {
+                val exposedPort = when (it.protocol) {
+                    "tcp" -> ExposedPort.tcp(it.guestPort)
+                    "udp" -> ExposedPort.udp(it.guestPort)
+                    else -> error("Invalid protocol ${it.protocol}")
+                }
+                val binding = Ports.Binding.bindPort(it.hostPort)
+                val portBinding = PortBinding(binding, exposedPort)
 
-            portBinding to exposedPort
-        }
-        val binds = volumes.map { Bind(it.key, Volume(it.value)) }
-        val hostConfig = HostConfig.newHostConfig()
-            .withPortBindings(ports.map { it.first })
-            .withBinds(binds)
-            .withRestartPolicy(RestartPolicy.unlessStoppedRestart())
+                portBinding to exposedPort
+            }
+            val binds = volumes.map { Bind(it.key, Volume(it.value)) }
+            val hostConfig = HostConfig.newHostConfig()
+                .withPortBindings(ports.map { it.first })
+                .withBinds(binds)
+                .withRestartPolicy(RestartPolicy.unlessStoppedRestart())
 
-        val cmd = getClient().createContainerCmd(image)
-            .withName(name)
-            .withHostConfig(hostConfig)
-            .withExposedPorts(ports.map { it.second })
-            .withEnv(env.map { "${it.key}=${it.value}" })
+            val cmd = getClient().createContainerCmd(image)
+                .withName(name)
+                .withHostConfig(hostConfig)
+                .withExposedPorts(ports.map { it.second })
+                .withEnv(env.map { "${it.key}=${it.value}" })
 
-        (if (hostName != null) cmd.withHostName(hostName) else cmd).exec().id
+            emit(ResultProgress.success((if (hostName != null) cmd.withHostName(hostName) else cmd).exec().id))
+        }.onFailure { emit(ResultProgress.failure(it)) }
     }
 
     suspend fun removeContainer(id: String): Result<Unit> = catch {
@@ -111,7 +123,7 @@ class DockerManager(
 
     suspend fun exec(id: String, commands: List<String>): Result<Flow<CommandStatus>> =
         withCatchingContext(Dispatchers.IO) {
-            logger.debug { "Executing ${commands.joinToString(" ")} on container $id"  }
+            logger.debug { "Executing ${commands.joinToString(" ")} on container $id" }
             // Before performing any operations, check its health
             checkHealth(id).getOrThrow()
             val client = getClient()
@@ -150,15 +162,43 @@ class DockerManager(
             }
         }
 
-    // TODO: Show progress with a flow
-    suspend fun pullImage(image: String): Result<Unit> = catch {
-        val client = getClient()
-        try {
-            client.pullImageCmd(image)
-                .exec(PullImageResultCallback())
-                .awaitCompletion()
-        } catch (_: NotModifiedException) {
-        } // Ignore it
+    fun pullImage(image: String): Flow<ResultProgress<Unit>> = flow {
+        catch {
+            val client = getClient()
+            val callback = object : PullImageResultCallback() {
+                override fun onStart(stream: Closeable) {
+                    runBlocking {
+                        emit(ResultProgress.proceed(0f, "Starting $image image pull"))
+                    }
+                }
+
+                override fun onNext(item: PullResponseItem) {
+                    val progress = item.progressDetail?.let { detail -> detail.total?.let { detail.current?.div(it) } }
+                    val percentage = progress?.toFloat() ?: 0f
+                    runBlocking {
+                        emit(ResultProgress.proceed(percentage, "Pulling $image ${percentage.readablePercentage()}"))
+                    }
+                }
+
+                override fun onError(throwable: Throwable) {
+                    runBlocking {
+                        emit(ResultProgress.failure(throwable))
+                    }
+                }
+
+                override fun onComplete() {
+                    runBlocking {
+                        emit(ResultProgress.success(Unit))
+                    }
+                }
+            }
+            try {
+                client.pullImageCmd(image)
+                    .exec(callback)
+                    .awaitCompletion()
+            } catch (_: NotModifiedException) {
+            } // Ignore it
+        }.onFailure { emit(ResultProgress.failure(it)) }
     }
 
     suspend fun checkHealth(id: String): Result<Unit> = catch {
