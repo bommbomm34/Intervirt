@@ -4,6 +4,7 @@ import ai.rever.bossterm.compose.PlatformServices
 import ai.rever.bossterm.compose.getPlatformServices
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
+import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -15,7 +16,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 class ContainerPlatformServices(
-    private val ioClient: ContainerIOClient,
+    private val ioClient: ContainerSshClient,
 ) : PlatformServices by getPlatformServices() {
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -24,7 +25,6 @@ class ContainerPlatformServices(
             Dispatchers.IO,
         ) {
             val pty = ioClient.pty(
-                scope = this,
                 command = config.command,
                 arguments = config.arguments,
                 environment = config.environment,

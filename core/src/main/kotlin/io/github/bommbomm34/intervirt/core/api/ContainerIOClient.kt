@@ -8,17 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
 interface ContainerIOClient : AsyncCloseable {
-    val port: Int
 
     fun exec(commands: List<String>): Result<Flow<CommandStatus>>
-
-    suspend fun pty(
-        scope: CoroutineScope,
-        command: String,
-        arguments: List<String>,
-        environment: Map<String, String> = emptyMap(),
-        workingDirectory: String? = null,
-    ): Result<Channel<ShellControlMessage>>
 
     fun getPath(path: String): Path
 }

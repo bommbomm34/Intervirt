@@ -4,7 +4,10 @@ import io.github.bommbomm34.intervirt.core.addFirst
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
@@ -12,7 +15,6 @@ class VirtualContainerIOClient(
     id: String,
     private val executor: Executor,
     fileManager: FileManager,
-    override val port: Int,
 ) : ContainerIOClient {
     private val virtualRoot = fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath()
 

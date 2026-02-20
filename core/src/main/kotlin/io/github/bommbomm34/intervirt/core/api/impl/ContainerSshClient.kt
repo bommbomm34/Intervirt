@@ -28,7 +28,7 @@ private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
 class ContainerSshClient(
-    override val port: Int,
+    val port: Int,
     val deviceManager: DeviceManager,
 ) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
@@ -48,8 +48,7 @@ class ContainerSshClient(
         session.auth().verify()
     }
 
-    override suspend fun pty(
-        scope: CoroutineScope,
+    suspend fun pty(
         command: String,
         arguments: List<String>,
         environment: Map<String, String>,
