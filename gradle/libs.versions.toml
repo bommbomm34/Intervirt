@@ -29,6 +29,7 @@ zip4j = "2.11.6"
 docker-java = "3.7.0"
 coil = "3.3.0"
 ksafe = "1.6.0"
+cryptography = "0.5.0"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -73,6 +74,8 @@ docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-ja
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 ksafe = { module = "eu.anifantakis:ksafe", version.ref = "ksafe" }
+cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography" }
+cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptography" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

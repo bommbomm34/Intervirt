@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.docker.java.core)
     implementation(libs.docker.java.transport.httpclient5)
     implementation(libs.ksafe)
+    implementation(libs.cryptography.core)
+    implementation(libs.cryptography.provider.optimal)
     // Test
     testImplementation(libs.koin.test)
     testImplementation(libs.kotlin.test)
