@@ -47,3 +47,5 @@ suspend fun <T> withCatchingContext(
         block()
     }
 }
+
+fun ByteArray.zeroize() = fill(0)

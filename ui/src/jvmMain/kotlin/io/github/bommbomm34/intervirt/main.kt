@@ -14,18 +14,15 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.terminal_window_title
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.Preferences
-import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.ShellViewWindow
+import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.gui.components.dialogs.Dialog
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
@@ -65,6 +62,10 @@ fun main() = application {
                 },
             )
             setDefaultExceptionHandler()
+        }
+        // Initialize SecretProvider
+        CatchingLaunchedEffect {
+            SecretProvider.init().getOrThrow()
         }
         density = LocalDensity.current
         // Main Window

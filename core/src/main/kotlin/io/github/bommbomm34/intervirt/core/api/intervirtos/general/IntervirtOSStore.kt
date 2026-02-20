@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.SecretProvider
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.defaultJson
@@ -29,14 +30,21 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
                 dataPath.createFile()
                 flush().getOrThrow()
             }
+            SecretProvider.init().getOrThrow() // If not already done
         }
     }
 
     suspend fun <T> set(accessor: Accessor<T>, value: T): Result<Unit> {
         logger.debug { "Setting ${accessor.name} to $value" }
-        data[accessor.name] = value.toString()
+        val content = when (accessor){
+            is Accessor.Secure -> SecretProvider.encrypt(value as ByteArray)
+            else -> value.toString()
+        }
+        data[accessor.name] = content
         return flush()
     }
+
+    suspend operator fun get(accessor: Accessor.Secure): ByteArray = data[accessor.name]?.let { SecretProvider.decrypt(it) } ?: accessor.default
 
     operator fun <T> get(accessor: Accessor<T>): T = accessor.get(data[accessor.name])
 
@@ -55,11 +63,11 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
 
     @Suppress("ClassName")
     sealed class Accessor<T>(private val produce: (String?) -> T) {
-        var value: Any? = UNINITIALIZED
+        private var value: Any? = UNINITIALIZED
         val name = this::class.simpleName!!
 
         object MAIL_USERNAME : Accessor<String>({ it ?: "" })
-        object MAIL_PASSWORD : Accessor<String>({ it ?: "" })
+        object MAIL_PASSWORD : Secure("".encodeToByteArray())
         object SMTP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
         object IMAP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
         object SMTP_SAFETY : Accessor<MailConnectionSafety>(
@@ -77,11 +85,14 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
         // General
         object HOSTNAME : Accessor<String?>({ it })
 
+        // `produce` won't be called on this class
+        abstract class Secure(val default: ByteArray = ByteArray(0)) : Accessor<ByteArray>({ ByteArray(0) })
+
         private object UNINITIALIZED
 
         @Suppress("UNCHECKED_CAST")
         fun get(env: String?): T {
-            if (value is UNINITIALIZED){
+            if (value is UNINITIALIZED) {
                 value = produce(env)
             }
             return value as T

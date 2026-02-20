@@ -4,15 +4,18 @@ import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.AES
 import eu.anifantakis.lib.ksafe.KSafe
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.zeroize
 
-class SecretGenerator {
+object SecretProvider {
     private val ksafe = KSafe()
     private var internalCipher: AES.IvAuthenticatedCipher? = null
     private val cipher: AES.IvAuthenticatedCipher
         get(){
-            check(internalCipher != null) { "SecretGenerator isn't initialized!" }
+            check(internalCipher != null) { "SecretProvider isn't initialized!" }
             return internalCipher!!
         }
+    val initialized: Boolean
+        get() = internalCipher != null
 
     suspend fun init(): Result<Unit> = runSuspendingCatching {
         val masterKey: ByteArray? = ksafe.getEncrypted("master-key", null)
@@ -35,13 +38,15 @@ class SecretGenerator {
         }
     }
 
-    suspend fun encrypt(plaintext: ByteArray): ByteArray = cipher.encrypt(plaintext)
+    suspend fun encrypt(plaintext: ByteArray): String {
+        val cipherText = cipher.encrypt(plaintext)
+        plaintext.zeroize()
+        return cipherText.decodeToString()
+    }
 
-    suspend fun decrypt(cipherText: ByteArray): ByteArray = cipher.decrypt(cipherText)
+    suspend fun decrypt(cipherText: String): ByteArray = cipher.decrypt(cipherText.encodeToByteArray())
 
     suspend fun wipe(): Result<Unit> = runSuspendingCatching {
         ksafe.delete("master-key")
     }
 }
-
-private fun ByteArray.zeroize() = fill(0)
