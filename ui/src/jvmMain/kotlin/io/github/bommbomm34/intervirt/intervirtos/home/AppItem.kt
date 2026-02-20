@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -26,11 +26,11 @@ fun AppItem(
             .padding(16.dp)
             .onClick(onClick = { onClick(appInfo) }),
     ) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+        GeneralIcon(
             imageVector = appInfo.icon,
             contentDescription = stringResource(appInfo.description),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(2.dp)
+        GeneralSpacer(2.dp)
         Text(stringResource(appInfo.name))
     }
 }

@@ -7,9 +7,9 @@ import compose.icons.tablericons.Folder
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.tables.ClickableTable
-import io.github.bommbomm34.intervirt.gui.components.tables.VisibleText
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.tables.ClickableTable
+import io.github.bommbomm34.intervirt.components.tables.VisibleText
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
@@ -20,21 +20,21 @@ fun FilesTable(
     files: List<File>,
     selectable: Boolean,
     onClick: (File) -> Unit,
-) = _root_ide_package_.io.github.bommbomm34.intervirt.components.tables.ClickableTable(
+) = ClickableTable(
     headers = headers,
     data = files.map { file ->
         val isFile = file.isFile
         listOf(
             {
                 // Icon
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+                GeneralIcon(
                     imageVector = if (isFile) TablerIcons.File else TablerIcons.Folder,
                     contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder),
                 )
             },
             {
                 // Filename
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.tables.VisibleText(file.name)
+                VisibleText(file.name)
             },
         )
     },

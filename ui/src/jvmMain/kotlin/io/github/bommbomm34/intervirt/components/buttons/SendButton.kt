@@ -6,7 +6,7 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.Send
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.send
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralIcon
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -18,7 +18,7 @@ fun SendButton(
         onClick = onClick,
         enabled = enabled,
     ) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+        GeneralIcon(
             imageVector = TablerIcons.Send,
             contentDescription = stringResource(Res.string.send),
         )

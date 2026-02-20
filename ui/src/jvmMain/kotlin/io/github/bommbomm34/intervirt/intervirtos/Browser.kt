@@ -14,10 +14,10 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.gui.components.AlignedColumn
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.CenterRow
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.AlignedColumn
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberProxyManager
 import io.github.bommbomm34.intervirt.webview.Proxy
 import io.github.bommbomm34.intervirt.webview.WebView
@@ -38,17 +38,17 @@ fun Browser(
     LaunchedEffect(Unit) {
         proxyUrl = browser.getProxyUrl()
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterRow {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedColumn(Alignment.CenterHorizontally) {
+    CenterColumn {
+        CenterRow {
+            AlignedColumn(Alignment.CenterHorizontally) {
                 OutlinedTextField(
                     value = url,
                     onValueChange = { url = it },
                     label = { Text(stringResource(Res.string.url)) },
                 )
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedColumn(Alignment.End) {
+            GeneralSpacer()
+            AlignedColumn(Alignment.End) {
                 Button(
                     onClick = { currentUrl = url },
                 ) {
@@ -56,7 +56,7 @@ fun Browser(
                 }
             }
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         val res = proxyUrl
         if (res != null) {
             res.fold(

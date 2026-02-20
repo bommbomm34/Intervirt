@@ -3,7 +3,7 @@ package io.github.bommbomm34.intervirt.intervirtos.components
 import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
+import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -20,7 +20,7 @@ fun SystemServiceView(
             running = serviceManager.status(serviceName).getOrThrow().active
         }
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.PlayButton(running) {
+    PlayButton(running) {
         scope.launch {
             appState.runDialogCatching {
                 if (it) serviceManager.start(serviceName).getOrThrow()

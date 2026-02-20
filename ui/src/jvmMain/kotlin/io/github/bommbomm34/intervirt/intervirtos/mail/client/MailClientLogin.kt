@@ -8,12 +8,12 @@ import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.parseAddress
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.CenterRow
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.components.textfields.AddressTextField
-import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
+import io.github.bommbomm34.intervirt.components.textfields.PasswordTextField
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -30,9 +30,9 @@ fun MailClientLogin(
     var username by remember { mutableStateOf(credentials.username) }
     var password = rememberTextFieldState(credentials.password)
     var saveDetails by remember { mutableStateOf(false) }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         // SMTP Address
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterRow {
+        CenterRow {
             AddressTextField(
                 value = smtpAddress,
                 valid = isSmtpAddressValid,
@@ -43,16 +43,16 @@ fun MailClientLogin(
                 label = stringResource(Res.string.server_address, "SMTP"),
                 errorLabel = stringResource(Res.string.invalid_server_address, "SMTP"),
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             MailSafetyChooser(
                 protocol = "SMTP",
                 safety = smtpSafety,
                 onSafetyChange = { smtpSafety = it },
             )
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         // IMAP Address
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterRow {
+        CenterRow {
             AddressTextField(
                 value = imapAddress,
                 valid = isImapAddressValid,
@@ -63,32 +63,32 @@ fun MailClientLogin(
                 label = stringResource(Res.string.server_address, "IMAP"),
                 errorLabel = stringResource(Res.string.invalid_server_address, "IMAP"),
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             MailSafetyChooser(
                 protocol = "IMAP",
                 safety = imapSafety,
                 onSafetyChange = { imapSafety = it },
             )
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         // Mail username
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(Res.string.username)) },
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         // Mail password
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.PasswordTextField(password)
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        PasswordTextField(password)
+        GeneralSpacer()
         // Remember checkbox
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+        NamedCheckbox(
             checked = saveDetails,
             onCheckedChange = { saveDetails = it },
             name = stringResource(Res.string.save_login_details),
             tooltip = stringResource(Res.string.save_login_details_warning),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         Button(
             onClick = {
                 onLogin(

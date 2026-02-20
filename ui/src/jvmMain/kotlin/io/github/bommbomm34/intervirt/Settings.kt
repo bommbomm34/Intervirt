@@ -13,14 +13,14 @@ import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
-import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfiguration
-import io.github.bommbomm34.intervirt.gui.components.configuration.DebugOptions
-import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.BackButton
+import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
+import io.github.bommbomm34.intervirt.components.configuration.DebugOptions
+import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.isDarkMode
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -56,26 +56,26 @@ fun Settings() {
         )
     }
     val confHash = remember { Objects.hash(appConf, vmConf) }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.BackButton {
+    AlignedBox(Alignment.TopStart) {
+        BackButton {
             appState.currentScreenIndex = 1
         }
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.configuration.AppConfiguration(appConf) {
+    AlignedBox(Alignment.Center) {
+        CenterColumn {
+            AppConfiguration(appConf) {
                 appConf = it
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.configuration.VMConfiguration(vmConf) {
+            GeneralSpacer()
+            VMConfiguration(vmConf) {
                 vmConf = it
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             Button(
                 onClick = {
                     appEnv.applyConfiguration(vmConf, appConf)
                     appState.openDialog {
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog(
+                        AcceptDialog(
                             message = stringResource(Res.string.restart_necessary_to_apply_changes),
                         ) {
                             exitProcess(0)
@@ -86,8 +86,8 @@ fun Settings() {
             ) {
                 Text(stringResource(Res.string.save_changes))
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-            if (appEnv.DEBUG_ENABLED) _root_ide_package_.io.github.bommbomm34.intervirt.components.configuration.DebugOptions()
+            GeneralSpacer()
+            if (appEnv.DEBUG_ENABLED) DebugOptions()
         }
     }
 }

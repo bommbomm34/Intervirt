@@ -25,7 +25,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -79,7 +79,7 @@ fun DeviceView(
             modifier = Modifier.size(appEnv.DEVICE_SIZE.dp, appEnv.DEVICE_SIZE.dp),
             tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(2.dp)
+        GeneralSpacer(2.dp)
         Text(device.name)
     }
 

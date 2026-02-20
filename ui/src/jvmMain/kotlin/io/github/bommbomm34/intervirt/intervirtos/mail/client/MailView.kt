@@ -24,11 +24,11 @@ import intervirt.ui.generated.resources.reply
 import intervirt.ui.generated.resources.to
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -52,17 +52,17 @@ fun MailView(
                 text = mail.subject,
                 fontSize = appEnv.MAIL_TITLE_FONT_SIZE.sp,
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             Text(
                 text = stringResource(Res.string.from, mail.sender),
                 color = FROM_TO_COLOR,
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(2.dp)
+            GeneralSpacer(2.dp)
             Text(
                 text = stringResource(Res.string.to, mail.receiver),
                 color = FROM_TO_COLOR,
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
@@ -73,21 +73,21 @@ fun MailView(
         }
     }
     // Delete, Reply and Close
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopEnd) {
+    AlignedBox(Alignment.TopEnd) {
         Column {
             // Close
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onClose)
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            CloseButton(onClose)
+            GeneralSpacer()
             // Reply
             IconButton(onReply) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+                GeneralIcon(
                     imageVector = TablerIcons.Send,
                     contentDescription = stringResource(Res.string.reply),
                 )
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             // Delete
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.RemoveButton(onDelete)
+            RemoveButton(onDelete)
         }
     }
 }

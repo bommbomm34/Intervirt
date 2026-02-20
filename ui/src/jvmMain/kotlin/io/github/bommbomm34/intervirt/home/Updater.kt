@@ -13,11 +13,11 @@ import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.readablePercentage
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.gui.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.rememberLogger
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -30,23 +30,23 @@ fun Updater(onClose: () -> Unit) {
     val scope = rememberCoroutineScope()
     val updates = remember { mutableStateListOf<Downloader.Component>() }
     val applyUpdates = remember { mutableStateListOf<Downloader.Component>() }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect {
+    CatchingLaunchedEffect {
         updates.clear()
         updates.addAll(downloader.checkUpdates().getOrThrow())
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         updates.forEach { component ->
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+            NamedCheckbox(
                 checked = applyUpdates.contains(component),
                 onCheckedChange = {
                     if (it) applyUpdates.add(component) else applyUpdates.remove(component)
                 },
                 name = component.readableName,
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
         }
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     // Update button
     Button(
         onClick = {

@@ -9,7 +9,7 @@ import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -33,7 +33,7 @@ fun DebugOptions() {
     ) {
         Text("Debug Agent")
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     Row {
         var command by remember { mutableStateOf("") }
         OutlinedTextField(
@@ -54,7 +54,7 @@ fun DebugOptions() {
             Text("Send")
         }
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     Button(
         onClick = {
             scope.launch {

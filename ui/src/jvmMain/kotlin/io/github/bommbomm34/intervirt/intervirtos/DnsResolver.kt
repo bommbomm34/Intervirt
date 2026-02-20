@@ -9,11 +9,11 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.rememberManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -45,14 +45,14 @@ fun DnsResolver(
     var reverseLookup by remember { mutableStateOf(false) }
     val records = remember { mutableStateListOf<DnsRecord>() }
     val scope = rememberCoroutineScope()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    AlignedBox(Alignment.Center) {
+        CenterColumn {
             OutlinedTextField(
                 value = domain,
                 onValueChange = { domain = it },
                 label = { Text(stringResource(Res.string.domain)) },
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
@@ -65,19 +65,19 @@ fun DnsResolver(
                     }
                 }
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             OutlinedTextField(
                 value = dnsServer,
                 onValueChange = { dnsServer = it },
                 label = { Text(stringResource(Res.string.dns_server)) },
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+            GeneralSpacer()
+            NamedCheckbox(
                 checked = reverseLookup,
                 onCheckedChange = { reverseLookup = it },
                 name = stringResource(Res.string.reverse_lookup),
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             Button(
                 onClick = {
                     records.clear()
@@ -97,8 +97,8 @@ fun DnsResolver(
             ) {
                 Text(stringResource(Res.string.lookup))
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-            _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable(records)
+            GeneralSpacer()
+            DnsRecordsTable(records)
         }
     }
 }

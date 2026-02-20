@@ -7,8 +7,8 @@ import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.filename
 import intervirt.ui.generated.resources.save
-import io.github.bommbomm34.intervirt.gui.components.CenterRow
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -17,14 +17,14 @@ fun FileSaveView(
     onSave: (String) -> Unit,
 ) {
     var currentFilename by remember { mutableStateOf(filename) }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterRow {
+    GeneralSpacer()
+    CenterRow {
         OutlinedTextField(
             value = currentFilename,
             onValueChange = { currentFilename = it },
             label = { Text(stringResource(Res.string.filename)) },
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         Button(
             onClick = { onSave(currentFilename) },
         ) {

@@ -15,8 +15,8 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.toViewDevice
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.imagepicker.ImagePicker
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.imagepicker.ImagePicker
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -40,7 +40,7 @@ fun AddDeviceButton() {
                     dropdownExpanded = false
                     // Add computer
                     appState.openDialog {
-                        _root_ide_package_.io.github.bommbomm34.intervirt.imagepicker.ImagePicker(
+                        ImagePicker(
                             onDismiss = {
                                 appState.openDialog(
                                     message = osIsNeededText,
@@ -77,7 +77,7 @@ fun AddDeviceButton() {
                     imageVector = TablerIcons.DevicesPc,
                     contentDescription = stringResource(Res.string.computer),
                 )
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(5.dp)
+                GeneralSpacer(5.dp)
                 Text(stringResource(Res.string.computer))
             }
             DropdownMenuItem(
@@ -95,7 +95,7 @@ fun AddDeviceButton() {
                     imageVector = TablerIcons.Switch,
                     contentDescription = stringResource(Res.string.computer),
                 )
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(5.dp)
+                GeneralSpacer(5.dp)
                 Text(stringResource(Res.string.switch))
             }
         }

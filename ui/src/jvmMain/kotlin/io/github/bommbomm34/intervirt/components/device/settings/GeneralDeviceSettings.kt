@@ -14,8 +14,8 @@ import intervirt.ui.generated.resources.name
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -34,7 +34,7 @@ fun GeneralDeviceSettings(
         enabled = false,
         label = { Text("ID") },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     OutlinedTextField(
         value = device.name,
         onValueChange = { newName ->
@@ -43,11 +43,11 @@ fun GeneralDeviceSettings(
         },
         label = { Text(stringResource(Res.string.name)) },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     Button(
         onClick = {
             appState.openDialog {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog(
+                AcceptDialog(
                     message = stringResource(Res.string.are_you_sure_to_remove_device, device.name),
                 ) {
                     scope.launch {

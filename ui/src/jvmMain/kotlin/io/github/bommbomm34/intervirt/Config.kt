@@ -15,16 +15,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import intervirt.ui.generated.resources.Res
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import org.koin.compose.koinInject
@@ -118,9 +119,15 @@ fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 
 @Composable
 fun DockerBasedManager.initialize(): MutableState<Boolean> {
+    val appState = koinInject<AppState>()
     val initialized = remember { mutableStateOf(false) }
     CatchingLaunchedEffect {
-        init().getOrThrow()
+        appState.openDialog {
+            ProgressDialog(
+                flow = init(),
+                onClose = ::close,
+            )
+        }
         initialized.value = true
     }
     return initialized

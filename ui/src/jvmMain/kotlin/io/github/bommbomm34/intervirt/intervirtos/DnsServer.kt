@@ -7,15 +7,15 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsServerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
-import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.gui.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.gui.intervirtos.components.DockerContainerView
-import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
-import io.github.bommbomm34.intervirt.gui.intervirtos.dns.server.AddDnsRecordView
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.buttons.AddButton
+import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
+import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
+import io.github.bommbomm34.intervirt.intervirtos.dns.server.AddDnsRecordView
 import io.github.bommbomm34.intervirt.initialize
 import io.github.bommbomm34.intervirt.rememberManager
 import org.koin.compose.koinInject
@@ -31,22 +31,22 @@ fun DnsServer(
     val records = remember { mutableStateListOf<DnsRecord>() }
 
     if (initialized) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect {
+        CatchingLaunchedEffect {
             records.clear()
             records.addAll(dnsServer.listRecords().getOrThrow())
         }
         // Start/Stop
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView(
+        AlignedBox(Alignment.TopStart) {
+            DockerContainerView(
                 name = dnsServer.containerName,
                 dockerManager = dnsServer.docker,
             )
         }
         // Add
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomEnd) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.AddButton {
+        AlignedBox(Alignment.BottomEnd) {
+            AddButton {
                 appState.openDialog {
-                    _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.dns.server.AddDnsRecordView(::close) {
+                    AddDnsRecordView(::close) {
                         scope.launchDialogCatching(appState) {
                             dnsServer.addRecord(it).getOrThrow()
                             records.add(it)
@@ -56,12 +56,12 @@ fun DnsServer(
             }
         }
         // Records
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
-            _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable(
+        CenterColumn {
+            DnsRecordsTable(
                 records = records,
                 customElements = records.map {
                     { record ->
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.RemoveButton {
+                        RemoveButton {
                             scope.launchDialogCatching(appState) {
                                 dnsServer.removeRecord(record).getOrThrow()
                                 records.remove(record)

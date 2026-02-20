@@ -10,14 +10,14 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
-import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.gui.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.AddButton
+import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.tables.SimpleTable
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -38,18 +38,18 @@ fun MailServerUserManager(
         users.clear()
         users.addAll(newUsers)
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect {
+    CatchingLaunchedEffect {
         retrieveUsers()
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.tables.SimpleTable(
+    GeneralSpacer()
+    SimpleTable(
         headers = headers.map { stringResource(it) } + "",
         content = users.map { listOf(it.username, it.address) },
         customElements = users.map {
             {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.RemoveButton {
+                RemoveButton {
                     appState.openDialog {
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog(
+                        AcceptDialog(
                             message = stringResource(Res.string.sure_to_delete_user),
                             onCancel = ::close
                         ) {
@@ -63,8 +63,8 @@ fun MailServerUserManager(
             }
         },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomEnd) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.AddButton {
+    AlignedBox(Alignment.BottomEnd) {
+        AddButton {
             appState.openDialog {
                 AddMailUserView(mailServer) {
                     close()

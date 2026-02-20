@@ -11,14 +11,14 @@ import intervirt.ui.generated.resources.data
 import intervirt.ui.generated.resources.name
 import intervirt.ui.generated.resources.type
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.SelectionDropdown
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
-import io.github.bommbomm34.intervirt.gui.components.textfields.ReadOnlyTextField
-import io.github.bommbomm34.intervirt.gui.components.textfields.SimpleTextField
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.SelectionDropdown
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
+import io.github.bommbomm34.intervirt.components.textfields.ReadOnlyTextField
+import io.github.bommbomm34.intervirt.components.textfields.SimpleTextField
 import org.jetbrains.compose.resources.stringResource
 
 private val DNS_CLASSES = listOf(
@@ -57,39 +57,39 @@ fun AddDnsRecordView(
     var ttl by remember { mutableStateOf(3600) }
     var dnsClass by remember { mutableStateOf("A") }
     var data by remember { mutableStateOf("104.18.27.120") }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onCancel)
+    AlignedBox(Alignment.TopStart) {
+        CloseButton(onCancel)
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.SimpleTextField(
+    CenterColumn {
+        SimpleTextField(
             value = name,
             onValueChange = { name = it },
             label = stringResource(Res.string.name),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.IntegerTextField(
+        GeneralSpacer()
+        IntegerTextField(
             value = ttl,
             onValueChange = { ttl = it },
             label = "TTL",
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.SelectionDropdown(
+        GeneralSpacer()
+        SelectionDropdown(
             options = DNS_CLASSES,
             selected = dnsClass,
             onSelect = { dnsClass = it },
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.ReadOnlyTextField(
+        GeneralSpacer()
+        ReadOnlyTextField(
             value = "IN",
             label = stringResource(Res.string.type),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.SimpleTextField(
+        GeneralSpacer()
+        SimpleTextField(
             value = data,
             onValueChange = { data = it },
             label = stringResource(Res.string.data),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(16.dp)
+        GeneralSpacer(16.dp)
         Button(
             onClick = {
                 onAdd(

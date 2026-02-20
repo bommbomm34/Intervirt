@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.data.getImages
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.ktor.client.HttpClient
 import org.koin.compose.koinInject
 
@@ -26,14 +26,14 @@ fun ImagePicker(
     val images = remember { mutableStateListOf<Image>() }
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onDismiss)
+    AlignedBox(Alignment.TopStart) {
+        CloseButton(onDismiss)
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect {
+    CatchingLaunchedEffect {
         images.clear()
         images.addAll(client.getImages(appEnv.IMAGES_URL).getOrThrow())
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center, 64.dp) {
+    AlignedBox(Alignment.Center, 64.dp) {
         LazyVerticalGrid(
             columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE.dp * 1.2f),
         ) {

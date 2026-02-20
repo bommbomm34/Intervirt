@@ -7,12 +7,12 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.enable_virtual_hosts
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.gui.intervirtos.components.DockerContainerView
-import io.github.bommbomm34.intervirt.gui.intervirtos.components.SystemServiceView
-import io.github.bommbomm34.intervirt.gui.intervirtos.http.VirtualHostsManager
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
+import io.github.bommbomm34.intervirt.intervirtos.components.SystemServiceView
+import io.github.bommbomm34.intervirt.intervirtos.http.VirtualHostsManager
 import io.github.bommbomm34.intervirt.initialize
 import io.github.bommbomm34.intervirt.rememberManager
 import org.jetbrains.compose.resources.stringResource
@@ -25,20 +25,20 @@ fun HttpServer(
     val initialized by httpServer.initialize()
     var enableVirtualHosts by remember { mutableStateOf(false) }
     if (initialized){
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopEnd) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView(
+        AlignedBox(Alignment.TopEnd) {
+            DockerContainerView(
                 name = httpServer.containerName,
                 dockerManager = httpServer.docker
             )
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+        GeneralSpacer()
+        NamedCheckbox(
             checked = enableVirtualHosts,
             onCheckedChange = { enableVirtualHosts = it },
             name = stringResource(Res.string.enable_virtual_hosts),
         )
         AnimatedVisibility(enableVirtualHosts) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.http.VirtualHostsManager(httpServer)
+            VirtualHostsManager(httpServer)
         }
     }
 }

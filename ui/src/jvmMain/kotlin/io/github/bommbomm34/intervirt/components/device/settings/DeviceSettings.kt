@@ -13,8 +13,8 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.hide_port_forwardings
 import intervirt.ui.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -26,27 +26,27 @@ fun DeviceSettings(
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
         // Device settings
         Column {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onClose)
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            CloseButton(onClose)
+            GeneralSpacer()
             GeneralDeviceSettings(device) { onClose() }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             if (device is ViewDevice.Computer) {
                 // All other device settings except port forwardings
                 // Device settings specific for computers
                 AnimatedVisibility(!showPortForwardings) {
                     Column {
                         OSField(device)
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                        GeneralSpacer()
                         IOOptions(device)
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                        GeneralSpacer()
                         Ipv4TextField(device)
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                        GeneralSpacer()
                         Ipv6TextField(device)
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                        GeneralSpacer()
                         MACTextField(device)
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                        GeneralSpacer()
                         InternetEnabledOption(device)
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                        GeneralSpacer()
                     }
                 }
                 AnimatedVisibility(showPortForwardings) {

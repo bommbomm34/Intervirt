@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.FilePicker
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.FilePicker
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.vinceglb.filekit.absolutePath
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -20,31 +20,31 @@ fun AppConfiguration(
     onConfChange: (AppConfigurationData) -> Unit,
 ) {
     val appEnv = koinInject<AppEnv>()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.IntegerTextField(
+    CenterColumn {
+        IntegerTextField(
             value = conf.vmShutdownTimeout,
             onValueChange = { onConfChange(conf.copy(vmShutdownTimeout = it)) },
             label = stringResource(Res.string.vm_shutdown_timeout),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.IntegerTextField(
+        GeneralSpacer()
+        IntegerTextField(
             value = conf.agentPort,
             onValueChange = { onConfChange(conf.copy(agentPort = it)) },
             label = stringResource(Res.string.agent_port),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.FilePicker(
+        GeneralSpacer()
+        FilePicker(
             label = stringResource(Res.string.intervirt_folder),
             directory = true,
             defaultPath = appEnv.DATA_DIR.absolutePath,
         ) { onConfChange(conf.copy(intervirtFolder = it.absolutePath())) }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+        GeneralSpacer()
+        NamedCheckbox(
             checked = conf.darkMode,
             onCheckedChange = { onConfChange(conf.copy(darkMode = it)) },
             name = stringResource(Res.string.dark_mode),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         LanguagePicker(
             language = Locale.forLanguageTag(conf.language),
             onChangeLanguage = { onConfChange(conf.copy(language = it.toLanguageTag())) },

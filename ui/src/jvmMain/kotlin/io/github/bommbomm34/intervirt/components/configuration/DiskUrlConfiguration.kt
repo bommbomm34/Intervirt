@@ -9,7 +9,7 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -32,13 +32,13 @@ fun DiskUrlConfiguration(
         onValueChange = { onConfChange(conf.copy(diskUrl = it)) },
         label = { Text(stringResource(Res.string.vm_disk_url)) },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     OutlinedTextField(
         value = conf.diskHashUrl,
         onValueChange = { onConfChange(conf.copy(diskHashUrl = it)) },
         label = { Text(stringResource(Res.string.vm_disk_hash_url)) },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     Button(
         onClick = {
             scope.launch {

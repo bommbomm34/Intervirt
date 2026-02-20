@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
-import io.github.bommbomm34.intervirt.gui.components.dialogs.DefaultDialog
+import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
 

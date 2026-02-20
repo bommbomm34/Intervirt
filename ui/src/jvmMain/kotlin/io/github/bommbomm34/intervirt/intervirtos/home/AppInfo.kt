@@ -6,7 +6,7 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.gui.intervirtos.*
+import io.github.bommbomm34.intervirt.intervirtos.*
 import io.github.bommbomm34.intervirt.intervirtos.Browser
 import io.github.bommbomm34.intervirt.intervirtos.DnsResolver
 import io.github.bommbomm34.intervirt.intervirtos.DnsServer

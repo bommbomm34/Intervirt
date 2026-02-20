@@ -10,8 +10,8 @@ import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.ShellView
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.ShellView
 import org.koin.compose.koinInject
 
 @Composable
@@ -24,9 +24,9 @@ fun ShellViewWindow(computer: ViewDevice.Computer){
             ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
         }
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         ioClient?.let {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.ShellView(it)
+            ShellView(it)
         }
     }
 }

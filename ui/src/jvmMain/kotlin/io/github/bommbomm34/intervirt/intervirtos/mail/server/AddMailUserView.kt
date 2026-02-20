@@ -15,12 +15,12 @@ import intervirt.ui.generated.resources.email_address
 import intervirt.ui.generated.resources.username
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.CenterRow
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.textfields.PasswordTextField
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -34,24 +34,24 @@ fun AddMailUserView(
     var username by remember { mutableStateOf("") }
     var emailAddress by remember { mutableStateOf("") }
     var password = rememberTextFieldState()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onClose)
+    AlignedBox(Alignment.TopStart) {
+        CloseButton(onClose)
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text(stringResource(Res.string.username)) },
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         OutlinedTextField(
             value = emailAddress,
             onValueChange = { emailAddress = it },
             label = { Text(stringResource(Res.string.email_address)) },
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.PasswordTextField(password)
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
+        PasswordTextField(password)
+        GeneralSpacer()
         Button(
             onClick = {
                 scope.launch {

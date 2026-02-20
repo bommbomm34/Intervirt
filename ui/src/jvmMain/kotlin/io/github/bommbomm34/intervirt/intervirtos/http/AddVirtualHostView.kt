@@ -7,8 +7,8 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.destination_folder
 import intervirt.ui.generated.resources.domain
 import io.github.bommbomm34.intervirt.core.data.VirtualHost
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -21,15 +21,15 @@ fun AddVirtualHostView(onAdd: (VirtualHost) -> Unit) {
         onValueChange = { serverName = it },
         label = { Text(stringResource(Res.string.domain)) },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+    GeneralSpacer()
     // DocumentRoot TextField
     OutlinedTextField(
         value = documentRoot,
         onValueChange = { documentRoot = it },
         label = { Text(stringResource(Res.string.destination_folder)) },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.AddButton {
+    GeneralSpacer()
+    AddButton {
         onAdd(VirtualHost(serverName, documentRoot))
         // Clear text fields
         serverName = ""

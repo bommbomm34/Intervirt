@@ -21,13 +21,13 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.*
-import io.github.bommbomm34.intervirt.gui.components.buttons.SendButton
-import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailClientLogin
-import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailEditor
-import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailListView
-import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailView
+import io.github.bommbomm34.intervirt.components.*
+import io.github.bommbomm34.intervirt.components.buttons.SendButton
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
+import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
+import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailListView
+import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.bommbomm34.intervirt.rememberManager
 import io.github.bommbomm34.intervirt.rememberProxyManager
@@ -62,7 +62,7 @@ fun MailClient(
 
     fun openMailEditor(mail: Mail? = null) {
         appState.openDialog {
-            _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor(
+            MailEditor(
                 sender = client.mailUser!!,
                 mail = mail,
                 onCancel = ::close,
@@ -79,10 +79,10 @@ fun MailClient(
     proxyUrl?.let { proxy ->
         if (initialized) {
             // Send button
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomEnd) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.SendButton { openMailEditor() }
+            AlignedBox(Alignment.BottomEnd) {
+                SendButton { openMailEditor() }
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+            CenterColumn {
                 Column(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier
@@ -99,21 +99,21 @@ fun MailClient(
                             }
                         },
                     ) {
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+                        GeneralIcon(
                             imageVector = TablerIcons.Refresh,
                             contentDescription = stringResource(Res.string.refresh),
                         )
                     }
                 }
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(2.dp)
-                _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.mail.client.MailListView(mails) {
+                GeneralSpacer(2.dp)
+                MailListView(mails) {
                     appState.openDialog {
-                        _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView(
+                        MailView(
                             mail = it,
                             onDelete = {
                                 close()
                                 appState.openDialog {
-                                    _root_ide_package_.io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog(
+                                    AcceptDialog(
                                         message = stringResource(Res.string.sure_to_delete_mail),
                                     ) {
                                         scope.launch {
@@ -140,6 +140,7 @@ fun MailClient(
                 }
             }
         } else {
+            var credentials: MailConnectionDetails? by remember { mutableStateOf(null) }
             fun login(details: MailConnectionDetails, saveCredentials: Boolean) {
                 scope.launch {
                     appState.runDialogCatching {
@@ -155,21 +156,26 @@ fun MailClient(
                 }
             }
 
-            val credentials = client.loadCredentials()
-            if (credentials.smtpAddress != Address.EXAMPLE
-                && credentials.imapAddress != Address.EXAMPLE
-                && credentials.username.isNotEmpty()
-                && credentials.password.isNotEmpty()
-            ) {
-                // Implicit login
-                login(credentials, true)
-            } else {
-                appState.openDialog {
-                    _root_ide_package_.io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin(
-                        credentials
-                    ) { details, saveCredentials ->
-                        close()
-                        login(details, saveCredentials)
+            LaunchedEffect(Unit){
+                credentials = client.loadCredentials()
+            }
+
+            credentials?.let { creds ->
+                if (creds.smtpAddress != Address.EXAMPLE
+                    && creds.imapAddress != Address.EXAMPLE
+                    && creds.username.isNotEmpty()
+                    && creds.password.isNotEmpty()
+                ) {
+                    // Implicit login
+                    login(creds, true)
+                } else {
+                    appState.openDialog {
+                        MailClientLogin(
+                            credentials = creds
+                        ) { details, saveCredentials ->
+                            close()
+                            login(details, saveCredentials)
+                        }
                     }
                 }
             }

@@ -12,8 +12,8 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
-import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.components.buttons.AddButton
+import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -23,7 +23,7 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
     val deviceManager = koinInject<DeviceManager>()
     val appState = koinInject<AppState>()
     Column {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.AddButton {
+        AddButton {
             appState.openDialog {
                 AddPortForwardingDialog(
                     device = device,
@@ -35,7 +35,7 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
             items(device.portForwardings) { portForwarding ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}")
-                    _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.RemoveButton {
+                    RemoveButton {
                         scope.launch {
                             device.portForwardings.remove(portForwarding)
                             deviceManager.removePortForwarding(portForwarding.hostPort, portForwarding.protocol)

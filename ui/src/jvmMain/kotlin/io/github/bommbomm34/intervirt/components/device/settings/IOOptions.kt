@@ -14,10 +14,10 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.filepicker.ContainerFilePicker
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
@@ -62,7 +62,7 @@ fun IOOptions(device: ViewDevice.Computer) {
     val filePickerLauncher = rememberFilePickerLauncher { file ->
         file?.let { _ ->
             appState.openDialog {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker(
+                ContainerFilePicker(
                     ioClient!!,
                     file.name
                 ) { path ->
@@ -72,7 +72,7 @@ fun IOOptions(device: ViewDevice.Computer) {
                             appState.runDialogCatching {
                                 if (file.exists()) {
                                     appState.openDialog {
-                                        _root_ide_package_.io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog(
+                                        AcceptDialog(
                                             message = stringResource(Res.string.file_already_exists),
                                         ) { file.file.toPath().copyTo(path, true) }
                                     }
@@ -89,7 +89,7 @@ fun IOOptions(device: ViewDevice.Computer) {
             IconButton(
                 onClick = {
                     appState.openDialog {
-                        _root_ide_package_.io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker(
+                        ContainerFilePicker(
                             client
                         ) { path ->
                             close()
@@ -105,30 +105,30 @@ fun IOOptions(device: ViewDevice.Computer) {
                     }
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+                GeneralIcon(
                     imageVector = TablerIcons.FileDownload,
                     contentDescription = stringResource(Res.string.download_file),
                 )
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             IconButton(
                 onClick = {
                     filePickerLauncher.launch()
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+                GeneralIcon(
                     imageVector = TablerIcons.FileUpload,
                     contentDescription = stringResource(Res.string.upload_file),
                 )
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
         }
         IconButton(
             onClick = {
                 appState.openComputerShell = device
             },
         ) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+            GeneralIcon(
                 imageVector = TablerIcons.Terminal,
                 contentDescription = stringResource(Res.string.terminal),
             )

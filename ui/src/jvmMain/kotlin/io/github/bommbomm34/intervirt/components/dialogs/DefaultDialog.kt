@@ -20,9 +20,9 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.copyToClipboard
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
-import io.github.bommbomm34.intervirt.gui.components.CenterRow
-import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -52,25 +52,25 @@ fun DefaultDialog(
                 Severity.WARNING -> Color.Yellow
             },
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         SelectionContainer {
             Text(message)
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterRow {
+        GeneralSpacer()
+        CenterRow {
             Button(
                 onClick = onClose,
             ) {
                 Text("OK")
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             // Copy button
             IconButton(
                 onClick = {
                     scope.launch { clipboard.copyToClipboard(message) }
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralIcon(
+                GeneralIcon(
                     imageVector = TablerIcons.Copy,
                     contentDescription = stringResource(Res.string.copy),
                 )

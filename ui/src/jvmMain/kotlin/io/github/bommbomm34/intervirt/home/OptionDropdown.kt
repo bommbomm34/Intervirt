@@ -14,7 +14,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
-import io.github.bommbomm34.intervirt.gui.components.buttons.IconText
+import io.github.bommbomm34.intervirt.components.buttons.IconText
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -80,7 +80,7 @@ fun OptionDropdown(
                     onDismiss()
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.Folder,
                     text = stringResource(Res.string.open),
                 )
@@ -96,7 +96,7 @@ fun OptionDropdown(
                     onDismiss()
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.DeviceFloppy,
                     text = stringResource(Res.string.save),
                 )
@@ -111,7 +111,7 @@ fun OptionDropdown(
                     onDismiss()
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.DeviceFloppy,
                     text = stringResource(Res.string.save_as),
                 )
@@ -125,7 +125,7 @@ fun OptionDropdown(
                     onDismiss()
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.Refresh,
                     text = stringResource(Res.string.update),
                 )
@@ -134,7 +134,7 @@ fun OptionDropdown(
             DropdownMenuItem(
                 onClick = { appState.currentScreenIndex = 2 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.Settings,
                     text = stringResource(Res.string.settings),
                 )
@@ -143,7 +143,7 @@ fun OptionDropdown(
             DropdownMenuItem(
                 onClick = { appState.currentScreenIndex = 3 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.InfoCircle,
                     text = stringResource(Res.string.about),
                 )
@@ -155,7 +155,7 @@ fun OptionDropdown(
                     onDismiss()
                 },
             ) {
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.IconText(
+                IconText(
                     imageVector = TablerIcons.Help,
                     text = stringResource(Res.string.help),
                 )

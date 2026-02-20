@@ -9,7 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.buttons.PlayButton
+import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -35,7 +35,7 @@ fun DockerContainerView(
         }
     }
     id?.let { idClone ->
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.PlayButton(running) {
+        PlayButton(running) {
             scope.launch {
                 appState.runDialogCatching {
                     if (it) dockerManager.startContainer(idClone).getOrThrow()

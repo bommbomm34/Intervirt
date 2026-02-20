@@ -13,10 +13,10 @@ import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.FlowProgressView
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.FlowProgressView
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -38,13 +38,13 @@ fun Installation(
     var allowInstallation by remember { mutableStateOf(false) }
     var flow: Flow<ResultProgress<String>>? by remember { mutableStateOf(null) }
     var job: Job? by remember { mutableStateOf(null) }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+    CenterColumn {
+        NamedCheckbox(
             checked = allowInstallation,
             onCheckedChange = { allowInstallation = it },
             name = stringResource(Res.string.allow_to_install_intervirt),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(8.dp)
+        GeneralSpacer(8.dp)
         Button(
             onClick = {
                 if (job != null) {
@@ -97,8 +97,8 @@ fun Installation(
         AnimatedVisibility(
             visible = flow != null,
         ) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(8.dp)
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.FlowProgressView(
+            GeneralSpacer(8.dp)
+            FlowProgressView(
                 flow = flow ?: flowOf(),
                 onJobChange = { job = it },
             ) { resultProgress ->
@@ -106,8 +106,8 @@ fun Installation(
                 appState.logs.add(resultProgress.log())
             }
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(8.dp)
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+        GeneralSpacer(8.dp)
+        NamedCheckbox(
             checked = appState.showLogs,
             onCheckedChange = { appState.showLogs = it },
             name = stringResource(Res.string.show_logs),

@@ -6,7 +6,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.internet_access
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -15,7 +15,7 @@ import org.koin.compose.koinInject
 fun InternetEnabledOption(device: ViewDevice.Computer) {
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.NamedCheckbox(
+    NamedCheckbox(
         checked = device.internetEnabled,
         onCheckedChange = {
             scope.launch {

@@ -15,10 +15,10 @@ import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.SelectionDropdown
-import io.github.bommbomm34.intervirt.gui.components.textfields.IntegerTextField
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.SelectionDropdown
+import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.isValidPort
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -32,7 +32,7 @@ fun AddPortForwardingDialog(
     device: ViewDevice.Computer,
     onCancel: () -> Unit,
 ) {
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         var internalPort by remember { mutableStateOf(1) }
         var externalPort by remember { mutableStateOf(1) }
         var protocol by remember { mutableStateOf(protocols[0]) }
@@ -41,13 +41,13 @@ fun AddPortForwardingDialog(
         val deviceManager = koinInject<DeviceManager>()
         val configuration = koinInject<IntervirtConfiguration>()
         Row(verticalAlignment = Alignment.CenterVertically) {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.SelectionDropdown(
+            SelectionDropdown(
                 options = protocols,
                 selected = protocol,
                 onSelect = { protocol = it },
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.IntegerTextField(
+            GeneralSpacer()
+            IntegerTextField(
                 value = internalPort,
                 onValueChange = { if (it.isValidPort()) internalPort = it },
                 label = stringResource(Res.string.internal_port),
@@ -56,7 +56,7 @@ fun AddPortForwardingDialog(
                 text = ":",
                 fontWeight = FontWeight.ExtraBold,
             )
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.IntegerTextField(
+            IntegerTextField(
                 value = externalPort,
                 onValueChange = { if (it.isValidPort()) externalPort = it },
                 label = stringResource(Res.string.external_port),
@@ -67,14 +67,14 @@ fun AddPortForwardingDialog(
         }
         if (result.isFailure) {
             result.exceptionOrNull()?.let { exp ->
-                _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+                GeneralSpacer()
                 Text(
                     text = exp.localizedMessage,
                     color = Color.Red,
                 )
             }
         }
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         Row {
             Button(
                 onClick = onCancel,
@@ -85,7 +85,7 @@ fun AddPortForwardingDialog(
                     color = Color.White,
                 )
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             Button(
                 onClick = {
                     scope.launch {

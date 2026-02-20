@@ -10,13 +10,13 @@ import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.MultipleAnimatedVisibility
-import io.github.bommbomm34.intervirt.gui.components.buttons.BackButton
-import io.github.bommbomm34.intervirt.gui.components.buttons.NextButton
-import io.github.bommbomm34.intervirt.gui.components.configuration.AppConfiguration
-import io.github.bommbomm34.intervirt.gui.components.configuration.VMConfiguration
-import io.github.bommbomm34.intervirt.gui.setup.Installation
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.MultipleAnimatedVisibility
+import io.github.bommbomm34.intervirt.components.buttons.BackButton
+import io.github.bommbomm34.intervirt.components.buttons.NextButton
+import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
+import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
+import io.github.bommbomm34.intervirt.setup.Installation
 import io.github.bommbomm34.intervirt.isDarkMode
 import org.koin.compose.koinInject
 
@@ -50,17 +50,17 @@ fun Setup() {
     }
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.configuration.VMConfiguration(vmConf) {
+            VMConfiguration(vmConf) {
                 vmConf = it
             }
         },
         {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.configuration.AppConfiguration(appConf) {
+            AppConfiguration(appConf) {
                 appConf = it
             }
         },
         {
-            _root_ide_package_.io.github.bommbomm34.intervirt.setup.Installation {
+            Installation {
                 appEnv.applyConfiguration(
                     vmConf,
                     appConf
@@ -68,31 +68,31 @@ fun Setup() {
             }
         },
     )
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopCenter) {
+    AlignedBox(Alignment.TopCenter) {
         Text(
             text = "Intervirt Setup",
             fontSize = 40.sp,
         )
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.MultipleAnimatedVisibility(
+    AlignedBox(Alignment.Center) {
+        MultipleAnimatedVisibility(
             visible = currentSetupScreenIndex,
             screens = setupScreens,
         )
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomStart) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.BackButton(currentSetupScreenIndex > 0) {
+    AlignedBox(Alignment.BottomStart) {
+        BackButton(currentSetupScreenIndex > 0) {
             currentSetupScreenIndex--
         }
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomCenter) {
+    AlignedBox(Alignment.BottomCenter) {
         Text(
             text = (currentSetupScreenIndex + 1).toString(),
             fontSize = 25.sp,
         )
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomEnd) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.NextButton(currentSetupScreenIndex < setupScreens.size - 1) {
+    AlignedBox(Alignment.BottomEnd) {
+        NextButton(currentSetupScreenIndex < setupScreens.size - 1) {
             currentSetupScreenIndex++
         }
     }

@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.data.Image
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -19,7 +19,7 @@ fun ImageItem(image: Image, onShowImage: () -> Unit) {
         modifier = Modifier.onClick(onClick = onShowImage),
     ) {
         ImageIcon(image)
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(2.dp)
+        GeneralSpacer(2.dp)
         Text(image.toReadableName())
     }
 }

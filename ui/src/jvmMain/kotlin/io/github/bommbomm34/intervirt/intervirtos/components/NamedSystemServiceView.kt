@@ -3,8 +3,8 @@ package io.github.bommbomm34.intervirt.intervirtos.components
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
-import io.github.bommbomm34.intervirt.gui.components.CenterRow
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 
 @Composable
 fun NamedSystemServiceView(
@@ -12,9 +12,9 @@ fun NamedSystemServiceView(
     serviceName: String,
     serviceManager: SystemServiceManager,
 ) {
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterRow {
+    CenterRow {
         Text(displayName)
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         SystemServiceView(serviceName, serviceManager)
     }
 }

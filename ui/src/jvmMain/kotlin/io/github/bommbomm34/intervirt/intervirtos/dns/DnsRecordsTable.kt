@@ -3,7 +3,7 @@ package io.github.bommbomm34.intervirt.intervirtos.dns
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
+import io.github.bommbomm34.intervirt.components.tables.SimpleTable
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -11,7 +11,7 @@ fun DnsRecordsTable(
     records: List<DnsRecord>,
     customElements: List<@Composable (DnsRecord) -> Unit> = emptyList(),
 ) {
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.tables.SimpleTable(
+    SimpleTable(
         headers = listOf(
             stringResource(Res.string.name),
             "TTL",

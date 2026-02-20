@@ -10,7 +10,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.no
 import intervirt.ui.generated.resources.yes
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -24,7 +24,7 @@ fun AcceptDialog(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(message)
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         Row {
             Button(
                 onClick = {
@@ -33,7 +33,7 @@ fun AcceptDialog(
             ) {
                 Text(stringResource(Res.string.yes))
             }
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+            GeneralSpacer()
             Button(
                 onClick = {
                     onCancel()

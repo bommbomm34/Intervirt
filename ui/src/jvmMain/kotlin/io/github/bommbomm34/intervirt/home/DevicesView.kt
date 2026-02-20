@@ -30,10 +30,10 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.buttons.AddDeviceButton
-import io.github.bommbomm34.intervirt.gui.components.device.settings.DeviceSettings
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.buttons.AddDeviceButton
+import io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings
 import io.github.bommbomm34.intervirt.toPx
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -51,7 +51,7 @@ fun DevicesView() {
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()
     val statefulConf = appState.statefulConf
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center) {
+    AlignedBox(Alignment.Center) {
         Canvas(
             Modifier
                 .fillMaxSize()
@@ -73,7 +73,7 @@ fun DevicesView() {
                             )
                         }?.let {
                             appState.openDialog {
-                                _root_ide_package_.io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog(
+                                AcceptDialog(
                                     message = stringResource(
                                         Res.string.are_you_sure_to_remove_connection,
                                         it.device1.name,
@@ -149,9 +149,9 @@ fun DevicesView() {
     }
     AnimatedVisibility(appState.deviceSettingsVisible) {
         selectedDevice?.let {
-            _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomStart) {
+            AlignedBox(Alignment.BottomStart) {
                 Column {
-                    _root_ide_package_.io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings(
+                    DeviceSettings(
                         device = it,
                     ) { appState.deviceSettingsVisible = false }
                 }
@@ -159,8 +159,8 @@ fun DevicesView() {
         }
 
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomEnd) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.AddDeviceButton()
+    AlignedBox(Alignment.BottomEnd) {
+        AddDeviceButton()
     }
 }
 

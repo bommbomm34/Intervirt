@@ -9,19 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.koin.compose.koinInject
 
 @Composable
 fun LogsView(logs: List<String>) {
     val appEnv = koinInject<AppEnv>()
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         Text(
             text = "Logs",
             fontSize = 64.sp,
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         SelectionContainer {
             LazyColumn {
                 items(logs) {

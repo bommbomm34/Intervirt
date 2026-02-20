@@ -14,14 +14,14 @@ import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.AlignedBox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
 fun Dialog(state: DialogState) {
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center) {
+    AlignedBox(Alignment.Center) {
         Surface(
             modifier = Modifier.clip(RoundedCornerShape(16.dp)),
             color = MaterialTheme.colors.background.copy(blue = 0.05f),

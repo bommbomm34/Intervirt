@@ -9,11 +9,11 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.parseMailAddress
-import io.github.bommbomm34.intervirt.gui.components.AlignedBox
-import io.github.bommbomm34.intervirt.gui.components.CenterColumn
-import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.gui.components.buttons.SendButton
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.buttons.SendButton
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -26,10 +26,10 @@ fun MailEditor(
     var receiverAddress by remember { mutableStateOf(mail?.receiver?.address ?: "") }
     var subject by remember { mutableStateOf(mail?.subject ?: "") }
     var content by remember { mutableStateOf(mail?.content ?: "") }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onCancel)
+    AlignedBox(Alignment.TopStart) {
+        CloseButton(onCancel)
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+    CenterColumn {
         OutlinedTextField(
             value = sender.address,
             onValueChange = {},
@@ -37,7 +37,7 @@ fun MailEditor(
             label = { Text(stringResource(Res.string.sender)) },
             singleLine = true,
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         OutlinedTextField(
             value = receiverAddress,
             onValueChange = { receiverAddress = it },
@@ -45,14 +45,14 @@ fun MailEditor(
             singleLine = true,
             isError = !receiverAddress.validateMailAddress(),
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        GeneralSpacer()
         OutlinedTextField(
             value = subject,
             onValueChange = { subject = it },
             label = { Text(stringResource(Res.string.subject)) },
             singleLine = true,
         )
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer(16.dp)
+        GeneralSpacer(16.dp)
         OutlinedTextField(
             value = content,
             onValueChange = { content = it },
@@ -60,8 +60,8 @@ fun MailEditor(
             minLines = 5,
         )
     }
-    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.BottomEnd) {
-        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.SendButton(receiverAddress.validateMailAddress()) {
+    AlignedBox(Alignment.BottomEnd) {
+        SendButton(receiverAddress.validateMailAddress()) {
             onSend(
                 Mail(
                     sender = sender,

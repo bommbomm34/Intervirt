@@ -2,8 +2,11 @@ package io.github.bommbomm34.intervirt.core
 
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
@@ -49,3 +52,5 @@ suspend fun <T> withCatchingContext(
 }
 
 fun ByteArray.zeroize() = fill(0)
+
+suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
