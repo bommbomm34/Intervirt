@@ -101,6 +101,7 @@ data class AppEnv(
     internal var CURRENT_QEMU_HASH: String? by delegate { it }
 
     var INTERVIRT_INSTALLED: Boolean by delegate { it.toBoolean() }
+    var IMAGES_URL: String by delegate { it ?: "https://perhof.org/intervirt/images.json" }
 
     private fun <T> delegate(producer: (String?) -> T) = object {
         private var value: Any? = UNINITIALIZED

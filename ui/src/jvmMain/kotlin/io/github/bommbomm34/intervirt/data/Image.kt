@@ -1,27 +1,32 @@
 package io.github.bommbomm34.intervirt.data
 
+import androidx.compose.foundation.Image
 import intervirt.ui.generated.resources.*
+import io.github.bommbomm34.intervirt.IMAGES_URL
+import io.github.bommbomm34.intervirt.runSuspendingCatching
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.getString
 
+@Serializable
 data class Image(
     val name: String,
     val tag: String,
     val description: String,
-    val icon: DrawableResource,
+    val icon: String,
+    val iconSource: String,
+    val descriptionSource: String = "Wikipedia",
 ) {
     val fullName = "$name/$tag"
 
     fun toReadableName() = fullName.toReadableImage()
+}
 
-    companion object {
-        suspend fun getImages() = listOf(
-            Image("debian", "trixie", getString(Res.string.debian_description), Res.drawable.debian),
-            Image("fedora", "43", getString(Res.string.fedora_description), Res.drawable.fedora),
-            Image("archlinux", "current", getString(Res.string.archlinux_description), Res.drawable.archlinux),
-            // Other images are coming soon!
-        )
-    }
+suspend fun HttpClient.getImages(url: String): Result<List<Image>> = runSuspendingCatching {
+    get(url).body<List<Image>>()
 }
 
 fun String.toReadableImage() = when {

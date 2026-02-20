@@ -9,8 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.Image
+import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
+import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
+import io.ktor.client.HttpClient
 import org.koin.compose.koinInject
 
 @Composable
@@ -19,15 +22,16 @@ fun ImagePicker(
     onInstall: (Image) -> Unit,
 ) {
     val appEnv = koinInject<AppEnv>()
+    val client = koinInject<HttpClient>()
     val images = remember { mutableStateListOf<Image>() }
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
     AlignedBox(Alignment.TopStart) {
         CloseButton(onDismiss)
     }
-    LaunchedEffect(Unit) {
+    CatchingLaunchedEffect {
         images.clear()
-        images.addAll(Image.getImages())
+        images.addAll(client.getImages(appEnv.IMAGES_URL).getOrThrow())
     }
     AlignedBox(Alignment.Center, 64.dp) {
         LazyVerticalGrid(

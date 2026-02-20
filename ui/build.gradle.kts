@@ -31,6 +31,7 @@ kotlin {
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.coil.compose)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -47,6 +48,7 @@ kotlin {
             implementation(libs.compose.table)
             implementation(libs.bossterm.core)
             implementation(libs.bossterm.compose)
+            implementation(libs.coil.network.ktor3)
             implementation(projects.core)
             implementation(projects.webview)
         }
