@@ -1,0 +1,69 @@
+package io.github.bommbomm34.intervirt.intervirtos.mail.server
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.add_user
+import intervirt.ui.generated.resources.email_address
+import intervirt.ui.generated.resources.username
+import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
+import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.gui.components.AlignedBox
+import io.github.bommbomm34.intervirt.gui.components.CenterColumn
+import io.github.bommbomm34.intervirt.gui.components.CenterRow
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.gui.components.textfields.PasswordTextField
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun AddMailUserView(
+    mailServer: MailServerManager,
+    onClose: () -> Unit,
+) {
+    // TODO: Save the password more secure
+    val scope = rememberCoroutineScope()
+    var username by remember { mutableStateOf("") }
+    var emailAddress by remember { mutableStateOf("") }
+    var password = rememberTextFieldState()
+    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
+        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onClose)
+    }
+    _root_ide_package_.io.github.bommbomm34.intervirt.components.CenterColumn {
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text(stringResource(Res.string.username)) },
+        )
+        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        OutlinedTextField(
+            value = emailAddress,
+            onValueChange = { emailAddress = it },
+            label = { Text(stringResource(Res.string.email_address)) },
+        )
+        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        _root_ide_package_.io.github.bommbomm34.intervirt.components.textfields.PasswordTextField(password)
+        _root_ide_package_.io.github.bommbomm34.intervirt.components.GeneralSpacer()
+        Button(
+            onClick = {
+                scope.launch {
+                    mailServer.addMailUser(MailUser(username, emailAddress), password.text.toString()).getOrThrow()
+                    username = ""
+                    emailAddress = ""
+                    password.clearText()
+                    onClose()
+                }
+            },
+        ) {
+            Text(stringResource(Res.string.add_user))
+        }
+    }
+}

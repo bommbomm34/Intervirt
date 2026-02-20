@@ -1,0 +1,57 @@
+package io.github.bommbomm34.intervirt.imagepicker
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.data.Image
+import io.github.bommbomm34.intervirt.data.getImages
+import io.github.bommbomm34.intervirt.gui.components.AlignedBox
+import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.gui.components.buttons.CloseButton
+import io.ktor.client.HttpClient
+import org.koin.compose.koinInject
+
+@Composable
+fun ImagePicker(
+    onDismiss: () -> Unit,
+    onInstall: (Image) -> Unit,
+) {
+    val appEnv = koinInject<AppEnv>()
+    val client = koinInject<HttpClient>()
+    val images = remember { mutableStateListOf<Image>() }
+    var showImageInfo by remember { mutableStateOf(false) }
+    var selectedImage: Image? by remember { mutableStateOf(null) }
+    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.TopStart) {
+        _root_ide_package_.io.github.bommbomm34.intervirt.components.buttons.CloseButton(onDismiss)
+    }
+    _root_ide_package_.io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect {
+        images.clear()
+        images.addAll(client.getImages(appEnv.IMAGES_URL).getOrThrow())
+    }
+    _root_ide_package_.io.github.bommbomm34.intervirt.components.AlignedBox(Alignment.Center, 64.dp) {
+        LazyVerticalGrid(
+            columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE.dp * 1.2f),
+        ) {
+            items(images) { image ->
+                ImageItem(image) {
+                    showImageInfo = true
+                    selectedImage = image
+                }
+            }
+        }
+    }
+    AnimatedVisibility(showImageInfo) {
+        selectedImage?.let {
+            ImageInfo(
+                image = it,
+                onDismiss = { showImageInfo = false },
+                onInstall = { onInstall(it) },
+            )
+        }
+    }
+}
