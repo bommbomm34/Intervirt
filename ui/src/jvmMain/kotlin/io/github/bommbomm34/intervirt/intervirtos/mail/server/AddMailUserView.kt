@@ -29,11 +29,10 @@ fun AddMailUserView(
     mailServer: MailServerManager,
     onClose: () -> Unit,
 ) {
-    // TODO: Save the password more secure
     val scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var emailAddress by remember { mutableStateOf("") }
-    var password = rememberTextFieldState()
+    val password = rememberTextFieldState()
     AlignedBox(Alignment.TopStart) {
         CloseButton(onClose)
     }
