@@ -32,7 +32,7 @@ class Preferences {
         flush()
     }
 
-    fun getAppEnv() = AppEnv(::env, ::saveString)
+    fun getAppEnv() = AppEnv(::env, ::saveString, ::removeString)
 
     fun env(name: String): String? = System.getenv("INTERVIRT_$name") ?: loadString(name)
 

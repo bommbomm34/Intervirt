@@ -21,9 +21,9 @@ class DeviceManager(
     appEnv: AppEnv,
 ) : AsyncCloseable {
     private val logger = KotlinLogging.logger { }
-    private val enableAgent = appEnv.enableAgent
-    private val virtualContainerIO = appEnv.virtualContainerIO
-    private val virtualContainerIOPort = appEnv.virtualContainerIOPort
+    private val enableAgent = appEnv.ENABLE_AGENT
+    private val virtualContainerIO = appEnv.VIRTUAL_CONTAINER_IO
+    private val virtualContainerIOPort = appEnv.VIRTUAL_CONTAINER_IO_PORT
     private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
     private val dockerManagers = mutableMapOf<String, DockerManager>()
     private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()

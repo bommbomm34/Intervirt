@@ -50,7 +50,7 @@ fun Updater(onClose: () -> Unit) {
     Button(
         onClick = {
             scope.launchDialogCatching(appState){
-                // TODO: Show progress in GUI
+                // TODO: Show progress in GUI and add onClose
                 downloader.upgrade(applyUpdates).collect {
                     val output = when (it){
                         is ResultProgress.Message<String> -> "Message ${it.message} with ${it.percentage.readablePercentage()}"

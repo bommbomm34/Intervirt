@@ -28,7 +28,7 @@ fun LogsView(logs: List<String>) {
                     Text(
                         text = it,
                         color = Color.Gray,
-                        fontSize = appEnv.tooltipFontSize.sp,
+                        fontSize = appEnv.TOOLTIP_FONT_SIZE.sp,
                     )
                     HorizontalDivider()
                 }

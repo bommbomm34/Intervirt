@@ -25,12 +25,12 @@ fun Home(
     CenterColumn {
         Text(
             text = "IntervirtOS",
-            fontSize = appEnv.titleFontSize.sp,
+            fontSize = appEnv.TITLE_FONT_SIZE.sp,
         )
         GeneralSpacer()
         AlignedBox(Alignment.Center) {
             LazyVerticalGrid(
-                columns = GridCells.FixedSize(appEnv.osIconSize.dp * 1.5f),
+                columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE.dp * 1.5f),
             ) {
                 items(INTERVIRTOS_APPS) { appInfo ->
                     AppItem(

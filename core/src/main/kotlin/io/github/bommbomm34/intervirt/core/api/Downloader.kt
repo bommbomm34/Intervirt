@@ -24,8 +24,8 @@ class Downloader(
 
     suspend fun checkUpdates(): Result<List<Component>> = runSuspendingCatching {
         buildList {
-            if (appEnv.qemuZipHashUrl.fetch().getOrThrow() != preferences.env("CURRENT_QEMU_HASH")) add(Component.QEMU)
-            if (appEnv.vmDiskHashUrl.fetch()
+            if (appEnv.QEMU_ZIP_HASH_URL.fetch().getOrThrow() != preferences.env("CURRENT_QEMU_HASH")) add(Component.QEMU)
+            if (appEnv.VM_DISK_HASH_URL.fetch()
                     .getOrThrow() != preferences.env("CURRENT_DISK_HASH")
             ) add(Component.VM_DISK)
         }
@@ -55,9 +55,9 @@ class Downloader(
         logger.debug { "Downloading disk" }
         if (!preferences.env("DISK_INSTALLED").toBoolean() || update) {
             // Invalidate previous installation
-            appEnv.diskInstalled = false
-            val hashRes = appEnv.vmDiskHashUrl.fetch()
-            val file = fileManager.downloadFile(appEnv.vmDiskUrl, "alpine-linux.qcow2", fileManager.getFile("disk"))
+            appEnv.DISK_INSTALLED = false
+            val hashRes = appEnv.VM_DISK_HASH_URL.fetch()
+            val file = fileManager.downloadFile(appEnv.VM_DISK_URL, "alpine-linux.qcow2", fileManager.getFile("disk"))
             hashRes.fold(
                 onSuccess = { hash ->
                     file.collect { resultProgress ->
@@ -65,8 +65,8 @@ class Downloader(
                             resultProgress.result.fold(
                                 onSuccess = {
                                     emit(ResultProgress.success("Download succeeded"))
-                                    appEnv.diskInstalled = true
-                                    appEnv.currentDiskHash = hash
+                                    appEnv.DISK_INSTALLED = true
+                                    appEnv.CURRENT_DISK_HASH = hash
                                 },
                                 onFailure = {
                                     emit(ResultProgress.failure(it))
@@ -96,10 +96,10 @@ class Downloader(
                 // Wipe previous installation if available
                 fileManager.getFile("qemu").listFiles().forEach { it.delete() }
                 // Invalidate previous installation
-                appEnv.qemuInstalled = false
+                appEnv.QEMU_INSTALLED = false
                 // Install fresh QEMU
-                val hashRes = appEnv.qemuZipHashUrl.fetch()
-                val file = fileManager.downloadFile(appEnv.qemuZipUrl, "qemu-portable.zip")
+                val hashRes = appEnv.QEMU_ZIP_HASH_URL.fetch()
+                val file = fileManager.downloadFile(appEnv.QEMU_ZIP_URL, "qemu-portable.zip")
                 hashRes.fold(
                     onSuccess = { hash ->
                         file.collect { resultProgress ->
@@ -108,8 +108,8 @@ class Downloader(
                                     onSuccess = { zipFile ->
                                         fileManager.extractZip(zipFile, fileManager.getFile("qemu"))
                                             .onFailure { emit(ResultProgress.failure(it)) }
-                                        appEnv.qemuInstalled = true
-                                        appEnv.currentQemuHash = hash
+                                        appEnv.QEMU_INSTALLED = true
+                                        appEnv.CURRENT_QEMU_HASH = hash
                                         emit(
                                             ResultProgress.success("Successfully downloaded QEMU"),
                                         )

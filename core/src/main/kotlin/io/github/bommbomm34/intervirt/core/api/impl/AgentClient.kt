@@ -27,8 +27,8 @@ class AgentClient(
     private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
-    private val agentPort = appEnv.agentPort
-    private val timeout = appEnv.agentWebSocketTimeout.milliseconds
+    private val agentPort = appEnv.AGENT_PORT
+    private val timeout = appEnv.AGENT_WEBSOCKET_TIMEOUT.milliseconds
 
     override suspend fun addContainer(
         id: String,

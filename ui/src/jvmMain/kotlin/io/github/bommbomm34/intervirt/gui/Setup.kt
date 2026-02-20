@@ -32,19 +32,19 @@ fun Setup() {
                 ram = 2048,
                 cpu = Runtime.getRuntime().availableProcessors() / 2,
                 kvm = false,
-                diskUrl = appEnv.vmDiskUrl,
-                diskHashUrl = appEnv.vmDiskHashUrl,
+                diskUrl = appEnv.VM_DISK_URL,
+                diskHashUrl = appEnv.VM_DISK_HASH_URL,
             ),
         )
     }
     var appConf by remember {
         mutableStateOf(
             AppConfigurationData(
-                vmShutdownTimeout = appEnv.vmShutdownTimeout.toInt(),
-                agentPort = appEnv.agentPort,
-                intervirtFolder = appEnv.dataDir.absolutePath,
+                vmShutdownTimeout = appEnv.VM_SHUTDOWN_TIMEOUT.toInt(),
+                agentPort = appEnv.AGENT_PORT,
+                intervirtFolder = appEnv.DATA_DIR.absolutePath,
                 darkMode = isDarkMode,
-                language = appEnv.language.toLanguageTag(),
+                language = appEnv.LANGUAGE.toLanguageTag(),
             ),
         )
     }

@@ -50,7 +50,7 @@ fun MailView(
         ) {
             Text(
                 text = mail.subject,
-                fontSize = appEnv.mailTitleFontSize.sp,
+                fontSize = appEnv.MAIL_TITLE_FONT_SIZE.sp,
             )
             GeneralSpacer()
             Text(

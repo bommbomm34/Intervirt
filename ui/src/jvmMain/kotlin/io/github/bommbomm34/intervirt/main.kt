@@ -54,7 +54,7 @@ fun main() = application {
         if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
         LaunchedEffect(Unit) {
             // These things should be only called once
-            Locale.setDefault(appEnv.language)
+            Locale.setDefault(appEnv.LANGUAGE)
             FileKit.init("intervirt")
             // Add shutdown hook
             Runtime.getRuntime().addShutdownHook(

@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,16 +82,16 @@ fun Int.canPortBind(): Result<Unit> {
 fun Preferences.checkSetupStatus() = env("INSTALLED").toBoolean()
 
 fun AppEnv.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
-    vmRam = vmConf.ram
-    vmCpu = vmConf.cpu
-    vmEnableKvm = vmConf.kvm
-    vmDiskUrl = vmConf.diskUrl
-    vmDiskHashUrl = vmConf.diskHashUrl
-    vmShutdownTimeout = appConf.vmShutdownTimeout.toLong()
-    agentPort = appConf.agentPort
-    dataDir = File(appConf.intervirtFolder)
-    darkMode = appConf.darkMode
-    language = Locale.forLanguageTag(appConf.language)
+    VM_RAM = vmConf.ram
+    VM_CPU = vmConf.cpu
+    VM_ENABLE_KVM = vmConf.kvm
+    VM_DISK_URL = vmConf.diskUrl
+    VM_DISK_HASH_URL = vmConf.diskHashUrl
+    VM_SHUTDOWN_TIMEOUT = appConf.vmShutdownTimeout.toLong()
+    AGENT_PORT = appConf.agentPort
+    DATA_DIR = File(appConf.intervirtFolder)
+    DARK_MODE = appConf.darkMode
+    LANGUAGE = Locale.forLanguageTag(appConf.language)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -100,7 +99,7 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
 @Composable
-fun AppEnv.isDarkMode() = darkMode ?: isSystemInDarkTheme()
+fun AppEnv.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
 

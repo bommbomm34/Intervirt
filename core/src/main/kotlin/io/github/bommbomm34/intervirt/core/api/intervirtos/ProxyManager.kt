@@ -16,7 +16,7 @@ class ProxyManager(
     private val client = osClient.getClient(this)
     private val logger = KotlinLogging.logger { }
     private val computer = client.computer
-    private val virtual = appEnv.virtualContainerIO
+    private val virtual = appEnv.VIRTUAL_CONTAINER_IO
     private var proxyUrl: Address? = null
 
     suspend fun getProxyUrl() = if (virtual) Result.success(Address("127.0.0.1", 1080)) else {

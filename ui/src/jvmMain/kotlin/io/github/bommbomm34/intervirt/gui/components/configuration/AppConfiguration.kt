@@ -36,7 +36,7 @@ fun AppConfiguration(
         FilePicker(
             label = stringResource(Res.string.intervirt_folder),
             directory = true,
-            defaultPath = appEnv.dataDir.absolutePath,
+            defaultPath = appEnv.DATA_DIR.absolutePath,
         ) { onConfChange(conf.copy(intervirtFolder = it.absolutePath())) }
         GeneralSpacer()
         NamedCheckbox(

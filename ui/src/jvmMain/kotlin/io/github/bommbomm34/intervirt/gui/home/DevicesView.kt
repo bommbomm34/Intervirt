@@ -56,7 +56,7 @@ fun DevicesView() {
             Modifier
                 .fillMaxSize()
                 .onPointerEvent(PointerEventType.Scroll) {
-                    val delta = it.changes.first().scrollDelta.y * -appEnv.zoomSpeed
+                    val delta = it.changes.first().scrollDelta.y * -appEnv.ZOOM_SPEED
                     if (appState.isCtrlPressed && appState.devicesViewZoom + delta > 0.1f) appState.devicesViewZoom += delta
                 }
                 .onClick(matcher = PointerMatcher.Primary) { appState.drawingConnectionSource = null }
@@ -69,7 +69,7 @@ fun DevicesView() {
                                 point = position,
                                 start = device1.fittingOffset(appState.devicesViewZoom),
                                 end = device2.fittingOffset(appState.devicesViewZoom),
-                                strokeWidth = appEnv.connectionStrokeWidth,
+                                strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
                             )
                         }?.let {
                             appState.openDialog {
@@ -98,16 +98,16 @@ fun DevicesView() {
                     drawConnection(
                         offset1 = it.fittingOffset(appState.devicesViewZoom),
                         offset2 = appState.mousePosition,
-                        color = appEnv.deviceConnectionColor,
-                        strokeWidth = appEnv.connectionStrokeWidth,
+                        color = appEnv.DEVICE_CONNECTION_COLOR,
+                        strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
                     )
                 }
                 statefulConf.connections.forEach {
                     drawConnection(
                         offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
                         offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
-                        color = appEnv.deviceConnectionColor,
-                        strokeWidth = appEnv.connectionStrokeWidth,
+                        color = appEnv.DEVICE_CONNECTION_COLOR,
+                        strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
                     )
                 }
             }

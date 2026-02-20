@@ -24,7 +24,7 @@ val coreModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<AppEnv>().pseudoMode) VirtualGuestManager() else AgentClient(
+        (if (get<AppEnv>().PSEUDO_MODE) VirtualGuestManager() else AgentClient(
             get(),
             get(),
         ))

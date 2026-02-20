@@ -4,9 +4,11 @@ import java.io.File
 import java.util.*
 import kotlin.reflect.KProperty
 
+@Suppress("PropertyName")
 data class AppEnv(
     private val env: (String) -> String?,
     private val save: (String, String) -> Unit,
+    private val delete: (String) -> Unit,
     private val custom: AppEnv.() -> Unit = {},
 ) {
     private val defaultQemuZipUrl = when (getOS()) {
@@ -14,155 +16,105 @@ data class AppEnv(
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
     }
 
-    var debugEnabled: Boolean by EnvDelegate("DEBUG_ENABLED", save) {
-        env(it).toBoolean()
+    var DEBUG_ENABLED: Boolean by delegate { it.toBoolean() }
+
+    var AGENT_TIMEOUT: Long by delegate { it?.toLong() ?: 30_000L }
+
+    var QEMU_MONITOR_TIMEOUT: Long by delegate { it?.toLong() ?: 5_000L }
+
+    var AGENT_PORT: Int by delegate { it?.toInt() ?: 55436 }
+
+    var VM_SHUTDOWN_TIMEOUT: Long by delegate { it?.toLong() ?: 30_000L }
+
+    var VM_RAM: Int by delegate { it?.toInt() ?: 2048 }
+
+    var VM_CPU: Int by delegate { it?.toInt() ?: 1 }
+
+    var VM_ENABLE_KVM: Boolean by delegate { it?.toBoolean() ?: false }
+
+    var DATA_DIR: File by delegate {
+        File(it ?: "${System.getProperty("user.home")}${File.separator}Intervirt")
     }
 
-    var agentTimeout: Long by EnvDelegate("AGENT_TIMEOUT", save) {
-        env(it)?.toLong() ?: 30_000L
-    }
+    var DARK_MODE: Boolean? by delegate { it?.toBoolean() }
 
-    var qemuMonitorTimeout: Long by EnvDelegate("QEMU_MONITOR_TIMEOUT", save) {
-        env(it)?.toLong() ?: 5_000L
-    }
+    var TOOLTIP_FONT_SIZE: Int by delegate { it?.toInt() ?: 12 }
 
-    var agentPort: Int by EnvDelegate("AGENT_PORT", save) {
-        env(it)?.toInt() ?: 55436
-    }
+    var CONNECTION_STROKE_WIDTH: Float by delegate { it?.toFloat() ?: 10f }
 
-    var vmShutdownTimeout: Long by EnvDelegate("VM_SHUTDOWN_TIMEOUT", save) {
-        env(it)?.toLong() ?: 30_000L
-    }
+    var DEVICE_CONNECTION_COLOR: Long by delegate { it?.toLong(16) ?: 0xFF9CCC65 }
 
-    var vmRam: Int by EnvDelegate("VM_RAM", save) {
-        env(it)?.toInt() ?: 2048
-    }
+    var ZOOM_SPEED: Float by delegate { it?.toFloat() ?: 0.1f }
 
-    var vmCpu: Int by EnvDelegate("VM_CPU", save) {
-        env(it)?.toInt() ?: 1
-    }
+    var DEVICE_SIZE: Int by delegate { it?.toInt() ?: 100 }
 
-    var vmEnableKvm: Boolean by EnvDelegate("VM_ENABLE_KVM", save) {
-        env(it)?.toBoolean() ?: false
-    }
+    var OS_ICON_SIZE: Int by delegate { it?.toInt() ?: 128 }
 
-    var dataDir: File by EnvDelegate("DATA_DIR", save) {
-        File(env(it) ?: "${System.getProperty("user.home")}${File.separator}Intervirt")
-    }
+    var SUGGESTED_FILENAME: String by delegate { it ?: "MyIntervirtProject" }
 
-    var darkMode: Boolean? by EnvDelegate("DARK_MODE", save) {
-        env(it)?.toBoolean()
-    }
-
-    var tooltipFontSize: Int by EnvDelegate("TOOLTIP_FONT_SIZE", save) {
-        env(it)?.toInt() ?: 12
-    }
-
-    var connectionStrokeWidth: Float by EnvDelegate("CONNECTION_STROKE_WIDTH", save) {
-        env(it)?.toFloat() ?: 10f
-    }
-
-    var deviceConnectionColor: Long by EnvDelegate("DEVICE_CONNECTION_COLOR", save) {
-        env(it)?.toLong(16) ?: 0xFF9CCC65
-    }
-
-    var zoomSpeed: Float by EnvDelegate("ZOOM_SPEED", save) {
-        env(it)?.toFloat() ?: 0.1f
-    }
-
-    var deviceSize: Int by EnvDelegate("DEVICE_SIZE", save) {
-        env(it)?.toInt() ?: 100
-    }
-
-    var osIconSize: Int by EnvDelegate("OS_ICON_SIZE", save) {
-        env(it)?.toInt() ?: 128
-    }
-
-    var suggestedFilename: String by EnvDelegate("SUGGESTED_FILENAME", save) {
-        env(it) ?: "MyIntervirtProject"
-    }
-
-    var language: Locale by EnvDelegate("LANGUAGE", save) {
-        env(it)?.let(Locale::forLanguageTag)
+    var LANGUAGE: Locale by delegate {
+        it?.let(Locale::forLanguageTag)
             ?: Locale.getDefault()
             ?: Locale.US
     }
 
-    var enableAgent: Boolean by EnvDelegate("ENABLE_AGENT", save) {
-        env(it)?.toBooleanStrictOrNull() ?: true
+    var ENABLE_AGENT: Boolean by delegate { it?.toBooleanStrictOrNull() ?: true }
+
+    var QEMU_MONITOR_PORT: Int by delegate { it?.toInt() ?: 55_437 }
+
+    var TITLE_FONT_SIZE: Int by delegate { it?.toInt() ?: 48 }
+
+    var APP_ICON_SIZE: Int? by delegate { it?.toInt() }
+
+    var DEFAULT_DNS_SERVER: String by delegate { it ?: "9.9.9.9" }
+
+    var PSEUDO_MODE: Boolean by delegate { it.toBoolean() }
+
+    var ENABLE_JAVASCRIPT: Boolean by delegate { it?.toBoolean() ?: true }
+
+    var VIRTUAL_CONTAINER_IO: Boolean by delegate { it.toBoolean() }
+
+    var VIRTUAL_CONTAINER_IO_PORT: Int by delegate { it?.toInt() ?: 22 }
+
+    var VM_DISK_URL: String by delegate {
+        it ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
     }
 
-    var qemuMonitorPort: Int by EnvDelegate("QEMU_MONITOR_PORT", save) {
-        env(it)?.toInt() ?: 55_437
+    var VM_DISK_HASH_URL: String by delegate {
+        it ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2.sha256"
     }
 
-    var titleFontSize: Int by EnvDelegate("TITLE_FONT_SIZE", save) {
-        env(it)?.toInt() ?: 48
-    }
+    var QEMU_ZIP_URL: String by delegate { it ?: defaultQemuZipUrl }
 
-    var appIconSize: Int? by EnvDelegate("APP_ICON_SIZE", save) {
-        env(it)?.toInt()
-    }
+    var QEMU_ZIP_HASH_URL: String by delegate { it ?: "$defaultQemuZipUrl.sha256" }
 
-    var defaultDnsServer: String by EnvDelegate("DEFAULT_DNS_SERVER", save) {
-        env(it) ?: "9.9.9.9"
-    }
+    var AGENT_WEBSOCKET_TIMEOUT: Long by delegate { it?.toLong() ?: 10_000L }
 
-    var pseudoMode: Boolean by EnvDelegate("PSEUDO_MODE", save) {
-        env(it).toBoolean()
-    }
+    var MAIL_TITLE_FONT_SIZE: Int by delegate { it?.toInt() ?: 24 }
 
-    var enableJavaScript: Boolean by EnvDelegate("ENABLE_JAVASCRIPT", save) {
-        env(it)?.toBoolean() ?: true
-    }
+    internal var DISK_INSTALLED: Boolean by delegate { it.toBoolean() }
 
-    var virtualContainerIO: Boolean by EnvDelegate("VIRTUAL_CONTAINER_IO", save) {
-        env(it).toBoolean()
-    }
+    internal var CURRENT_DISK_HASH: String? by delegate { it }
 
-    var virtualContainerIOPort: Int by EnvDelegate("VIRTUAL_CONTAINER_IO_PORT", save) {
-        env(it)?.toInt() ?: 22
-    }
+    internal var QEMU_INSTALLED: Boolean by delegate { it.toBoolean() }
 
-    var vmDiskUrl: String by EnvDelegate("VM_DISK_URL", save) {
-        env(it) ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2"
-    }
+    internal var CURRENT_QEMU_HASH: String? by delegate { it }
 
-    var vmDiskHashUrl: String by EnvDelegate("VM_DISK_HASH_URL", save) {
-        env(it) ?: "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2.sha256"
-    }
+    var INTERVIRT_INSTALLED: Boolean by delegate { it.toBoolean() }
 
-    var qemuZipUrl: String by EnvDelegate("QEMU_ZIP_URL", save) {
-        env(it) ?: defaultQemuZipUrl
-    }
+    private fun <T> delegate(producer: (String?) -> T) = object {
+        private var value: Any? = UNINITIALIZED
 
-    var qemuZipHashUrl: String by EnvDelegate("QEMU_ZIP_HASH_URL", save) {
-        env(it) ?: "$defaultQemuZipUrl.sha256"
-    }
+        @Suppress("UNCHECKED_CAST")
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+            if (value == UNINITIALIZED) value = producer(env(property.name))
+            return value as T
+        }
 
-    var agentWebSocketTimeout: Long by EnvDelegate("AGENT_WEBSOCKET_TIMEOUT", save) {
-        env(it)?.toLong() ?: 10_000L
+        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+            if (value != null) save(property.name, value.toString()) else delete(property.name)
+        }
     }
-
-    var mailTitleFontSize: Int by EnvDelegate("MAIL_TITLE_FONT_SIZE", save) {
-        env(it)?.toInt() ?: 24
-    }
-
-    internal var diskInstalled: Boolean by EnvDelegate("DISK_INSTALLED", save) { env(it).toBoolean() }
-    internal var currentDiskHash: String? by EnvDelegate("CURRENT_DISK_HASH", save) { env(it) }
-    internal var qemuInstalled: Boolean by EnvDelegate("QEMU_INSTALLED", save) { env(it).toBoolean() }
-    internal var currentQemuHash: String? by EnvDelegate("CURRENT_QEMU_HASH", save) { env(it) }
-    var intervirtInstalled: Boolean by EnvDelegate("INSTALLED", save) { env(it).toBoolean() }
 }
 
-private class EnvDelegate<T>(
-    private val env: String,
-    private val save: (env: String, new: String) -> Unit,
-    producer: (env: String) -> T,
-) {
-    private val value = producer(env)
-
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = value
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = save(env, value.toString())
-}
+private object UNINITIALIZED

@@ -79,7 +79,7 @@ fun Installation(
                             emit(it.clone(percentage = it.percentage * 0.5f + 0.5f))
                             if (it is ResultProgress.Result && it.result.isFailure) job!!.cancel()
                         }
-                        appEnv.intervirtInstalled = true
+                        appEnv.INTERVIRT_INSTALLED = true
                         appState.currentScreenIndex = 1
                     }
                 }

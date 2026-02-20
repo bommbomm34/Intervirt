@@ -58,7 +58,7 @@ fun OptionDropdown(
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
-                if (appEnv.enableAgent) {
+                if (appEnv.ENABLE_AGENT) {
                     configuration.syncConfiguration(guestManager).collect {
                         logger.info { it }
                     }
@@ -90,7 +90,7 @@ fun OptionDropdown(
                 onClick = {
                     val file = appState.currentFile // Copy delegated state variable
                     if (file != null) writeConf(file) else fileSaverLauncher.launch(
-                        suggestedName = appEnv.suggestedFilename,
+                        suggestedName = appEnv.SUGGESTED_FILENAME,
                         extension = "ivrt",
                     )
                     onDismiss()
@@ -105,7 +105,7 @@ fun OptionDropdown(
             DropdownMenuItem(
                 onClick = {
                     fileSaverLauncher.launch(
-                        suggestedName = appEnv.suggestedFilename,
+                        suggestedName = appEnv.SUGGESTED_FILENAME,
                         extension = "ivrt",
                     )
                     onDismiss()
