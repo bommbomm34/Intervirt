@@ -6,6 +6,7 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.RequestBody
 import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
 import io.github.bommbomm34.intervirt.core.data.agent.commandBody
+import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.result
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -82,7 +83,12 @@ class AgentClient(
         val response = send<ResponseBody.Version>("version".commandBody())
         response
             .onSuccess {
-                return Result.success(it.firstOrNull()!!.version)
+                val res = it.firstOrNull()!!
+                return if (res.version != null) {
+                    Result.success(res.version)
+                } else {
+                    Result.failure(AgentTimeoutException(res.refID))
+                }
             }
             .onFailure {
                 return Result.failure(it)
@@ -139,7 +145,14 @@ class AgentClient(
                         .timeout(timeout)
                         .catch { exception ->
                             if (exception is TimeoutCancellationException) {
-                                // TODO: Handle timeout situations also for ResponseBody.Version
+                                if (body is RequestBody.Command && body.command == "version") {
+                                    // Request was version request
+                                    emit(
+                                        ResponseBody.Version(
+                                            refID = body.uuid,
+                                        ) as T,
+                                    )
+                                }
                                 emit(
                                     ResponseBody.General(
                                         refID = body.uuid,
@@ -150,7 +163,8 @@ class AgentClient(
                         },
                 )
             },
-            onFailure = { return Result.failure(it) },
+            onFailure =
+                { return Result.failure(it) },
         )
     }
 

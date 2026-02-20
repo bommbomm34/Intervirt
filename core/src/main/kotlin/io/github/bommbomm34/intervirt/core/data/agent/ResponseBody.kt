@@ -39,7 +39,7 @@ sealed class ResponseBody {
     @Serializable
     data class Version(
         override val refID: String,
-        val version: String,
+        val version: String? = null,
     ) : ResponseBody()
 
 
