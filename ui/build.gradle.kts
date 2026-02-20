@@ -43,8 +43,6 @@ kotlin {
             implementation(libs.zip4j)
             implementation(libs.compose.tabler.icons)
             implementation(libs.commons.validator)
-            implementation(libs.jediterm.core)
-            implementation(libs.jediterm.ui)
             implementation(libs.compose.table)
             implementation(libs.bossterm.core)
             implementation(libs.bossterm.compose)

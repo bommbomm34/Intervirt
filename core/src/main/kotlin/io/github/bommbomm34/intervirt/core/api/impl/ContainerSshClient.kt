@@ -2,28 +2,34 @@ package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import org.apache.sshd.client.SshClient
+import org.apache.sshd.client.channel.ClientChannel
+import org.apache.sshd.client.channel.ClientChannelEvent
 import org.apache.sshd.client.session.ClientSession
-import org.apache.sshd.sftp.client.SftpClientFactory
 import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Path
+import java.util.EnumSet
 
 private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
 class ContainerSshClient(
     override val port: Int,
-    val deviceManager: DeviceManager
+    val deviceManager: DeviceManager,
 ) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
@@ -42,6 +48,60 @@ class ContainerSshClient(
         session.auth().verify()
     }
 
+    override suspend fun pty(
+        scope: CoroutineScope,
+        command: String,
+        arguments: List<String>,
+        environment: Map<String, String>,
+        workingDirectory: String?, // TODO: Handle working directory
+    ) = withCatchingContext(Dispatchers.IO) {
+        logger.info { "Opening PTY shell '$command' on container" }
+        val sshChannel = session.createShellChannel(null, environment)
+        sshChannel.ptyType = "xterm"
+        sshChannel.open().verify()
+        val channel = Channel<ShellControlMessage>()
+        val inputStream = sshChannel.`in`
+        val outputStream = sshChannel.out
+
+        launch {
+            inputStream.use { _ ->
+                while (!sshChannel.isClosed) {
+                    val bytes = inputStream.readBytes()
+                    channel.send(ShellControlMessage.ByteData(bytes))
+                }
+            }
+            channel.send(ShellControlMessage.End(sshChannel.exitStatus))
+            channel.close()
+        }
+
+        launch {
+            outputStream.use { _ ->
+                while (!sshChannel.isClosed){
+                    for (msg in channel){
+                        when (msg) {
+                            is ShellControlMessage.ByteData -> {
+                                outputStream.write(msg.bytes)
+                                outputStream.flush()
+                            }
+                            is ShellControlMessage.Kill -> {
+                                channel.close()
+                                inputStream.close()
+                                outputStream.close()
+                                sshClient.close(true)
+                            }
+                            is ShellControlMessage.Resize -> {
+                                sshChannel.ptyColumns = msg.columns
+                                sshChannel.ptyLines = msg.rows
+                            }
+                            else -> error("Invalid: $msg")
+                        }
+                    }
+                }
+            }
+        }
+
+        channel
+    }
 
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         session.close()
@@ -49,7 +109,7 @@ class ContainerSshClient(
         fs.close()
         deviceManager.removePortForwarding(
             externalPort = port,
-            protocol = "tcp"
+            protocol = "tcp",
         ).getOrThrow()
     }
 
