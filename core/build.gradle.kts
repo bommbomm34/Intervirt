@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.jakarta.mail)
     implementation(libs.docker.java.core)
     implementation(libs.docker.java.transport.httpclient5)
+    implementation(libs.ksafe)
     // Test
     testImplementation(libs.koin.test)
     testImplementation(libs.kotlin.test)
