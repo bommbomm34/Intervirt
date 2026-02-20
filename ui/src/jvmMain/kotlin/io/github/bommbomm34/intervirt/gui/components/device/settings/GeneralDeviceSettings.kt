@@ -14,7 +14,7 @@ import intervirt.ui.generated.resources.name
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
+import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource

@@ -6,13 +6,14 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.gui.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
 
 class AppState(configuration: IntervirtConfiguration) {
     val logs = mutableStateListOf<String>()
     var showLogs by mutableStateOf(false)
-    var dialogState: DialogState by mutableStateOf(DialogState.Default)
+    var dialogStates = mutableStateListOf<DialogState>()
     var devicesViewZoom by mutableStateOf(1f)
     var isCtrlPressed by mutableStateOf(false)
     var mousePosition by mutableStateOf(Offset.Zero)
@@ -25,26 +26,25 @@ class AppState(configuration: IntervirtConfiguration) {
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
 
-    fun closeDialog() {
-        dialogState = when (dialogState) {
-            is DialogState.Custom -> (dialogState as DialogState.Custom).copy(visible = false)
-            is DialogState.Regular -> (dialogState as DialogState.Regular).copy(visible = false)
-        }
-    }
-
     fun openDialog(
-        importance: Importance,
+        severity: Severity,
         message: String,
-    ) {
-        dialogState = DialogState.Regular(
-            importance = importance,
+        title: String? = null,
+    ) = openDialog(title ?: message) {
+        DefaultDialog(
             message = message,
-            visible = true,
+            severity = severity,
+            onClose = ::close,
         )
     }
 
-    fun openDialog(customContent: @Composable () -> Unit) {
-        dialogState = DialogState.Custom(customContent, true)
+    fun openDialog(
+        title: String = "",
+        customContent: @Composable DialogState.() -> Unit,
+    ): DialogState {
+        val state = DialogState(title, customContent) { dialogStates.remove(it) }
+        dialogStates.add(state)
+        return state
     }
 
     /**
@@ -54,8 +54,9 @@ class AppState(configuration: IntervirtConfiguration) {
         runSuspendingCatching(block).onFailure {
             it.printStackTrace()
             openDialog(
-                importance = Importance.ERROR,
+                severity = Severity.ERROR,
                 message = it.stackTraceToString(),
+                title = it.localizedMessage,
             )
         }
 }

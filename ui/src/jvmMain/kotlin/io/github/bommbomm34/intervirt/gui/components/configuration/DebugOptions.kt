@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.launch
@@ -26,7 +26,7 @@ fun DebugOptions() {
     Button(
         onClick = {
             appState.openDialog(
-                importance = Importance.INFO,
+                severity = Severity.INFO,
                 message = "Debug with: ./gradlew",
             )
         },

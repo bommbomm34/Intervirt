@@ -11,7 +11,7 @@ import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.gui.components.launchDialogCatching
+import io.github.bommbomm34.intervirt.gui.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.gui.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.gui.intervirtos.dns.server.AddDnsRecordView
@@ -45,7 +45,7 @@ fun DnsServer(
         AlignedBox(Alignment.BottomEnd) {
             AddButton {
                 appState.openDialog {
-                    AddDnsRecordView(appState::closeDialog) {
+                    AddDnsRecordView(::close) {
                         scope.launchDialogCatching(appState) {
                             dnsServer.addRecord(it).getOrThrow()
                             records.add(it)

@@ -2,30 +2,17 @@ package io.github.bommbomm34.intervirt.data
 
 import androidx.compose.runtime.Composable
 
+data class DialogState(
+    val title: String = "",
+    private val content: @Composable DialogState.() -> Unit,
+    private val onClose: (DialogState) -> Unit,
+){
+    @Composable
+    fun compose() = content(this)
 
-sealed class DialogState(
-    open val visible: Boolean,
-) {
-    companion object {
-        val Default = Regular(
-            importance = Importance.INFO,
-            message = "",
-            visible = false,
-        )
-    }
-
-    data class Regular(
-        val importance: Importance,
-        val message: String,
-        override val visible: Boolean,
-    ) : DialogState(visible)
-
-    data class Custom(
-        val customContent: @Composable () -> Unit,
-        override val visible: Boolean,
-    ) : DialogState(visible)
+    fun close() = onClose(this)
 }
 
-enum class Importance {
+enum class Severity {
     INFO, ERROR, WARNING
 }

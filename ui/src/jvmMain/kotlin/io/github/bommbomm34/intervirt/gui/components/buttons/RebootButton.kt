@@ -8,7 +8,7 @@ import intervirt.ui.generated.resources.reboot
 import intervirt.ui.generated.resources.rebooting
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -28,7 +28,7 @@ fun RebootButton(running: Boolean) {
                 guestManager.reboot()
                     .onFailure {
                         appState.openDialog(
-                            importance = Importance.ERROR,
+                            severity = Severity.ERROR,
                             message = it.localizedMessage,
                         )
                     }

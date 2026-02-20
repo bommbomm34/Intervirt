@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.gui.components
+package io.github.bommbomm34.intervirt.gui.components.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +10,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.no
 import intervirt.ui.generated.resources.yes
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -19,7 +20,6 @@ fun AcceptDialog(
     onCancel: () -> Unit = {},
     onAccept: () -> Unit,
 ) {
-    val appState = koinInject<AppState>()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -28,7 +28,6 @@ fun AcceptDialog(
         Row {
             Button(
                 onClick = {
-                    appState.closeDialog()
                     onAccept()
                 },
             ) {
@@ -37,7 +36,6 @@ fun AcceptDialog(
             GeneralSpacer()
             Button(
                 onClick = {
-                    appState.closeDialog()
                     onCancel()
                 },
             ) {

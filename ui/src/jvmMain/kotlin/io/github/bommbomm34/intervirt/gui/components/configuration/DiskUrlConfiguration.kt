@@ -8,7 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -44,13 +44,13 @@ fun DiskUrlConfiguration(
             scope.launch {
                 client.validate(conf.diskUrl) {
                     appState.openDialog(
-                        importance = Importance.ERROR,
+                        severity = Severity.ERROR,
                         message = getString(Res.string.disk_url_validation_failure, it),
                     )
                 }
                 client.validate(conf.diskHashUrl) {
                     appState.openDialog(
-                        importance = Importance.ERROR,
+                        severity = Severity.ERROR,
                         message = getString(Res.string.disk_hash_url_validation_failure, it),
                     )
                 }

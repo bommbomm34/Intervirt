@@ -13,7 +13,7 @@ import compose.icons.tablericons.Switch
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.toViewDevice
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.imagepicker.ImagePicker
@@ -44,7 +44,7 @@ fun AddDeviceButton() {
                             onDismiss = {
                                 appState.openDialog(
                                     message = osIsNeededText,
-                                    importance = Importance.ERROR,
+                                    severity = Severity.ERROR,
                                 )
                             },
                             onInstall = { image ->
@@ -56,11 +56,11 @@ fun AddDeviceButton() {
                                     )
                                         .onSuccess {
                                             appState.statefulConf.devices.add(it.toViewDevice())
-                                            appState.closeDialog()
+                                            close()
                                         }
                                         .onFailure {
                                             appState.openDialog(
-                                                importance = Importance.ERROR,
+                                                severity = Severity.ERROR,
                                                 message = getString(
                                                     Res.string.error_during_device_creation,
                                                     it.localizedMessage,

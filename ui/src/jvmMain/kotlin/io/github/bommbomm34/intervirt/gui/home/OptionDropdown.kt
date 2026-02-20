@@ -120,7 +120,7 @@ fun OptionDropdown(
             DropdownMenuItem(
                 onClick = {
                     appState.openDialog {
-                        Updater(appState::closeDialog)
+                        Updater(::close)
                     }
                     onDismiss()
                 },

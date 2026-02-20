@@ -14,7 +14,7 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -38,7 +38,7 @@ fun SyncButton(running: Boolean) {
                         appState.logs.add(it.log())
                         if (syncFailed) {
                             appState.openDialog(
-                                importance = Importance.ERROR,
+                                severity = Severity.ERROR,
                                 message = it.log(),
                             )
                             coroutineContext.cancel()

@@ -9,13 +9,13 @@ import intervirt.ui.generated.resources.username
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
+import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.gui.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.gui.components.launchDialogCatching
+import io.github.bommbomm34.intervirt.gui.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.gui.components.tables.SimpleTable
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -50,7 +50,7 @@ fun MailServerUserManager(
                     appState.openDialog {
                         AcceptDialog(
                             message = stringResource(Res.string.sure_to_delete_user),
-                            onCancel = appState::closeDialog
+                            onCancel = ::close
                         ){
                             scope.launchDialogCatching(appState){
                                 mailServer.removeMailUser(it).getOrThrow()
@@ -66,7 +66,7 @@ fun MailServerUserManager(
         AddButton {
             appState.openDialog {
                 AddMailUserView(mailServer){
-                    appState.closeDialog()
+                    close()
                     scope.launchDialogCatching(appState){
                         retrieveUsers()
                     }

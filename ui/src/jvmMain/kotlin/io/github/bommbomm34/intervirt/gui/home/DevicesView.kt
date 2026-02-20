@@ -28,9 +28,9 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
+import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.AlignedBox
 import io.github.bommbomm34.intervirt.gui.components.buttons.AddDeviceButton
 import io.github.bommbomm34.intervirt.gui.components.device.settings.DeviceSettings
@@ -137,7 +137,7 @@ fun DevicesView() {
                                 statefulConf.connections.add(copy connect it)
                                 deviceManager.connectDevice(copy.device, it.device)
                             } else appState.openDialog(
-                                importance = Importance.WARNING,
+                                severity = Severity.WARNING,
                                 message = getString(Res.string.too_many_devices_connected),
                             )
                         }

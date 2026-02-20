@@ -16,7 +16,7 @@ import io.github.bommbomm34.intervirt.gui.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.gui.components.CenterColumn
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.gui.components.launchDialogCatching
+import io.github.bommbomm34.intervirt.gui.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.rememberLogger
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject

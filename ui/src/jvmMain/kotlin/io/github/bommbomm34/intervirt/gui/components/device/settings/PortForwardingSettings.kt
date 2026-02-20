@@ -26,8 +26,9 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
         AddButton {
             appState.openDialog {
                 AddPortForwardingDialog(
-                    device,
-                ) { appState.dialogState = (appState.dialogState as DialogState.Custom).copy(visible = false) }
+                    device = device,
+                    onCancel = ::close
+                )
             }
         }
         LazyColumn {

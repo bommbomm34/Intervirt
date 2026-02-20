@@ -1,15 +1,10 @@
 package io.github.bommbomm34.intervirt.data
 
-import androidx.compose.foundation.Image
-import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.IMAGES_URL
 import io.github.bommbomm34.intervirt.runSuspendingCatching
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.request.*
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.getString
 
 @Serializable
 data class Image(

@@ -23,6 +23,7 @@ import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.gui.components.*
 import io.github.bommbomm34.intervirt.gui.components.buttons.SendButton
+import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.gui.intervirtos.mail.client.MailListView
@@ -64,9 +65,9 @@ fun MailClient(
             MailEditor(
                 sender = client.mailUser!!,
                 mail = mail,
-                onCancel = appState::closeDialog,
+                onCancel = ::close,
             ) {
-                appState.closeDialog()
+                close()
                 scope.launch {
                     appState.runDialogCatching {
                         client.sendMail(it).getOrThrow()
@@ -110,7 +111,7 @@ fun MailClient(
                         MailView(
                             mail = it,
                             onDelete = {
-                                appState.closeDialog()
+                                close()
                                 appState.openDialog {
                                     AcceptDialog(
                                         message = stringResource(Res.string.sure_to_delete_mail),
@@ -125,7 +126,7 @@ fun MailClient(
                                 }
                             },
                             onReply = {
-                                appState.closeDialog()
+                                close()
                                 scope.launch {
                                     appState.runDialogCatching {
                                         val mail = client.getReplyMail(it).getOrThrow()
@@ -133,7 +134,8 @@ fun MailClient(
                                     }
                                 }
                             },
-                        ) { appState.closeDialog() }
+                            onClose = ::close
+                        )
                     }
                 }
             }
@@ -164,7 +166,7 @@ fun MailClient(
             } else {
                 appState.openDialog {
                     MailClientLogin(credentials) { details, saveCredentials ->
-                        appState.closeDialog()
+                        close()
                         login(details, saveCredentials)
                     }
                 }

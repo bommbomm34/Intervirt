@@ -27,7 +27,7 @@ import io.github.bommbomm34.intervirt.gui.App
 import io.github.bommbomm34.intervirt.gui.LogsView
 import io.github.bommbomm34.intervirt.gui.ShellViewWindow
 import io.github.bommbomm34.intervirt.gui.components.DefaultWindowScope
-import io.github.bommbomm34.intervirt.gui.components.Dialog
+import io.github.bommbomm34.intervirt.gui.components.dialogs.Dialog
 import io.github.bommbomm34.intervirt.gui.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.runBlocking
@@ -118,18 +118,16 @@ fun main() = application {
                 }
             }
         }
-        // Dialog Window
-        Window(
-            onCloseRequest = appState::closeDialog,
-            visible = appState.dialogState.visible,
-            title = when (appState.dialogState) {
-                is DialogState.Regular -> (appState.dialogState as DialogState.Regular).message
-                is DialogState.Custom -> "Dialog"
-            },
-            state = rememberWindowState(size = dialogSize),
-        ) {
-            DefaultWindowScope {
-                Dialog()
+        // Dialog Windows
+        appState.dialogStates.forEach { dialogState ->
+            Window(
+                onCloseRequest = dialogState::close,
+                title = dialogState.title,
+                state = rememberWindowState(size = dialogSize),
+            ) {
+                DefaultWindowScope {
+                    Dialog(dialogState)
+                }
             }
         }
     }

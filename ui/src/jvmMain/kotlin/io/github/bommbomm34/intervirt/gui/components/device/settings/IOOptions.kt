@@ -12,9 +12,9 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Importance
+import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.gui.components.AcceptDialog
+import io.github.bommbomm34.intervirt.gui.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.gui.components.GeneralIcon
 import io.github.bommbomm34.intervirt.gui.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.gui.components.filepicker.ContainerFilePicker
@@ -52,7 +52,7 @@ fun IOOptions(device: ViewDevice.Computer) {
                     containerFilePath!!.copyTo(file.file.toPath())
                 } catch (e: Exception) {
                     appState.openDialog(
-                        importance = Importance.ERROR,
+                        severity = Severity.ERROR,
                         message = e.localizedMessage,
                     )
                 }
@@ -63,7 +63,7 @@ fun IOOptions(device: ViewDevice.Computer) {
         file?.let { _ ->
             appState.openDialog {
                 ContainerFilePicker(ioClient!!, file.name) { path ->
-                    appState.closeDialog()
+                    close()
                     path?.let { _ ->
                         scope.launch {
                             appState.runDialogCatching {
@@ -87,7 +87,7 @@ fun IOOptions(device: ViewDevice.Computer) {
                 onClick = {
                     appState.openDialog {
                         ContainerFilePicker(client) { path ->
-                            appState.closeDialog()
+                            close()
                             path?.let {
                                 containerFilePath = it
                                 val fullFileName = path.name
