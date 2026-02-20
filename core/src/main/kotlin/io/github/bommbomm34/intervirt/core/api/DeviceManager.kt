@@ -153,7 +153,7 @@ class DeviceManager(
         logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
         device.portForwardings.add(PortForwarding(protocol, externalPort, internalPort))
         qemuClient.addPortForwarding(
-            protocol = "tcp", // TODO: It should be editable,
+            protocol = protocol,
             hostPort = externalPort,
             guestPort = externalPort, // Guest is not the container itself
         ).onFailure { return Result.failure(it) }
