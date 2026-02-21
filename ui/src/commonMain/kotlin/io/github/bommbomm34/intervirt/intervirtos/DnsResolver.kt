@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.intervirtos
 
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.*
@@ -60,9 +60,8 @@ fun DnsResolver(
                 DNS_RECORD_TYPES.forEach { type ->
                     DropdownMenuItem(
                         onClick = { dnsRecordType = type },
-                    ) {
-                        Text(dnsRecordType)
-                    }
+                        text = { Text(dnsRecordType) }
+                    )
                 }
             }
             GeneralSpacer()

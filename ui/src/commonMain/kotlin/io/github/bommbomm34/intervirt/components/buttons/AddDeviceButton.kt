@@ -1,21 +1,22 @@
 package io.github.bommbomm34.intervirt.components.buttons
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import compose.icons.TablerIcons
 import compose.icons.tablericons.DevicesPc
 import compose.icons.tablericons.Switch
 import intervirt.ui.generated.resources.*
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.toViewDevice
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.imagepicker.ImagePicker
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -72,14 +73,17 @@ fun AddDeviceButton() {
                         )
                     }
                 },
-            ) {
-                Icon(
-                    imageVector = TablerIcons.DevicesPc,
-                    contentDescription = stringResource(Res.string.computer),
-                )
-                GeneralSpacer(5.dp)
-                Text(stringResource(Res.string.computer))
-            }
+                text = {
+                    CenterRow {
+                        Icon(
+                            imageVector = TablerIcons.DevicesPc,
+                            contentDescription = stringResource(Res.string.computer),
+                        )
+                        GeneralSpacer(5.dp)
+                        Text(stringResource(Res.string.computer))
+                    }
+                },
+            )
             DropdownMenuItem(
                 onClick = {
                     dropdownExpanded = false
@@ -90,14 +94,15 @@ fun AddDeviceButton() {
                     )
                     appState.statefulConf.devices.add(device.toViewDevice())
                 },
-            ) {
-                Icon(
-                    imageVector = TablerIcons.Switch,
-                    contentDescription = stringResource(Res.string.computer),
-                )
-                GeneralSpacer(5.dp)
-                Text(stringResource(Res.string.switch))
-            }
+                text = {
+                    Icon(
+                        imageVector = TablerIcons.Switch,
+                        contentDescription = stringResource(Res.string.computer),
+                    )
+                    GeneralSpacer(5.dp)
+                    Text(stringResource(Res.string.switch))
+                },
+            )
         }
         AddButton { dropdownExpanded = true }
     }

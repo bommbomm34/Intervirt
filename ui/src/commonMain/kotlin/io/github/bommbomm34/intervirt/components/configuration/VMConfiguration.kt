@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.components.configuration
 
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData

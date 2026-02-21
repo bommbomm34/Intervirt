@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.components
 
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 
 
@@ -24,9 +24,8 @@ fun SelectionDropdown(
                     onSelect(it)
                     expanded = false
                 },
-            ) {
-                Text(it)
-            }
+                text = { Text(it) }
+            )
         }
     }
     Button(onClick = { expanded = true }) {

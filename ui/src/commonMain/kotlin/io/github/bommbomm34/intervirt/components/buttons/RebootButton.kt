@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.components.buttons
 
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.reboot

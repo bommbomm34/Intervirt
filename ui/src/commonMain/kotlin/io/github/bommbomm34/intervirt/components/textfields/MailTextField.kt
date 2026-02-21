@@ -1,8 +1,8 @@
 package io.github.bommbomm34.intervirt.components.textfields
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 private val ADDRESS_VALIDATION_REGEX = Regex(".+:\\d+")
@@ -21,7 +21,7 @@ fun AddressTextField(
         label = {
             if (valid) Text(label) else
                 Text(
-                    color = MaterialTheme.colors.error,
+                    color = MaterialTheme.colorScheme.error,
                     text = errorLabel,
                 )
         },

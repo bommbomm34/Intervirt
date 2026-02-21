@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.intervirtos.components
 
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
 import io.github.bommbomm34.intervirt.components.CenterRow

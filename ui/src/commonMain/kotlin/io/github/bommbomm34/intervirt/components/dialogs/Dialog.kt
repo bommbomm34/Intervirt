@@ -3,7 +3,7 @@ package io.github.bommbomm34.intervirt.components.dialogs
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -24,7 +24,7 @@ fun Dialog(state: DialogState) {
     AlignedBox(Alignment.Center) {
         Surface(
             modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-            color = MaterialTheme.colors.background.copy(blue = 0.05f),
+            color = MaterialTheme.colorScheme.background.copy(blue = 0.05f),
         ) {
             Box(Modifier.padding(16.dp)) {
                 state.compose()

@@ -1,8 +1,8 @@
 package io.github.bommbomm34.intervirt.home
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import compose.icons.TablerIcons
@@ -79,12 +79,13 @@ fun OptionDropdown(
                     filePickerLauncher.launch()
                     onDismiss()
                 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.Folder,
-                    text = stringResource(Res.string.open),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.Folder,
+                        text = stringResource(Res.string.open),
+                    )
+                }
+            )
             // Save
             DropdownMenuItem(
                 onClick = {
@@ -95,12 +96,13 @@ fun OptionDropdown(
                     )
                     onDismiss()
                 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.DeviceFloppy,
-                    text = stringResource(Res.string.save),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.DeviceFloppy,
+                        text = stringResource(Res.string.save),
+                    )
+                }
+            )
             // Save As
             DropdownMenuItem(
                 onClick = {
@@ -110,12 +112,13 @@ fun OptionDropdown(
                     )
                     onDismiss()
                 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.DeviceFloppy,
-                    text = stringResource(Res.string.save_as),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.DeviceFloppy,
+                        text = stringResource(Res.string.save_as),
+                    )
+                }
+            )
             // Update
             DropdownMenuItem(
                 onClick = {
@@ -124,42 +127,46 @@ fun OptionDropdown(
                     }
                     onDismiss()
                 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.Refresh,
-                    text = stringResource(Res.string.update),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.Refresh,
+                        text = stringResource(Res.string.update),
+                    )
+                }
+            )
             // Settings
             DropdownMenuItem(
                 onClick = { appState.currentScreenIndex = 2 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.Settings,
-                    text = stringResource(Res.string.settings),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.Settings,
+                        text = stringResource(Res.string.settings),
+                    )
+                }
+            )
             // About
             DropdownMenuItem(
                 onClick = { appState.currentScreenIndex = 3 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.InfoCircle,
-                    text = stringResource(Res.string.about),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.InfoCircle,
+                        text = stringResource(Res.string.about),
+                    )
+                }
+            )
             // Help
             DropdownMenuItem(
                 onClick = {
                     Desktop.getDesktop().browse(URI(HELP_URL))
                     onDismiss()
                 },
-            ) {
-                IconText(
-                    imageVector = TablerIcons.Help,
-                    text = stringResource(Res.string.help),
-                )
-            }
+                text = {
+                    IconText(
+                        imageVector = TablerIcons.Help,
+                        text = stringResource(Res.string.help),
+                    )
+                }
+            )
         }
     }
 }

@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.components.configuration
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.QemuClient

@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.setup
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -85,7 +85,7 @@ fun Installation(
                 }
             },
             enabled = allowInstallation,
-            colors = if (job != null) ButtonDefaults.buttonColors(backgroundColor = Color.Red) else ButtonDefaults.buttonColors(),
+            colors = if (job != null) ButtonDefaults.buttonColors(containerColor = Color.Red) else ButtonDefaults.buttonColors(),
         ) {
             if (job != null) Text(
                 text = stringResource(Res.string.cancel_intervirt_installation),

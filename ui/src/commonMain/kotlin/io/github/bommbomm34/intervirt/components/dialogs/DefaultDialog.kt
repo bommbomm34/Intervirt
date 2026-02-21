@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -47,8 +47,8 @@ fun DefaultDialog(
                 Severity.WARNING -> stringResource(Res.string.warning)
             },
             color = when (severity) {
-                Severity.INFO -> MaterialTheme.colors.onSecondary
-                Severity.ERROR -> MaterialTheme.colors.error
+                Severity.INFO -> MaterialTheme.colorScheme.onSecondary
+                Severity.ERROR -> MaterialTheme.colorScheme.error
                 Severity.WARNING -> Color.Yellow
             },
         )

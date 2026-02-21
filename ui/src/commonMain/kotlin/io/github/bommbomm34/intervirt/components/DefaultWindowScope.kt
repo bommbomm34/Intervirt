@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,35 +28,22 @@ fun DefaultWindowScope(
     content: @Composable BoxScope.() -> Unit,
 ) {
     val appEnv = koinInject<AppEnv>()
-    val colors = if (appEnv.isDarkMode()) darkColors() else lightColors()
+    val colors = if (appEnv.isDarkMode()) darkColorScheme() else lightColorScheme()
     MaterialTheme(
-        colors = colors,
-        typography = MaterialTheme.typography.copy(
-            h1 = MaterialTheme.typography.h1.copy(colors.onBackground),
-            h2 = MaterialTheme.typography.h2.copy(colors.onBackground),
-            h3 = MaterialTheme.typography.h3.copy(colors.onBackground),
-            h4 = MaterialTheme.typography.h4.copy(colors.onBackground),
-            h5 = MaterialTheme.typography.h5.copy(colors.onBackground),
-            h6 = MaterialTheme.typography.h6.copy(colors.onBackground),
-            subtitle1 = MaterialTheme.typography.subtitle1.copy(colors.onBackground),
-            subtitle2 = MaterialTheme.typography.subtitle2.copy(colors.onBackground),
-            body1 = MaterialTheme.typography.body1.copy(colors.onBackground),
-            body2 = MaterialTheme.typography.body2.copy(colors.onBackground),
-            button = MaterialTheme.typography.button.copy(colors.onPrimary),
-            caption = MaterialTheme.typography.caption.copy(colors.onBackground),
-            overline = MaterialTheme.typography.overline.copy(colors.onBackground),
-        ),
+        colorScheme = colors,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeContentPadding()
-                .background(colors.background)
-                .onPointerEvent(
-                    eventType = PointerEventType.Move,
-                    onEvent = onPointerEvent,
-                ),
-            content = content,
-        )
+        Surface(contentColor = colors.onBackground) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .safeContentPadding()
+                    .background(colors.background)
+                    .onPointerEvent(
+                        eventType = PointerEventType.Move,
+                        onEvent = onPointerEvent,
+                    ),
+                content = content,
+            )
+        }
     }
 }

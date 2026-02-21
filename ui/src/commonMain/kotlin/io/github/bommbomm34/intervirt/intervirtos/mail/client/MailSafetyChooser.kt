@@ -1,10 +1,10 @@
 package io.github.bommbomm34.intervirt.intervirtos.mail.client
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 
@@ -31,9 +31,8 @@ fun MailSafetyChooser(
                         expanded = false
                         onSafetyChange(mailSafety.second)
                     },
-                ) {
-                    Text(mailSafety.first)
-                }
+                    text = { Text(mailSafety.first) },
+                )
             }
         }
         Button(

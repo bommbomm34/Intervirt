@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.intervirtos.mail.client
 
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails

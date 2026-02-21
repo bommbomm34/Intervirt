@@ -1,8 +1,8 @@
 package io.github.bommbomm34.intervirt.components.filepicker
 
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.filename

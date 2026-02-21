@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,13 +71,13 @@ fun DeviceView(
                 onClick = { onSecondaryClick(device) },
             )
             .clip(RoundedCornerShape(16f))
-            .background(MaterialTheme.colors.background),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         Icon(
             imageVector = device.getVector(),
             contentDescription = device.name,
             modifier = Modifier.size(appEnv.DEVICE_SIZE.dp, appEnv.DEVICE_SIZE.dp),
-            tint = MaterialTheme.colors.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
         )
         GeneralSpacer(2.dp)
         Text(device.name)

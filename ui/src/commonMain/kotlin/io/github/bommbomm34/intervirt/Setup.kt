@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp

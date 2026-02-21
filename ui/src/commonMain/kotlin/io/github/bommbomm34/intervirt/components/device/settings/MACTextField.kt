@@ -1,7 +1,7 @@
 package io.github.bommbomm34.intervirt.components.device.settings
 
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.mac_address

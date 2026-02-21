@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.components.device.settings
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -78,7 +78,7 @@ fun AddPortForwardingDialog(
         Row {
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
             ) {
                 Text(
                     text = "Cancel",

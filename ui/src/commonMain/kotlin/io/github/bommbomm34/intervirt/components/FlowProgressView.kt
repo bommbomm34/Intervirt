@@ -1,6 +1,6 @@
 package io.github.bommbomm34.intervirt.components
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
@@ -14,7 +14,7 @@ fun <T> FlowProgressView(
     onJobChange: ((Job?) -> Unit),
     onMessage: ((ResultProgress<T>) -> Unit)?,
 ) {
-    val defaultMessageColor = MaterialTheme.colors.onBackground
+    val defaultMessageColor = MaterialTheme.colorScheme.onBackground
     var message by remember { mutableStateOf("") }
     var progress by remember { mutableStateOf(0f) }
     var messageColor by remember { mutableStateOf(defaultMessageColor) }
