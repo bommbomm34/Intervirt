@@ -1,43 +1,42 @@
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
     alias(libs.plugins.kotlinSerialization)
 }
 
 group = "io.github.bommbomm34.intervirt"
 version = "0.0.1"
 
-dependencies {
-    implementation(libs.sshd.core)
-    implementation(libs.sshd.sftp)
-    implementation(libs.kommand)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.client.websockets)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.koin.core)
-    implementation(libs.slf4j.reload4j)
-    implementation(libs.kotlin.logging.jvm)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.zip4j)
-    implementation(libs.jediterm.core)
-    implementation(libs.jediterm.ui)
-    implementation(libs.jakarta.mail)
-    implementation(libs.docker.java.core)
-    implementation(libs.docker.java.transport.httpclient5)
-    implementation(libs.ksafe)
-    implementation(libs.cryptography.core)
-    implementation(libs.cryptography.provider.optimal)
-    implementation(libs.multiplatform.settings)
-    implementation(libs.multiplatform.settings.serialization)
-    // Test
-    testImplementation(libs.koin.test)
-    testImplementation(libs.kotlin.test)
-}
-
 kotlin {
-    jvmToolchain(21)
-}
+    jvm()
 
-tasks.test {
-    useJUnitPlatform()
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.websockets)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.koin.core)
+            implementation(libs.ksafe)
+            implementation(libs.cryptography.core)
+            implementation(libs.cryptography.provider.optimal)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.serialization)
+        }
+        commonTest.dependencies {
+            implementation(libs.koin.test)
+            implementation(libs.kotlin.test)
+        }
+        jvmMain.dependencies {
+            implementation(libs.docker.java.core)
+            implementation(libs.docker.java.transport.httpclient5)
+            implementation(libs.zip4j)
+            implementation(libs.jakarta.mail)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.kotlin.logging.jvm)
+            implementation(libs.slf4j.reload4j)
+            implementation(libs.kommand)
+            implementation(libs.sshd.core)
+            implementation(libs.sshd.sftp)
+        }
+    }
 }
