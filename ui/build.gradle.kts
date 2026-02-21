@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.compose.tabler.icons)
             implementation(libs.compose.table)
             implementation(libs.coil.network.ktor3)
+            implementation(libs.material.kolor)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
