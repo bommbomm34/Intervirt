@@ -8,11 +8,11 @@ import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 
 @Composable
@@ -45,7 +45,7 @@ fun DebugOptions() {
             onClick = {
                 scope.launch {
                     if (!qemuClient.running) qemuClient.bootAlpine().getOrThrow()
-                    val res = qemuClient.qmpSend(command).getOrNull()?.let { Json.encodeToString(it) }
+                    val res = qemuClient.qmpSend(command).getOrNull()?.let { defaultJson.encodeToString(it) }
                     logger.debug { "Command result of $command: $res" }
                 }
 
