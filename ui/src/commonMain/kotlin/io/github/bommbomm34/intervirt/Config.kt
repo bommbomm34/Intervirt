@@ -93,6 +93,7 @@ fun AppEnv.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigura
     DATA_DIR = File(appConf.intervirtFolder)
     DARK_MODE = appConf.darkMode
     LANGUAGE = Locale.forLanguageTag(appConf.language)
+    ACCENT_COLOR = appConf.accentColor
 }
 
 @OptIn(ExperimentalFoundationApi::class)

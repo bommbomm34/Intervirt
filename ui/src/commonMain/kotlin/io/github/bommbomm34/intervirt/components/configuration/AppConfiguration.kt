@@ -1,8 +1,16 @@
 package io.github.bommbomm34.intervirt.components.configuration
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.ColorPicker
 import io.github.bommbomm34.intervirt.components.FilePicker
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
@@ -48,6 +56,11 @@ fun AppConfiguration(
         LanguagePicker(
             language = Locale.forLanguageTag(conf.language),
             onChangeLanguage = { onConfChange(conf.copy(language = it.toLanguageTag())) },
+        )
+        GeneralSpacer()
+        ColorPicker(
+            color = Color(conf.accentColor),
+            onColorSelect = { appEnv.ACCENT_COLOR = it.value } // TODO: Save it to conf
         )
     }
 }

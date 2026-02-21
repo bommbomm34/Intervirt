@@ -31,6 +31,7 @@ sshd = "3.0.0-M2"
 version-catalog-update = "1.0.1"
 zip4j = "2.11.6"
 materialKolor = "4.1.1"
+colorpicker = "1.1.3"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -78,6 +79,7 @@ sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "sshd" }
 sshd-sftp = { module = "org.apache.sshd:sshd-sftp", version.ref = "sshd" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
+compose-colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

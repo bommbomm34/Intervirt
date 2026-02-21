@@ -6,4 +6,5 @@ data class AppConfigurationData(
     val intervirtFolder: String,
     val darkMode: Boolean,
     val language: String,
+    val accentColor: ULong,
 )

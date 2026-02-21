@@ -28,7 +28,7 @@ fun ClickableTable(
     DataTable(
         columns = {
             headers.forEach {
-                column { Text(it, true) }
+                column { BoldText(it) }
             }
         },
         modifier = Modifier.verticalScroll(scrollState),

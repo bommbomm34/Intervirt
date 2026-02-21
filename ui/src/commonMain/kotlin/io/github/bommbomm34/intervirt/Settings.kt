@@ -1,9 +1,16 @@
 package io.github.bommbomm34.intervirt
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.restart_necessary_to_apply_changes
 import intervirt.ui.generated.resources.save_changes
@@ -28,8 +35,8 @@ import kotlin.system.exitProcess
 @Composable
 fun Settings() {
     val appEnv = koinInject<AppEnv>()
-    val preferences = koinInject<Preferences>()
     val appState = koinInject<AppState>()
+    val windowSize = appState.windowState.size
     val isDarkMode = appEnv.isDarkMode()
     var appConf by remember {
         mutableStateOf(
@@ -39,6 +46,7 @@ fun Settings() {
                 intervirtFolder = appEnv.DATA_DIR.absolutePath,
                 darkMode = appEnv.DARK_MODE ?: isDarkMode,
                 language = appEnv.LANGUAGE.toLanguageTag(),
+                accentColor = appEnv.ACCENT_COLOR,
             ),
         )
     }
@@ -60,7 +68,11 @@ fun Settings() {
         }
     }
     AlignedBox(Alignment.Center) {
-        CenterColumn {
+        CenterColumn(
+            modifier = Modifier
+                .size(windowSize * 0.8f)
+                .verticalScroll(rememberScrollState())
+        ) {
             AppConfiguration(appConf) {
                 appConf = it
             }
@@ -71,6 +83,7 @@ fun Settings() {
             GeneralSpacer()
             Button(
                 onClick = {
+                    println("Apply conf")
                     appEnv.applyConfiguration(vmConf, appConf)
                     appState.openDialog {
                         AcceptDialog(

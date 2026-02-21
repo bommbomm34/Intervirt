@@ -102,7 +102,7 @@ data class AppEnv(
 
     var INTERVIRT_INSTALLED: Boolean by delegate { it.toBoolean() }
     var IMAGES_URL: String by delegate { it ?: "https://perhof.org/intervirt/images.json" }
-    var ACCENT_COLOR: Long by delegate { it?.toLong() ?: 0x3253FF  }
+    var ACCENT_COLOR: ULong by delegate { it?.toULong() ?: 0xFF648042.toULong()  }
 
     private fun <T> delegate(producer: (String?) -> T) = object {
         private var value: Any? = UNINITIALIZED

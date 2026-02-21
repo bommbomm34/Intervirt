@@ -22,7 +22,7 @@ fun CustomTable(
         DataTable(
             columns = {
                 headers.forEach {
-                    column { Text(it, true) }
+                    column { BoldText(it) }
                 }
             },
         ) {
@@ -41,11 +41,9 @@ fun CustomTable(
 }
 
 @Composable
-fun Text(text: Any, bold: Boolean = false) {
-    val appEnv = koinInject<AppEnv>()
+fun BoldText(text: String) {
     Text(
-        text = text.toString(),
-        color = if (appEnv.isDarkMode()) Color.White else Color.Black,
-        fontWeight = if (bold) FontWeight.ExtraBold else null,
+        text = text,
+        fontWeight = FontWeight.ExtraBold,
     )
 }

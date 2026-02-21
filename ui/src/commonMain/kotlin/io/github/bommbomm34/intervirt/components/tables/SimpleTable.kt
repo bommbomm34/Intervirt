@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.components.tables
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
@@ -12,7 +13,7 @@ fun SimpleTable(
         headers = headers,
         content = content.mapIndexed { i, row ->
             buildList {
-                addAll(row.map { { Text(it) } })
+                addAll(row.map { { Text(it.toString()) } })
                 println("$i with $row: ${customElements.getOrNull(i)}")
                 customElements.getOrNull(i)?.let { element -> add(element) }
             }

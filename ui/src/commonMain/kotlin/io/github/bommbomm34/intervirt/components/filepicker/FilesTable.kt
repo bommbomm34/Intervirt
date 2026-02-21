@@ -3,13 +3,13 @@ package io.github.bommbomm34.intervirt.components.filepicker
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
-import io.github.bommbomm34.intervirt.components.tables.Text
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 

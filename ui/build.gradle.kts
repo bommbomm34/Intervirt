@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.compose.table)
             implementation(libs.coil.network.ktor3)
             implementation(libs.material.kolor)
+            implementation(libs.compose.colorpicker)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

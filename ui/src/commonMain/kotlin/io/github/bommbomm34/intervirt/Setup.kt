@@ -43,6 +43,7 @@ fun Setup() {
                 intervirtFolder = appEnv.DATA_DIR.absolutePath,
                 darkMode = isDarkMode,
                 language = appEnv.LANGUAGE.toLanguageTag(),
+                accentColor = appEnv.ACCENT_COLOR,
             ),
         )
     }
