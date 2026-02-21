@@ -13,10 +13,7 @@ import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
 import intervirt.ui.generated.resources.sure_to_delete_mail
-import io.github.bommbomm34.intervirt.components.AlignedBox
-import io.github.bommbomm34.intervirt.components.CenterColumn
-import io.github.bommbomm34.intervirt.components.GeneralIcon
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.*
 import io.github.bommbomm34.intervirt.components.buttons.SendButton
 import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
@@ -31,7 +28,6 @@ import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailListView
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
-import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.bommbomm34.intervirt.rememberManager
 import io.github.bommbomm34.intervirt.rememberProxyManager
 import kotlinx.coroutines.launch
@@ -52,10 +48,8 @@ fun MailClient(
     var initialized by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     // Get proxy
-    LaunchedEffect(Unit) {
-        appState.runDialogCatching {
-            proxyUrl = proxyClient.getProxyUrl().getOrThrow()
-        }
+    CatchingLaunchedEffect {
+        proxyUrl = proxyClient.getProxyUrl().getOrThrow()
     }
     suspend fun loadMails() {
         mails.clear()
@@ -117,7 +111,7 @@ fun MailClient(
                                 appState.openDialog {
                                     AcceptDialog(
                                         message = stringResource(Res.string.sure_to_delete_mail),
-                                        onCancel = ::close
+                                        onCancel = ::close,
                                     ) {
                                         close()
                                         scope.launch {

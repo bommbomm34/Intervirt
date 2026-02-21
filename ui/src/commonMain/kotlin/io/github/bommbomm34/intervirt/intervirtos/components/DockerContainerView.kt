@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.intervirtos.components
 
 import androidx.compose.runtime.*
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.data.AppState
@@ -16,17 +17,15 @@ fun DockerContainerView(
     val appState = koinInject<AppState>()
     var id: String? by remember { mutableStateOf(null) }
     var running by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        appState.runDialogCatching {
-            val newId = dockerManager
-                .getContainer(name)
-                .getOrThrow()
-            require(newId != null) { "Container $name doesn't exist" }
-            id = newId
-            running = dockerManager
-                .isContainerRunning(newId)
-                .getOrThrow()
-        }
+    CatchingLaunchedEffect {
+        val newId = dockerManager
+            .getContainer(name)
+            .getOrThrow()
+        require(newId != null) { "Container $name doesn't exist" }
+        id = newId
+        running = dockerManager
+            .isContainerRunning(newId)
+            .getOrThrow()
     }
     id?.let { idClone ->
         PlayButton(running) {

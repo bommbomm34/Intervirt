@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HOMEPAGE_URL
 import io.github.bommbomm34.intervirt.components.AlignedColumn
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -34,9 +35,9 @@ fun Browser(
     val browser = rememberProxyManager(appEnv, deviceManager, osClient)
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
-    var proxyUrl: Result<Address>? by remember { mutableStateOf(null) }
-    LaunchedEffect(Unit) {
-        proxyUrl = browser.getProxyUrl()
+    var proxyUrl: Address? by remember { mutableStateOf(null) }
+    CatchingLaunchedEffect {
+        proxyUrl = browser.getProxyUrl().getOrThrow()
     }
     CenterColumn {
         CenterRow {
@@ -57,23 +58,13 @@ fun Browser(
             }
         }
         GeneralSpacer()
-        val res = proxyUrl
-        if (res != null) {
-            res.fold(
-                onSuccess = {
-                    WebView(
-                        url = currentUrl,
-                        navigator = rememberWebViewNavigator(),
-                        modifier = Modifier.fillMaxSize(),
-                        proxy = Proxy(it.host, it.port),
-                    )
-                },
-                onFailure = {
-                    Text(
-                        text = stringResource(Res.string.failed_to_load_proxy, it.localizedMessage),
-                        color = Color.Red,
-                    )
-                },
+        val url = proxyUrl
+        if (url != null) {
+            WebView(
+                url = currentUrl,
+                navigator = rememberWebViewNavigator(),
+                modifier = Modifier.fillMaxSize(),
+                proxy = Proxy(url.host, url.port),
             )
         } else Text(stringResource(Res.string.waiting_for_container_proxy))
     }

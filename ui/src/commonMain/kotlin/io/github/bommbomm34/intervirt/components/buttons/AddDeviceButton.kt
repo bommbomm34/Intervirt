@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
@@ -43,31 +44,20 @@ fun AddDeviceButton() {
                     appState.openDialog {
                         ImagePicker(
                             onDismiss = {
+                                close()
                                 appState.openDialog(
                                     message = osIsNeededText,
                                     severity = Severity.ERROR,
                                 )
                             },
                             onInstall = { image ->
-                                scope.launch {
+                                close()
+                                scope.launchDialogCatching(appState) {
                                     deviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName,
                                     )
-                                        .onSuccess {
-                                            appState.statefulConf.devices.add(it.toViewDevice())
-                                            close()
-                                        }
-                                        .onFailure {
-                                            appState.openDialog(
-                                                severity = Severity.ERROR,
-                                                message = getString(
-                                                    Res.string.error_during_device_creation,
-                                                    it.localizedMessage,
-                                                ),
-                                            )
-                                        }
                                 }
                             },
                         )

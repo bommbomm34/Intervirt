@@ -7,6 +7,7 @@ import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -50,7 +51,7 @@ class QemuClient(
         )
     }
 
-    suspend fun bootAlpine(): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun bootAlpine(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Booting Alpine Linux" }
         val builder = ProcessBuilder(*startAlpineVMCommands.toTypedArray())
         builder.directory(fileManager.getFile("qemu"))
@@ -62,25 +63,19 @@ class QemuClient(
             if (currentProcess.isAlive) {
                 logger.debug { "Waiting for availability" }
                 delay(2000) // Wait for QEMU to start QMP
-                initMonitorSocket()
-                    .onSuccess { qemuMonitorSession = it }
-                    .onFailure { return@withContext Result.failure(it) }
+                qemuMonitorSession = initMonitorSocket().getOrThrow()
                 isRunningLoop() // Runs in background
                 while (!running) {
                     if (!currentProcess.isAlive) {
                         // QEMU start process failed
                         val error = OSException(tempReader.readText())
                         logger.error(error) { "Process exited unexpectedly" }
-                        return@withContext Result.failure(error)
+                        throw error
                     }
                     delay(1000)
                 }
             }
-            return@withContext if (currentProcess.isAlive) {
-                Result.success(Unit)
-            } else {
-                Result.failure(IllegalStateException())
-            }
+            if (!currentProcess.isAlive) throw IllegalStateException()
         }
     }
 
@@ -113,31 +108,25 @@ class QemuClient(
     }
 
     suspend fun addPortForwarding(protocol: String, externalPort: Int, internalPort: Int): Result<Unit> {
-        qmpSend(
+        return qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
                 putJsonObject("arguments") {
                     put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$externalPort-:$internalPort")
                 }
             },
-        ).fold(
-            onSuccess = { return Result.success(Unit) },
-            onFailure = { return Result.failure(it) },
-        )
+        ).map {  }
     }
 
     suspend fun removePortForwarding(protocol: String, externalPort: Int): Result<Unit> {
-        qmpSend(
+        return qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
                 putJsonObject("arguments") {
                     put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$externalPort")
                 }
             },
-        ).fold(
-            onSuccess = { return Result.success(Unit) },
-            onFailure = { return Result.failure(it) },
-        )
+        ).map {  }
     }
 
     suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession) = qmpSend(
@@ -210,10 +199,8 @@ class QemuClient(
         }
     }
 
-    override suspend fun close() = withContext(Dispatchers.IO) {
-        runSuspendingCatching {
-            isRunningLoopJob?.cancel()
-            shutdownAlpine()
-        }
+    override suspend fun close() = withCatchingContext(Dispatchers.IO){
+        isRunningLoopJob?.cancel()
+        shutdownAlpine()
     }
 }

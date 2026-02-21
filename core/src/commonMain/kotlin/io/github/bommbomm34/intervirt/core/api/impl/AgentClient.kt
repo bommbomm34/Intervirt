@@ -81,31 +81,21 @@ class AgentClient(
 
     override suspend fun getVersion(): Result<String> {
         val response = send<ResponseBody.Version>("version".commandBody())
-        response
-            .onSuccess {
-                val res = it.firstOrNull()!!
-                return if (res.version != null) {
-                    Result.success(res.version)
-                } else {
-                    Result.failure(AgentTimeoutException(res.refID))
-                }
+        return response.map {
+            val res = it.firstOrNull()!!
+            return if (res.version != null) {
+                Result.success(res.version)
+            } else {
+                Result.failure(AgentTimeoutException(res.refID))
             }
-            .onFailure {
-                return Result.failure(it)
-            }
-        return Result.failure(UnknownError())
+        }
     }
 
     private suspend fun justSend(body: RequestBody): Result<Unit> {
         val response = send<ResponseBody.General>(body)
-        response
-            .onSuccess {
-                return it.firstOrNull()?.exception()?.result() ?: Result.success(Unit)
-            }
-            .onFailure {
-                return Result.failure(it)
-            }
-        return Result.failure(UnknownError())
+        return response.map {
+            it.firstOrNull()?.exception()?.result() ?: Result.success(Unit)
+        }
     }
 
     private fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
@@ -132,40 +122,34 @@ class AgentClient(
     @Suppress("UNCHECKED_CAST")
     private suspend fun <T : ResponseBody> send(body: RequestBody): Result<Flow<T>> {
         logger.debug { "Checking connection with agent" }
-        listen().fold(
-            onSuccess = {
-                requests[body.uuid] = MutableSharedFlow()
-                session!!.sendSerialized(body)
-                return Result.success(
-                    requests[body.uuid]!!
-                        .onCompletion {
-                            requests.remove(body.uuid)
+        return listen().map {
+            requests[body.uuid] = MutableSharedFlow()
+            session!!.sendSerialized(body)
+            requests[body.uuid]!!
+                .onCompletion {
+                    requests.remove(body.uuid)
+                }
+                .map { it as T }
+                .timeout(timeout)
+                .catch { exception ->
+                    if (exception is TimeoutCancellationException) {
+                        if (body is RequestBody.Command && body.command == "version") {
+                            // Request was version request
+                            emit(
+                                ResponseBody.Version(
+                                    refID = body.uuid,
+                                ) as T,
+                            )
                         }
-                        .map { it as T }
-                        .timeout(timeout)
-                        .catch { exception ->
-                            if (exception is TimeoutCancellationException) {
-                                if (body is RequestBody.Command && body.command == "version") {
-                                    // Request was version request
-                                    emit(
-                                        ResponseBody.Version(
-                                            refID = body.uuid,
-                                        ) as T,
-                                    )
-                                }
-                                emit(
-                                    ResponseBody.General(
-                                        refID = body.uuid,
-                                        code = 100,
-                                    ) as T,
-                                )
-                            } else throw exception
-                        },
-                )
-            },
-            onFailure =
-                { return Result.failure(it) },
-        )
+                        emit(
+                            ResponseBody.General(
+                                refID = body.uuid,
+                                code = 100,
+                            ) as T,
+                        )
+                    } else throw exception
+                }
+        }
     }
 
     private suspend fun listen(): Result<Unit> {

@@ -43,10 +43,14 @@ class DeviceManager(
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
-        return if (enableAgent) {
-            val res = guestManager.addContainer(device.id, device.ipv4, device.ipv6, device.mac, false, image)
-            res.check(device)
-        } else Result.success(device)
+        return guestManager.addContainer(
+            id = device.id,
+            initialIpv4 = device.ipv4,
+            initialIpv6 = device.ipv6,
+            mac = device.mac,
+            internet = false,
+            image = image,
+        ).map { device }
     }
 
     fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
@@ -73,7 +77,7 @@ class DeviceManager(
         dockerManagers.remove(device.id)
         containerIOClients[device.id]?.close()?.getOrThrow()
         containerIOClients.remove(device.id)
-        if (device is Device.Computer && enableAgent) {
+        if (device is Device.Computer) {
             guestManager.removeContainer(device.id).getOrThrow()
         }
     }
@@ -81,13 +85,11 @@ class DeviceManager(
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Connecting device $device1 to $device2" }
         configuration.connections.add(configuration.connect(device1, device2))
-        if (enableAgent) {
-            val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-            device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
-                device1ConnectedComputers.forEach { computer2 ->
-                    val res = guestManager.connect(computer1.id, computer2.id)
-                    res.onFailure { return res }
-                }
+        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
+        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+            device1ConnectedComputers.forEach { computer2 ->
+                val res = guestManager.connect(computer1.id, computer2.id)
+                res.onFailure { return res }
             }
         }
         return Result.success(Unit)
@@ -96,13 +98,11 @@ class DeviceManager(
     suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Disconnecting device $device1 to $device2" }
         configuration.connections.removeIf { it == configuration.connect(device1, device2) }
-        if (enableAgent) {
-            val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-            device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
-                device1ConnectedComputers.forEach { computer2 ->
-                    val res = guestManager.disconnect(computer1.id, computer2.id)
-                    res.onFailure { return res }
-                }
+        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
+        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+            device1ConnectedComputers.forEach { computer2 ->
+                val res = guestManager.disconnect(computer1.id, computer2.id)
+                res.onFailure { return res }
             }
         }
         return Result.success(Unit)
@@ -111,19 +111,13 @@ class DeviceManager(
     suspend fun setIpv4(device: Device.Computer, ipv4: String): Result<Unit> {
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
-        return if (enableAgent) {
-            val res = guestManager.setIpv4(device.id, ipv4)
-            res.check(Unit)
-        } else Result.success(Unit)
+        return guestManager.setIpv4(device.id, ipv4)
     }
 
     suspend fun setIpv6(device: Device.Computer, ipv6: String): Result<Unit> {
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
-        return if (enableAgent) {
-            val res = guestManager.setIpv6(device.id, ipv6)
-            res.check(Unit)
-        } else Result.success(Unit)
+        return guestManager.setIpv6(device.id, ipv6)
     }
 
     fun setName(device: Device, name: String) {
@@ -133,10 +127,7 @@ class DeviceManager(
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean): Result<Unit> {
         logger.debug { "Set internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled
-        return if (enableAgent) {
-            val res = guestManager.setInternetAccess(device.id, enabled)
-            res.check(Unit)
-        } else Result.success(Unit)
+        return guestManager.setInternetAccess(device.id, enabled)
     }
 
     suspend fun start(computer: Device.Computer) = guestManager.startContainer(computer.id)
@@ -154,15 +145,12 @@ class DeviceManager(
             externalPort = portForwarding.externalPort,
             internalPort = portForwarding.internalPort,
         ).onFailure { return Result.failure(it) }
-        return if (enableAgent) {
-            val res = guestManager.addPortForwarding(
-                id = device.id,
-                internalPort = portForwarding.internalPort,
-                externalPort = portForwarding.externalPort,
-                protocol = portForwarding.protocol,
-            )
-            res.check(Unit)
-        } else Result.success(Unit)
+        return guestManager.addPortForwarding(
+            id = device.id,
+            internalPort = portForwarding.internalPort,
+            externalPort = portForwarding.externalPort,
+            protocol = portForwarding.protocol,
+        )
     }
 
     suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> {
@@ -175,10 +163,7 @@ class DeviceManager(
             protocol = protocol,
             externalPort = externalPort,
         ).onFailure { return Result.failure(it) }
-        return if (enableAgent) {
-            val res = guestManager.removePortForwarding(externalPort, protocol)
-            res.check(Unit)
-        } else Result.success(Unit)
+        return guestManager.removePortForwarding(externalPort, protocol)
     }
 
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
@@ -255,11 +240,7 @@ class DeviceManager(
         }
     }
 
-    private fun <T, R> Result<T>.check(ifSuccess: R): Result<R> {
-        return exceptionOrNull()?.let { Result.failure(it) } ?: Result.success(ifSuccess)
-    }
-
-    fun generateIpv4(): String {
+    private fun generateIpv4(): String {
         val rand = { Random.nextInt(256) }
         while (true) {
             val ipv4 = "192.168.${rand()}.${rand()}"
@@ -267,7 +248,7 @@ class DeviceManager(
         }
     }
 
-    fun generateIpv6(): String {
+    private fun generateIpv6(): String {
         val rand = { Random.nextInt(65536).toString(16) }
         val randFirst = { Random.nextInt(256).toString(16) }
         while (true) {
