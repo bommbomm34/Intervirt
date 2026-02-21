@@ -27,9 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun Installation(
-    applyConfiguration: () -> Unit,
-) {
+fun Installation() {
     val logger = rememberLogger("Installation")
     val downloader = koinInject<Downloader>()
     val appEnv = koinInject<AppEnv>()
@@ -68,7 +66,7 @@ fun Installation(
                                 message = getString(Res.string.applying_configuration),
                             ),
                         )
-                        applyConfiguration()
+                        // Apply configuration
                         // Downloading QEMU
                         downloader.downloadQemu().collect {
                             emit(it.clone(percentage = it.percentage * 0.4f + 0.1f))

@@ -22,9 +22,7 @@ import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
@@ -81,20 +79,6 @@ fun Int.canPortBind(): Result<Unit> {
 }
 
 fun Preferences.checkSetupStatus() = env("INSTALLED").toBoolean()
-
-fun AppEnv.applyConfiguration(vmConf: VMConfigurationData, appConf: AppConfigurationData) {
-    VM_RAM = vmConf.ram
-    VM_CPU = vmConf.cpu
-    VM_ENABLE_KVM = vmConf.kvm
-    VM_DISK_URL = vmConf.diskUrl
-    VM_DISK_HASH_URL = vmConf.diskHashUrl
-    VM_SHUTDOWN_TIMEOUT = appConf.vmShutdownTimeout.toLong()
-    AGENT_PORT = appConf.agentPort
-    DATA_DIR = File(appConf.intervirtFolder)
-    DARK_MODE = appConf.darkMode
-    LANGUAGE = Locale.forLanguageTag(appConf.language)
-    ACCENT_COLOR = appConf.accentColor
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 val PointerMatcher.Companion.Secondary: PointerMatcher

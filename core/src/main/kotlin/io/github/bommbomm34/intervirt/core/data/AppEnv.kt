@@ -9,6 +9,7 @@ data class AppEnv(
     private val env: (String) -> String?,
     private val save: (String, String) -> Unit,
     private val delete: (String) -> Unit,
+    private val autoFlush: Boolean = true,
     private val custom: AppEnv.() -> Unit = {},
 ) {
     private val defaultQemuZipUrl = when (getOS()) {

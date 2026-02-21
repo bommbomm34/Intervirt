@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.ktor.client.*
@@ -20,35 +20,32 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun DiskUrlConfiguration(
-    conf: VMConfigurationData,
-    onConfChange: (VMConfigurationData) -> Unit,
-) {
+fun DiskUrlConfiguration(appEnv: AppEnv) {
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val client = koinInject<HttpClient>()
     val appState = koinInject<AppState>()
     OutlinedTextField(
-        value = conf.diskUrl,
-        onValueChange = { onConfChange(conf.copy(diskUrl = it)) },
+        value = appEnv.VM_DISK_URL,
+        onValueChange = { appEnv.VM_DISK_URL = it },
         label = { Text(stringResource(Res.string.vm_disk_url)) },
     )
     GeneralSpacer()
     OutlinedTextField(
-        value = conf.diskHashUrl,
-        onValueChange = { onConfChange(conf.copy(diskHashUrl = it)) },
+        value = appEnv.VM_DISK_HASH_URL,
+        onValueChange = { appEnv.VM_DISK_HASH_URL = it },
         label = { Text(stringResource(Res.string.vm_disk_hash_url)) },
     )
     GeneralSpacer()
     Button(
         onClick = {
             scope.launch {
-                client.validate(conf.diskUrl) {
+                client.validate(appEnv.VM_DISK_URL) {
                     appState.openDialog(
                         severity = Severity.ERROR,
                         message = getString(Res.string.disk_url_validation_failure, it),
                     )
                 }
-                client.validate(conf.diskHashUrl) {
+                client.validate(appEnv.VM_DISK_HASH_URL) {
                     appState.openDialog(
                         severity = Severity.ERROR,
                         message = getString(Res.string.disk_hash_url_validation_failure, it),
