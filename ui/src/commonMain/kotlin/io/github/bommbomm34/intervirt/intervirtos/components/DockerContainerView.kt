@@ -1,22 +1,16 @@
 package io.github.bommbomm34.intervirt.intervirtos.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
 fun DockerContainerView(
     name: String,
-    dockerManager: DockerManager
+    dockerManager: DockerManager,
 ) {
     val scope = rememberCoroutineScope()
     val appState = koinInject<AppState>()

@@ -9,15 +9,15 @@ import compose.icons.tablericons.FileDownload
 import compose.icons.tablericons.FileUpload
 import compose.icons.tablericons.Terminal
 import intervirt.ui.generated.resources.*
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.components.GeneralIcon
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
@@ -64,7 +64,7 @@ fun IOOptions(device: ViewDevice.Computer) {
             appState.openDialog {
                 ContainerFilePicker(
                     ioClient!!,
-                    file.name
+                    file.name,
                 ) { path ->
                     close()
                     path?.let { _ ->
@@ -90,7 +90,7 @@ fun IOOptions(device: ViewDevice.Computer) {
                 onClick = {
                     appState.openDialog {
                         ContainerFilePicker(
-                            client
+                            client,
                         ) { path ->
                             close()
                             path?.let {

@@ -8,12 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.DialogState
-import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.ViewDevice
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -27,7 +26,7 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
             appState.openDialog {
                 AddPortForwardingDialog(
                     device = device,
-                    onCancel = ::close
+                    onCancel = ::close,
                 )
             }
         }

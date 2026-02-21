@@ -14,15 +14,15 @@ fun SimpleTextField(
     value = value,
     onValueChange = onValueChange,
     label = label?.let { { Text(it) } },
-    isError = isError
+    isError = isError,
 )
 
 @Composable
 fun ReadOnlyTextField(
     value: String,
-    label: String? = null
+    label: String? = null,
 ) = OutlinedTextField(
     value = value,
     onValueChange = {},
-    label = label?.let { { Text(it) } }
+    label = label?.let { { Text(it) } },
 )

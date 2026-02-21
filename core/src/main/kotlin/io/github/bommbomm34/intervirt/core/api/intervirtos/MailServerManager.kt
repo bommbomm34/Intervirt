@@ -30,7 +30,7 @@ class MailServerManager(
     env = mapOf(
         "OVERRIDE_HOSTNAME" to "ideapad.west-quillback.ts.net",
         "ACCOUNT_PROVISIONER" to "FILE",
-    )
+    ),
 ) {
     val docker = client.docker
     private val logger = KotlinLogging.logger { }

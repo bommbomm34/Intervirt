@@ -2,8 +2,6 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 

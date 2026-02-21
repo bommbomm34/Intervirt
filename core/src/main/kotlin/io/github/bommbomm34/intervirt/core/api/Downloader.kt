@@ -24,7 +24,9 @@ class Downloader(
 
     suspend fun checkUpdates(): Result<List<Component>> = runSuspendingCatching {
         buildList {
-            if (appEnv.QEMU_ZIP_HASH_URL.fetch().getOrThrow() != preferences.env("CURRENT_QEMU_HASH")) add(Component.QEMU)
+            if (appEnv.QEMU_ZIP_HASH_URL.fetch()
+                    .getOrThrow() != preferences.env("CURRENT_QEMU_HASH")
+            ) add(Component.QEMU)
             if (appEnv.VM_DISK_HASH_URL.fetch()
                     .getOrThrow() != preferences.env("CURRENT_DISK_HASH")
             ) add(Component.VM_DISK)

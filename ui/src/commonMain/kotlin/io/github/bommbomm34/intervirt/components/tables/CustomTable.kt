@@ -1,12 +1,8 @@
 package io.github.bommbomm34.intervirt.components.tables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import io.github.bommbomm34.intervirt.core.data.AppEnv
@@ -19,7 +15,7 @@ fun CustomTable(
     headers: List<String>,
     content: List<List<@Composable () -> Unit>>,
 ) {
-    require((content.maxOfOrNull { it.size } ?: headers.size) == headers.size){
+    require((content.maxOfOrNull { it.size } ?: headers.size) == headers.size) {
         "Largest content row size is not equal to headers size!"
     }
     SelectionContainer {

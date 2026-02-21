@@ -2,21 +2,20 @@ package io.github.bommbomm34.intervirt.intervirtos
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsServerManager
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsServerManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.initialize
 import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.dns.server.AddDnsRecordView
-import io.github.bommbomm34.intervirt.initialize
 import io.github.bommbomm34.intervirt.rememberManager
 import org.koin.compose.koinInject
 
@@ -68,7 +67,7 @@ fun DnsServer(
                             }
                         }
                     }
-                }
+                },
             )
         }
     }

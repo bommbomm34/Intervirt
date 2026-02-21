@@ -1,23 +1,25 @@
 package io.github.bommbomm34.intervirt.intervirtos.mail.server
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.email_address
 import intervirt.ui.generated.resources.sure_to_delete_user
 import intervirt.ui.generated.resources.username
-import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
-import io.github.bommbomm34.intervirt.core.data.MailUser
-import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.tables.SimpleTable
+import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
+import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.data.AppState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -33,7 +35,7 @@ fun MailServerUserManager(
     val appState = koinInject<AppState>()
     val users = remember { mutableStateListOf<MailUser>() }
     val scope = rememberCoroutineScope()
-    suspend fun retrieveUsers(){
+    suspend fun retrieveUsers() {
         val newUsers = mailServer.listMailUsers().getOrThrow()
         users.clear()
         users.addAll(newUsers)
@@ -51,7 +53,7 @@ fun MailServerUserManager(
                     appState.openDialog {
                         AcceptDialog(
                             message = stringResource(Res.string.sure_to_delete_user),
-                            onCancel = ::close
+                            onCancel = ::close,
                         ) {
                             scope.launchDialogCatching(appState) {
                                 mailServer.removeMailUser(it).getOrThrow()

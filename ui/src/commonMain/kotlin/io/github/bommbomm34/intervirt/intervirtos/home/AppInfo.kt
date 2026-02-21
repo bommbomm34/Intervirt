@@ -7,14 +7,6 @@ import compose.icons.tablericons.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.intervirtos.*
-import io.github.bommbomm34.intervirt.intervirtos.Browser
-import io.github.bommbomm34.intervirt.intervirtos.DnsResolver
-import io.github.bommbomm34.intervirt.intervirtos.DnsServer
-import io.github.bommbomm34.intervirt.intervirtos.HttpServer
-import io.github.bommbomm34.intervirt.intervirtos.MailClient
-import io.github.bommbomm34.intervirt.intervirtos.MailServer
-import io.github.bommbomm34.intervirt.intervirtos.SshServer
-import io.github.bommbomm34.intervirt.intervirtos.Terminal
 import org.jetbrains.compose.resources.StringResource
 
 // More apps will be added in the future :)

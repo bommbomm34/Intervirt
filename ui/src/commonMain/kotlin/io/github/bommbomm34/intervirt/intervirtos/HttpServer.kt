@@ -5,15 +5,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.enable_virtual_hosts
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
-import io.github.bommbomm34.intervirt.intervirtos.components.SystemServiceView
-import io.github.bommbomm34.intervirt.intervirtos.http.VirtualHostsManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.initialize
+import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
+import io.github.bommbomm34.intervirt.intervirtos.http.VirtualHostsManager
 import io.github.bommbomm34.intervirt.rememberManager
 import org.jetbrains.compose.resources.stringResource
 
@@ -24,11 +23,11 @@ fun HttpServer(
     val httpServer = osClient.rememberManager(::HttpServerManager)
     val initialized by httpServer.initialize()
     var enableVirtualHosts by remember { mutableStateOf(false) }
-    if (initialized){
+    if (initialized) {
         AlignedBox(Alignment.TopEnd) {
             DockerContainerView(
                 name = httpServer.containerName,
-                dockerManager = httpServer.docker
+                dockerManager = httpServer.docker,
             )
         }
         GeneralSpacer()

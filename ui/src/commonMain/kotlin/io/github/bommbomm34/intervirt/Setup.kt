@@ -5,19 +5,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.applyConfiguration
-import io.github.bommbomm34.intervirt.core.api.Preferences
-import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.MultipleAnimatedVisibility
 import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.components.buttons.NextButton
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.setup.Installation
-import io.github.bommbomm34.intervirt.isDarkMode
 import org.koin.compose.koinInject
 
 @Composable
@@ -63,7 +61,7 @@ fun Setup() {
             Installation {
                 appEnv.applyConfiguration(
                     vmConf,
-                    appConf
+                    appConf,
                 )
             }
         },

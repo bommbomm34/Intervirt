@@ -6,7 +6,7 @@ data class DialogState(
     val title: String = "",
     private val content: @Composable DialogState.() -> Unit,
     private val onClose: (DialogState) -> Unit,
-){
+) {
     @Composable
     fun compose() = content(this)
 

@@ -5,12 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.add
-import intervirt.ui.generated.resources.data
-import intervirt.ui.generated.resources.name
-import intervirt.ui.generated.resources.type
-import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -19,6 +14,7 @@ import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.components.textfields.ReadOnlyTextField
 import io.github.bommbomm34.intervirt.components.textfields.SimpleTextField
+import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import org.jetbrains.compose.resources.stringResource
 
 private val DNS_CLASSES = listOf(

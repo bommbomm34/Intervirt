@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.sender
 import intervirt.ui.generated.resources.subject
-import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
 import io.github.bommbomm34.intervirt.components.tables.Text
+import io.github.bommbomm34.intervirt.core.data.Mail
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

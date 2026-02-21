@@ -23,6 +23,10 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.are_you_sure_to_remove_connection
 import intervirt.ui.generated.resources.too_many_devices_connected
 import io.github.bommbomm34.intervirt.Secondary
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.buttons.AddDeviceButton
+import io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -30,10 +34,6 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.components.AlignedBox
-import io.github.bommbomm34.intervirt.components.buttons.AddDeviceButton
-import io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings
 import io.github.bommbomm34.intervirt.toPx
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString

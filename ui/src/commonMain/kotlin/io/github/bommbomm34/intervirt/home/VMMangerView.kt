@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.RebootButton
 import io.github.bommbomm34.intervirt.components.buttons.ShutdownButton
 import io.github.bommbomm34.intervirt.components.buttons.SyncButton
+import io.github.bommbomm34.intervirt.core.api.QemuClient
 import org.koin.compose.koinInject
 
 @Composable

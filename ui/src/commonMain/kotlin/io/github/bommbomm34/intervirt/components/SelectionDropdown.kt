@@ -24,7 +24,7 @@ fun SelectionDropdown(
                     onSelect(it)
                     expanded = false
                 },
-                text = { Text(it) }
+                text = { Text(it) },
             )
         }
     }

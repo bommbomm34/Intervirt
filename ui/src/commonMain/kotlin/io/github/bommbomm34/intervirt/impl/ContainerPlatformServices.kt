@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.impl
 
 import ai.rever.bossterm.compose.PlatformServices
 import ai.rever.bossterm.compose.getPlatformServices
-import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -43,7 +42,8 @@ class ContainerPlatformServices(
                     }
 
                     override suspend fun read(): String? {
-                        return (shell.tryReceive().getOrNull() as? ShellControlMessage.ByteData)?.bytes?.decodeToString()
+                        return (shell.tryReceive()
+                            .getOrNull() as? ShellControlMessage.ByteData)?.bytes?.decodeToString()
                     }
 
                     override fun isAlive() = shell.isClosedForSend && shell.isClosedForReceive

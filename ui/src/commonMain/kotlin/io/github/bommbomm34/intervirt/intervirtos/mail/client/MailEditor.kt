@@ -6,14 +6,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.core.data.Mail
-import io.github.bommbomm34.intervirt.core.data.MailUser
-import io.github.bommbomm34.intervirt.core.parseMailAddress
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.SendButton
+import io.github.bommbomm34.intervirt.core.data.Mail
+import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.core.parseMailAddress
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

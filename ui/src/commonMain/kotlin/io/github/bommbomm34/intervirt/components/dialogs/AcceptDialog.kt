@@ -9,10 +9,8 @@ import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.no
 import intervirt.ui.generated.resources.yes
-import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun AcceptDialog(

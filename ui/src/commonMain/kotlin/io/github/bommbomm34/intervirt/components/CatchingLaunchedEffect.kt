@@ -9,7 +9,7 @@ import org.koin.compose.koinInject
 @Composable
 fun CatchingLaunchedEffect(
     key: Any? = Unit,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ) {
     val appState = koinInject<AppState>()
     LaunchedEffect(key) {

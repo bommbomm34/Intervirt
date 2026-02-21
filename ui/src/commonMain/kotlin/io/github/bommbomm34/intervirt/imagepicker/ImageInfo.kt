@@ -12,12 +12,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.install_os
-import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.Overlay
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.data.Image
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -54,7 +54,7 @@ fun ImageInfo(
             SelectionContainer {
                 Text(
                     text = "Source of description: ${image.descriptionSource}\nSource of icon: ${image.iconSource}",
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
         }

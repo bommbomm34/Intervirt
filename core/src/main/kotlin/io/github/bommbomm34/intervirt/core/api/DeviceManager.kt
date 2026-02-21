@@ -208,7 +208,7 @@ class DeviceManager(
             IntervirtOSClient.Client(
                 computer = computer,
                 ioClient = getIOClient(computer).getOrThrow(),
-                docker = getDockerManager(computer).getOrThrow()
+                docker = getDockerManager(computer).getOrThrow(),
             ),
         )
         osClient.init().getOrThrow()
@@ -224,7 +224,7 @@ class DeviceManager(
                 device = computer,
                 internalPort = 2375,
                 externalPort = freePort,
-                protocol = "tcp"
+                protocol = "tcp",
             ).getOrThrow()
             freePort
         } else 2375

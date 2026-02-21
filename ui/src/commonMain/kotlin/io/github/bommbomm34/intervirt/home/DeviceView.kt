@@ -21,11 +21,11 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.Secondary
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -6,10 +6,12 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 import kotlinx.coroutines.Dispatchers
-import kotlin.io.path.*
+import kotlin.io.path.appendLines
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 
 class DnsServerManager(
-    osClient: IntervirtOSClient
+    osClient: IntervirtOSClient,
 ) : DockerBasedManager(
     osClient = osClient,
     containerName = "coredns",
@@ -18,7 +20,7 @@ class DnsServerManager(
         PortForwarding("tcp", 53, 53),
         PortForwarding("udp", 53, 53),
     ),
-    volumes = mapOf("./" to "/etc/coredns")
+    volumes = mapOf("./" to "/etc/coredns"),
 ) {
     private val ioClient = client.ioClient
     val docker = client.docker
@@ -39,7 +41,7 @@ class DnsServerManager(
         restart().getOrThrow()
     }
 
-    suspend fun listRecords(): Result<List<DnsRecord>> = withCatchingContext(Dispatchers.IO){
+    suspend fun listRecords(): Result<List<DnsRecord>> = withCatchingContext(Dispatchers.IO) {
         getMainFile()
             .readText()
             .lines()

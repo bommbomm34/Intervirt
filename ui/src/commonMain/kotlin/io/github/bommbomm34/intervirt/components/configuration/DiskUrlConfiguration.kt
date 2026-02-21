@@ -6,10 +6,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import intervirt.ui.generated.resources.*
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*

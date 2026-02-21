@@ -13,17 +13,20 @@ import compose.icons.tablericons.Refresh
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
 import intervirt.ui.generated.resources.sure_to_delete_mail
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.buttons.SendButton
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.components.*
-import io.github.bommbomm34.intervirt.components.buttons.SendButton
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailListView
@@ -134,7 +137,7 @@ fun MailClient(
                                     }
                                 }
                             },
-                            onClose = ::close
+                            onClose = ::close,
                         )
                     }
                 }
@@ -156,7 +159,7 @@ fun MailClient(
                 }
             }
 
-            LaunchedEffect(Unit){
+            LaunchedEffect(Unit) {
                 credentials = client.loadCredentials()
             }
 
@@ -171,7 +174,7 @@ fun MailClient(
                 } else {
                     appState.openDialog {
                         MailClientLogin(
-                            credentials = creds
+                            credentials = creds,
                         ) { details, saveCredentials ->
                             close()
                             login(details, saveCredentials)

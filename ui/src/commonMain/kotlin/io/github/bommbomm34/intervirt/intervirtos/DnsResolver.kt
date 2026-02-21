@@ -4,15 +4,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
-import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
+import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.rememberManager
 import kotlinx.coroutines.launch
@@ -60,7 +60,7 @@ fun DnsResolver(
                 DNS_RECORD_TYPES.forEach { type ->
                     DropdownMenuItem(
                         onClick = { dnsRecordType = type },
-                        text = { Text(dnsRecordType) }
+                        text = { Text(dnsRecordType) },
                     )
                 }
             }

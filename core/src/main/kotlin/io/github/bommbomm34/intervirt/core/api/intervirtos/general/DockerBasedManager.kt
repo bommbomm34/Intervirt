@@ -8,14 +8,9 @@ import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
-import kotlin.io.path.createDirectory
-import kotlin.io.path.createParentDirectories
 
 /**
  * `./` in `volumes` keys will be replaced with a default host path
@@ -37,7 +32,7 @@ abstract class DockerBasedManager(
             check(internalId != null) { "Manager of $containerName isn't successfully initialized" }
             return internalId!!
         }
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     fun init(): Flow<ResultProgress<String>> = flow {
         withCatchingContext(Dispatchers.IO) {

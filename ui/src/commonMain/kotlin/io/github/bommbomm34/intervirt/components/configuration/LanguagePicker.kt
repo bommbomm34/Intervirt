@@ -27,7 +27,7 @@ fun LanguagePicker(
                 DropdownMenuItem(
                     onClick = { onChangeLanguage(it) },
                     enabled = language.toLanguageTag() != it.toLanguageTag(),
-                    text = { Text(it.displayLanguage) }
+                    text = { Text(it.displayLanguage) },
                 )
             }
         }

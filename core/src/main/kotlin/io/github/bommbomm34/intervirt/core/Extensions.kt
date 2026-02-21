@@ -44,8 +44,8 @@ fun String.parseAddress() = Address(substringBefore(":"), substringAfter(":").to
 
 suspend fun <T> withCatchingContext(
     context: CoroutineContext,
-    block: suspend CoroutineScope.() -> T
-): Result<T> = withContext(context){
+    block: suspend CoroutineScope.() -> T,
+): Result<T> = withContext(context) {
     runSuspendingCatching {
         block()
     }

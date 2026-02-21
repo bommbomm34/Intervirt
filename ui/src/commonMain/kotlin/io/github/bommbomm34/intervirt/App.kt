@@ -1,8 +1,8 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.runtime.Composable
-import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.components.MultipleAnimatedVisibility
+import io.github.bommbomm34.intervirt.data.AppState
 import org.koin.compose.koinInject
 
 @Composable

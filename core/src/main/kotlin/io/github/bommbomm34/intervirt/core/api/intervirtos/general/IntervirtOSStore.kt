@@ -36,7 +36,7 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
 
     suspend fun <T> set(accessor: Accessor<T>, value: T): Result<Unit> {
         logger.debug { "Setting ${accessor.name} to $value" }
-        val content = when (accessor){
+        val content = when (accessor) {
             is Accessor.Secure -> SecretProvider.encrypt(value as ByteArray)
             else -> value.toString()
         }
@@ -44,7 +44,8 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
         return flush()
     }
 
-    suspend operator fun get(accessor: Accessor.Secure): ByteArray = data[accessor.name]?.let { SecretProvider.decrypt(it) } ?: accessor.default
+    suspend operator fun get(accessor: Accessor.Secure): ByteArray =
+        data[accessor.name]?.let { SecretProvider.decrypt(it) } ?: accessor.default
 
     operator fun <T> get(accessor: Accessor<T>): T = accessor.get(data[accessor.name])
 

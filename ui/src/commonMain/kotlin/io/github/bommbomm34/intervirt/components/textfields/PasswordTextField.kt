@@ -10,7 +10,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PasswordTextField(
-    state: TextFieldState
+    state: TextFieldState,
 ) {
     SecureTextField(
         state = state,

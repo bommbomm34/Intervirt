@@ -7,13 +7,6 @@ import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.restart_necessary_to_apply_changes
 import intervirt.ui.generated.resources.save_changes
-import io.github.bommbomm34.intervirt.applyConfiguration
-import io.github.bommbomm34.intervirt.core.api.Preferences
-import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
-import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -21,7 +14,12 @@ import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.DebugOptions
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
-import io.github.bommbomm34.intervirt.isDarkMode
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.core.api.Preferences
+import io.github.bommbomm34.intervirt.core.data.AppConfigurationData
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.VMConfigurationData
+import io.github.bommbomm34.intervirt.data.AppState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import java.util.*

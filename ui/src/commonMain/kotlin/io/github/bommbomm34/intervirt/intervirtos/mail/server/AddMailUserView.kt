@@ -1,8 +1,6 @@
 package io.github.bommbomm34.intervirt.intervirtos.mail.server
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.input.clearText
-import androidx.compose.foundation.text.input.delete
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -13,14 +11,13 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.add_user
 import intervirt.ui.generated.resources.email_address
 import intervirt.ui.generated.resources.username
-import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
-import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
-import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.textfields.PasswordTextField
+import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
+import io.github.bommbomm34.intervirt.core.data.MailUser
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 

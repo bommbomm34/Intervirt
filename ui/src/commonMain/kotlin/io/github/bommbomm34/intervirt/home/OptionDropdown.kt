@@ -9,12 +9,12 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HELP_URL
+import io.github.bommbomm34.intervirt.components.buttons.IconText
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
-import io.github.bommbomm34.intervirt.components.buttons.IconText
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -84,7 +84,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.Folder,
                         text = stringResource(Res.string.open),
                     )
-                }
+                },
             )
             // Save
             DropdownMenuItem(
@@ -101,7 +101,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.DeviceFloppy,
                         text = stringResource(Res.string.save),
                     )
-                }
+                },
             )
             // Save As
             DropdownMenuItem(
@@ -117,7 +117,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.DeviceFloppy,
                         text = stringResource(Res.string.save_as),
                     )
-                }
+                },
             )
             // Update
             DropdownMenuItem(
@@ -132,7 +132,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.Refresh,
                         text = stringResource(Res.string.update),
                     )
-                }
+                },
             )
             // Settings
             DropdownMenuItem(
@@ -142,7 +142,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.Settings,
                         text = stringResource(Res.string.settings),
                     )
-                }
+                },
             )
             // About
             DropdownMenuItem(
@@ -152,7 +152,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.InfoCircle,
                         text = stringResource(Res.string.about),
                     )
-                }
+                },
             )
             // Help
             DropdownMenuItem(
@@ -165,7 +165,7 @@ fun OptionDropdown(
                         imageVector = TablerIcons.Help,
                         text = stringResource(Res.string.help),
                     )
-                }
+                },
             )
         }
     }

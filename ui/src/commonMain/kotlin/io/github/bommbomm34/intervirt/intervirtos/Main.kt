@@ -3,13 +3,12 @@ package io.github.bommbomm34.intervirt.intervirtos
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.components.AlignedBox
-import io.github.bommbomm34.intervirt.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.intervirtos.home.AppInfo
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

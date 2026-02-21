@@ -10,7 +10,7 @@ object SecretProvider {
     private val ksafe = KSafe()
     private var internalCipher: AES.IvAuthenticatedCipher? = null
     private val cipher: AES.IvAuthenticatedCipher
-        get(){
+        get() {
             check(internalCipher != null) { "SecretProvider isn't initialized!" }
             return internalCipher!!
         }
@@ -21,7 +21,7 @@ object SecretProvider {
         val masterKey: ByteArray? = ksafe.getEncrypted("master-key", null)
         val provider = CryptographyProvider.Default
         val aesGcm = provider.get(AES.GCM)
-        if (masterKey != null){
+        if (masterKey != null) {
             val key = aesGcm
                 .keyDecoder()
                 .decodeFromByteArray(AES.Key.Format.RAW, masterKey)

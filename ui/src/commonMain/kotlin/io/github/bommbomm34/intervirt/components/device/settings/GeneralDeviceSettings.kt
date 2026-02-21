@@ -11,11 +11,11 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.are_you_sure_to_remove_device
 import intervirt.ui.generated.resources.delete
 import intervirt.ui.generated.resources.name
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject

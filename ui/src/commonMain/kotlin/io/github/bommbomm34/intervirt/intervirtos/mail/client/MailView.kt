@@ -21,13 +21,13 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.from
 import intervirt.ui.generated.resources.reply
 import intervirt.ui.generated.resources.to
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Mail
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

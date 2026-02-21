@@ -6,14 +6,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
-import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.components.textfields.AddressTextField
 import io.github.bommbomm34.intervirt.components.textfields.PasswordTextField
+import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
+import io.github.bommbomm34.intervirt.core.parseAddress
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

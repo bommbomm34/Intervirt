@@ -6,7 +6,7 @@ data class DnsRecord(
     val dnsClass: String,
     val type: String,
     val data: String,
-){
+) {
     companion object {
         fun parse(text: String): DnsRecord {
             val splitted = text.split(" ")

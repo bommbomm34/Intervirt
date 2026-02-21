@@ -17,12 +17,12 @@ import androidx.compose.ui.platform.LocalClipboard
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Copy
 import intervirt.ui.generated.resources.*
-import io.github.bommbomm34.intervirt.copyToClipboard
-import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.copyToClipboard
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Severity
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -32,7 +32,7 @@ fun DefaultDialog(
     message: String,
     severity: Severity,
     onClose: () -> Unit,
-){
+) {
     val appState = koinInject<AppState>()
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
