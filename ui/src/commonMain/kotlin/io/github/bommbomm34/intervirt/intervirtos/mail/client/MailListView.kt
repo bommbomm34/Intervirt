@@ -6,7 +6,7 @@ import intervirt.ui.generated.resources.sender
 import intervirt.ui.generated.resources.subject
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
-import io.github.bommbomm34.intervirt.components.tables.VisibleText
+import io.github.bommbomm34.intervirt.components.tables.Text
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -19,8 +19,8 @@ fun MailListView(
         headers = headers,
         data = mails.map {
             listOf(
-                { VisibleText(it.subject) },
-                { VisibleText(it.sender) },
+                { Text(it.subject) },
+                { Text(it.sender) },
             )
         },
     ) { onClick(mails[it]) }

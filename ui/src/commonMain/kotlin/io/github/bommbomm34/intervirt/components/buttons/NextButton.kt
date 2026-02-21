@@ -19,7 +19,6 @@ fun NextButton(
             Icon(
                 imageVector = TablerIcons.ArrowRight,
                 contentDescription = "Next",
-                tint = MaterialTheme.colorScheme.onBackground,
             )
         }
     }

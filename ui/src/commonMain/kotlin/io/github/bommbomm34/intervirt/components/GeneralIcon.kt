@@ -13,6 +13,5 @@ fun GeneralIcon(
     Icon(
         imageVector = imageVector,
         contentDescription = contentDescription,
-        tint = MaterialTheme.colorScheme.onBackground,
     )
 }

@@ -9,7 +9,7 @@ import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
-import io.github.bommbomm34.intervirt.components.tables.VisibleText
+import io.github.bommbomm34.intervirt.components.tables.Text
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
@@ -34,7 +34,7 @@ fun FilesTable(
             },
             {
                 // Filename
-                VisibleText(file.name)
+                Text(file.name)
             },
         )
     },

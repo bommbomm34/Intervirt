@@ -28,11 +28,8 @@ fun ClickableTable(
     }
     DataTable(
         columns = {
-            headerBackground {
-                Box(Modifier.background(bg))
-            }
             headers.forEach {
-                column { VisibleText(it, true) }
+                column { Text(it, true) }
             }
         },
         modifier = Modifier.verticalScroll(scrollState),

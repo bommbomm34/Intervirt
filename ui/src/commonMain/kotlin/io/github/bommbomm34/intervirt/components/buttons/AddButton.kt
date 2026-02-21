@@ -18,7 +18,6 @@ fun AddButton(
         Icon(
             imageVector = TablerIcons.Plus,
             contentDescription = stringResource(Res.string.add),
-            tint = MaterialTheme.colorScheme.onBackground,
         )
     }
 }

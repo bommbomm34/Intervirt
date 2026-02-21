@@ -12,7 +12,7 @@ fun SimpleTable(
         headers = headers,
         content = content.mapIndexed { i, row ->
             buildList {
-                addAll(row.map { { VisibleText(it) } })
+                addAll(row.map { { Text(it) } })
                 println("$i with $row: ${customElements.getOrNull(i)}")
                 customElements.getOrNull(i)?.let { element -> add(element) }
             }

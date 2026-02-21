@@ -19,7 +19,6 @@ fun BackButton(
             Icon(
                 imageVector = TablerIcons.ArrowLeft,
                 contentDescription = "Back",
-                tint = MaterialTheme.colorScheme.onBackground,
             )
         }
     }

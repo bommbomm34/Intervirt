@@ -25,11 +25,8 @@ fun CustomTable(
     SelectionContainer {
         DataTable(
             columns = {
-                headerBackground {
-                    Box(Modifier.background(MaterialTheme.colorScheme.onBackground))
-                }
                 headers.forEach {
-                    column { VisibleText(it, true) }
+                    column { Text(it, true) }
                 }
             },
         ) {
@@ -48,7 +45,7 @@ fun CustomTable(
 }
 
 @Composable
-fun VisibleText(text: Any, bold: Boolean = false) {
+fun Text(text: Any, bold: Boolean = false) {
     val appEnv = koinInject<AppEnv>()
     Text(
         text = text.toString(),

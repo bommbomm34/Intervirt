@@ -16,7 +16,6 @@ fun CloseButton(onClose: () -> Unit) {
         Icon(
             imageVector = TablerIcons.X,
             contentDescription = stringResource(Res.string.close),
-            tint = MaterialTheme.colorScheme.onBackground,
         )
     }
 }

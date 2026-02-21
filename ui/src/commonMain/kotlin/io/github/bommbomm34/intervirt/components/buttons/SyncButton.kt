@@ -52,7 +52,6 @@ fun SyncButton(running: Boolean) {
             Icon(
                 imageVector = if (syncFailed) TablerIcons.RefreshAlert else TablerIcons.Refresh,
                 contentDescription = stringResource(if (syncing) Res.string.syncing else Res.string.sync_guest),
-                tint = MaterialTheme.colorScheme.onBackground,
             )
         }
     }
