@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
@@ -43,6 +44,7 @@ fun main() = application {
         val deviceManager = koinInject<DeviceManager>()
         val guestManager = koinInject<GuestManager>()
         val qemuClient = koinInject<QemuClient>()
+        val httpClient = koinInject<HttpClient>()
         val appState = koinInject<AppState>()
         if (!appEnv.INTERVIRT_INSTALLED) appState.currentScreenIndex = 1
         LaunchedEffect(Unit) {
@@ -53,7 +55,10 @@ fun main() = application {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
                     runBlocking {
-                        gracefulShutdown(deviceManager, guestManager, qemuClient)
+                        deviceManager.close()
+                        guestManager.close()
+                        qemuClient.close()
+                        httpClient.close()
                     }
                 },
             )
@@ -128,16 +133,6 @@ fun main() = application {
             }
         }
     }
-}
-
-private suspend fun gracefulShutdown(
-    deviceManager: DeviceManager,
-    guestManager: GuestManager,
-    qemuClient: QemuClient,
-) {
-    deviceManager.close()
-    guestManager.close()
-    qemuClient.close()
 }
 
 private fun setDefaultExceptionHandler() {
