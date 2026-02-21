@@ -8,6 +8,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -31,8 +32,6 @@ import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import java.util.*
 import kotlin.system.exitProcess
-
-private val dialogSize = DpSize(700.dp, 600.dp)
 
 fun main() = application {
     KoinApplication(
@@ -122,10 +121,9 @@ fun main() = application {
         }
         // Dialog Windows
         appState.dialogStates.forEach { dialogState ->
-            Window(
+            DialogWindow(
                 onCloseRequest = dialogState::close,
                 title = dialogState.title,
-                state = rememberWindowState(size = dialogSize),
             ) {
                 DefaultWindowScope {
                     Dialog(dialogState)
