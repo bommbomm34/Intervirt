@@ -112,12 +112,12 @@ class QemuClient(
         logger.debug { "Alpine VM is now offline" }
     }
 
-    suspend fun addPortForwarding(protocol: String, hostPort: Int, guestPort: Int): Result<Unit> {
+    suspend fun addPortForwarding(protocol: String, externalPort: Int, internalPort: Int): Result<Unit> {
         qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
                 putJsonObject("arguments") {
-                    put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$hostPort-:$guestPort")
+                    put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$externalPort-:$internalPort")
                 }
             },
         ).fold(
@@ -126,12 +126,12 @@ class QemuClient(
         )
     }
 
-    suspend fun removePortForwarding(protocol: String, hostPort: Int): Result<Unit> {
+    suspend fun removePortForwarding(protocol: String, externalPort: Int): Result<Unit> {
         qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
                 putJsonObject("arguments") {
-                    put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$hostPort")
+                    put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$externalPort")
                 }
             },
         ).fold(

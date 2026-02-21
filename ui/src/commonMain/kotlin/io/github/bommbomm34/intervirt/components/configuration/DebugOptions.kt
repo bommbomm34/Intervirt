@@ -60,8 +60,8 @@ fun DebugOptions() {
             scope.launch {
                 qemuClient.addPortForwarding(
                     protocol = "tcp",
-                    hostPort = 8999,
-                    guestPort = 22,
+                    externalPort = 8999,
+                    internalPort = 22,
                 ).onFailure { logger.error(it) { "Example port forwarding creation failed" } }
             }
         },
@@ -73,7 +73,7 @@ fun DebugOptions() {
             scope.launch {
                 qemuClient.removePortForwarding(
                     protocol = "tcp",
-                    hostPort = 8999,
+                    externalPort = 8999,
                 ).onFailure { logger.error(it) { "Example port forwarding creation failed" } }
             }
         },

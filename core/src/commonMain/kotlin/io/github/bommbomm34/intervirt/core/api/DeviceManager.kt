@@ -151,14 +151,14 @@ class DeviceManager(
         device.portForwardings.add(portForwarding)
         qemuClient.addPortForwarding(
             protocol = portForwarding.protocol,
-            hostPort = portForwarding.hostPort,
-            guestPort = portForwarding.guestPort, // Guest is not the container itself
+            externalPort = portForwarding.externalPort,
+            internalPort = portForwarding.internalPort,
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
             val res = guestManager.addPortForwarding(
                 id = device.id,
-                internalPort = portForwarding.guestPort,
-                externalPort = portForwarding.hostPort,
+                internalPort = portForwarding.internalPort,
+                externalPort = portForwarding.externalPort,
                 protocol = portForwarding.protocol,
             )
             res.check(Unit)
@@ -169,11 +169,11 @@ class DeviceManager(
         logger.debug { "Remove port forwarding of $externalPort" }
         configuration.devices.forEach { device ->
             if (device is Device.Computer)
-                device.portForwardings.removeIf { it.hostPort == externalPort }
+                device.portForwardings.removeIf { it.externalPort == externalPort }
         }
         qemuClient.removePortForwarding(
             protocol = protocol,
-            hostPort = externalPort,
+            externalPort = externalPort,
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
             val res = guestManager.removePortForwarding(externalPort, protocol)
@@ -192,8 +192,8 @@ class DeviceManager(
             device = computer,
             portForwarding = PortForwarding(
                 protocol = "tcp",
-                guestPort = 22,
-                hostPort = port,
+                internalPort = 22,
+                externalPort = port,
             ),
         ).map {
             val sshClient = ContainerSshClient(port, this)
@@ -229,8 +229,8 @@ class DeviceManager(
                 device = computer,
                 portForwarding = PortForwarding(
                     protocol = "tcp",
-                    guestPort = 2375,
-                    hostPort = freePort,
+                    internalPort = 2375,
+                    externalPort = freePort,
                 ),
             ).getOrThrow()
             freePort

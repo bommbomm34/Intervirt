@@ -38,7 +38,7 @@ fun AddPortForwardingDialog(
             portForwarding = portForwarding,
             onChangePortForwarding = { portForwarding = it },
         )
-        LaunchedEffect(portForwarding.hostPort, portForwarding.guestPort) {
+        LaunchedEffect(portForwarding.externalPort, portForwarding.internalPort) {
             result = configuration.lint(device, portForwarding)
         }
         if (result.isFailure) {
@@ -82,9 +82,9 @@ private suspend fun IntervirtConfiguration.lint(
     device: ViewDevice.Computer,
     portForwarding: PortForwarding,
 ): Result<Unit> {
-    val bindResult = portForwarding.hostPort.canPortBind()
+    val bindResult = portForwarding.externalPort.canPortBind()
     return when {
-        device.portForwardings.any { it.guestPort == portForwarding.guestPort } -> Result.failure(
+        device.portForwardings.any { it.internalPort == portForwarding.internalPort } -> Result.failure(
             IllegalArgumentException(
                 getString(
                     Res.string.internal_port_already_exposed,
@@ -94,7 +94,7 @@ private suspend fun IntervirtConfiguration.lint(
 
         devices.any { device ->
             if (device is Device.Computer) device.portForwardings.any {
-                it.hostPort == portForwarding.hostPort && it.protocol == portForwarding.protocol
+                it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
             } else false
         } -> Result.failure(
             IllegalArgumentException(getString(Res.string.external_port_already_bound)),

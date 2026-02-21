@@ -64,11 +64,11 @@ class DockerManager(
             }
             val ports = portForwardings.map {
                 val exposedPort = when (it.protocol) {
-                    "tcp" -> ExposedPort.tcp(it.guestPort)
-                    "udp" -> ExposedPort.udp(it.guestPort)
+                    "tcp" -> ExposedPort.tcp(it.internalPort)
+                    "udp" -> ExposedPort.udp(it.internalPort)
                     else -> error("Invalid protocol ${it.protocol}")
                 }
-                val binding = Ports.Binding.bindPort(it.hostPort)
+                val binding = Ports.Binding.bindPort(it.externalPort)
                 val portBinding = PortBinding(binding, exposedPort)
 
                 portBinding to exposedPort

@@ -18,14 +18,14 @@ fun PortForwardingChooser(
     var portForwarding by remember { mutableStateOf(PortForwarding("tcp", 0, 0)) }
     CenterRow {
         IntegerTextField(
-            value = portForwarding.hostPort,
-            onValueChange = { portForwarding = portForwarding.copy(hostPort = it) },
+            value = portForwarding.externalPort,
+            onValueChange = { portForwarding = portForwarding.copy(externalPort = it) },
             label = stringResource(Res.string.external_port),
         )
         GeneralSpacer()
         IntegerTextField(
-            value = portForwarding.guestPort,
-            onValueChange = { portForwarding = portForwarding.copy(guestPort = it) },
+            value = portForwarding.internalPort,
+            onValueChange = { portForwarding = portForwarding.copy(internalPort = it) },
             label = stringResource(Res.string.internal_port),
         )
         GeneralSpacer()

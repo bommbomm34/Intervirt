@@ -61,13 +61,13 @@ data class IntervirtConfiguration(
                                 emit(
                                     ResultProgress.proceed(
                                         percentage = progress,
-                                        message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}",
+                                        message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
                                     ),
                                 )
                                 guestManager.addPortForwarding(
                                     device.id,
-                                    portForwarding.guestPort,
-                                    portForwarding.hostPort,
+                                    portForwarding.internalPort,
+                                    portForwarding.externalPort,
                                     portForwarding.protocol,
                                 )
                             }

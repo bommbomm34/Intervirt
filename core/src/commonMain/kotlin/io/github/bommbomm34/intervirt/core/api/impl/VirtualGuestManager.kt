@@ -65,8 +65,8 @@ class VirtualGuestManager : GuestManager {
         getContainerByID(id).portForwardings.add(
             PortForwarding(
                 protocol = protocol,
-                hostPort = externalPort,
-                guestPort = internalPort,
+                externalPort = externalPort,
+                internalPort = internalPort,
             ),
         )
     }
@@ -76,7 +76,7 @@ class VirtualGuestManager : GuestManager {
         protocol: String,
     ): Result<Unit> = runCatching {
         containers.forEach { container ->
-            container.portForwardings.removeIf { it.hostPort == externalPort && it.protocol == protocol }
+            container.portForwardings.removeIf { it.externalPort == externalPort && it.protocol == protocol }
         }
     }
 

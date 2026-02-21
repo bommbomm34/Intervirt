@@ -30,8 +30,8 @@ class ProxyManager(
                 device = computer,
                 PortForwarding(
                     protocol = "tcp",
-                    guestPort = 1080,
-                    hostPort = port,
+                    internalPort = 1080,
+                    externalPort = port,
                 ),
             )
                 .map { Address("127.0.0.1", port) }

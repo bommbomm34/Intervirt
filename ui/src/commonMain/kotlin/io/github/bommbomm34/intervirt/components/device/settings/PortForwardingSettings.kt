@@ -33,11 +33,11 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
         LazyColumn {
             items(device.portForwardings) { portForwarding ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${portForwarding.protocol}:${portForwarding.guestPort}:${portForwarding.hostPort}")
+                    Text("${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}")
                     RemoveButton {
                         scope.launch {
                             device.portForwardings.remove(portForwarding)
-                            deviceManager.removePortForwarding(portForwarding.hostPort, portForwarding.protocol)
+                            deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
                         }
                     }
                 }
