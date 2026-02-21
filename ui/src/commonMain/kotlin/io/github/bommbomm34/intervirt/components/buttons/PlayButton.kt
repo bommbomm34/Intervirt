@@ -1,10 +1,10 @@
 package io.github.bommbomm34.intervirt.components.buttons
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import compose.icons.TablerIcons
-import compose.icons.tablericons.PlayerPlay
-import compose.icons.tablericons.PlayerStop
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.start
 import intervirt.ui.generated.resources.stop
@@ -20,7 +20,7 @@ fun PlayButton(
         onClick = { onClick(!playing) },
     ) {
         GeneralIcon(
-            imageVector = if (playing) TablerIcons.PlayerStop else TablerIcons.PlayerPlay,
+            imageVector = if (playing) Icons.Default.Stop else Icons.Default.PlayArrow,
             contentDescription = stringResource(if (playing) Res.string.stop else Res.string.start),
         )
     }

@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -14,8 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboard
-import compose.icons.TablerIcons
-import compose.icons.tablericons.Copy
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralIcon
@@ -33,7 +33,6 @@ fun DefaultDialog(
     severity: Severity,
     onClose: () -> Unit,
 ) {
-    val appState = koinInject<AppState>()
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
     Column(
@@ -71,7 +70,7 @@ fun DefaultDialog(
                 },
             ) {
                 GeneralIcon(
-                    imageVector = TablerIcons.Copy,
+                    imageVector = Icons.Default.ContentCopy,
                     contentDescription = stringResource(Res.string.copy),
                 )
             }

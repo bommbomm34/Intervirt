@@ -1,12 +1,19 @@
 package io.github.bommbomm34.intervirt.home
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.SaveAs
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import compose.icons.TablerIcons
-import compose.icons.tablericons.*
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.HELP_URL
 import io.github.bommbomm34.intervirt.components.buttons.IconText
@@ -81,7 +88,7 @@ fun OptionDropdown(
                 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.Folder,
+                        imageVector = Icons.Default.FileOpen,
                         text = stringResource(Res.string.open),
                     )
                 },
@@ -98,7 +105,7 @@ fun OptionDropdown(
                 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.DeviceFloppy,
+                        imageVector = Icons.Default.Save,
                         text = stringResource(Res.string.save),
                     )
                 },
@@ -114,7 +121,7 @@ fun OptionDropdown(
                 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.DeviceFloppy,
+                        imageVector = Icons.Default.SaveAs,
                         text = stringResource(Res.string.save_as),
                     )
                 },
@@ -129,7 +136,7 @@ fun OptionDropdown(
                 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.Refresh,
+                        imageVector = Icons.Default.Update,
                         text = stringResource(Res.string.update),
                     )
                 },
@@ -139,7 +146,7 @@ fun OptionDropdown(
                 onClick = { appState.currentScreenIndex = 2 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.Settings,
+                        imageVector = Icons.Default.Settings,
                         text = stringResource(Res.string.settings),
                     )
                 },
@@ -149,7 +156,7 @@ fun OptionDropdown(
                 onClick = { appState.currentScreenIndex = 3 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.InfoCircle,
+                        imageVector = Icons.Default.Info,
                         text = stringResource(Res.string.about),
                     )
                 },
@@ -162,7 +169,7 @@ fun OptionDropdown(
                 },
                 text = {
                     IconText(
-                        imageVector = TablerIcons.Help,
+                        imageVector = Icons.AutoMirrored.Filled.Help,
                         text = stringResource(Res.string.help),
                     )
                 },

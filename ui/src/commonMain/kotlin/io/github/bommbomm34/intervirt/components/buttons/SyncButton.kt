@@ -1,11 +1,11 @@
 package io.github.bommbomm34.intervirt.components.buttons
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
-import compose.icons.TablerIcons
-import compose.icons.tablericons.Refresh
-import compose.icons.tablericons.RefreshAlert
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.sync_guest
 import intervirt.ui.generated.resources.syncing
@@ -49,7 +49,7 @@ fun SyncButton(running: Boolean) {
             enabled = !syncing,
         ) {
             Icon(
-                imageVector = if (syncFailed) TablerIcons.RefreshAlert else TablerIcons.Refresh,
+                imageVector = if (syncFailed) Icons.Default.Refresh else Icons.Default.Autorenew,
                 contentDescription = stringResource(if (syncing) Res.string.syncing else Res.string.sync_guest),
             )
         }

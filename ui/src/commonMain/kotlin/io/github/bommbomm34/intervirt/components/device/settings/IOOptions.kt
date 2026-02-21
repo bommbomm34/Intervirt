@@ -1,13 +1,13 @@
 package io.github.bommbomm34.intervirt.components.device.settings
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import compose.icons.TablerIcons
-import compose.icons.tablericons.FileDownload
-import compose.icons.tablericons.FileUpload
-import compose.icons.tablericons.Terminal
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -106,7 +106,7 @@ fun IOOptions(device: ViewDevice.Computer) {
                 },
             ) {
                 GeneralIcon(
-                    imageVector = TablerIcons.FileDownload,
+                    imageVector = Icons.Default.FileDownload,
                     contentDescription = stringResource(Res.string.download_file),
                 )
             }
@@ -117,7 +117,7 @@ fun IOOptions(device: ViewDevice.Computer) {
                 },
             ) {
                 GeneralIcon(
-                    imageVector = TablerIcons.FileUpload,
+                    imageVector = Icons.Default.FileUpload,
                     contentDescription = stringResource(Res.string.upload_file),
                 )
             }
@@ -129,7 +129,7 @@ fun IOOptions(device: ViewDevice.Computer) {
             },
         ) {
             GeneralIcon(
-                imageVector = TablerIcons.Terminal,
+                imageVector = Icons.Default.Terminal,
                 contentDescription = stringResource(Res.string.terminal),
             )
         }

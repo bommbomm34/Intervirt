@@ -1,13 +1,13 @@
 package io.github.bommbomm34.intervirt.data
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Hub
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
-import compose.icons.TablerIcons
-import compose.icons.tablericons.DevicesPc
-import compose.icons.tablericons.Switch
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
@@ -34,7 +34,7 @@ sealed class ViewDevice {
         val portForwardings =
             mutableListOf<PortForwarding>().apply { addAll(device.portForwardings) } // internalPort:externalPort
 
-        override fun getVector() = TablerIcons.DevicesPc
+        override fun getVector() = Icons.Default.Computer
         override fun canConnect(configuration: IntervirtConfiguration) =
             configuration.connections.count { it.containsDevice(device) } == 0
     }
@@ -46,7 +46,7 @@ sealed class ViewDevice {
         override var name by mutableStateOf(device.name)
         override var x by mutableStateOf(device.x)
         override var y by mutableStateOf(device.y)
-        override fun getVector() = TablerIcons.Switch
+        override fun getVector() = Icons.Default.Hub // Switches aren't hubs!
         override fun canConnect(configuration: IntervirtConfiguration) = true
     }
 

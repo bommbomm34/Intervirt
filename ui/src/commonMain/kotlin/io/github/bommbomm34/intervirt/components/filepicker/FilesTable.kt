@@ -1,9 +1,9 @@
 package io.github.bommbomm34.intervirt.components.filepicker
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilePresent
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.runtime.Composable
-import compose.icons.TablerIcons
-import compose.icons.tablericons.File
-import compose.icons.tablericons.Folder
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
@@ -28,7 +28,7 @@ fun FilesTable(
             {
                 // Icon
                 GeneralIcon(
-                    imageVector = if (isFile) TablerIcons.File else TablerIcons.Folder,
+                    imageVector = if (isFile) Icons.Default.FilePresent else Icons.Default.Folder,
                     contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder),
                 )
             },

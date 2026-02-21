@@ -3,13 +3,13 @@ package io.github.bommbomm34.intervirt.intervirtos
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import compose.icons.TablerIcons
-import compose.icons.tablericons.Refresh
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
 import intervirt.ui.generated.resources.sure_to_delete_mail
@@ -42,7 +42,6 @@ import org.koin.compose.koinInject
 fun MailClient(
     osClient: IntervirtOSClient,
 ) {
-    val logger = rememberLogger("MailClient")
     val appState = koinInject<AppState>()
     val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
@@ -103,7 +102,7 @@ fun MailClient(
                         },
                     ) {
                         GeneralIcon(
-                            imageVector = TablerIcons.Refresh,
+                            imageVector = Icons.Default.Refresh,
                             contentDescription = stringResource(Res.string.refresh),
                         )
                     }

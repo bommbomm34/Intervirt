@@ -1,15 +1,15 @@
 package io.github.bommbomm34.intervirt.components.buttons
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
-import compose.icons.TablerIcons
-import compose.icons.tablericons.DevicesPc
-import compose.icons.tablericons.Switch
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -76,7 +76,7 @@ fun AddDeviceButton() {
                 text = {
                     CenterRow {
                         Icon(
-                            imageVector = TablerIcons.DevicesPc,
+                            imageVector = Icons.Default.Computer,
                             contentDescription = stringResource(Res.string.computer),
                         )
                         GeneralSpacer(5.dp)
@@ -96,7 +96,7 @@ fun AddDeviceButton() {
                 },
                 text = {
                     Icon(
-                        imageVector = TablerIcons.Switch,
+                        imageVector = Icons.Default.Hub,
                         contentDescription = stringResource(Res.string.computer),
                     )
                     GeneralSpacer(5.dp)
