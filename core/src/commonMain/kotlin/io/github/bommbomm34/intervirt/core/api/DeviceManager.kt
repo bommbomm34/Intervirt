@@ -145,19 +145,22 @@ class DeviceManager(
 
     suspend fun addPortForwarding(
         device: Device.Computer,
-        internalPort: Int,
-        externalPort: Int,
-        protocol: String,
+        portForwarding: PortForwarding,
     ): Result<Unit> {
-        logger.debug { "Add port forwarding $internalPort:$externalPort for ${device.id}" }
-        device.portForwardings.add(PortForwarding(protocol, externalPort, internalPort))
+        logger.debug { "Add port forwarding $portForwarding for ${device.id}" }
+        device.portForwardings.add(portForwarding)
         qemuClient.addPortForwarding(
-            protocol = protocol,
-            hostPort = externalPort,
-            guestPort = externalPort, // Guest is not the container itself
+            protocol = portForwarding.protocol,
+            hostPort = portForwarding.hostPort,
+            guestPort = portForwarding.guestPort, // Guest is not the container itself
         ).onFailure { return Result.failure(it) }
         return if (enableAgent) {
-            val res = guestManager.addPortForwarding(device.id, internalPort, externalPort, protocol)
+            val res = guestManager.addPortForwarding(
+                id = device.id,
+                internalPort = portForwarding.guestPort,
+                externalPort = portForwarding.hostPort,
+                protocol = portForwarding.protocol,
+            )
             res.check(Unit)
         } else Result.success(Unit)
     }
@@ -187,9 +190,11 @@ class DeviceManager(
         val port = getFreePort()
         return addPortForwarding(
             device = computer,
-            internalPort = 22,
-            externalPort = port,
-            protocol = "tcp",
+            portForwarding = PortForwarding(
+                protocol = "tcp",
+                guestPort = 22,
+                hostPort = port,
+            ),
         ).map {
             val sshClient = ContainerSshClient(port, this)
             containerIOClients[computer.id] = sshClient
@@ -222,9 +227,11 @@ class DeviceManager(
             val freePort = getFreePort()
             addPortForwarding(
                 device = computer,
-                internalPort = 2375,
-                externalPort = freePort,
-                protocol = "tcp",
+                portForwarding = PortForwarding(
+                    protocol = "tcp",
+                    guestPort = 2375,
+                    hostPort = freePort,
+                ),
             ).getOrThrow()
             freePort
         } else 2375

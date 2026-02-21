@@ -5,21 +5,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.canPortBind
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.components.SelectionDropdown
-import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
+import io.github.bommbomm34.intervirt.components.PortForwardingChooser
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.isValidPort
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -33,37 +29,17 @@ fun AddPortForwardingDialog(
     onCancel: () -> Unit,
 ) {
     CenterColumn {
-        var internalPort by remember { mutableStateOf(1) }
-        var externalPort by remember { mutableStateOf(1) }
-        var protocol by remember { mutableStateOf(protocols[0]) }
+        var portForwarding by remember { mutableStateOf(PortForwarding.DEFAULT) }
         var result by remember { mutableStateOf(Result.success(Unit)) }
         val scope = rememberCoroutineScope()
         val deviceManager = koinInject<DeviceManager>()
         val configuration = koinInject<IntervirtConfiguration>()
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SelectionDropdown(
-                options = protocols,
-                selected = protocol,
-                onSelect = { protocol = it },
-            )
-            GeneralSpacer()
-            IntegerTextField(
-                value = internalPort,
-                onValueChange = { if (it.isValidPort()) internalPort = it },
-                label = stringResource(Res.string.internal_port),
-            )
-            Text(
-                text = ":",
-                fontWeight = FontWeight.ExtraBold,
-            )
-            IntegerTextField(
-                value = externalPort,
-                onValueChange = { if (it.isValidPort()) externalPort = it },
-                label = stringResource(Res.string.external_port),
-            )
-        }
-        LaunchedEffect(internalPort, externalPort) {
-            result = configuration.lint(device, internalPort, externalPort, protocol.lowercase())
+        PortForwardingChooser(
+            portForwarding = portForwarding,
+            onChangePortForwarding = { portForwarding = it },
+        )
+        LaunchedEffect(portForwarding.hostPort, portForwarding.guestPort) {
+            result = configuration.lint(device, portForwarding)
         }
         if (result.isFailure) {
             result.exceptionOrNull()?.let { exp ->
@@ -89,14 +65,7 @@ fun AddPortForwardingDialog(
             Button(
                 onClick = {
                     scope.launch {
-                        device.portForwardings.add(
-                            PortForwarding(
-                                protocol = protocol.lowercase(),
-                                hostPort = externalPort,
-                                guestPort = internalPort,
-                            ),
-                        )
-                        deviceManager.addPortForwarding(device.device, internalPort, externalPort, protocol.lowercase())
+                        deviceManager.addPortForwarding(device.device, portForwarding)
                         onCancel()
                     }
                 },
@@ -111,13 +80,11 @@ fun AddPortForwardingDialog(
 
 private suspend fun IntervirtConfiguration.lint(
     device: ViewDevice.Computer,
-    internalPort: Int,
-    externalPort: Int,
-    protocol: String,
+    portForwarding: PortForwarding,
 ): Result<Unit> {
-    val bindResult = externalPort.canPortBind()
+    val bindResult = portForwarding.hostPort.canPortBind()
     return when {
-        device.portForwardings.any { it.guestPort == internalPort } -> Result.failure(
+        device.portForwardings.any { it.guestPort == portForwarding.guestPort } -> Result.failure(
             IllegalArgumentException(
                 getString(
                     Res.string.internal_port_already_exposed,
@@ -125,7 +92,11 @@ private suspend fun IntervirtConfiguration.lint(
             ),
         )
 
-        devices.any { device -> if (device is Device.Computer) device.portForwardings.any { it.hostPort == externalPort && it.protocol == protocol } else false } -> Result.failure(
+        devices.any { device ->
+            if (device is Device.Computer) device.portForwardings.any {
+                it.hostPort == portForwarding.hostPort && it.protocol == portForwarding.protocol
+            } else false
+        } -> Result.failure(
             IllegalArgumentException(getString(Res.string.external_port_already_bound)),
         )
 

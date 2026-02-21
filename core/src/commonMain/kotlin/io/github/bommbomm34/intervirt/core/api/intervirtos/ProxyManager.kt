@@ -5,6 +5,7 @@ import io.github.bommbomm34.intervirt.core.api.getFreePort
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -27,9 +28,11 @@ class ProxyManager(
             logger.debug { "Chose free port $port" }
             deviceManager.addPortForwarding(
                 device = computer,
-                internalPort = 1080,
-                externalPort = port,
-                protocol = "tcp",
+                PortForwarding(
+                    protocol = "tcp",
+                    guestPort = 1080,
+                    hostPort = port,
+                ),
             )
                 .map { Address("127.0.0.1", port) }
                 .onSuccess {
