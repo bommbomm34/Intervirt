@@ -6,9 +6,9 @@ import androidx.compose.runtime.getValue
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import intervirt.ui.generated.resources.Res
-import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.BackButton
+import io.github.bommbomm34.intervirt.data.AppState
 import org.koin.compose.koinInject
 
 @Composable

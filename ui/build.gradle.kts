@@ -32,23 +32,23 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.coil.compose)
+            implementation(projects.webview)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.bossterm.compose)
+            implementation(libs.compose.tabler.icons)
+            implementation(libs.compose.table)
+            implementation(libs.coil.network.ktor3)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.slf4j.reload4j)
             implementation(libs.kotlin.logging.jvm)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.cio)
             implementation(libs.zip4j)
-            implementation(libs.compose.tabler.icons)
             implementation(libs.commons.validator)
-            implementation(libs.compose.table)
             implementation(libs.bossterm.core)
-            implementation(libs.bossterm.compose)
-            implementation(libs.coil.network.ktor3)
             implementation(projects.core)
-            implementation(projects.webview)
         }
     }
 }
