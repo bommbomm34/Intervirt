@@ -39,13 +39,12 @@ fun main() = application {
             modules(coreModule, uiModule)
         },
     ) {
-        val preferences = koinInject<Preferences>()
         val appEnv = koinInject<AppEnv>()
         val deviceManager = koinInject<DeviceManager>()
         val guestManager = koinInject<GuestManager>()
         val qemuClient = koinInject<QemuClient>()
         val appState = koinInject<AppState>()
-        if (preferences.checkSetupStatus()) appState.currentScreenIndex = 1
+        if (!appEnv.INTERVIRT_INSTALLED) appState.currentScreenIndex = 1
         LaunchedEffect(Unit) {
             // These things should be only called once
             Locale.setDefault(appEnv.LANGUAGE)

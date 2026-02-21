@@ -152,7 +152,7 @@ class QemuClient(
             logger.debug { "Send to QMP: $payload" }
             writeLine(payload)
             logger.debug { "Waiting for answer" }
-            withTimeoutOrNull(appEnv.QEMU_MONITOR_TIMEOUT) {
+            withTimeoutOrNull(appEnv.QEMU_MONITOR_TIMEOUT.toLong()) {
                 while (true) {
                     readLine()?.let { line ->
                         logger.debug { "Received answer: $line" }

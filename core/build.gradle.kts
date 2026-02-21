@@ -27,6 +27,8 @@ dependencies {
     implementation(libs.ksafe)
     implementation(libs.cryptography.core)
     implementation(libs.cryptography.provider.optimal)
+    implementation(libs.multiplatform.settings)
+    implementation(libs.multiplatform.settings.serialization)
     // Test
     testImplementation(libs.koin.test)
     testImplementation(libs.kotlin.test)

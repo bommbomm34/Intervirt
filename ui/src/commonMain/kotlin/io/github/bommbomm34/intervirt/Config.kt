@@ -18,7 +18,6 @@ import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
@@ -77,8 +76,6 @@ fun Int.canPortBind(): Result<Unit> {
         return Result.failure(e)
     }
 }
-
-fun Preferences.checkSetupStatus() = env("INSTALLED").toBoolean()
 
 @OptIn(ExperimentalFoundationApi::class)
 val PointerMatcher.Companion.Secondary: PointerMatcher

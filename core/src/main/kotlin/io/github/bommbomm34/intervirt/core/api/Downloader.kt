@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 class Downloader(
-    private val preferences: Preferences,
     private val fileManager: FileManager,
     private val appEnv: AppEnv,
     private val client: HttpClient,
@@ -25,10 +24,10 @@ class Downloader(
     suspend fun checkUpdates(): Result<List<Component>> = runSuspendingCatching {
         buildList {
             if (appEnv.QEMU_ZIP_HASH_URL.fetch()
-                    .getOrThrow() != preferences.env("CURRENT_QEMU_HASH")
+                    .getOrThrow() != appEnv.CURRENT_QEMU_HASH
             ) add(Component.QEMU)
             if (appEnv.VM_DISK_HASH_URL.fetch()
-                    .getOrThrow() != preferences.env("CURRENT_DISK_HASH")
+                    .getOrThrow() != appEnv.CURRENT_DISK_HASH
             ) add(Component.VM_DISK)
         }
     }
@@ -55,7 +54,7 @@ class Downloader(
 
     fun downloadAlpineDisk(update: Boolean = false): Flow<ResultProgress<String>> = flow {
         logger.debug { "Downloading disk" }
-        if (!preferences.env("DISK_INSTALLED").toBoolean() || update) {
+        if (!appEnv.DISK_INSTALLED || update) {
             // Invalidate previous installation
             appEnv.DISK_INSTALLED = false
             val hashRes = appEnv.VM_DISK_HASH_URL.fetch()
@@ -93,7 +92,7 @@ class Downloader(
     }
 
     private fun downloadQemuZip(update: Boolean = false): Flow<ResultProgress<String>> = flow {
-        if (!preferences.env("QEMU_INSTALLED").toBoolean() || update) {
+        if (!appEnv.QEMU_INSTALLED || update) {
             withContext(Dispatchers.IO) {
                 // Wipe previous installation if available
                 fileManager.getFile("qemu").listFiles().forEach { it.delete() }

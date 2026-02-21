@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core
 
+import com.russhwolf.settings.PreferencesSettings
 import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
@@ -12,6 +13,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds
 import org.koin.dsl.module
+import java.util.prefs.Preferences
 
 
 const val CURRENT_VERSION = "0.0.1"
@@ -31,9 +33,8 @@ val coreModule = module {
     }.binds(arrayOf(GuestManager::class))
     singleOf(::DeviceManager)
     singleOf(::FileManager)
-    singleOf(::Preferences)
     singleOf(::QemuClient)
-    single { get<Preferences>().getAppEnv() }
+    single { AppEnv(PreferencesSettings(Preferences.userRoot())) }
     single {
         HttpClient(CIO) {
             engine {

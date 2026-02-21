@@ -11,7 +11,6 @@ import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.components.buttons.NextButton
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
-import io.github.bommbomm34.intervirt.core.api.Preferences
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.setup.Installation
 import org.koin.compose.koinInject
