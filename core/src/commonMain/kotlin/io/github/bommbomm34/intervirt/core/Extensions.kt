@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.core
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.roundBy
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +32,8 @@ fun Float.roundBy(num: Int = 2): Float {
     return round(times(factor)) / factor
 }
 
-fun String.parseMailAddress() = MailUser(substringBefore("@"), this)
+fun String.parseMailAddress() =
+    _root_ide_package_.io.github.bommbomm34.intervirt.core.data.MailUser(substringBefore("@"), this)
 
 
 fun <T> List<T>.addFirst(element: T): List<T> {
@@ -40,17 +42,20 @@ fun <T> List<T>.addFirst(element: T): List<T> {
     return mutableList
 }
 
-fun String.parseAddress() = Address(substringBefore(":"), substringAfter(":").toInt())
+fun String.parseAddress() = _root_ide_package_.io.github.bommbomm34.intervirt.core.data.Address(
+    substringBefore(":"),
+    substringAfter(":").toInt()
+)
 
 suspend fun <T> withCatchingContext(
     context: CoroutineContext,
     block: suspend CoroutineScope.() -> T,
 ): Result<T> = withContext(context) {
-    runSuspendingCatching {
+    _root_ide_package_.io.github.bommbomm34.intervirt.core.runSuspendingCatching {
         block()
     }
 }
 
 fun ByteArray.zeroize() = fill(0)
 
-suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
+suspend fun <T> Flow<io.github.bommbomm34.intervirt.core.data.ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result

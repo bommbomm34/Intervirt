@@ -1,9 +1,12 @@
 package io.github.bommbomm34.intervirt.core
 
 import com.russhwolf.settings.PreferencesSettings
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.Downloader
+import io.github.bommbomm34.intervirt.core.api.Executor
+import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.*
-import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
-import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -26,15 +29,15 @@ val coreModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<AppEnv>().PSEUDO_MODE) VirtualGuestManager() else AgentClient(
+        (if (get<io.github.bommbomm34.intervirt.core.data.AppEnv>().PSEUDO_MODE) _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager() else _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.AgentClient(
             get(),
             get(),
         ))
-    }.binds(arrayOf(GuestManager::class))
+    }.binds(arrayOf(_root_ide_package_.io.github.bommbomm34.intervirt.core.api.GuestManager::class))
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::QemuClient)
-    single { AppEnv(PreferencesSettings(Preferences.userRoot())) }
+    single { _root_ide_package_.io.github.bommbomm34.intervirt.core.data.AppEnv(PreferencesSettings(Preferences.userRoot())) }
     single {
         HttpClient(CIO) {
             engine {
@@ -46,17 +49,17 @@ val coreModule = module {
         }
     }
     single {
-        IntervirtConfiguration(
-            version = CURRENT_VERSION,
+        _root_ide_package_.io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration(
+            version = _root_ide_package_.io.github.bommbomm34.intervirt.core.CURRENT_VERSION,
             author = "",
             devices = mutableListOf(
-                Device.Switch(
+                _root_ide_package_.io.github.bommbomm34.intervirt.core.data.Device.Switch(
                     id = "switch-88888",
                     name = "My Switch",
                     x = 300,
                     y = 300,
                 ),
-                Device.Computer(
+                _root_ide_package_.io.github.bommbomm34.intervirt.core.data.Device.Computer(
                     id = "computer-67676",
                     image = "intervirtos/1",
                     name = "My Debian",
@@ -67,11 +70,11 @@ val coreModule = module {
                     mac = "fd:67:67:67:67:67",
                     internetEnabled = false,
                     portForwardings = mutableListOf(
-                        PortForwarding("tcp", 67, 25565),
+                        _root_ide_package_.io.github.bommbomm34.intervirt.core.data.PortForwarding("tcp", 67, 25565),
                     ),
                 ),
             ),
             connections = mutableListOf(),
-        ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
+        ).apply { connections.add(_root_ide_package_.io.github.bommbomm34.intervirt.core.data.DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
     }
 }
