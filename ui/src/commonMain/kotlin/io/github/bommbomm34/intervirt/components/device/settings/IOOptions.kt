@@ -74,7 +74,11 @@ fun IOOptions(device: ViewDevice.Computer) {
                                     appState.openDialog {
                                         AcceptDialog(
                                             message = stringResource(Res.string.file_already_exists),
-                                        ) { file.file.toPath().copyTo(path, true) }
+                                            onCancel = ::close,
+                                        ) {
+                                            close()
+                                            file.file.toPath().copyTo(path, true)
+                                        }
                                     }
                                 }
                             }

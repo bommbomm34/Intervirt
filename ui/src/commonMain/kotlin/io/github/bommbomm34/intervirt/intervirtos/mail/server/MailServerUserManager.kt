@@ -55,6 +55,7 @@ fun MailServerUserManager(
                             message = stringResource(Res.string.sure_to_delete_user),
                             onCancel = ::close,
                         ) {
+                            close()
                             scope.launchDialogCatching(appState) {
                                 mailServer.removeMailUser(it).getOrThrow()
                                 users.remove(it)

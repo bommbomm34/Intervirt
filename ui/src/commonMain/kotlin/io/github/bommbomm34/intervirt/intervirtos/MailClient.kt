@@ -117,7 +117,9 @@ fun MailClient(
                                 appState.openDialog {
                                     AcceptDialog(
                                         message = stringResource(Res.string.sure_to_delete_mail),
+                                        onCancel = ::close
                                     ) {
+                                        close()
                                         scope.launch {
                                             appState.runDialogCatching {
                                                 client.deleteMail(it).getOrThrow()

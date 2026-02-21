@@ -49,8 +49,10 @@ fun GeneralDeviceSettings(
             appState.openDialog {
                 AcceptDialog(
                     message = stringResource(Res.string.are_you_sure_to_remove_device, device.name),
+                    onCancel = ::close,
                 ) {
                     scope.launch {
+                        close()
                         onClose()
                         appState.statefulConf.devices.remove(device)
                         appState.statefulConf.connections.removeIf { it.containsDevice(device) }

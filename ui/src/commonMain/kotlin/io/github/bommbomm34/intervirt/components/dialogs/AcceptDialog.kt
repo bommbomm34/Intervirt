@@ -15,7 +15,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AcceptDialog(
     message: String,
-    onCancel: () -> Unit = {},
+    onCancel: () -> Unit,
     onAccept: () -> Unit,
 ) {
     Column(

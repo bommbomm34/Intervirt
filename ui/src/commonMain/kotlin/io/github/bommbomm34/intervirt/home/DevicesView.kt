@@ -79,7 +79,9 @@ fun DevicesView() {
                                         it.device1.name,
                                         it.device2.name,
                                     ),
+                                    onCancel = ::close,
                                 ) {
+                                    close()
                                     statefulConf.connections.remove(it)
                                     scope.launch {
                                         deviceManager.disconnectDevice(
