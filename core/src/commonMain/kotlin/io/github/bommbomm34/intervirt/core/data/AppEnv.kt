@@ -19,6 +19,7 @@ data class AppEnv(
     private val autoFlush: Boolean = true,
     private val custom: AppEnv.() -> Unit = {},
 ) {
+    private var instantFlush = false
     private val logger = KotlinLogging.logger { }
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
@@ -113,6 +114,12 @@ data class AppEnv(
     var IMAGES_URL: String by delegate("https://perhof.org/intervirt/images.json")
     var ACCENT_COLOR: ULong by delegate(0xFF648042.toULong())
 
+    init {
+        instantFlush = true
+        custom()
+        instantFlush = false
+    }
+
     @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
     private inline fun <reified T : Any, R> delegate(
         default: T,
@@ -129,10 +136,12 @@ data class AppEnv(
 
             override operator fun setValue(thisRef: AppEnv, property: KProperty<*>, value: R) {
                 logger.debug { "Setting ${property.name} to $value" }
+                val serialized = serializer(value)
                 settings.encodeValue(
                     key = property.name,
-                    value = serializer(value),
+                    value = serialized,
                 )
+                if (instantFlush) this.value = serialized
             }
 
             private fun getVar(name: String): T {

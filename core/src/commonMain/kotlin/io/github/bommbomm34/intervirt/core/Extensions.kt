@@ -1,15 +1,22 @@
 package io.github.bommbomm34.intervirt.core
 
+import com.russhwolf.settings.PreferencesSettings
 import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.core.roundBy
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import java.util.prefs.Preferences
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
 import kotlin.math.round
@@ -45,7 +52,7 @@ fun <T> List<T>.addFirst(element: T): List<T> {
 
 fun String.parseAddress() = Address(
     substringBefore(":"),
-    substringAfter(":").toInt()
+    substringAfter(":").toInt(),
 )
 
 suspend fun <T> withCatchingContext(
@@ -59,7 +66,7 @@ suspend fun <T> withCatchingContext(
 
 fun ByteArray.zeroize() = fill(0)
 
-inline fun <reified T> String.toPrimitive(): T = when (T::class){
+inline fun <reified T> String.toPrimitive(): T = when (T::class) {
     String::class -> this
     Int::class -> toInt()
     Long::class -> toLong()
@@ -68,4 +75,20 @@ inline fun <reified T> String.toPrimitive(): T = when (T::class){
     Float::class -> toFloat()
     else -> throw SerializationException("${T::class.qualifiedName} is not supported!")
 } as T
+
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
+
+fun getAppEnv(custom: AppEnv.() -> Unit = {}) = AppEnv(
+    settings = PreferencesSettings(Preferences.userRoot()),
+    override = { System.getenv("INTERVIRT_$it") },
+    custom = custom,
+)
+
+fun getHttpClient(): HttpClient = HttpClient(CIO) {
+    engine {
+        requestTimeout = 0
+    }
+    install(WebSockets) {
+        contentConverter = KotlinxWebsocketSerializationConverter(Json)
+    }
+}

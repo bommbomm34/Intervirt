@@ -24,6 +24,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.koin.test)
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
         jvmMain.dependencies {
             implementation(libs.docker.java.core)

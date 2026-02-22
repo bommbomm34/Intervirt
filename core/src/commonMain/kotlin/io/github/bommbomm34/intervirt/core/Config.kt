@@ -34,22 +34,8 @@ val coreModule = module {
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::QemuClient)
-    single {
-        AppEnv(
-            settings = PreferencesSettings(Preferences.userRoot()),
-            override = { System.getenv("INTERVIRT_$it") },
-        )
-    }
-    single {
-        HttpClient(CIO) {
-            engine {
-                requestTimeout = 0
-            }
-            install(WebSockets) {
-                contentConverter = KotlinxWebsocketSerializationConverter(Json)
-            }
-        }
-    }
+    single { getAppEnv() }
+    single { getHttpClient() }
     single {
         IntervirtConfiguration(
             version = CURRENT_VERSION,

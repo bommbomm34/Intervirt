@@ -40,6 +40,10 @@ class DeviceManager(
             internetEnabled = false,
             portForwardings = mutableListOf(),
         )
+        return addComputer(device)
+    }
+
+    suspend fun addComputer(device: Device.Computer): Result<Device.Computer> {
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
         return guestManager.addContainer(
@@ -48,7 +52,7 @@ class DeviceManager(
             initialIpv6 = device.ipv6,
             mac = device.mac,
             internet = false,
-            image = image,
+            image = device.image,
         ).map { device }
     }
 
@@ -130,14 +134,14 @@ class DeviceManager(
         return guestManager.setInternetAccess(device.id, enabled)
     }
 
-    suspend fun start(computer: Device.Computer) {
+    suspend fun start(computer: Device.Computer): Result<Unit> {
         logger.debug { "Starting ${computer.id}" }
-        guestManager.startContainer(computer.id)
+        return guestManager.startContainer(computer.id)
     }
 
-    suspend fun stop(computer: Device.Computer) {
+    suspend fun stop(computer: Device.Computer): Result<Unit> {
         logger.debug { "Stopping ${computer.id}" }
-        guestManager.stopContainer(computer.id)
+        return guestManager.stopContainer(computer.id)
     }
 
     suspend fun addPortForwarding(

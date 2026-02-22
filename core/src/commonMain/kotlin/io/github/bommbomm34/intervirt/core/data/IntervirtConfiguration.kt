@@ -10,10 +10,10 @@ import kotlinx.serialization.Serializable
 // Configuration of an Intervirt project
 @Serializable
 data class IntervirtConfiguration(
-    val version: String,
-    var author: String,
-    val devices: MutableList<Device>,
-    val connections: MutableList<DeviceConnection>,
+    val version: String = CURRENT_VERSION,
+    var author: String = "",
+    val devices: MutableList<Device> = mutableListOf(),
+    val connections: MutableList<DeviceConnection> = mutableListOf(),
 ) {
     fun syncConfiguration(guestManager: GuestManager): Flow<ResultProgress<Unit>> = flow {
         guestManager.getVersion()
