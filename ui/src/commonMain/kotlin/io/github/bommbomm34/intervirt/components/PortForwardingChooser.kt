@@ -15,24 +15,33 @@ fun PortForwardingChooser(
     portForwarding: PortForwarding,
     onChangePortForwarding: (PortForwarding) -> Unit,
 ) {
-    var portForwarding by remember { mutableStateOf(PortForwarding("tcp", 0, 0)) }
+    var portForwarding by remember { mutableStateOf(portForwarding) }
     CenterRow {
         IntegerTextField(
             value = portForwarding.externalPort,
-            onValueChange = { portForwarding = portForwarding.copy(externalPort = it) },
+            onValueChange = {
+                portForwarding = portForwarding.copy(externalPort = it)
+                onChangePortForwarding(portForwarding)
+            },
             label = stringResource(Res.string.external_port),
         )
         GeneralSpacer()
         IntegerTextField(
             value = portForwarding.internalPort,
-            onValueChange = { portForwarding = portForwarding.copy(internalPort = it) },
+            onValueChange = {
+                portForwarding = portForwarding.copy(internalPort = it)
+                onChangePortForwarding(portForwarding)
+            },
             label = stringResource(Res.string.internal_port),
         )
         GeneralSpacer()
         SelectionDropdown(
             options = PROTOCOLS,
             selected = portForwarding.protocol.uppercase(),
-            onSelect = { portForwarding = portForwarding.copy(protocol = it.lowercase()) },
+            onSelect = {
+                portForwarding = portForwarding.copy(protocol = it.lowercase())
+                onChangePortForwarding(portForwarding)
+            },
         )
     }
 }
