@@ -4,6 +4,8 @@ import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.serialization.decodeValue
 import com.russhwolf.settings.serialization.encodeValue
+import io.github.bommbomm34.intervirt.core.toPrimitive
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.File
 import java.util.*
@@ -13,9 +15,11 @@ import kotlin.reflect.KProperty
 @Suppress("PropertyName")
 data class AppEnv(
     private val settings: Settings,
+    private val override: (String) -> String? = { null },
     private val autoFlush: Boolean = true,
     private val custom: AppEnv.() -> Unit = {},
 ) {
+    private val logger = KotlinLogging.logger { }
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
@@ -121,18 +125,22 @@ data class AppEnv(
             private var value: T? = null
 
             override operator fun getValue(thisRef: AppEnv, property: KProperty<*>): R {
-                if (value == null) value = settings.decodeValue(
-                    key = property.name,
-                    defaultValue = default,
-                )
-
+                if (value == null) value = getVar(property.name)
                 return deserializer(value!!)
             }
 
             override operator fun setValue(thisRef: AppEnv, property: KProperty<*>, value: R) {
+                logger.debug { "Setting ${property.name} to $value" }
                 settings.encodeValue(
                     key = property.name,
                     value = serializer(value),
+                )
+            }
+
+            private fun getVar(name: String): T {
+                return override(name)?.toPrimitive() ?: settings.decodeValue(
+                    key = name,
+                    defaultValue = default,
                 )
             }
         }

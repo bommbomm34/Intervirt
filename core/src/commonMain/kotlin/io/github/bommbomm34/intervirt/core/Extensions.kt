@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerializationException
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
 import kotlin.math.round
@@ -58,4 +59,13 @@ suspend fun <T> withCatchingContext(
 
 fun ByteArray.zeroize() = fill(0)
 
-suspend fun <T> Flow<io.github.bommbomm34.intervirt.core.data.ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
+inline fun <reified T> String.toPrimitive(): T = when (T::class){
+    String::class -> this
+    Int::class -> toInt()
+    Long::class -> toLong()
+    ULong::class -> toULong()
+    Boolean::class -> toBoolean()
+    Float::class -> toFloat()
+    else -> throw SerializationException("${T::class.qualifiedName} is not supported!")
+} as T
+suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result

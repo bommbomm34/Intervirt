@@ -7,6 +7,7 @@ import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.*
+import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -29,15 +30,20 @@ val coreModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<io.github.bommbomm34.intervirt.core.data.AppEnv>().PSEUDO_MODE) _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager() else _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.AgentClient(
+        (if (get<AppEnv>().PSEUDO_MODE) VirtualGuestManager() else _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.AgentClient(
             get(),
             get(),
         ))
-    }.binds(arrayOf(_root_ide_package_.io.github.bommbomm34.intervirt.core.api.GuestManager::class))
+    }.binds(arrayOf(GuestManager::class))
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::QemuClient)
-    single { _root_ide_package_.io.github.bommbomm34.intervirt.core.data.AppEnv(PreferencesSettings(Preferences.userRoot())) }
+    single {
+        AppEnv(
+            settings = PreferencesSettings(Preferences.userRoot()),
+            override = { System.getenv("INTERVIRT_$it") }
+        )
+    }
     single {
         HttpClient(CIO) {
             engine {
@@ -49,17 +55,17 @@ val coreModule = module {
         }
     }
     single {
-        _root_ide_package_.io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration(
-            version = _root_ide_package_.io.github.bommbomm34.intervirt.core.CURRENT_VERSION,
+        IntervirtConfiguration(
+            version = CURRENT_VERSION,
             author = "",
             devices = mutableListOf(
-                _root_ide_package_.io.github.bommbomm34.intervirt.core.data.Device.Switch(
+                Device.Switch(
                     id = "switch-88888",
                     name = "My Switch",
                     x = 300,
                     y = 300,
                 ),
-                _root_ide_package_.io.github.bommbomm34.intervirt.core.data.Device.Computer(
+                Device.Computer(
                     id = "computer-67676",
                     image = "intervirtos/1",
                     name = "My Debian",
@@ -70,11 +76,11 @@ val coreModule = module {
                     mac = "fd:67:67:67:67:67",
                     internetEnabled = false,
                     portForwardings = mutableListOf(
-                        _root_ide_package_.io.github.bommbomm34.intervirt.core.data.PortForwarding("tcp", 67, 25565),
+                        PortForwarding("tcp", 67, 25565),
                     ),
                 ),
             ),
             connections = mutableListOf(),
-        ).apply { connections.add(_root_ide_package_.io.github.bommbomm34.intervirt.core.data.DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
+        ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
     }
 }
