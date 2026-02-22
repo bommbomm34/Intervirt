@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
@@ -32,7 +33,7 @@ sealed class ViewDevice {
         val mac = device.mac
         var internetEnabled by mutableStateOf(device.internetEnabled)
         val portForwardings =
-            mutableListOf<PortForwarding>().apply { addAll(device.portForwardings) } // internalPort:externalPort
+            mutableStateListOf<PortForwarding>().apply { addAll(device.portForwardings) }
 
         override fun getVector() = Icons.Default.Computer
         override fun canConnect(configuration: IntervirtConfiguration) =
