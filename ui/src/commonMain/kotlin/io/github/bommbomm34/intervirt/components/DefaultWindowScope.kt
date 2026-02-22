@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -20,7 +22,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.isDarkMode
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DefaultWindowScope(
     onPointerEvent: AwaitPointerEventScope.(PointerEvent) -> Unit = {},
@@ -31,7 +33,7 @@ fun DefaultWindowScope(
         seedColor = Color(appEnv.ACCENT_COLOR),
         isDark = appEnv.isDarkMode(),
     )
-    MaterialTheme(
+    MaterialExpressiveTheme(
         colorScheme = colors,
     ) {
         Surface(contentColor = colors.onBackground) {
