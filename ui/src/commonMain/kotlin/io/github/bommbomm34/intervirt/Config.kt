@@ -14,6 +14,8 @@ import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
@@ -37,12 +39,12 @@ const val CURRENT_VERSION = "0.0.1"
 const val HELP_URL = "https://docs.perhof.org/intervirt"
 const val HOMEPAGE_URL = "https://perhof.org/intervirt"
 
+val AVAILABLE_LANGUAGES = listOf(
+    Locale.US,
+)
+
 val uiModule = module {
     singleOf(::AppState)
 }
 
-val AVAILABLE_LANGUAGES = listOf(
-    Locale.US,
-)
-val SUPPORTED_ARCHITECTURES = listOf("amd64", "arm64")
 lateinit var density: Density

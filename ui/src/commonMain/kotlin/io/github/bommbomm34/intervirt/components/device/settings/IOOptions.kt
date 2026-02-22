@@ -8,11 +8,13 @@ import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
@@ -29,6 +31,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import java.nio.file.Path
 import kotlin.io.path.copyTo
+import kotlin.io.path.exists
 import kotlin.io.path.name
 
 @Composable
@@ -44,42 +47,23 @@ fun IOOptions(device: ViewDevice.Computer) {
     }
     val fileSaverLauncher = rememberFileSaverLauncher { file ->
         file?.let {
-            scope.launch {
+            scope.launchDialogCatching(appState) {
                 // containerFilePath must be valid if this launcher is called
-                try {
-                    containerFilePath!!.copyTo(file.file.toPath())
-                } catch (e: Exception) {
-                    appState.openDialog(
-                        severity = Severity.ERROR,
-                        message = e.localizedMessage,
-                    )
-                }
+                containerFilePath!!.copyTo(file.file.toPath(), overwrite = true)
             }
         }
     }
     val filePickerLauncher = rememberFilePickerLauncher { file ->
         file?.let { _ ->
-            appState.openDialog {
+            appState.openDialog(width = 1000.dp, height = 800.dp) {
                 ContainerFilePicker(
                     ioClient!!,
                     file.name,
                 ) { path ->
                     close()
                     path?.let { _ ->
-                        scope.launch {
-                            appState.runDialogCatching {
-                                if (file.exists()) {
-                                    appState.openDialog {
-                                        AcceptDialog(
-                                            message = stringResource(Res.string.file_already_exists),
-                                            onCancel = ::close,
-                                        ) {
-                                            close()
-                                            file.file.toPath().copyTo(path, true)
-                                        }
-                                    }
-                                }
-                            }
+                        scope.launchDialogCatching(appState) {
+                            file.file.toPath().copyTo(path, true)
                         }
                     }
                 }
@@ -90,7 +74,8 @@ fun IOOptions(device: ViewDevice.Computer) {
         ioClient?.let { client ->
             IconButton(
                 onClick = {
-                    appState.openDialog {
+                    logger.debug { "Downloading file from ${device.id}" }
+                    appState.openDialog(width = 1000.dp, height = 800.dp) {
                         ContainerFilePicker(
                             client,
                         ) { path ->
@@ -115,6 +100,7 @@ fun IOOptions(device: ViewDevice.Computer) {
             GeneralSpacer()
             IconButton(
                 onClick = {
+                    logger.debug { "Uploading file to ${device.id}" }
                     filePickerLauncher.launch()
                 },
             ) {

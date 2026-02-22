@@ -19,7 +19,8 @@ fun ClickableTable(
     data: List<List<@Composable BoxScope.() -> Unit>>,
     onClick: (Int) -> Unit, // Parameter is the index of data list
 ) {
-    val bg = MaterialTheme.colorScheme.onBackground
+    val bg = MaterialTheme.colorScheme.background
+    val onBg = MaterialTheme.colorScheme.onBackground
     val scrollState = rememberScrollState()
     val hoverData = data.map {
         val interactionSource = remember { MutableInteractionSource() }
@@ -39,7 +40,7 @@ fun ClickableTable(
                 Modifier
                     .onClick { onClick(i) }
                     .hoverable(hover.first)
-                    .background(if (hover.second.value) bg.copy(alpha = 0.5f) else bg)
+                    .background(if (hover.second.value) onBg.copy(alpha = 0.5f) else bg)
                     .pointerHoverIcon(PointerIcon.Hand),
             ) {
                 composables.forEach {
