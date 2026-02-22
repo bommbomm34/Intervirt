@@ -34,7 +34,7 @@ fun Float.roundBy(num: Int = 2): Float {
 }
 
 fun String.parseMailAddress() =
-    _root_ide_package_.io.github.bommbomm34.intervirt.core.data.MailUser(substringBefore("@"), this)
+    MailUser(substringBefore("@"), this)
 
 
 fun <T> List<T>.addFirst(element: T): List<T> {
@@ -43,7 +43,7 @@ fun <T> List<T>.addFirst(element: T): List<T> {
     return mutableList
 }
 
-fun String.parseAddress() = _root_ide_package_.io.github.bommbomm34.intervirt.core.data.Address(
+fun String.parseAddress() = Address(
     substringBefore(":"),
     substringAfter(":").toInt()
 )
@@ -52,7 +52,7 @@ suspend fun <T> withCatchingContext(
     context: CoroutineContext,
     block: suspend CoroutineScope.() -> T,
 ): Result<T> = withContext(context) {
-    _root_ide_package_.io.github.bommbomm34.intervirt.core.runSuspendingCatching {
+    runSuspendingCatching {
         block()
     }
 }

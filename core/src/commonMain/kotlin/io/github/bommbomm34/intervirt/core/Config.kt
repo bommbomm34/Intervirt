@@ -7,6 +7,7 @@ import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.*
+import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.ktor.client.*
@@ -30,7 +31,7 @@ val coreModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<AppEnv>().PSEUDO_MODE) VirtualGuestManager() else _root_ide_package_.io.github.bommbomm34.intervirt.core.api.impl.AgentClient(
+        (if (get<AppEnv>().PSEUDO_MODE) VirtualGuestManager() else AgentClient(
             get(),
             get(),
         ))
