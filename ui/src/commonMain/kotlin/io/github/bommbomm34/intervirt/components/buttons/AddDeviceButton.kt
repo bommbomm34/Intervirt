@@ -41,7 +41,7 @@ fun AddDeviceButton() {
                 onClick = {
                     dropdownExpanded = false
                     // Add computer
-                    appState.openDialog {
+                    appState.openDialog(width = 1000.dp, height = 800.dp) {
                         ImagePicker(
                             onDismiss = {
                                 close()
