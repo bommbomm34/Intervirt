@@ -9,6 +9,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.*
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
@@ -38,11 +39,8 @@ fun IOOptions(device: ViewDevice.Computer) {
     val logger = rememberLogger("IOOptions")
     var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
     var containerFilePath: Path? by remember { mutableStateOf(null) }
-    LaunchedEffect(device.id) {
-        ioClient = deviceManager.getIOClient(device.device).getOrElse {
-            logger.error(it) { "Failure during obtaining a IOClient for ${device.id}" }
-            null
-        }
+    CatchingLaunchedEffect {
+        ioClient = deviceManager.getIOClient(device.device).getOrThrow()
     }
     val fileSaverLauncher = rememberFileSaverLauncher { file ->
         file?.let {

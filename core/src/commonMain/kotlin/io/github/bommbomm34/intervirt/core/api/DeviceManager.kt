@@ -147,7 +147,7 @@ class DeviceManager(
     ): Result<Unit> {
         logger.debug { "Add port forwarding $portForwarding for ${device.id}" }
         device.portForwardings.add(portForwarding)
-        qemuClient.addPortForwarding(
+        if (!virtualContainerIO) qemuClient.addPortForwarding(
             protocol = portForwarding.protocol,
             externalPort = portForwarding.externalPort,
             internalPort = portForwarding.internalPort,
@@ -166,7 +166,7 @@ class DeviceManager(
             if (device is Device.Computer)
                 device.portForwardings.removeIf { it.externalPort == externalPort }
         }
-        qemuClient.removePortForwarding(
+        if (!virtualContainerIO) qemuClient.removePortForwarding(
             protocol = protocol,
             externalPort = externalPort,
         ).onFailure { return Result.failure(it) }
@@ -191,8 +191,9 @@ class DeviceManager(
                 internalPort = 22,
                 externalPort = port,
             ),
-        ).map {
+        ).mapCatching {
             val sshClient = ContainerSshClient(port, this)
+            sshClient.init().getOrThrow()
             containerIOClients[computer.id] = sshClient
             sshClient
         }

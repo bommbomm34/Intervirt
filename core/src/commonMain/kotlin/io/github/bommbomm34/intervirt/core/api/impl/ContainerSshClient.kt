@@ -36,10 +36,10 @@ class ContainerSshClient(
         emptyMap<String, Any>(),
     )
     private val sshClient = SshClient.setUpDefaultClient()
-    private var session: ClientSession
+    private lateinit var session: ClientSession
     private val logger = KotlinLogging.logger { }
 
-    init {
+    suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         sshClient.start()
         session = sshClient.connect(USERNAME, HOST, port).verify().session
         session.auth().verify()
