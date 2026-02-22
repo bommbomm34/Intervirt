@@ -53,11 +53,12 @@ fun AddDeviceButton() {
                             onInstall = { image ->
                                 close()
                                 scope.launchDialogCatching(appState) {
-                                    deviceManager.addComputer(
+                                    val viewDevice = deviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName,
-                                    )
+                                    ).getOrThrow().toViewDevice()
+                                    appState.statefulConf.devices.add(viewDevice)
                                 }
                             },
                         )

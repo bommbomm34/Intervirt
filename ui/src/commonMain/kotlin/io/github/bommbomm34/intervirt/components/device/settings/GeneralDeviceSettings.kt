@@ -13,6 +13,7 @@ import intervirt.ui.generated.resources.delete
 import intervirt.ui.generated.resources.name
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
@@ -51,12 +52,12 @@ fun GeneralDeviceSettings(
                     message = stringResource(Res.string.are_you_sure_to_remove_device, device.name),
                     onCancel = ::close,
                 ) {
-                    scope.launch {
+                    scope.launchDialogCatching(appState) {
                         close()
                         onClose()
                         appState.statefulConf.devices.remove(device)
                         appState.statefulConf.connections.removeIf { it.containsDevice(device) }
-                        deviceManager.removeDevice(device.device)
+                        deviceManager.removeDevice(device.device).getOrThrow()
                     }
                 }
             }

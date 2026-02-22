@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
@@ -38,9 +39,9 @@ fun PortForwardingSettings(device: ViewDevice.Computer) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}")
                     RemoveButton {
-                        scope.launch {
+                        scope.launchDialogCatching(appState) {
                             device.portForwardings.remove(portForwarding)
-                            deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
+                            deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol).getOrThrow()
                         }
                     }
                 }

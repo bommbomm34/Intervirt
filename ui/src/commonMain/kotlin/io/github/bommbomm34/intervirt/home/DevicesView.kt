@@ -27,6 +27,7 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.buttons.AddDeviceButton
 import io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings
 import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -83,11 +84,11 @@ fun DevicesView() {
                                 ) {
                                     close()
                                     statefulConf.connections.remove(it)
-                                    scope.launch {
+                                    scope.launchDialogCatching(appState) {
                                         deviceManager.disconnectDevice(
                                             it.device1.device,
                                             it.device2.device,
-                                        )
+                                        ).getOrThrow()
                                     }
                                 }
                             }
@@ -134,10 +135,10 @@ fun DevicesView() {
                 val copy = appState.drawingConnectionSource
                 if (copy != null) {
                     if (copy.id != it.id) {
-                        scope.launch {
+                        scope.launchDialogCatching(appState) {
                             if (copy.canConnect(configuration) && it.canConnect(configuration)) {
                                 statefulConf.connections.add(copy connect it)
-                                deviceManager.connectDevice(copy.device, it.device)
+                                deviceManager.connectDevice(copy.device, it.device).getOrThrow()
                             } else appState.openDialog(
                                 severity = Severity.WARNING,
                                 message = getString(Res.string.too_many_devices_connected),

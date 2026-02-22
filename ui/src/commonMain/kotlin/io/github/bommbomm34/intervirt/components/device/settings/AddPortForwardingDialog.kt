@@ -11,10 +11,12 @@ import io.github.bommbomm34.intervirt.canPortBind
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.PortForwardingChooser
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -34,6 +36,7 @@ fun AddPortForwardingDialog(
         val scope = rememberCoroutineScope()
         val deviceManager = koinInject<DeviceManager>()
         val configuration = koinInject<IntervirtConfiguration>()
+        val appState = koinInject<AppState>()
         PortForwardingChooser(
             portForwarding = portForwarding,
             onChangePortForwarding = { portForwarding = it },
@@ -64,8 +67,9 @@ fun AddPortForwardingDialog(
             GeneralSpacer()
             Button(
                 onClick = {
-                    scope.launch {
-                        deviceManager.addPortForwarding(device.device, portForwarding)
+                    scope.launchDialogCatching(appState) {
+                        device.portForwardings.add(portForwarding)
+                        deviceManager.addPortForwarding(device.device, portForwarding).getOrThrow()
                         onCancel()
                     }
                 },

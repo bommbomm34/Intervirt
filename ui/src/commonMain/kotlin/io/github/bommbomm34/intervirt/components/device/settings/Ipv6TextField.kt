@@ -7,7 +7,9 @@ import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.invalid_ipv6_address
 import intervirt.ui.generated.resources.ipv6_address
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import kotlinx.coroutines.launch
 import org.apache.commons.validator.routines.InetAddressValidator
@@ -19,14 +21,15 @@ fun Ipv6TextField(device: ViewDevice.Computer) {
     var validIpv6 by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
+    val appState = koinInject<AppState>()
     OutlinedTextField(
         value = device.ipv6,
         onValueChange = {
-            scope.launch {
+            scope.launchDialogCatching(appState) {
                 validIpv6 = InetAddressValidator.getInstance().isValidInet6Address(it)
                 if (validIpv6) {
                     device.ipv6 = it
-                    deviceManager.setIpv6(device.device, it)
+                    deviceManager.setIpv6(device.device, it).getOrThrow()
                 }
             }
         },
