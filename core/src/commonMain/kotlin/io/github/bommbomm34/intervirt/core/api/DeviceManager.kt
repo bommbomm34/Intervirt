@@ -121,6 +121,7 @@ class DeviceManager(
     }
 
     fun setName(device: Device, name: String) {
+        logger.debug { "Setting name of ${device.name} to $name" }
         device.name = name
     }
 
@@ -130,9 +131,15 @@ class DeviceManager(
         return guestManager.setInternetAccess(device.id, enabled)
     }
 
-    suspend fun start(computer: Device.Computer) = guestManager.startContainer(computer.id)
+    suspend fun start(computer: Device.Computer) {
+        logger.debug { "Starting ${computer.id}" }
+        guestManager.startContainer(computer.id)
+    }
 
-    suspend fun stop(computer: Device.Computer) = guestManager.stopContainer(computer.id)
+    suspend fun stop(computer: Device.Computer) {
+        logger.debug { "Stopping ${computer.id}" }
+        guestManager.stopContainer(computer.id)
+    }
 
     suspend fun addPortForwarding(
         device: Device.Computer,
@@ -166,13 +173,17 @@ class DeviceManager(
         return guestManager.removePortForwarding(externalPort, protocol)
     }
 
-    suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> =
-        containerIOClients[computer.id]?.let { Result.success(it) } ?: if (virtualContainerIO) Result.success(
-            initVirtualIOClient(computer),
-        ) else initSshClient(computer)
+    suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> {
+        logger.debug { "Retrieving IO client of ${computer.id}" }
+        val cached = containerIOClients[computer.id]?.let { Result.success(it) }
+        if (cached != null) return cached
+        return if (virtualContainerIO) Result.success(initVirtualIOClient(computer)) else initSshClient(computer)
+    }
+
 
     suspend fun initSshClient(computer: Device.Computer): Result<ContainerSshClient> {
         val port = getFreePort()
+        logger.debug { "Initializing SSH client for ${computer.id} on port $port" }
         return addPortForwarding(
             device = computer,
             portForwarding = PortForwarding(
@@ -188,12 +199,15 @@ class DeviceManager(
     }
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
+        logger.debug { "Initializing virtual container IO client for ${computer.id}" }
         val client = VirtualContainerIOClient(computer.id, executor, fileManager)
         containerIOClients[computer.id] = client
         return client
     }
 
     suspend fun getIntervirtOSClient(computer: Device.Computer) = runSuspendingCatching {
+        logger.debug { "Retrieving IntervirtOSClient of ${computer.id}" }
+        intervirtOSClients[computer.id]?.let { return@runSuspendingCatching it }
         val osClient = IntervirtOSClient(
             IntervirtOSClient.Client(
                 computer = computer,
@@ -207,6 +221,7 @@ class DeviceManager(
     }
 
     suspend fun getDockerManager(computer: Device.Computer): Result<DockerManager> = runSuspendingCatching {
+        logger.debug { "Retrieving Docker manager of ${computer.id}" }
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
         val port = if (!virtualContainerIO) {
             val freePort = getFreePort()
@@ -258,6 +273,7 @@ class DeviceManager(
     }
 
     override suspend fun close() = runSuspendingCatching {
+        logger.debug { "Closing DeviceManager" }
         intervirtOSClients.forEach { (_, client) -> client.close().getOrThrow() }
         dockerManagers.forEach { (_, manager) -> manager.close().getOrThrow() }
         containerIOClients.forEach { (_, client) -> client.close().getOrThrow() }
