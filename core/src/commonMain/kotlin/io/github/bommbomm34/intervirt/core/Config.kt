@@ -54,29 +54,8 @@ val coreModule = module {
         IntervirtConfiguration(
             version = CURRENT_VERSION,
             author = "",
-            devices = mutableListOf(
-                Device.Switch(
-                    id = "switch-88888",
-                    name = "My Switch",
-                    x = 300,
-                    y = 300,
-                ),
-                Device.Computer(
-                    id = "computer-67676",
-                    image = "intervirtos/1",
-                    name = "My Debian",
-                    x = 500,
-                    y = 500,
-                    ipv4 = "192.168.0.20",
-                    ipv6 = "fd00:6767:6767:6767:0808:abcd:abcd:aaaa",
-                    mac = "fd:67:67:67:67:67",
-                    internetEnabled = false,
-                    portForwardings = mutableListOf(
-                        PortForwarding("tcp", 67, 25565),
-                    ),
-                ),
-            ),
+            devices = mutableListOf(),
             connections = mutableListOf(),
-        ).apply { connections.add(DeviceConnection.SwitchComputer(devices[0].id, devices[1].id, this)) }
+        )
     }
 }
