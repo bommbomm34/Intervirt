@@ -2,8 +2,10 @@ package io.github.bommbomm34.intervirt.components.buttons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
@@ -14,11 +16,14 @@ import org.jetbrains.compose.resources.stringResource
 fun RemoveButton(
     onClick: () -> Unit,
 ) {
-    IconButton(onClick = onClick) {
+    FloatingActionButton(
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.errorContainer
+    ) {
         Icon(
             imageVector = Icons.Default.Delete,
             contentDescription = stringResource(Res.string.delete),
-            tint = Color.Red,
+            tint = MaterialTheme.colorScheme.onErrorContainer,
         )
     }
 }

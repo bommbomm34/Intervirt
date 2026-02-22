@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.components.buttons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
@@ -14,9 +15,9 @@ fun SendButton(
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    IconButton(
-        onClick = onClick,
-        enabled = enabled,
+    val empty: () -> Unit = {}
+    FloatingActionButton(
+        onClick = if (enabled) onClick else empty,
     ) {
         GeneralIcon(
             imageVector = Icons.AutoMirrored.Filled.Send,
