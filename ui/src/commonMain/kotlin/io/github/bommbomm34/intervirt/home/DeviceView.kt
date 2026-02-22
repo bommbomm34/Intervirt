@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,6 +72,7 @@ fun DeviceView(
                 onClick = { onSecondaryClick(device) },
             )
             .clip(RoundedCornerShape(16f))
+            .padding(8.dp)
             .background(MaterialTheme.colorScheme.background),
     ) {
         Icon(
