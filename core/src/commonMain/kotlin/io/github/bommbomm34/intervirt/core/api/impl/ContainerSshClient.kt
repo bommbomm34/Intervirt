@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
+import org.apache.sshd.common.channel.PtyChannelConfiguration
 import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -48,9 +49,10 @@ class ContainerSshClient(
         command: String,
         arguments: List<String>,
         environment: Map<String, String>,
-        workingDirectory: String?, // TODO: Handle working directory
+        workingDirectory: String?,
     ) = withCatchingContext(Dispatchers.IO) {
-        logger.info { "Opening PTY shell '$command' on container" }
+        val totalCommand = listOf(command, *(arguments.toTypedArray()))
+        logger.info { "Opening PTY shell '$totalCommand' on container" }
         val sshChannel = session.createShellChannel(null, environment)
         sshChannel.ptyType = "xterm"
         sshChannel.open().verify()
@@ -97,6 +99,10 @@ class ContainerSshClient(
                 }
             }
         }
+        // Switch to working directory
+        channel.send(ShellControlMessage.ByteData("cd $workingDirectory\n".encodeToByteArray()))
+        // Run command with arguments
+        channel.send(ShellControlMessage.ByteData("$totalCommand\n".encodeToByteArray()))
 
         channel
     }
