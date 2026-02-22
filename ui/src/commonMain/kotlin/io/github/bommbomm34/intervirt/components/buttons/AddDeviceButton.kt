@@ -66,12 +66,10 @@ fun AddDeviceButton() {
                 },
                 text = {
                     CenterRow {
-                        Icon(
+                        IconText(
                             imageVector = Icons.Default.Computer,
-                            contentDescription = stringResource(Res.string.computer),
+                            text = stringResource(Res.string.computer),
                         )
-                        GeneralSpacer(5.dp)
-                        Text(stringResource(Res.string.computer))
                     }
                 },
             )
@@ -86,12 +84,10 @@ fun AddDeviceButton() {
                     appState.statefulConf.devices.add(device.toViewDevice())
                 },
                 text = {
-                    Icon(
+                    IconText(
                         imageVector = Icons.Default.Hub,
-                        contentDescription = stringResource(Res.string.computer),
+                        text = stringResource(Res.string.switch),
                     )
-                    GeneralSpacer(5.dp)
-                    Text(stringResource(Res.string.switch))
                 },
             )
         }
