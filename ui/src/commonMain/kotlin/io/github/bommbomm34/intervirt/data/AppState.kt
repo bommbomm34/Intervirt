@@ -40,9 +40,10 @@ class AppState(configuration: IntervirtConfiguration) {
 
     fun openDialog(
         title: String = "",
+        size: DpSize = DpSize(600.dp, 300.dp),
         customContent: @Composable DialogState.() -> Unit,
     ): DialogState {
-        val state = DialogState(title, customContent) { dialogStates.remove(it) }
+        val state = DialogState(title, size, customContent) { dialogStates.remove(it) }
         dialogStates.add(state)
         return state
     }

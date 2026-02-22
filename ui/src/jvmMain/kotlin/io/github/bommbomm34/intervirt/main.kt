@@ -6,26 +6,23 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogWindow
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.*
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.components.dialogs.Dialog
-import io.github.bommbomm34.intervirt.core.api.*
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.SecretProvider
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
@@ -124,6 +121,7 @@ fun main() = application {
             DialogWindow(
                 onCloseRequest = dialogState::close,
                 title = dialogState.title,
+                state = rememberDialogState(size = dialogState.size),
             ) {
                 DefaultWindowScope {
                     Dialog(dialogState)

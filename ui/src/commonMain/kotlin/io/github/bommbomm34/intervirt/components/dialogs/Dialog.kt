@@ -19,14 +19,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Dialog(state: DialogState) {
     AlignedBox(Alignment.Center) {
-        Surface(
-            modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-            color = MaterialTheme.colorScheme.background.copy(blue = 0.05f),
-        ) {
-            Box(Modifier.padding(16.dp)) {
-                state.compose()
-            }
-        }
+        state.compose()
     }
 }
 
