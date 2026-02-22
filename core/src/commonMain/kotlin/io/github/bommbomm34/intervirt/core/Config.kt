@@ -1,11 +1,6 @@
 package io.github.bommbomm34.intervirt.core
 
 import com.russhwolf.settings.PreferencesSettings
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.Downloader
-import io.github.bommbomm34.intervirt.core.api.Executor
-import io.github.bommbomm34.intervirt.core.api.FileManager
-import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
@@ -31,7 +26,7 @@ val coreModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
     single {
-        (if (get<AppEnv>().PSEUDO_MODE) VirtualGuestManager() else AgentClient(
+        (if (get<AppEnv>().VIRTUAL_AGENT_MODE) VirtualGuestManager() else AgentClient(
             get(),
             get(),
         ))
@@ -42,7 +37,7 @@ val coreModule = module {
     single {
         AppEnv(
             settings = PreferencesSettings(Preferences.userRoot()),
-            override = { System.getenv("INTERVIRT_$it") }
+            override = { System.getenv("INTERVIRT_$it") },
         )
     }
     single {

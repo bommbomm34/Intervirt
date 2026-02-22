@@ -73,8 +73,6 @@ data class AppEnv(
         deserializer = { Locale.forLanguageTag(it) },
     )
 
-    var ENABLE_AGENT: Boolean by delegate(true)
-
     var QEMU_MONITOR_PORT: Int by delegate(55437)
 
     var TITLE_FONT_SIZE: Int by delegate(48)
@@ -83,7 +81,7 @@ data class AppEnv(
 
     var DEFAULT_DNS_SERVER: String by delegate("9.9.9.9")
 
-    var PSEUDO_MODE: Boolean by delegate(false)
+    var VIRTUAL_AGENT_MODE: Boolean by delegate(false)
 
     var ENABLE_JAVASCRIPT: Boolean by delegate(true)
 

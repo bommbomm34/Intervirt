@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.data
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
@@ -40,10 +41,11 @@ class AppState(configuration: IntervirtConfiguration) {
 
     fun openDialog(
         title: String = "",
-        size: DpSize = DpSize(600.dp, 300.dp),
+        width: Dp = 600.dp,
+        height: Dp = 300.dp,
         customContent: @Composable DialogState.() -> Unit,
     ): DialogState {
-        val state = DialogState(title, size, customContent) { dialogStates.remove(it) }
+        val state = DialogState(title, DpSize(width, height), customContent) { dialogStates.remove(it) }
         dialogStates.add(state)
         return state
     }

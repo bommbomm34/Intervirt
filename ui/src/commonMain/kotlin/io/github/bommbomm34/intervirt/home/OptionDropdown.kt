@@ -65,10 +65,8 @@ fun OptionDropdown(
                 val fileContent = file.readString()
                 val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
                 configuration.update(newConfiguration)
-                if (appEnv.ENABLE_AGENT) {
-                    configuration.syncConfiguration(guestManager).collect {
-                        logger.info { it }
-                    }
+                configuration.syncConfiguration(guestManager).collect {
+                    logger.info { it }
                 }
                 appState.statefulConf.update(ViewConfiguration(newConfiguration))
                 onConfChange()
