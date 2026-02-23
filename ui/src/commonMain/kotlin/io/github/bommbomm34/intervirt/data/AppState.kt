@@ -30,11 +30,13 @@ class AppState(configuration: IntervirtConfiguration) {
     fun openDialog(
         severity: Severity,
         message: String,
-        title: String? = null,
-    ) = openDialog(title ?: message) {
+        title: String = message,
+        copyMessage: String = message,
+    ) = openDialog(title) {
         DefaultDialog(
             message = message,
             severity = severity,
+            copyMessage = copyMessage,
             onClose = ::close,
         )
     }
@@ -58,8 +60,8 @@ class AppState(configuration: IntervirtConfiguration) {
             it.printStackTrace()
             openDialog(
                 severity = Severity.ERROR,
-                message = it.stackTraceToString(),
-                title = it.localizedMessage,
+                message = it.localizedMessage,
+                copyMessage = it.stackTraceToString(),
             )
         }
 }

@@ -31,6 +31,7 @@ import org.koin.compose.koinInject
 fun DefaultDialog(
     message: String,
     severity: Severity,
+    copyMessage: String,
     onClose: () -> Unit,
 ) {
     val clipboard = LocalClipboard.current
@@ -66,7 +67,7 @@ fun DefaultDialog(
             // Copy button
             IconButton(
                 onClick = {
-                    scope.launch { clipboard.copyToClipboard(message) }
+                    scope.launch { clipboard.copyToClipboard(copyMessage) }
                 },
             ) {
                 GeneralIcon(
