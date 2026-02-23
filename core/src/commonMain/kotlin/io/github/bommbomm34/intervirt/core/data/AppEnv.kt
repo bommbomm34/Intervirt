@@ -19,7 +19,6 @@ data class AppEnv(
     private val autoFlush: Boolean = true,
     private val custom: AppEnv.() -> Unit = {},
 ) {
-    private var instantFlush = false
     private val logger = KotlinLogging.logger { }
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
@@ -116,9 +115,7 @@ data class AppEnv(
     var SMALL_FAB_SIZE: Int by delegate(32)
 
     init {
-        instantFlush = true
         custom()
-        instantFlush = false
     }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
@@ -142,7 +139,7 @@ data class AppEnv(
                     key = property.name,
                     value = serialized,
                 )
-                if (instantFlush) this.value = serialized
+                this.value = serialized
             }
 
             private fun getVar(name: String): T {
