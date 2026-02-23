@@ -113,6 +113,7 @@ data class AppEnv(
     var INTERVIRT_INSTALLED: Boolean by delegate(false)
     var IMAGES_URL: String by delegate("https://perhof.org/intervirt/images.json")
     var ACCENT_COLOR: ULong by delegate(0xFF648042.toULong())
+    var SMALL_FAB_SIZE: Int by delegate(32)
 
     init {
         instantFlush = true

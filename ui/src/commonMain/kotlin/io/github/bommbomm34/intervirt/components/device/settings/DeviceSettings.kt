@@ -52,6 +52,7 @@ fun DeviceSettings(
                 AnimatedVisibility(showPortForwardings) {
                     PortForwardingSettings(device)
                 }
+                GeneralSpacer()
                 // Show/Hide port forwardings
                 Button(
                     onClick = { showPortForwardings = !showPortForwardings },

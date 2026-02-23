@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
@@ -81,13 +82,13 @@ fun MailView(
             // Reply
             FloatingActionButton(onReply) {
                 GeneralIcon(
-                    imageVector = Icons.Default.Send,
+                    imageVector = Icons.AutoMirrored.Filled.Send,
                     contentDescription = stringResource(Res.string.reply),
                 )
             }
             GeneralSpacer()
             // Delete
-            RemoveButton(onDelete)
+            RemoveButton(onClick = onDelete)
         }
     }
 }
