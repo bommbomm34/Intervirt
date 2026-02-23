@@ -5,6 +5,7 @@ import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.patch
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
@@ -16,7 +17,7 @@ class VirtualContainerIOClient(
     private val virtualRoot by lazy { fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath() }
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =
-        Result.success(executor.runCommandOnHost(null, commands.addFirst("pkexec")))
+        Result.success(executor.runCommandOnHost(null, commands.patch("sudo", "pkexec")))
 
     override fun getPath(path: String): Path = virtualRoot.resolve(path.normalize())
 

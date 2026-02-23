@@ -50,6 +50,8 @@ fun <T> List<T>.addFirst(element: T): List<T> {
     return mutableList
 }
 
+fun <T> List<T>.patch(element1: T, element2: T) = map { if (it == element1) element2 else it }
+
 fun String.parseAddress() = Address(
     substringBefore(":"),
     substringAfter(":").toInt(),

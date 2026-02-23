@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.addFirst
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
@@ -29,7 +30,7 @@ class SystemServiceManager(
     }
 
     private suspend fun exec(vararg commands: String): Result<String> {
-        val res = ioClient.exec(commands.toList())
+        val res = ioClient.exec(commands.toList().addFirst("sudo"))
         return res.fold(
             onSuccess = {
                 val (output, statusCode) = it.getCommandResult()
