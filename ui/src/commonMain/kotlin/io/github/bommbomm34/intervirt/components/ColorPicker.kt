@@ -34,7 +34,7 @@ fun ColorPicker(
         GeneralSpacer()
         Button(
             onClick = {
-                appState.openDialog {
+                appState.openDialog(height = 800.dp) {
                     ColorPickerDialog(color, onColorSelect, ::close)
                 }
             },
