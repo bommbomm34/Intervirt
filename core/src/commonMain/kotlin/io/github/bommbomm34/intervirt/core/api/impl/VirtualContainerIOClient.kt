@@ -13,7 +13,7 @@ class VirtualContainerIOClient(
     private val executor: Executor,
     fileManager: FileManager,
 ) : ContainerIOClient {
-    private val virtualRoot = fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath()
+    private val virtualRoot by lazy { fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath() }
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =
         Result.success(executor.runCommandOnHost(null, commands.addFirst("pkexec")))
