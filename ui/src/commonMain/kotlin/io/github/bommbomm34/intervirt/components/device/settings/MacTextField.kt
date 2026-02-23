@@ -9,7 +9,7 @@ import io.github.bommbomm34.intervirt.data.ViewDevice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun MACTextField(device: ViewDevice.Computer) {
+fun MacTextField(device: ViewDevice.Computer) {
     OutlinedTextField(
         value = device.mac,
         onValueChange = {}, // MAC address can't be changed once set

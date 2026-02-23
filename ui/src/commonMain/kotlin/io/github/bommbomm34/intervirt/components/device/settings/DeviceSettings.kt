@@ -28,7 +28,7 @@ fun DeviceSettings(
         Column {
             CloseButton(onClose)
             GeneralSpacer()
-            GeneralDeviceSettings(device) { onClose() }
+            GeneralDeviceSettings(device, onClose)
             GeneralSpacer()
             if (device is ViewDevice.Computer) {
                 // All other device settings except port forwardings
@@ -43,7 +43,7 @@ fun DeviceSettings(
                         GeneralSpacer()
                         Ipv6TextField(device)
                         GeneralSpacer()
-                        MACTextField(device)
+                        MacTextField(device)
                         GeneralSpacer()
                         InternetEnabledOption(device)
                         GeneralSpacer()
