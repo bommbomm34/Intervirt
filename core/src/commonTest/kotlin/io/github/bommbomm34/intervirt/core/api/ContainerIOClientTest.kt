@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import kotlinx.coroutines.test.runTest
@@ -21,6 +22,7 @@ import kotlin.io.path.writeText
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class ContainerIOClientTest : KoinTest {
@@ -63,20 +65,29 @@ class ContainerIOClientTest : KoinTest {
     }
 
     @Test
-    fun getIOClient() = runTest {
+    fun testGetIOClient() = runTest {
         val device = createDevice()
         deviceManager.getIOClient(device).getOrThrow()
     }
 
     @Test
-    fun writeFile() = runTest {
+    fun testExec() = runTest {
+        val device = createDevice()
+        val ioClient = deviceManager.getIOClient(device).getOrThrow()
+        val res = ioClient.exec(listOf("echo", "Hello World")).getOrThrow().getCommandResult()
+        assertEquals(0, res.statusCode)
+        assertContains(res.output, "Hello World")
+    }
+
+    @Test
+    fun testWriteFile() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         ioClient.getTestPath().writeText("Hello Test!")
     }
 
     @Test
-    fun raedFile() = runTest {
+    fun testReadFile() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         val path = ioClient.getTestPath()
@@ -85,7 +96,7 @@ class ContainerIOClientTest : KoinTest {
     }
 
     @Test
-    fun closeClient() = runTest {
+    fun testCloseClient() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         ioClient.close().getOrThrow()
