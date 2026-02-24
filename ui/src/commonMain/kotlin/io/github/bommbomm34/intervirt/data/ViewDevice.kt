@@ -30,6 +30,7 @@ sealed class ViewDevice {
         val image by mutableStateOf(device.image)
         var ipv4 by mutableStateOf(device.ipv4)
         var ipv6 by mutableStateOf(device.ipv6)
+        var running by mutableStateOf(false) // Not inherited by Device.Computer
         val mac = device.mac
         var internetEnabled by mutableStateOf(device.internetEnabled)
         val portForwardings =

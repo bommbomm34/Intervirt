@@ -3,10 +3,12 @@ package io.github.bommbomm34.intervirt.components.device.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
@@ -37,7 +39,12 @@ fun DeviceSettings(
                     Column {
                         OSField(device)
                         GeneralSpacer()
-                        IOOptions(device)
+                        // IOOptions and start/stop button
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IOOptions(device)
+                            GeneralSpacer()
+                            ComputerStartButton(device)
+                        }
                         GeneralSpacer()
                         Ipv4TextField(device)
                         GeneralSpacer()
