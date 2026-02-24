@@ -1,0 +1,24 @@
+on:
+  push:
+
+jobs:
+  test:
+    name: Test All
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'jetbrains'
+          java-version: '21'
+      - name: Setup Cargo
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
+      - name: All Tests
+        run: ./gradlew :core:allTests
