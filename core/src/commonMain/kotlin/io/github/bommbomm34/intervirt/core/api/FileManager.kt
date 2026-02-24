@@ -34,18 +34,11 @@ class FileManager(
     private val dataDir = appEnv.DATA_DIR
 
     suspend fun init() = withContext(Dispatchers.IO) {
+        logger.debug { "Initializing FileManager" }
         dataDir.mkdir()
         dataDir.createFileInDirectory("qemu", true)
         dataDir.createFileInDirectory("disk", true)
         dataDir.createFileInDirectory("cache", true)
-    }
-
-    suspend fun newFile(path: String) = withContext(Dispatchers.IO) {
-        dataDir.createFileInDirectory(path)
-    }
-
-    suspend fun removeFile(path: String) = withContext(Dispatchers.IO) {
-        dataDir.createFileInDirectory(path)
     }
 
     fun getFile(name: String) = File(dataDir.absolutePath + File.separator + name)
@@ -88,26 +81,6 @@ class FileManager(
                 }
             }
         }.flowOn(Dispatchers.IO)
-
-    fun uploadFile(url: String, file: File): Flow<ResultProgress<Unit>> = flow {
-        client.post(url) {
-            setBody(
-                MultiPartFormDataContent(
-                    formData {
-                        append(
-                            "file",
-                            InputProvider { file.inputStream().asInput().buffered() },
-                        )
-                    },
-                    boundary = "FileUploadBoundary",
-                ),
-            )
-            onUpload { bytesSentTotal, contentLength ->
-                val progress = contentLength?.let { bytesSentTotal / it.toFloat() }
-                emit(ResultProgress.proceed(progress ?: 0f))
-            }
-        }
-    }
 
     fun getQemuFile(): File {
         return when (getOS()) {
