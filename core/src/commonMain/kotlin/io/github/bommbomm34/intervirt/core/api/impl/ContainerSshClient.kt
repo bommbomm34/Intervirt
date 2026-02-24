@@ -40,6 +40,7 @@ class ContainerSshClient(
     private val logger = KotlinLogging.logger { }
 
     suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+        logger.debug { "Initializing ContainerSshClient" }
         sshClient.start()
         session = sshClient.connect(USERNAME, HOST, port).verify().session
         session.auth().verify()
@@ -108,6 +109,7 @@ class ContainerSshClient(
     }
 
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
+        logger.debug { "Closing ContainerSshClient" }
         session.close()
         sshClient.stop()
         fs.close()
