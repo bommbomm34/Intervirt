@@ -60,7 +60,7 @@ class AppState(configuration: IntervirtConfiguration) {
             it.printStackTrace()
             openDialog(
                 severity = Severity.ERROR,
-                message = it.localizedMessage,
+                message = it.parseException().message,
                 copyMessage = it.stackTraceToString(),
             )
         }

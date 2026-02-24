@@ -7,10 +7,10 @@ import java.io.IOException
 
 data class ExceptionInfo(
     val message: String,
-    val exception: Exception,
+    val exception: Throwable,
 )
 
-suspend fun Exception.parseException(): ExceptionInfo {
+suspend fun Throwable.parseException(): ExceptionInfo {
     val internalError = getString(Res.string.internal_error_occurred, localizedMessage)
     val msg = when (this) {
         is IOException -> getString(Res.string.io_error_occurred, localizedMessage)
