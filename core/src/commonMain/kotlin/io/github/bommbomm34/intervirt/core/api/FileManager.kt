@@ -8,20 +8,16 @@ import io.github.bommbomm34.intervirt.core.exceptions.ZipExtractionException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
-import io.ktor.utils.io.streams.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.io.asSink
-import kotlinx.io.buffered
 import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.util.zip.ZipException
@@ -99,11 +95,7 @@ class FileManager(
             Result.success(Unit)
         } catch (e: ZipException) {
             logger.error { "Error occurred while extracting ${file.name}: ${e.message}" }
-            Result.failure(
-                ZipExtractionException(
-                    "Error during ZIP extraction of ${file.name}: ${e.localizedMessage}",
-                ),
-            )
+            Result.failure(ZipExtractionException(file.name, e.localizedMessage))
         }
     }
 }

@@ -1,3 +1,3 @@
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class NotSupportedOperationException : Exception()
+class NotSupportedOperationException : AgentException()

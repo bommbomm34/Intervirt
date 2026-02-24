@@ -156,4 +156,11 @@
     <string name="update">Update</string>
     <string name="cancel">Cancel</string>
     <string name="pick_color">Pick color</string>
+    <string name="io_error_occurred">An I/O error occurred: %1$s</string>
+    <string name="agent_timeout_occurred">An Agent timeout occurred: %1$s</string>
+    <string name="container_command_failed">Failure during running a container command: %1$s</string>
+    <string name="deprecated_agent">Agent is deprecated. Try to update the guest system.</string>
+    <string name="received_mail_is_invalid">The received mail is invalid: %1$s</string>
+    <string name="internal_error_occurred">An internal error occurred (a restart might fix it): %1$s</string>
+    <string name="undefined_error_occurred">An undefined error occurred: %1$s</string>
 </resources>
