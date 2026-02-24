@@ -9,6 +9,7 @@ import io.github.bommbomm34.intervirt.core.data.agent.commandBody
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.result
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.withCatchingContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -71,15 +72,28 @@ class AgentClient(
 
     override suspend fun stopContainer(id: String): Result<Unit> = justSend(RequestBody.StopContainer(id))
 
-    override fun wipe(): Flow<ResultProgress<Unit>> = flowSend("wipe".commandBody())
+    override fun wipe(): Flow<ResultProgress<Unit>> {
+        logger.debug { "Wiping guest" }
+        return flowSend("wipe".commandBody())
+    }
 
-    override fun update(): Flow<ResultProgress<Unit>> = flowSend("update".commandBody())
+    override fun update(): Flow<ResultProgress<Unit>> {
+        logger.debug { "Updating guest" }
+        return flowSend("update".commandBody())
+    }
 
-    override suspend fun shutdown(): Result<Unit> = justSend("shutdown".commandBody())
+    override suspend fun shutdown(): Result<Unit> {
+        logger.debug { "Shutting down guest" }
+        return justSend("shutdown".commandBody())
+    }
 
-    override suspend fun reboot(): Result<Unit> = justSend("reboot".commandBody())
+    override suspend fun reboot(): Result<Unit> {
+        logger.debug { "Rebooting guest" }
+        return justSend("reboot".commandBody())
+    }
 
     override suspend fun getVersion(): Result<String> {
+        logger.debug { "Retrieving version of guest" }
         val response = send<ResponseBody.Version>("version".commandBody())
         return response.map {
             val res = it.firstOrNull()!!
@@ -181,11 +195,9 @@ class AgentClient(
         return Result.success(Unit)
     }
 
-    override suspend fun close() = withContext(Dispatchers.IO) {
-        runSuspendingCatching {
-            listenJob?.cancel()
-            session?.close()
-            Unit
-        }
+    override suspend fun close() = withCatchingContext(Dispatchers.IO) {
+        listenJob?.cancel()
+        session?.close()
+        Unit
     }
 }
