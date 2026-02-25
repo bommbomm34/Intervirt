@@ -148,7 +148,7 @@ class MailClientManager(
 
     suspend fun saveCredentials(details: MailConnectionDetails) = runSuspendingCatching {
         store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.MAIL_PASSWORD, details.password.encodeToByteArray()).getOrThrow()
+        store.set(IntervirtOSStore.Accessor.MAIL_PASSWORD, details.password).getOrThrow()
         store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress).getOrThrow()
         store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress).getOrThrow()
         store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety).getOrThrow()
@@ -159,7 +159,7 @@ class MailClientManager(
         smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS],
         imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS],
         username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
-        password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD].decodeToString(),
+        password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD],
         smtpSafety = store[IntervirtOSStore.Accessor.SMTP_SAFETY],
         imapSafety = store[IntervirtOSStore.Accessor.IMAP_SAFETY],
     )

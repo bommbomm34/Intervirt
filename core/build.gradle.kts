@@ -15,9 +15,6 @@ kotlin {
             implementation(libs.ktor.client.websockets)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.koin.core)
-            implementation(libs.ksafe)
-            implementation(libs.cryptography.core)
-            implementation(libs.cryptography.provider.optimal)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.serialization)
         }

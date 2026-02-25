@@ -54,6 +54,10 @@ compose.desktop {
     application {
         mainClass = "io.github.bommbomm34.intervirt.MainKt"
 
+        // Necessary because of need of sun.misc.Unsafe
+        // TODO: Find the legacy library which uses sun.misc.Unsafe
+        jvmArgs("--add-opens", "java.base/sun.misc=ALL-UNNAMED")
+
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage, TargetFormat.Pkg)
             packageName = "io.github.bommbomm34.intervirt"

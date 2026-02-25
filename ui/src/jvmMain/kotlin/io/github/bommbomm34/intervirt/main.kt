@@ -15,7 +15,6 @@ import io.github.bommbomm34.intervirt.components.dialogs.Dialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
-import io.github.bommbomm34.intervirt.core.api.SecretProvider
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
@@ -59,10 +58,6 @@ fun main() = application {
                 },
             )
             setDefaultExceptionHandler()
-        }
-        // Initialize SecretProvider
-        CatchingLaunchedEffect {
-            SecretProvider.init().getOrThrow()
         }
         density = LocalDensity.current
         // Main Window

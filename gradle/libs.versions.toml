@@ -14,7 +14,6 @@ docker-java = "3.7.0"
 filekit = "0.12.0"
 gobley = "0.3.7"
 jakarta-mail = "2.0.2"
-jediterm = "3.63"
 jna = "5.18.1"
 koin = "4.1.1"
 kommand = "2.3.0"
@@ -51,8 +50,6 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons" }
 compose-table = { module = "io.github.windedge.table:table-m3", version.ref = "compose-table" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
-cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography" }
-cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptography" }
 docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
 docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
