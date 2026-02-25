@@ -7,6 +7,9 @@ on:
         type: string
         description: Version
 
+permissions:
+  contents: write
+
 jobs:
   build-linux:
     name: Build Linux
@@ -64,3 +67,26 @@ jobs:
           path: |
             ui/build/compose/binaries/main/exe/*.exe
           overwrite: true
+
+  publish:
+    name: Publish packages
+    runs-on: ubuntu-latest
+    needs:
+      - build-windows
+      - build-linux
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          name: Release v${{ github.events.inputs.version }}
+          body_path: CHANGELOG.md
+          make_latest: true
+          files: |
+            intervirt-linux/deb/*.deb
+            intervirt-linux/rpm/*.rpm
+            intervirt-windows/*.exe
