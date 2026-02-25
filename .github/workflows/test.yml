@@ -1,5 +1,15 @@
+name: Test All
 on:
   push:
+    paths:
+      - '**.kt'
+      - '**.rs'
+      - '**.toml'
+      - '**.kts'
+      - '**.xml'
+      - '**.jar'
+      - '**.properties'
+      - 'incus/intervirt-os.yaml'
 
 jobs:
   test:
