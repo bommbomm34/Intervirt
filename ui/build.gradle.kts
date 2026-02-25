@@ -57,7 +57,23 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage, TargetFormat.Pkg)
             packageName = "io.github.bommbomm34.intervirt"
-            packageVersion = "1.0.0"
+            packageVersion = "0.0.1"
+
+            windows {
+                iconFile.set(project.file("metadata/icon.ico"))
+
+                // Platform-specific
+                perUserInstall = true
+                dirChooser = true
+            }
+
+            linux {
+                iconFile.set(project.file("metadata/icon.png"))
+
+                // Platform-specific
+                packageName = "intervirt"
+                debMaintainer = "bommbomm34@perhof.org"
+            }
         }
     }
 }
