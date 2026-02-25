@@ -55,7 +55,7 @@ compose.desktop {
         mainClass = "io.github.bommbomm34.intervirt.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage, TargetFormat.Pkg)
+            targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
             packageName = "io.github.bommbomm34.intervirt"
             packageVersion = "0.0.1"
 
