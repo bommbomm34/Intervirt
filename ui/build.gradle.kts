@@ -31,7 +31,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.coil.compose)
-            implementation(projects.webview)
             implementation(libs.bossterm.compose)
             implementation(libs.compose.table)
             implementation(libs.coil.network.ktor3)
