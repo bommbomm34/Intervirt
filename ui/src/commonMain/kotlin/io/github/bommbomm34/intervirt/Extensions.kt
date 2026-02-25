@@ -23,7 +23,10 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.utils.io.CancellationException
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
+import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
+import io.ktor.utils.io.*
 import org.koin.compose.koinInject
 import java.awt.datatransfer.StringSelection
 import java.net.ServerSocket
@@ -110,3 +113,9 @@ suspend fun Clipboard.copyToClipboard(text: String) {
 }
 
 internal suspend fun Res.readString(path: String) = readBytes(path).decodeToString()
+
+@Composable
+fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileSaverLauncher(
+    dialogSettings = FileKitDialogSettings.createDefault(),
+    onResult = onResult,
+)

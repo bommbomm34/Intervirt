@@ -22,11 +22,11 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
+import io.github.bommbomm34.intervirt.rememberFileSaverLauncher
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import io.github.vinceglb.filekit.readString
 import io.github.vinceglb.filekit.writeString
 import kotlinx.coroutines.Dispatchers
