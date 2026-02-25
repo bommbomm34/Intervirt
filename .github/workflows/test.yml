@@ -4,7 +4,7 @@ on:
     paths:
       - '**.kt'
       - '**.rs'
-      - '**.toml'
+      - 'gradle/libs.versions.toml'
       - '**.kts'
       - '**.xml'
       - '**.jar'
