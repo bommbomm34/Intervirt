@@ -61,7 +61,7 @@ compose.desktop {
             description = "Rootless educational software for studying networks"
             copyright = "© 2026 bommbomm34. Licensed under GNU General Public License 3"
             vendor = "bommbomm34"
-            licenseFile.set(project.file("LICENSE"))
+            licenseFile.set(project.file("../LICENSE"))
 
             windows {
                 iconFile.set(project.file("metadata/icon.ico"))
