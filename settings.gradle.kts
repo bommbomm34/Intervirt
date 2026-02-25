@@ -25,7 +25,6 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/")
     }
 }
 
@@ -36,4 +35,3 @@ plugins {
 include(":ui")
 include(":core")
 include(":webview")
-include("secret")
