@@ -24,6 +24,7 @@ data class AppEnv(
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
     }
+    private val flushers = mutableSetOf<() -> Unit>()
 
     var DEBUG_ENABLED: Boolean by delegate(false)
 
@@ -118,6 +119,8 @@ data class AppEnv(
         custom()
     }
 
+    fun flush() = flushers.forEach { it() }
+
     @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
     private inline fun <reified T : Any, R> delegate(
         default: T,
@@ -125,21 +128,32 @@ data class AppEnv(
         crossinline deserializer: (T) -> R,
     ): ReadWriteProperty<AppEnv, R> =
         object : ReadWriteProperty<AppEnv, R> {
+            private var name: String? = null
             private var value: T? = null
 
+            init {
+                flushers.add(::flush)
+            }
+
             override operator fun getValue(thisRef: AppEnv, property: KProperty<*>): R {
+                name = property.name
                 if (value == null) value = getVar(property.name)
                 return deserializer(value!!)
             }
 
             override operator fun setValue(thisRef: AppEnv, property: KProperty<*>, value: R) {
+                name = property.name
                 logger.debug { "Setting ${property.name} to $value" }
                 val serialized = serializer(value)
-                settings.encodeValue(
-                    key = property.name,
-                    value = serialized,
-                )
+                if (autoFlush) flush()
                 this.value = serialized
+            }
+
+            fun flush() = name?.let {
+                settings.encodeValue(
+                    key = it,
+                    value = value,
+                )
             }
 
             private fun getVar(name: String): T {
