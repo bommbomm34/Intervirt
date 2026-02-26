@@ -18,7 +18,7 @@ data class Image(
     val description: String,
     val icon: String,
     val iconSource: String,
-    val descriptionSource: String = "Wikipedia",
+    val descriptionSource: String,
 ) {
     val fullName = "$name/$tag"
 

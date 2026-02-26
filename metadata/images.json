@@ -1,0 +1,34 @@
+[
+  {
+    "name": "intervirtos",
+    "tag": "current",
+    "description": "IntervirtOS is a user-friendly operating system optimized for Intervirt. It contains some useful networking tools and lots of client and server software for experimenting.",
+    "icon": "https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/ui/metadata/icon.svg",
+    "iconSource": "bommbomm34",
+    "descriptionSource": "bommbomm34"
+  },
+  {
+    "name": "debian",
+    "tag": "trixie",
+    "description": "Debian is an operating system developed by the Debian project established by Ian Murdock in August 1993.",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Openlogo-debianV2.svg/640px-Openlogo-debianV2.svg.png",
+    "iconSource": "Debian Project",
+    "descriptionSource": "Wikipedia"
+  },
+  {
+    "name": "fedora",
+    "tag": "43",
+    "description": "Fedora Linux is a free and open-source Linux distribution developed by the Fedora Project. It was originally developed in 2003 as a continuation of the Red Hat Linux project.",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Fedora_icon_%282021%29.svg/640px-Fedora_icon_%282021%29.svg.png",
+    "iconSource": "Red Hat, Inc.",
+    "descriptionSource": "Wikipedia"
+  },
+  {
+    "name": "archlinux",
+    "tag": "current",
+    "description": "Arch Linux is an open source, rolling release Linux distribution. Arch Linux is kept up-to-date by regularly updating the individual pieces of software that it comprises.",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Arch_Linux_%22Crystal%22_icon.svg/640px-Arch_Linux_%22Crystal%22_icon.svg.png",
+    "iconSource": "Judd Vinet, Aaron Griffin and Levente Polyák",
+    "descriptionSource": "Wikipedia"
+  }
+]
