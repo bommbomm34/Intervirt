@@ -19,13 +19,14 @@ class AppState(configuration: IntervirtConfiguration) {
     var isCtrlPressed by mutableStateOf(false)
     var mousePosition by mutableStateOf(Offset.Zero)
     val currentFile: PlatformFile? by mutableStateOf(null)
-    var currentScreenIndex by mutableStateOf(0)
+    var currentScreenIndex by mutableStateOf(1)
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
     val statefulConf = ViewConfiguration(configuration)
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
+    var appEnvChangeKey by mutableStateOf(0)
 
     fun openDialog(
         severity: Severity,

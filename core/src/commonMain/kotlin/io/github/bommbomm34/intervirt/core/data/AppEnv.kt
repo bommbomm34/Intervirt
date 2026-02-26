@@ -17,6 +17,7 @@ data class AppEnv(
     private val settings: Settings,
     private val override: (String) -> String? = { null },
     private val autoFlush: Boolean = true,
+    private val onChange: () -> Unit = {},
     private val custom: AppEnv.() -> Unit = {},
 ) {
     private val logger = KotlinLogging.logger { }
@@ -25,6 +26,8 @@ data class AppEnv(
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
     }
     private val flushers = mutableSetOf<() -> Unit>()
+    private val onChanges = mutableMapOf<String, () -> Unit>()
+    private val cacheInvalidators = mutableSetOf<() -> Unit>()
 
     var DEBUG_ENABLED: Boolean by delegate(false)
 
@@ -110,7 +113,7 @@ data class AppEnv(
 
     internal var CURRENT_QEMU_HASH: String by delegate("")
 
-    var INTERVIRT_INSTALLED: Boolean by delegate(false)
+    var INSTALLED: Boolean by delegate(false)
     var IMAGES_URL: String by delegate("https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/metadata/images.json")
     var ACCENT_COLOR: ULong by delegate(0xFF648042.toULong())
     var SMALL_FAB_SIZE: Int by delegate(32)
@@ -120,6 +123,10 @@ data class AppEnv(
     }
 
     fun flush() = flushers.forEach { it() }
+
+    fun addOnChange(name: String, block: () -> Unit) = onChanges.put(name, block)
+
+    fun invalidateCache() = cacheInvalidators.forEach { it() }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
     private inline fun <reified T : Any, R> delegate(
@@ -133,6 +140,7 @@ data class AppEnv(
 
             init {
                 flushers.add(::flush)
+                cacheInvalidators.add(::invalidateCache)
             }
 
             override operator fun getValue(thisRef: AppEnv, property: KProperty<*>): R {
@@ -147,6 +155,8 @@ data class AppEnv(
                 val serialized = serializer(value)
                 if (autoFlush) flush()
                 this.value = serialized
+                onChange()
+                onChanges[name]?.invoke()
             }
 
             fun flush() = name?.let {
@@ -154,6 +164,10 @@ data class AppEnv(
                     key = it,
                     value = value,
                 )
+            }
+
+            fun invalidateCache(){
+                value = null
             }
 
             private fun getVar(name: String): T {

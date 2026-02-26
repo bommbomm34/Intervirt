@@ -5,6 +5,7 @@ import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -30,6 +31,7 @@ import io.ktor.utils.io.*
 import org.koin.compose.koinInject
 import java.awt.datatransfer.StringSelection
 import java.net.ServerSocket
+import kotlin.reflect.KMutableProperty0
 
 fun String.versionCode() = replace(".", "").toInt()
 
@@ -67,7 +69,7 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
 @Composable
-fun AppEnv.isDarkMode() = DARK_MODE ?: isSystemInDarkTheme()
+fun AppEnv.isDarkMode() = state(::DARK_MODE).value ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
 
@@ -119,3 +121,10 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
     dialogSettings = FileKitDialogSettings.createDefault(),
     onResult = onResult,
 )
+
+@Composable
+fun <T> AppEnv.state(property: KMutableProperty0<T>): State<T> = remember {
+    val state = mutableStateOf(property.get())
+    addOnChange(property.name) { state.value = property.get() }
+    state
+}
