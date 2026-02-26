@@ -26,10 +26,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install fakeroot -y
       - name: Build .deb
         run: ./gradlew :ui:packageDeb
       - name: Build .rpm

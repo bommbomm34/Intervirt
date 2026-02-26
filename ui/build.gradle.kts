@@ -56,15 +56,16 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
-            packageName = "io.github.bommbomm34.intervirt"
+
+            packageName = "Intervirt"
             packageVersion = "0.0.1"
             description = "Rootless educational software for studying networks"
             copyright = "© 2026 bommbomm34. Licensed under GNU General Public License 3"
             vendor = "bommbomm34"
-            licenseFile.set(project.file("../LICENSE"))
+            licenseFile = project.file("../LICENSE")
 
             windows {
-                iconFile.set(project.file("metadata/icon.ico"))
+                iconFile = project.file("metadata/icon.ico")
 
                 // Platform-specific
                 perUserInstall = true
@@ -75,7 +76,7 @@ compose.desktop {
                 iconFile.set(project.file("metadata/icon.png"))
 
                 // Platform-specific
-                packageName = "intervirt"
+                appCategory = "Development"
                 debMaintainer = "bommbomm34@perhof.org"
             }
         }
