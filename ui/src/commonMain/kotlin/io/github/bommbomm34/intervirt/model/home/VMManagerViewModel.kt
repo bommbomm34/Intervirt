@@ -29,9 +29,13 @@ class VMManagerViewModel(
         }
     }
 
-    fun shutdown() {
-        viewModelScope.launch {
-            qemuClient.shutdownAlpine()
+    fun boot() {
+        viewModelScope.launchDialogCatching(appState) {
+            if (running){
+                qemuClient.shutdownAlpine()
+            } else {
+                qemuClient.bootAlpine().getOrThrow()
+            }
         }
     }
 
