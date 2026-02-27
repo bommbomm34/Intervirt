@@ -4,6 +4,8 @@ import androidx.compose.ui.unit.Density
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
+import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContainerViewModel
+import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
@@ -11,6 +13,7 @@ import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
 import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
 import io.github.bommbomm34.intervirt.model.setup.InstallationViewModel
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.viewModel
 import java.util.*
@@ -36,6 +39,8 @@ val intervirtOSViewModelsModule = module {
     viewModel<DnsResolverViewModel>()
     viewModel<MailClientViewModel>()
     viewModel<MailServerUserManagerViewModel>()
+    viewModel<DockerContainerViewModel>()
+    viewModel<SystemServiceViewModel>()
 }
 
 lateinit var density: Density

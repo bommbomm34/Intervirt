@@ -4,28 +4,22 @@ import androidx.compose.runtime.*
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
-import io.github.bommbomm34.intervirt.data.AppState
-import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun SystemServiceView(
     serviceName: String,
     serviceManager: SystemServiceManager,
 ) {
-    val scope = rememberCoroutineScope()
-    val appState = koinInject<AppState>()
+    val viewModel = koinViewModel<SystemServiceViewModel> { parametersOf(serviceName, serviceManager) }
     var running by remember { mutableStateOf(false) }
     CatchingLaunchedEffect {
         running = serviceManager.status(serviceName).getOrThrow().active
     }
-    PlayButton(running) {
-        scope.launch {
-            appState.runDialogCatching {
-                if (it) serviceManager.start(serviceName).getOrThrow()
-                else serviceManager.stop(serviceName).getOrThrow()
-                running = it
-            }
-        }
-    }
+    PlayButton(
+        playing = running,
+        onClick = viewModel::enable,
+    )
 }
