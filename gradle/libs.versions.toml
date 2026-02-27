@@ -15,7 +15,8 @@ filekit = "0.13.0"
 gobley = "0.3.7"
 jakarta-mail = "2.0.2"
 jna = "5.18.1"
-koin = "4.1.1"
+koin = "4.2.0-RC1"
+koin-plugin = "0.3.0"
 kommand = "2.3.0"
 kotlin = "2.3.10"
 kotlin-logging = "8.0.01"
@@ -56,8 +57,11 @@ filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref =
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 jakarta-mail = { module = "com.sun.mail:jakarta.mail", version.ref = "jakarta-mail" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-core-viewmodel = { module = "io.insert-koin:koin-core-viewmodel", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 kommand = { module = "com.kgit2:kommand", version.ref = "kommand" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
@@ -91,3 +95,4 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+koin-compiler = { id = "io.insert-koin.compiler.plugin", version.ref = "koin-plugin" }

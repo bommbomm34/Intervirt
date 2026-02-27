@@ -22,6 +22,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
+import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
 import io.github.bommbomm34.intervirt.rememberFileSaverLauncher
 import io.github.bommbomm34.intervirt.rememberLogger
 import io.github.vinceglb.filekit.PlatformFile
@@ -34,6 +35,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import java.awt.Desktop
 import java.net.URI
 
@@ -43,36 +46,7 @@ fun OptionDropdown(
     onConfChange: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val logger = rememberLogger("OptionDropdown")
-    val appEnv = koinInject<AppEnv>()
-    val guestManager = koinInject<GuestManager>()
-    val appState = koinInject<AppState>()
-    val configuration = koinInject<IntervirtConfiguration>()
-    val scope = rememberCoroutineScope()
-    val writeConf: (PlatformFile) -> Unit = { file ->
-        scope.launch {
-            file.writeString(Json.encodeToString(configuration))
-        }
-    }
-    val fileSaverLauncher = rememberFileSaverLauncher { file ->
-        if (file != null) writeConf(file)
-    }
-    val filePickerLauncher = rememberFilePickerLauncher(
-        type = FileKitType.File(extensions = listOf("ivrt")),
-    ) { file ->
-        if (file != null) {
-            scope.launch(Dispatchers.IO) {
-                val fileContent = file.readString()
-                val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
-                configuration.update(newConfiguration)
-                configuration.syncConfiguration(guestManager).collect {
-                    logger.info { it }
-                }
-                appState.statefulConf.update(ViewConfiguration(newConfiguration))
-                onConfChange()
-            }
-        }
-    }
+    val viewModel = koinViewModel<OptionDropdownViewModel> { parametersOf(onConfChange, onDismiss) }
     Column {
         DropdownMenu(
             expanded = expanded,
@@ -80,10 +54,7 @@ fun OptionDropdown(
         ) {
             // Open
             DropdownMenuItem(
-                onClick = {
-                    filePickerLauncher.launch()
-                    onDismiss()
-                },
+                onClick = viewModel::open,
                 text = {
                     IconText(
                         imageVector = Icons.Default.FileOpen,
@@ -93,14 +64,7 @@ fun OptionDropdown(
             )
             // Save
             DropdownMenuItem(
-                onClick = {
-                    val file = appState.currentFile // Copy delegated state variable
-                    if (file != null) writeConf(file) else fileSaverLauncher.launch(
-                        suggestedName = appEnv.SUGGESTED_FILENAME,
-                        extension = "ivrt",
-                    )
-                    onDismiss()
-                },
+                onClick = viewModel::save,
                 text = {
                     IconText(
                         imageVector = Icons.Default.Save,
@@ -110,13 +74,7 @@ fun OptionDropdown(
             )
             // Save As
             DropdownMenuItem(
-                onClick = {
-                    fileSaverLauncher.launch(
-                        suggestedName = appEnv.SUGGESTED_FILENAME,
-                        extension = "ivrt",
-                    )
-                    onDismiss()
-                },
+                onClick = viewModel::saveAs,
                 text = {
                     IconText(
                         imageVector = Icons.Default.SaveAs,
@@ -126,12 +84,7 @@ fun OptionDropdown(
             )
             // Update
             DropdownMenuItem(
-                onClick = {
-                    appState.openDialog {
-                        Updater(::close)
-                    }
-                    onDismiss()
-                },
+                onClick = viewModel::update,
                 text = {
                     IconText(
                         imageVector = Icons.Default.Update,
@@ -141,7 +94,7 @@ fun OptionDropdown(
             )
             // Settings
             DropdownMenuItem(
-                onClick = { appState.currentScreenIndex = 2 },
+                onClick = viewModel::openSettings,
                 text = {
                     IconText(
                         imageVector = Icons.Default.Settings,
@@ -151,7 +104,7 @@ fun OptionDropdown(
             )
             // About
             DropdownMenuItem(
-                onClick = { appState.currentScreenIndex = 3 },
+                onClick = viewModel::openAbout,
                 text = {
                     IconText(
                         imageVector = Icons.Default.Info,
@@ -161,10 +114,7 @@ fun OptionDropdown(
             )
             // Help
             DropdownMenuItem(
-                onClick = {
-                    Desktop.getDesktop().browse(URI(HELP_URL))
-                    onDismiss()
-                },
+                onClick = viewModel::openHelp,
                 text = {
                     IconText(
                         imageVector = Icons.AutoMirrored.Filled.Help,

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.aboutLibraries)
     alias(libs.plugins.osdetector)
+    alias(libs.plugins.koin.compiler)
 }
 
 kotlin {
@@ -29,7 +30,10 @@ kotlin {
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
+            implementation(libs.koin.core.viewmodel)
             implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.annotations)
             implementation(libs.coil.compose)
             implementation(libs.bossterm.compose)
             implementation(libs.compose.table)
