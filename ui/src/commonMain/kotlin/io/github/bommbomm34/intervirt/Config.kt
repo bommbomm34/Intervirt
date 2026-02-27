@@ -3,6 +3,8 @@ package io.github.bommbomm34.intervirt
 import androidx.compose.ui.unit.Density
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
+import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
+import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
 import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
@@ -32,6 +34,8 @@ val uiModule = module {
 
 val intervirtOSViewModelsModule = module {
     viewModel<DnsResolverViewModel>()
+    viewModel<MailClientViewModel>()
+    viewModel<MailServerUserManagerViewModel>()
 }
 
 lateinit var density: Density
