@@ -18,28 +18,22 @@ import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.readablePercentage
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
 import io.github.bommbomm34.intervirt.rememberLogger
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun Updater(onClose: () -> Unit) {
-    val logger = rememberLogger("Updater")
-    val downloader = koinInject<Downloader>()
-    val appState = koinInject<AppState>()
-    val scope = rememberCoroutineScope()
-    val updates = remember { mutableStateListOf<Downloader.Component>() }
-    val applyUpdates = remember { mutableStateListOf<Downloader.Component>() }
-    CatchingLaunchedEffect {
-        updates.clear()
-        updates.addAll(downloader.checkUpdates().getOrThrow())
-    }
+    val viewModel = koinViewModel<UpdaterViewModel> { parametersOf(onClose) }
     CenterColumn {
-        updates.forEach { component ->
+        viewModel.updates.forEach { component ->
             NamedCheckbox(
-                checked = applyUpdates.contains(component),
+                checked = viewModel.applyUpdates.contains(component),
                 onCheckedChange = {
-                    if (it) applyUpdates.add(component) else applyUpdates.remove(component)
+                    if (it) viewModel.applyUpdates.add(component) else viewModel.applyUpdates.remove(component)
                 },
                 name = component.readableName,
             )
@@ -49,27 +43,7 @@ fun Updater(onClose: () -> Unit) {
     GeneralSpacer()
     // Update button
     Button(
-        onClick = {
-            scope.launchDialogCatching(appState) {
-                appState.openDialog {
-                    ProgressDialog(
-                        flow = downloader.upgrade(applyUpdates),
-                        onMessage = {
-                            val output = when (it) {
-                                is ResultProgress.Message<String> -> "Message ${it.message} with ${it.percentage.readablePercentage()}"
-                                is ResultProgress.Proceed<String> -> "Proceed ${it.percentage.readablePercentage()}"
-                                is ResultProgress.Result<String> -> {
-                                    onClose()
-                                    "Finished with: ${it.result}"
-                                }
-                            }
-                            logger.debug { output }
-                        },
-                        onClose = ::close,
-                    )
-                }
-            }
-        },
+        onClick = viewModel::update,
     ) {
         Text(stringResource(Res.string.update))
     }

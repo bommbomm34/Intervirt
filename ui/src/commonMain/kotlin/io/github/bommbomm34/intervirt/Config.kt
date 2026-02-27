@@ -4,6 +4,8 @@ import androidx.compose.ui.unit.Density
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
+import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
+import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
 import io.github.bommbomm34.intervirt.model.setup.InstallationViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -23,6 +25,8 @@ val uiModule = module {
     viewModel<OptionDropdownViewModel>()
     viewModel<SettingsViewModel>()
     viewModel<InstallationViewModel>()
+    viewModel<VMManagerViewModel>()
+    viewModel<UpdaterViewModel>()
 }
 
 lateinit var density: Density
