@@ -15,11 +15,11 @@ import org.koin.compose.koinInject
 
 @Composable
 fun AppConfiguration(appEnv: AppEnv) {
-    val vmShutdownTimeout by appEnv.state(appEnv::VM_SHUTDOWN_TIMEOUT)
-    val agentPort by appEnv.state(appEnv::AGENT_PORT)
-    val dataDir by appEnv.state(appEnv::DATA_DIR)
-    val language by appEnv.state(appEnv::LANGUAGE)
-    val accentColor by appEnv.state(appEnv::ACCENT_COLOR)
+    val vmShutdownTimeout by appEnv.state { ::VM_SHUTDOWN_TIMEOUT }
+    val agentPort by appEnv.state { ::AGENT_PORT }
+    val dataDir by appEnv.state { ::DATA_DIR }
+    val language by appEnv.state { ::LANGUAGE }
+    val accentColor by appEnv.state { ::ACCENT_COLOR }
     CenterColumn {
         IntegerTextField(
             value = vmShutdownTimeout.toInt(),

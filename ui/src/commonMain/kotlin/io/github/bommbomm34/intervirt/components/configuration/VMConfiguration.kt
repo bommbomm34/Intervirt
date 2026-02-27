@@ -14,9 +14,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun VMConfiguration(appEnv: AppEnv) {
-    val vmRam by appEnv.state(appEnv::VM_RAM)
-    val vmCpu by appEnv.state(appEnv::VM_CPU)
-    val vmEnableKvm by appEnv.state(appEnv::VM_ENABLE_KVM)
+    val vmRam by appEnv.state { ::VM_RAM }
+    val vmCpu by appEnv.state { ::VM_CPU }
+    val vmEnableKvm by appEnv.state { ::VM_ENABLE_KVM }
     CenterColumn {
         Text(stringResource(Res.string.vm_setup_introduction))
         GeneralSpacer()

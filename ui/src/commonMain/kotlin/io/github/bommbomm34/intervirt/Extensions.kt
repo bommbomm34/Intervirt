@@ -32,6 +32,7 @@ import org.koin.compose.koinInject
 import java.awt.datatransfer.StringSelection
 import java.net.ServerSocket
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty0
 
 fun String.versionCode() = replace(".", "").toInt()
 
@@ -69,7 +70,7 @@ val PointerMatcher.Companion.Secondary: PointerMatcher
     get() = PointerMatcher.mouse(PointerButton.Secondary)
 
 @Composable
-fun AppEnv.isDarkMode() = state(::DARK_MODE).value ?: isSystemInDarkTheme()
+fun AppEnv.isDarkMode() = state { ::DARK_MODE }.value ?: isSystemInDarkTheme()
 
 fun Dp.toPx() = density.run { toPx() }
 
@@ -123,7 +124,8 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
 )
 
 @Composable
-fun <T> AppEnv.state(property: KMutableProperty0<T>): State<T> = remember {
+fun <T> AppEnv.state(producer: AppEnv.() -> KProperty0<T>): State<T> = remember {
+    val property = producer()
     val state = mutableStateOf(property.get())
     addOnChange(property.name) { state.value = property.get() }
     state

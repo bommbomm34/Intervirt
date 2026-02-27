@@ -26,8 +26,8 @@ fun DiskUrlConfiguration(appEnv: AppEnv) {
     val scope = rememberCoroutineScope { Dispatchers.IO }
     val client = koinInject<HttpClient>()
     val appState = koinInject<AppState>()
-    val vmDiskUrl by appEnv.state(appEnv::VM_DISK_URL)
-    val vmDiskHashUrl by appEnv.state(appEnv::VM_DISK_HASH_URL)
+    val vmDiskUrl by appEnv.state { ::VM_DISK_URL }
+    val vmDiskHashUrl by appEnv.state { ::VM_DISK_HASH_URL }
     OutlinedTextField(
         value = vmDiskUrl,
         onValueChange = { appEnv.VM_DISK_URL = it },
