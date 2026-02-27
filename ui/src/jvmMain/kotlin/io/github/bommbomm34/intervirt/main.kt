@@ -32,7 +32,7 @@ import kotlin.system.exitProcess
 fun main() = application {
     KoinApplication(
         application = {
-            modules(coreModule, uiModule)
+            modules(coreModule, uiModule, intervirtOSViewModelsModule)
         },
     ) {
         val appEnv = koinInject<AppEnv>()

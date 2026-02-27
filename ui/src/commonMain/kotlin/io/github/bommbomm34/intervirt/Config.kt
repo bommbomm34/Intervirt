@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt
 
 import androidx.compose.ui.unit.Density
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
 import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
@@ -27,6 +28,10 @@ val uiModule = module {
     viewModel<InstallationViewModel>()
     viewModel<VMManagerViewModel>()
     viewModel<UpdaterViewModel>()
+}
+
+val intervirtOSViewModelsModule = module {
+    viewModel<DnsResolverViewModel>()
 }
 
 lateinit var density: Density

@@ -14,10 +14,13 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
+import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.rememberManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 val DNS_RECORD_TYPES = listOf(
     "A",
@@ -36,68 +39,44 @@ fun DnsResolver(
     osClient: IntervirtOSClient,
 ) {
     val dnsResolver = osClient.rememberManager(::DnsResolverManager)
-    val appEnv = koinInject<AppEnv>()
-    val appState = koinInject<AppState>()
-    var domain by remember { mutableStateOf("perhof.org") }
-    var expanded by remember { mutableStateOf(false) }
-    var dnsRecordType by remember { mutableStateOf(DNS_RECORD_TYPES[0]) }
-    var dnsServer by remember { mutableStateOf(appEnv.DEFAULT_DNS_SERVER) }
-    var reverseLookup by remember { mutableStateOf(false) }
-    val records = remember { mutableStateListOf<DnsRecord>() }
-    val scope = rememberCoroutineScope()
+    val viewModel = koinViewModel<DnsResolverViewModel> { parametersOf(dnsResolver) }
     AlignedBox(Alignment.Center) {
         CenterColumn {
             OutlinedTextField(
-                value = domain,
-                onValueChange = { domain = it },
+                value = viewModel.domain,
+                onValueChange = { viewModel.domain = it },
                 label = { Text(stringResource(Res.string.domain)) },
             )
             GeneralSpacer()
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
+                expanded = viewModel.expanded,
+                onDismissRequest = { viewModel.expanded = false },
             ) {
                 DNS_RECORD_TYPES.forEach { type ->
                     DropdownMenuItem(
-                        onClick = { dnsRecordType = type },
-                        text = { Text(dnsRecordType) },
+                        onClick = { viewModel.dnsRecordType = type },
+                        text = { Text(viewModel.dnsRecordType) },
                     )
                 }
             }
             GeneralSpacer()
             OutlinedTextField(
-                value = dnsServer,
-                onValueChange = { dnsServer = it },
+                value = viewModel.dnsServer,
+                onValueChange = { viewModel.dnsServer = it },
                 label = { Text(stringResource(Res.string.dns_server)) },
             )
             GeneralSpacer()
             NamedCheckbox(
-                checked = reverseLookup,
-                onCheckedChange = { reverseLookup = it },
+                checked = viewModel.reverseLookup,
+                onCheckedChange = { viewModel.reverseLookup = it },
                 name = stringResource(Res.string.reverse_lookup),
             )
             GeneralSpacer()
-            Button(
-                onClick = {
-                    records.clear()
-                    scope.launch {
-                        appState.runDialogCatching {
-                            records.addAll(
-                                dnsResolver.lookupDns(
-                                    name = domain,
-                                    type = dnsRecordType,
-                                    nameserver = dnsServer,
-                                    reverse = reverseLookup,
-                                ).getOrThrow(),
-                            )
-                        }
-                    }
-                },
-            ) {
+            Button(onClick = viewModel::lookup) {
                 Text(stringResource(Res.string.lookup))
             }
             GeneralSpacer()
-            DnsRecordsTable(records)
+            DnsRecordsTable(viewModel.records)
         }
     }
 }
