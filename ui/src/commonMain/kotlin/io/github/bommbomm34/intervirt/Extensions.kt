@@ -5,7 +5,6 @@ import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -23,6 +22,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedMa
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.state
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
@@ -31,8 +31,6 @@ import io.ktor.utils.io.*
 import org.koin.compose.koinInject
 import java.awt.datatransfer.StringSelection
 import java.net.ServerSocket
-import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.KProperty0
 
 fun String.versionCode() = replace(".", "").toInt()
 
@@ -122,11 +120,3 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
     dialogSettings = FileKitDialogSettings.createDefault(),
     onResult = onResult,
 )
-
-@Composable
-fun <T> AppEnv.state(producer: AppEnv.() -> KProperty0<T>): State<T> = remember {
-    val property = producer()
-    val state = mutableStateOf(property.get())
-    addOnChange(property.name) { state.value = property.get() }
-    state
-}

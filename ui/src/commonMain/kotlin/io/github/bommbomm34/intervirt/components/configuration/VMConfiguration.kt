@@ -9,7 +9,7 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.state
+import io.github.bommbomm34.intervirt.data.state
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
