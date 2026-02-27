@@ -19,21 +19,17 @@ import io.github.bommbomm34.intervirt.components.configuration.DebugOptions
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun Settings() {
+    val viewModel = koinViewModel<SettingsViewModel>()
     val appState = koinInject<AppState>()
+    val appEnv = koinInject<AppEnv>()
     val windowSize = appState.windowState.size
-    var changed by remember { mutableStateOf(false) }
-    val baseAppEnv = koinInject<AppEnv>()
-    val appEnv = remember {
-        baseAppEnv.copy(
-            autoFlush = false,
-            onChange = { changed = true },
-        )
-    }
     AlignedBox(Alignment.TopStart) {
         BackButton {
             appState.currentScreenIndex = 1
@@ -45,17 +41,13 @@ fun Settings() {
                 .size(windowSize * 0.8f)
                 .verticalScroll(rememberScrollState()),
         ) {
-            AppConfiguration(appEnv)
+            AppConfiguration(viewModel.appEnv)
             GeneralSpacer()
-            VMConfiguration(appEnv)
+            VMConfiguration(viewModel.appEnv)
             GeneralSpacer()
             Button(
-                onClick = {
-                    appEnv.flush()
-                    baseAppEnv.invalidateCache()
-                    appState.appEnvChangeKey++
-                },
-                enabled = changed,
+                onClick = viewModel::saveChanges,
+                enabled = viewModel.changed,
             ) {
                 Text(stringResource(Res.string.save_changes))
             }

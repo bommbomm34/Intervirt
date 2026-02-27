@@ -2,7 +2,9 @@ package io.github.bommbomm34.intervirt
 
 import androidx.compose.ui.unit.Density
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
+import io.github.bommbomm34.intervirt.model.setup.InstallationViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.viewModel
@@ -19,6 +21,8 @@ val AVAILABLE_LANGUAGES = listOf(
 val uiModule = module {
     singleOf(::AppState)
     viewModel<OptionDropdownViewModel>()
+    viewModel<SettingsViewModel>()
+    viewModel<InstallationViewModel>()
 }
 
 lateinit var density: Density

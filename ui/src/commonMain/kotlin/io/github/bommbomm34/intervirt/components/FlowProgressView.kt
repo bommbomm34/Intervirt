@@ -12,7 +12,7 @@ import kotlinx.coroutines.job
 fun <T> FlowProgressView(
     flow: Flow<ResultProgress<T>>,
     onJobChange: ((Job?) -> Unit),
-    onMessage: ((ResultProgress<T>) -> Unit)?,
+    onMessage: ((ResultProgress<T>) -> Unit)? = null,
 ) {
     val defaultMessageColor = MaterialTheme.colorScheme.onBackground
     var message by remember { mutableStateOf("") }
