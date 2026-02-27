@@ -28,55 +28,30 @@ import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailListView
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
+import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
 import io.github.bommbomm34.intervirt.rememberManager
 import io.github.bommbomm34.intervirt.rememberProxyManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MailClient(
     osClient: IntervirtOSClient,
 ) {
-    val appState = koinInject<AppState>()
     val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
     val client = osClient.rememberManager(::MailClientManager)
     val proxyClient = rememberProxyManager(appEnv, deviceManager, osClient)
-    val mails = remember { mutableStateListOf<Mail>() }
-    var proxyUrl: Address? by remember { mutableStateOf(null) }
-    var initialized by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    // Get proxy
-    CatchingLaunchedEffect {
-        proxyUrl = proxyClient.getProxyUrl().getOrThrow()
-    }
-    suspend fun loadMails() {
-        mails.clear()
-        mails.addAll(client.getMails().getOrThrow())
-    }
+    val viewModel = koinViewModel<MailClientViewModel> { parametersOf(client, proxyClient) }
 
-    fun openMailEditor(mail: Mail? = null) {
-        appState.openDialog {
-            MailEditor(
-                sender = client.mailUser!!,
-                mail = mail,
-                onCancel = ::close,
-            ) {
-                close()
-                scope.launch {
-                    appState.runDialogCatching {
-                        client.sendMail(it).getOrThrow()
-                    }
-                }
-            }
-        }
-    }
-    proxyUrl?.let { proxy ->
-        if (initialized) {
+    viewModel.proxyUrl?.let { proxy ->
+        if (viewModel.initialized) {
             // Send button
             AlignedBox(Alignment.BottomEnd) {
-                SendButton { openMailEditor() }
+                SendButton { viewModel.openMailEditor() }
             }
             CenterColumn {
                 Column(
@@ -87,13 +62,7 @@ fun MailClient(
                 ) {
                     // Refresh button
                     IconButton(
-                        onClick = {
-                            scope.launch {
-                                appState.runDialogCatching {
-                                    loadMails()
-                                }
-                            }
-                        },
+                        onClick = viewModel::loadMails,
                     ) {
                         GeneralIcon(
                             imageVector = Icons.Default.Refresh,
@@ -102,57 +71,10 @@ fun MailClient(
                     }
                 }
                 GeneralSpacer(2.dp)
-                MailListView(mails) {
-                    appState.openDialog {
-                        MailView(
-                            mail = it,
-                            onDelete = {
-                                close()
-                                appState.openDialog {
-                                    AcceptDialog(
-                                        message = stringResource(Res.string.sure_to_delete_mail),
-                                        onCancel = ::close,
-                                    ) {
-                                        close()
-                                        scope.launch {
-                                            appState.runDialogCatching {
-                                                client.deleteMail(it).getOrThrow()
-                                                mails.remove(it)
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            onReply = {
-                                close()
-                                scope.launch {
-                                    appState.runDialogCatching {
-                                        val mail = client.getReplyMail(it).getOrThrow()
-                                        openMailEditor(mail)
-                                    }
-                                }
-                            },
-                            onClose = ::close,
-                        )
-                    }
-                }
+                MailListView(viewModel.mails, viewModel::clickMail)
             }
         } else {
             var credentials: MailConnectionDetails? by remember { mutableStateOf(null) }
-            fun login(details: MailConnectionDetails, saveCredentials: Boolean) {
-                scope.launch {
-                    appState.runDialogCatching {
-                        client.init(
-                            mailConnectionDetails = details,
-                            proxy = proxy,
-                        ).getOrThrow()
-                        initialized = true
-                        loadMails()
-                        if (saveCredentials) client.saveCredentials(details).getOrThrow() else
-                            client.clearCredentials()
-                    }
-                }
-            }
 
             LaunchedEffect(Unit) {
                 credentials = client.loadCredentials()
@@ -165,16 +87,9 @@ fun MailClient(
                     && creds.password.isNotEmpty()
                 ) {
                     // Implicit login
-                    login(creds, true)
+                    viewModel.login(creds, true, proxy)
                 } else {
-                    appState.openDialog {
-                        MailClientLogin(
-                            credentials = creds,
-                        ) { details, saveCredentials ->
-                            close()
-                            login(details, saveCredentials)
-                        }
-                    }
+                    viewModel.newLogin(creds)
                 }
             }
         }
