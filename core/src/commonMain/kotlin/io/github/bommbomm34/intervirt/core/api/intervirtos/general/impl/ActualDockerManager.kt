@@ -43,6 +43,7 @@ class ActualDockerManager(
     private val logger = KotlinLogging.logger { }
 
     override suspend fun init(): Result<Unit> = catch {
+        logger.debug { "Initializing ActualDockerManager with host $host" }
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
             .withDockerHost(host)
             .withDockerTlsVerify(false)

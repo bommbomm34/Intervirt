@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.ClipEntry
@@ -23,6 +24,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedMa
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.syncConfiguration
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.data.AppState
@@ -35,6 +37,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import io.github.vinceglb.filekit.readString
 import io.ktor.utils.io.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import java.awt.datatransfer.StringSelection
@@ -98,14 +101,26 @@ fun rememberLogger(name: String) = remember { KotlinLogging.logger(name) }
 fun DockerBasedManager.initialize(): MutableState<Boolean> {
     val appState = koinInject<AppState>()
     val initialized = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     CatchingLaunchedEffect {
         appState.openDialog {
             ProgressDialog(
                 flow = init(),
                 onClose = ::close,
+                onMessage = { progress ->
+                    if (progress is ResultProgress.Result){
+                        progress.result.fold(
+                            onSuccess = { initialized.value = true },
+                            onFailure = {
+                                scope.launch {
+                                    appState.showExceptionDialog(it)
+                                }
+                            }
+                        )
+                    }
+                },
             )
         }
-        initialized.value = true
     }
     return initialized
 }
