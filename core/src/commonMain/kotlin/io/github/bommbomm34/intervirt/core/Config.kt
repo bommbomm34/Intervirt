@@ -1,19 +1,14 @@
 package io.github.bommbomm34.intervirt.core
 
-import com.russhwolf.settings.PreferencesSettings
 import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.*
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.serialization.kotlinx.*
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds
 import org.koin.dsl.module
-import java.util.prefs.Preferences
 
 
 const val CURRENT_VERSION = "0.0.1"

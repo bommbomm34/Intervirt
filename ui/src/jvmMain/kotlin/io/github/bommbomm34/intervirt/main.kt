@@ -49,7 +49,7 @@ fun main() = application {
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
         val configuration = koinInject<IntervirtConfiguration>()
-        val tempConfFile = remember { fileManager.getFile("temp.ivrt") }
+        val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
         if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
         LaunchedEffect(Unit) {
             // These things should be only called once

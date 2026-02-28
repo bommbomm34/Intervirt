@@ -82,6 +82,6 @@ infix fun Device.connect(other: Device) = when (this) {
     is Device.Computer if other is Device.Computer -> DeviceConnection.Computer(id, other.id)
     is Device.Switch if other is Device.Switch -> DeviceConnection.Switch(id, other.id)
     is Device.Switch if other is Device.Computer -> DeviceConnection.SwitchComputer(id, other.id)
-    is Device.Computer if other is Device.Switch -> DeviceConnection.SwitchComputer(id, other.id)
+    is Device.Computer if other is Device.Switch -> DeviceConnection.SwitchComputer(other.id, id)
     else -> error("Invalid connection of $this and $other")
 }
