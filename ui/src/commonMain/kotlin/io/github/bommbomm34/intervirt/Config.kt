@@ -8,6 +8,7 @@ import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContain
 import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
+import io.github.bommbomm34.intervirt.model.components.IOOptionsViewModel
 import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
 import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
 import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
@@ -28,11 +29,13 @@ val AVAILABLE_LANGUAGES = listOf(
 
 val uiModule = module {
     singleOf(::AppState)
+
     viewModel<OptionDropdownViewModel>()
     viewModel<SettingsViewModel>()
     viewModel<InstallationViewModel>()
     viewModel<VMManagerViewModel>()
     viewModel<UpdaterViewModel>()
+    viewModel<IOOptionsViewModel>()
 }
 
 val intervirtOSViewModelsModule = module {
