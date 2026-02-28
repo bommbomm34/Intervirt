@@ -15,112 +15,6 @@ data class IntervirtConfiguration(
     val devices: MutableList<Device> = mutableListOf(),
     val connections: MutableList<DeviceConnection> = mutableListOf(),
 ) {
-    fun syncConfiguration(guestManager: GuestManager): Flow<ResultProgress<Unit>> = flow {
-        guestManager.getVersion()
-            .onSuccess { version ->
-                if (version != CURRENT_VERSION) {
-                    emit(ResultProgress.failure(DeprecatedException()))
-                } else {
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = 0f,
-                            message = "Starting synchronisation...",
-                        ),
-                    )
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = 0f,
-                            message = "Wiping old data...",
-                        ),
-                    )
-                    guestManager.wipe().collect { emit(it.clone(percentage = it.percentage * 0.2f)) }
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = 0.2f,
-                            message = "Creating devices...",
-                        ),
-                    )
-                    devices.forEachIndexed { i, device ->
-                        if (device is Device.Computer) {
-                            val progress = 0.2f + (i.toFloat() / devices.size) * 0.6f
-                            emit(
-                                ResultProgress.proceed(
-                                    percentage = progress,
-                                    message = "Creating device ${device.name} with id ${device.id}",
-                                ),
-                            )
-                            guestManager.addContainer(
-                                id = device.id,
-                                initialIpv4 = device.ipv4,
-                                initialIpv6 = device.ipv6,
-                                mac = device.mac,
-                                internet = device.internetEnabled,
-                                image = device.image,
-                            )
-                            device.portForwardings.forEach { portForwarding ->
-                                emit(
-                                    ResultProgress.proceed(
-                                        percentage = progress,
-                                        message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
-                                    ),
-                                )
-                                guestManager.addPortForwarding(
-                                    device.id,
-                                    portForwarding.internalPort,
-                                    portForwarding.externalPort,
-                                    portForwarding.protocol,
-                                )
-                            }
-                        }
-                    }
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = 0.8f,
-                            message = "Connecting devices...",
-                        ),
-                    )
-
-                    connections.forEachIndexed { i, conn ->
-                        emit(
-                            ResultProgress.proceed(
-                                percentage = 0.8f + (i.toFloat() / connections.size) * 0.2f,
-                                message = "Connecting device ${conn.id1} with ${conn.id2}",
-                            ),
-                        )
-                        when (conn) {
-                            is DeviceConnection.Computer -> guestManager.connect(conn.id1, conn.id2)
-                            is DeviceConnection.Switch -> {
-                                val (switch1, switch2) = conn.getDevices(this@IntervirtConfiguration)
-                                val switch1ConnectedComputers = getConnectedComputers(switch1)
-                                getConnectedComputers(switch2).forEach { computer1 ->
-                                    switch1ConnectedComputers.forEach { computer2 ->
-                                        guestManager.connect(
-                                            computer1.id,
-                                            computer2.id,
-                                        )
-                                    }
-                                }
-                            }
-
-                            is DeviceConnection.SwitchComputer -> {
-                                val (switch, computer) = conn.getDevices(this@IntervirtConfiguration)
-                                getConnectedComputers(switch).forEach { guestManager.connect(it.id, computer.id) }
-                            }
-                        }
-                    }
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = 1f,
-                            message = "Synchronisation successfully completed",
-                        ),
-                    )
-                }
-            }
-            .onFailure {
-                emit(ResultProgress.failure(it))
-            }
-    }
-
     fun update(configuration: IntervirtConfiguration) {
         author = configuration.author
         devices.clear()
@@ -128,4 +22,110 @@ data class IntervirtConfiguration(
         connections.clear()
         connections.addAll(configuration.connections)
     }
+}
+
+fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultProgress<Unit>> = flow {
+    getVersion()
+        .onSuccess { version ->
+            if (version != CURRENT_VERSION) {
+                emit(ResultProgress.failure(DeprecatedException()))
+            } else {
+                emit(
+                    ResultProgress.proceed(
+                        percentage = 0f,
+                        message = "Starting synchronisation...",
+                    ),
+                )
+                emit(
+                    ResultProgress.proceed(
+                        percentage = 0f,
+                        message = "Wiping old data...",
+                    ),
+                )
+                wipe().collect { emit(it.clone(percentage = it.percentage * 0.2f)) }
+                emit(
+                    ResultProgress.proceed(
+                        percentage = 0.2f,
+                        message = "Creating devices...",
+                    ),
+                )
+                conf.devices.forEachIndexed { i, device ->
+                    if (device is Device.Computer) {
+                        val progress = 0.2f + (i.toFloat() / conf.devices.size) * 0.6f
+                        emit(
+                            ResultProgress.proceed(
+                                percentage = progress,
+                                message = "Creating device ${device.name} with id ${device.id}",
+                            ),
+                        )
+                        addContainer(
+                            id = device.id,
+                            initialIpv4 = device.ipv4,
+                            initialIpv6 = device.ipv6,
+                            mac = device.mac,
+                            internet = device.internetEnabled,
+                            image = device.image,
+                        )
+                        device.portForwardings.forEach { portForwarding ->
+                            emit(
+                                ResultProgress.proceed(
+                                    percentage = progress,
+                                    message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
+                                ),
+                            )
+                            addPortForwarding(
+                                device.id,
+                                portForwarding.internalPort,
+                                portForwarding.externalPort,
+                                portForwarding.protocol,
+                            )
+                        }
+                    }
+                }
+                emit(
+                    ResultProgress.proceed(
+                        percentage = 0.8f,
+                        message = "Connecting devices...",
+                    ),
+                )
+
+                conf.connections.forEachIndexed { i, conn ->
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = 0.8f + (i.toFloat() / conf.connections.size) * 0.2f,
+                            message = "Connecting device ${conn.id1} with ${conn.id2}",
+                        ),
+                    )
+                    when (conn) {
+                        is DeviceConnection.Computer -> connect(conn.id1, conn.id2)
+                        is DeviceConnection.Switch -> {
+                            val (switch1, switch2) = conn.getDevices(conf)
+                            val switch1ConnectedComputers = conf.getConnectedComputers(switch1)
+                            conf.getConnectedComputers(switch2).forEach { computer1 ->
+                                switch1ConnectedComputers.forEach { computer2 ->
+                                    connect(
+                                        computer1.id,
+                                        computer2.id,
+                                    )
+                                }
+                            }
+                        }
+
+                        is DeviceConnection.SwitchComputer -> {
+                            val (switch, computer) = conn.getDevices(conf)
+                            conf.getConnectedComputers(switch).forEach { connect(it.id, computer.id) }
+                        }
+                    }
+                }
+                emit(
+                    ResultProgress.proceed(
+                        percentage = 1f,
+                        message = "Synchronisation successfully completed",
+                    ),
+                )
+            }
+        }
+        .onFailure {
+            emit(ResultProgress.failure(it))
+        }
 }

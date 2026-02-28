@@ -23,6 +23,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedMa
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.syncConfiguration
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
@@ -139,6 +140,6 @@ suspend fun File.loadConf(
     val fileContent = readText()
     val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
     configuration.update(newConfiguration)
-    configuration.syncConfiguration(guestManager).collect()
+    guestManager.syncConfiguration(configuration).collect()
     appState.statefulConf.update(ViewConfiguration(newConfiguration))
 }

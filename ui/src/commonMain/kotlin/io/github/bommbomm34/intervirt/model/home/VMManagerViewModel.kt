@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.syncConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
@@ -49,7 +50,7 @@ class VMManagerViewModel(
     fun sync() {
         appState.openDialog {
             ProgressDialog(
-                flow = configuration.syncConfiguration(guestManager),
+                flow = guestManager.syncConfiguration(configuration),
                 onClose = ::close,
             )
         }
