@@ -27,6 +27,7 @@ class AppState(configuration: IntervirtConfiguration) {
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
     var appEnvChangeKey by mutableStateOf(0)
+    val images = mutableStateListOf<Image>()
 
     fun openDialog(
         severity: Severity,

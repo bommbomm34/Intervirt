@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.*
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.terminal_window_title
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.components.dialogs.Dialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
@@ -18,6 +19,7 @@ import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
 import io.github.vinceglb.filekit.FileKit
@@ -58,6 +60,10 @@ fun main() = application {
                 },
             )
             setDefaultExceptionHandler()
+        }
+        CatchingLaunchedEffect {
+            appState.images.clear()
+            appState.images.addAll(httpClient.getImages(appEnv.IMAGES_URL).getOrThrow())
         }
         density = LocalDensity.current
         key(appState.appEnvChangeKey){

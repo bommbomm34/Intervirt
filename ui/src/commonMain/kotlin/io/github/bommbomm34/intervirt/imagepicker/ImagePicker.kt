@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.data.getImages
 import io.ktor.client.*
@@ -21,23 +22,18 @@ fun ImagePicker(
     onDismiss: () -> Unit,
     onInstall: (Image) -> Unit,
 ) {
+    val appState = koinInject<AppState>()
     val appEnv = koinInject<AppEnv>()
-    val client = koinInject<HttpClient>()
-    val images = remember { mutableStateListOf<Image>() }
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
     AlignedBox(Alignment.TopStart) {
         CloseButton(onDismiss)
     }
-    CatchingLaunchedEffect {
-        images.clear()
-        images.addAll(client.getImages(appEnv.IMAGES_URL).getOrThrow())
-    }
     AlignedBox(Alignment.Center, 64.dp) {
         LazyVerticalGrid(
             columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE.dp * 1.5f),
         ) {
-            items(images) { image ->
+            items(appState.images) { image ->
                 ImageItem(image) {
                     showImageInfo = true
                     selectedImage = image
