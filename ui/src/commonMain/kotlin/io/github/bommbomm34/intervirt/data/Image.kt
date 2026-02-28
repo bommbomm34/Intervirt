@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
 import java.nio.file.Files
 import java.nio.file.Path
 
+private var images: List<Image>? = null
+
 @Serializable
 data class Image(
     val name: String,
@@ -24,13 +26,13 @@ data class Image(
 }
 
 suspend fun HttpClient.getImages(url: String): Result<List<Image>> = runSuspendingCatching {
-    if (url.startsWith("file:///")){
-        val text = Files.readString(Path.of(url.substringAfter("file:///")))
-        return@runSuspendingCatching defaultJson.decodeFromString(text)
+    if (images == null){
+        val text = if (url.startsWith("file:///")){
+            Files.readString(Path.of(url.substringAfter("file:///")))
+        } else get(url).bodyAsText()
+        images = defaultJson.decodeFromString(text)
     }
-    val text = get(url).bodyAsText()
-    println("Received: $text")
-    defaultJson.decodeFromString(text)
+    images!!
 }
 
 fun String.toReadableImage() = when {
