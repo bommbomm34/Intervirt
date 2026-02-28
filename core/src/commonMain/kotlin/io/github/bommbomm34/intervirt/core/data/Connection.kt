@@ -8,19 +8,14 @@ import kotlinx.serialization.Serializable
  * This class represents a logical connection between two devices.
  * Intervirt Agent will only receive connections that are *computer to computer*
  *
- * @param device1 first device
- * @property device2 second device
+ * @param id1 first device id
+ * @property id2 second device id
  * @constructor Creates a connection
  */
 @Serializable
 sealed class DeviceConnection {
-    abstract val configuration: IntervirtConfiguration
     abstract val id1: String
     abstract val id2: String
-    val device1: Device
-        get() = id1.toDevice(configuration)
-    val device2: Device
-        get() = id2.toDevice(configuration)
 
     /**
      * Connection between two switches
@@ -29,12 +24,8 @@ sealed class DeviceConnection {
     data class Switch(
         override val id1: String,
         override val id2: String,
-        override val configuration: IntervirtConfiguration,
     ) : DeviceConnection() {
-        val switch1
-            get() = id1.toDevice(configuration) as Device.Switch
-        val switch2
-            get() = id2.toDevice(configuration) as Device.Switch
+
     }
 
     /**
@@ -44,12 +35,11 @@ sealed class DeviceConnection {
     data class Computer(
         override val id1: String,
         override val id2: String,
-        override val configuration: IntervirtConfiguration,
     ) : DeviceConnection() {
-        val computer1
-            get() = id1.toDevice(configuration) as Device.Computer
-        val computer2
-            get() = id2.toDevice(configuration) as Device.Computer
+        @Suppress("UNCHECKED_CAST")
+        override fun getDevices(configuration: IntervirtConfiguration): Pair<Device.Computer, Device.Computer> {
+            return Pair(id1.toDevice(configuration), id2.toDevice(configuration)) as Pair<Device.Computer, Device.Computer>
+        }
     }
 
     /**
@@ -59,43 +49,39 @@ sealed class DeviceConnection {
     data class SwitchComputer(
         override val id1: String, // Switch
         override val id2: String, // Computer
-        override val configuration: IntervirtConfiguration,
     ) : DeviceConnection() {
-        val switch
-            get() = id1.toDevice(configuration) as Device.Switch
-        val computer
-            get() = id2.toDevice(configuration) as Device.Computer
+        @Suppress("UNCHECKED_CAST")
+        override fun getDevices(configuration: IntervirtConfiguration): Pair<Device.Switch, Device.Computer> {
+            return Pair(id1.toDevice(configuration), id2.toDevice(configuration)) as Pair<Device.Switch, Device.Computer>
+        }
     }
 
     /**
      * Checks if device is in the connection
      * @param device device to check
-     * @return ```true``` if device is in the connection and ```false``` otherwise
+     * @return `true` if device is in the connection and `false` otherwise
      */
-    fun containsDevice(device: Device) = device1 == device || device2 == device
+    fun containsDevice(device: Device) = id1 == device.id || id2 == device.id
 
     override fun equals(other: Any?): Boolean {
-        return other is DeviceConnection && ((device1 == other.device1 && device2 == other.device2) ||
-                (device1 == other.device2 && device2 == other.device1))
+        return other is DeviceConnection && ((id1 == other.id1 && id2 == other.id2) ||
+                (id1 == other.id2 && id2 == other.id1))
     }
 
     override fun hashCode(): Int {
-        val (firstDevice, secondDevice) = if (device1.hashCode() > device2.hashCode()) device1 to device2 else device2 to device1
+        val (firstDevice, secondDevice) = if (id1.hashCode() > id2.hashCode()) id1 to id2 else id2 to id1
         var result = firstDevice.hashCode()
         result = 31 * result + secondDevice.hashCode()
         return result
     }
+
+    open fun getDevices(configuration: IntervirtConfiguration) = Pair(id1.toDevice(configuration), id2.toDevice(configuration))
 }
 
-/**
- * @param device1 first device to be connected
- * @param device2 second device to be connected
- * @return a ```DeviceConnection``` based on the types of the given devices
- */
-fun IntervirtConfiguration.connect(device1: Device, device2: Device) = when (device1) {
-    is Device.Computer if device2 is Device.Computer -> DeviceConnection.Computer(device1.id, device2.id, this)
-    is Device.Switch if device2 is Device.Switch -> DeviceConnection.Switch(device1.id, device2.id, this)
-    is Device.Switch if device2 is Device.Computer -> DeviceConnection.SwitchComputer(device1.id, device2.id, this)
-    is Device.Computer if device2 is Device.Switch -> DeviceConnection.SwitchComputer(device2.id, device1.id, this)
-    else -> error("Invalid connection of $device1 and $device2")
+infix fun Device.connect(other: Device) = when (this) {
+    is Device.Computer if other is Device.Computer -> DeviceConnection.Computer(id, other.id)
+    is Device.Switch if other is Device.Switch -> DeviceConnection.Switch(id, other.id)
+    is Device.Switch if other is Device.Computer -> DeviceConnection.SwitchComputer(id, other.id)
+    is Device.Computer if other is Device.Switch -> DeviceConnection.SwitchComputer(id, other.id)
+    else -> error("Invalid connection of $this and $other")
 }

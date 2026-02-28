@@ -29,8 +29,8 @@ data class ViewConfiguration(
     fun exists(device: ViewDevice) = devices.any { it.id == device.id }
 
     private fun DeviceConnection.toViewConnection(): ViewConnection {
-        val viewDevice1 = devices.first { it.id == device1.id }
-        val viewDevice2 = devices.first { it.id == device2.id }
+        val viewDevice1 = devices.first { it.id == id1 }
+        val viewDevice2 = devices.first { it.id == id2 }
         return ViewConnection(viewDevice1, viewDevice2)
     }
 }

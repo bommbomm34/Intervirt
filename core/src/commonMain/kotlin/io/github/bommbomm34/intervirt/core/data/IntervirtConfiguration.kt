@@ -84,14 +84,15 @@ data class IntervirtConfiguration(
                         emit(
                             ResultProgress.proceed(
                                 percentage = 0.8f + (i.toFloat() / connections.size) * 0.2f,
-                                message = "Connecting device ${conn.device1.name} with ${conn.device2.name}",
+                                message = "Connecting device ${conn.id1} with ${conn.id2}",
                             ),
                         )
                         when (conn) {
-                            is DeviceConnection.Computer -> guestManager.connect(conn.device1.id, conn.device2.id)
+                            is DeviceConnection.Computer -> guestManager.connect(conn.id1, conn.id2)
                             is DeviceConnection.Switch -> {
-                                val switch1ConnectedComputers = conn.switch1.getConnectedComputers(connections)
-                                conn.switch2.getConnectedComputers(connections).forEach { computer1 ->
+                                val (switch1, switch2) = conn.getDevices(this@IntervirtConfiguration)
+                                val switch1ConnectedComputers = getConnectedComputers(switch1)
+                                getConnectedComputers(switch2).forEach { computer1 ->
                                     switch1ConnectedComputers.forEach { computer2 ->
                                         guestManager.connect(
                                             computer1.id,
@@ -101,8 +102,10 @@ data class IntervirtConfiguration(
                                 }
                             }
 
-                            is DeviceConnection.SwitchComputer -> conn.switch.getConnectedComputers(connections)
-                                .forEach { guestManager.connect(it.id, conn.computer.id) }
+                            is DeviceConnection.SwitchComputer -> {
+                                val (switch, computer) = conn.getDevices(this@IntervirtConfiguration)
+                                getConnectedComputers(switch).forEach { guestManager.connect(it.id, computer.id) }
+                            }
                         }
                     }
                     emit(

@@ -104,7 +104,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.connectDevice(mockComputer, mockComputer2).getOrThrow()
         assertContains(
             iterable = configuration.connections,
-            element = configuration.connect(mockComputer, mockComputer2),
+            element = mockComputer connect mockComputer2,
         )
     }
 
@@ -115,9 +115,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.connectDevice(mockComputer, mockComputer2).getOrThrow()
         deviceManager.disconnectDevice(mockComputer, mockComputer2).getOrThrow()
         assertFalse {
-            configuration.connections.contains(
-                configuration.connect(mockComputer, mockComputer2),
-            )
+            configuration.connections.contains(mockComputer connect mockComputer2)
         }
     }
 
@@ -128,7 +126,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.connectDevice(mockComputer, switch).getOrThrow()
         assertContains(
             iterable = configuration.connections,
-            element = configuration.connect(mockComputer, switch),
+            element = mockComputer connect switch,
         )
     }
 
@@ -139,9 +137,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.connectDevice(mockComputer, switch).getOrThrow()
         deviceManager.disconnectDevice(mockComputer, switch).getOrThrow()
         assertFalse {
-            configuration.connections.contains(
-                configuration.connect(mockComputer, switch),
-            )
+            configuration.connections.contains(mockComputer connect switch)
         }
     }
 

@@ -1,5 +1,6 @@
 package io.github.bommbomm34.intervirt.core.data
 
+import io.github.bommbomm34.intervirt.core.data.Device.Computer
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,23 +33,6 @@ sealed class Device {
         override var y: Int,
     ) : Device()
 
-    fun getConnectedDevices(totalConnections: List<DeviceConnection>) =
-        totalConnections.mapNotNull { if (it.device1 == this) it.device2 else if (it.device2 == this) it.device1 else null }
-
-    fun getConnectedComputers(
-        totalConnections: List<DeviceConnection>,
-        exceptDevices: Set<Device> = emptySet(),
-    ): List<Computer> {
-        val connected = getConnectedDevices(totalConnections)
-        val connectedComputers = mutableSetOf<Computer>() // Usage of a set is important because duplicates can occur
-        connected.filter { device -> exceptDevices.all { device.id != it.id } }
-            .forEach {
-                if (it is Computer) connectedComputers.add(it) else
-                    connectedComputers.addAll(it.getConnectedComputers(totalConnections, exceptDevices + this))
-            }
-        return connectedComputers.toList()
-    }
-
     override fun equals(other: Any?): Boolean {
         return other is Device && other.id == id
     }
@@ -57,3 +41,24 @@ sealed class Device {
 }
 
 fun String.toDevice(configuration: IntervirtConfiguration) = configuration.devices.first { it.id == this }
+
+fun IntervirtConfiguration.getConnectedComputers(
+    device: Device,
+    exceptDevices: Set<Device> = emptySet(),
+): List<Computer> {
+    val connected = getConnectedDevices(device)
+    val connectedComputers = mutableSetOf<Computer>() // Usage of a set is important because duplicates can occur
+    connected.filter { device -> exceptDevices.all { device.id != it.id } }
+        .forEach {
+            if (it is Computer) connectedComputers.add(it) else
+                connectedComputers.addAll(getConnectedComputers(it, exceptDevices + device))
+        }
+    return connectedComputers.toList()
+}
+
+fun IntervirtConfiguration.getConnectedDevices(device: Device): List<Device> {
+    return connections.mapNotNull {
+        val (device1, device2) = it.getDevices(this)
+        if (device1 == device) device2 else if (device2 == device) device1 else null
+    }
+}

@@ -89,9 +89,9 @@ class DeviceManager(
 
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Connecting device $device1 to $device2" }
-        configuration.connections.add(configuration.connect(device1, device2))
-        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+        configuration.connections.add(device1 connect device2)
+        val device1ConnectedComputers = configuration.getConnectedComputers(device1)
+        configuration.getConnectedComputers(device2).forEach { computer1 ->
             device1ConnectedComputers.forEach { computer2 ->
                 val res = guestManager.connect(computer1.id, computer2.id)
                 res.onFailure { return res }
@@ -102,9 +102,9 @@ class DeviceManager(
 
     suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> {
         logger.debug { "Disconnecting device $device1 to $device2" }
-        configuration.connections.removeIf { it == configuration.connect(device1, device2) }
-        val device1ConnectedComputers = device1.getConnectedComputers(configuration.connections)
-        device2.getConnectedComputers(configuration.connections).forEach { computer1 ->
+        configuration.connections.removeIf { it == device1 connect device2 }
+        val device1ConnectedComputers = configuration.getConnectedComputers(device1)
+        configuration.getConnectedComputers(device2).forEach { computer1 ->
             device1ConnectedComputers.forEach { computer2 ->
                 val res = guestManager.disconnect(computer1.id, computer2.id)
                 res.onFailure { return res }
