@@ -15,6 +15,7 @@ import com.github.dockerjava.api.model.RestartPolicy
 import com.github.dockerjava.api.model.Volume
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
@@ -35,7 +36,7 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import kotlin.sequences.forEach
 
-class SshDockerManager(
+class ActualDockerManager(
     private val host: String,
 ) : DockerManager {
     private var client: DockerClient? = null
@@ -46,9 +47,18 @@ class SshDockerManager(
             .withDockerHost(host)
             .withDockerTlsVerify(false)
             .build()
-        val httpClient = JschDockerHttpClient.Builder()
-            .dockerHost(config.dockerHost)
-            .build()
+        val httpClient = when {
+            host.startsWith("ssh://") -> {
+                JschDockerHttpClient.Builder()
+                    .dockerHost(config.dockerHost)
+                    .build()
+            }
+            else -> {
+                ApacheDockerHttpClient.Builder()
+                    .dockerHost(config.dockerHost)
+                    .build()
+            }
+        }
         client = DockerClientImpl.getInstance(config, httpClient)
     }
 
