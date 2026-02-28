@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -14,10 +15,12 @@ import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.components.dialogs.Dialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
@@ -31,6 +34,7 @@ import org.koin.compose.koinInject
 import java.util.*
 import kotlin.system.exitProcess
 
+
 fun main() = application {
     KoinApplication(
         application = {
@@ -43,6 +47,9 @@ fun main() = application {
         val qemuClient = koinInject<QemuClient>()
         val httpClient = koinInject<HttpClient>()
         val appState = koinInject<AppState>()
+        val fileManager = koinInject<FileManager>()
+        val configuration = koinInject<IntervirtConfiguration>()
+        val tempConfFile = remember { fileManager.getFile("temp.ivrt") }
         if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
         LaunchedEffect(Unit) {
             // These things should be only called once
@@ -52,6 +59,7 @@ fun main() = application {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
                     runBlocking {
+                        tempConfFile.writeConf(configuration)
                         deviceManager.close()
                         guestManager.close()
                         qemuClient.close()
@@ -60,6 +68,8 @@ fun main() = application {
                 },
             )
             setDefaultExceptionHandler()
+            // Load temp file if exists
+            if (tempConfFile.exists()) tempConfFile.loadConf(configuration, appState, guestManager)
         }
         CatchingLaunchedEffect {
             appState.images.clear()

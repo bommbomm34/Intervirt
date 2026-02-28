@@ -9,6 +9,8 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
 import io.github.bommbomm34.intervirt.home.Updater
+import io.github.bommbomm34.intervirt.loadConf
+import io.github.bommbomm34.intervirt.writeConf
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
@@ -22,6 +24,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 import java.awt.Desktop
+import java.io.File
 import java.net.URI
 
 @KoinViewModel
@@ -41,13 +44,7 @@ class OptionDropdownViewModel(
                 type = FileKitType.File(extensions = listOf("ivrt")),
             )
             if (file != null) {
-                val fileContent = file.readString()
-                val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
-                configuration.update(newConfiguration)
-                configuration.syncConfiguration(guestManager).collect {
-                    logger.info { it }
-                }
-                appState.statefulConf.update(ViewConfiguration(newConfiguration))
+                file.file.loadConf(configuration, appState, guestManager)
                 onConfChange()
             }
         }
@@ -60,7 +57,7 @@ class OptionDropdownViewModel(
                 suggestedName = appEnv.SUGGESTED_FILENAME,
                 extension = "ivrt",
             )
-            file?.writeConf()
+            file?.file?.writeConf(configuration)
         }
         onDismiss()
     }
@@ -68,7 +65,7 @@ class OptionDropdownViewModel(
     fun saveAs() {
         val file = appState.currentFile
         if (file != null) {
-            viewModelScope.launch { file.writeConf() }
+            viewModelScope.launch { file.file.writeConf(configuration) }
             onDismiss()
         } else save()
     }
@@ -91,6 +88,4 @@ class OptionDropdownViewModel(
         Desktop.getDesktop().browse(URI(HELP_URL))
         onDismiss()
     }
-
-    private suspend fun PlatformFile.writeConf() = writeString(Json.encodeToString(configuration))
 }
