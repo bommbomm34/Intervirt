@@ -38,7 +38,7 @@ fun IOOptions(device: ViewDevice.Computer) {
     val logger = rememberLogger("IOOptions")
     var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
     var containerFilePath: Path? by remember { mutableStateOf(null) }
-    CatchingLaunchedEffect {
+    CatchingLaunchedEffect(device) {
         ioClient = deviceManager.getIOClient(device.device).getOrThrow()
     }
     val fileSaverLauncher = rememberFileSaverLauncher { file ->
