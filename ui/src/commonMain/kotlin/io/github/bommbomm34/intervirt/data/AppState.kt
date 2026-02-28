@@ -58,11 +58,15 @@ class AppState(configuration: IntervirtConfiguration) {
      */
     suspend inline fun <T> runDialogCatching(block: suspend () -> T): Result<T> =
         runSuspendingCatching(block).onFailure {
-            it.printStackTrace()
-            openDialog(
-                severity = Severity.ERROR,
-                message = it.parseException().message,
-                copyMessage = it.stackTraceToString(),
-            )
+            showExceptionDialog(it)
         }
+
+    suspend fun showExceptionDialog(throwable: Throwable) {
+        throwable.printStackTrace()
+        openDialog(
+            severity = Severity.ERROR,
+            message = throwable.parseException().message,
+            copyMessage = throwable.stackTraceToString(),
+        )
+    }
 }

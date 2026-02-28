@@ -98,13 +98,13 @@ class MailClientViewModel(
         }
     }
 
-    fun newLogin(creds: MailConnectionDetails) {
+    fun newLogin(creds: MailConnectionDetails, proxy: Address) {
         appState.openDialog {
             MailClientLogin(
                 credentials = creds,
             ) { details, saveCredentials ->
                 close()
-                login(details, saveCredentials)
+                login(details, saveCredentials, proxy)
             }
         }
     }

@@ -163,4 +163,5 @@
     <string name="received_mail_is_invalid">The received mail is invalid: %1$s</string>
     <string name="internal_error_occurred">An internal error occurred (a restart might fix it): %1$s</string>
     <string name="undefined_error_occurred">An undefined error occurred: %1$s</string>
+    <string name="failure_loading_image">Failed to load image: %1$s</string>
 </resources>

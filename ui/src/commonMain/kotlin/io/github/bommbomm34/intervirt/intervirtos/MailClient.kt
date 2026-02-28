@@ -89,7 +89,7 @@ fun MailClient(
                     // Implicit login
                     viewModel.login(creds, true, proxy)
                 } else {
-                    viewModel.newLogin(creds)
+                    viewModel.newLogin(creds, proxy)
                 }
             }
         }

@@ -35,7 +35,7 @@ fun ImagePicker(
     }
     AlignedBox(Alignment.Center, 64.dp) {
         LazyVerticalGrid(
-            columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE.dp * 1.2f),
+            columns = GridCells.FixedSize(appEnv.OS_ICON_SIZE.dp * 1.5f),
         ) {
             items(images) { image ->
                 ImageItem(image) {

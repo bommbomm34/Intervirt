@@ -12,13 +12,15 @@ import io.github.bommbomm34.intervirt.data.Image
 
 @Composable
 fun ImageItem(image: Image, onShowImage: () -> Unit) {
-    Card(
-        onClick = onShowImage,
-    ) {
-        Column(Modifier.padding(16.dp)){
-            ImageIcon(image)
-            GeneralSpacer(2.dp)
-            Text(image.toReadableName())
+    Column(Modifier.padding(16.dp)) {
+        Card(
+            onClick = onShowImage,
+        ) {
+            Column(Modifier.padding(16.dp)){
+                ImageIcon(image)
+                GeneralSpacer(2.dp)
+                Text(image.toReadableName())
+            }
         }
     }
 }

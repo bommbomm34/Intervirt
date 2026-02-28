@@ -42,6 +42,7 @@ bossterm-compose = { module = "com.risaboss:bossterm-compose", version.ref = "bo
 bossterm-core = { module = "com.risaboss:bossterm-core", version.ref = "bossterm" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 commons-validator = { module = "commons-validator:commons-validator", version.ref = "commons-validator" }
 compose-colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }

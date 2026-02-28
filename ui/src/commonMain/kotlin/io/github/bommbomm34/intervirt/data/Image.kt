@@ -3,13 +3,11 @@ package io.github.bommbomm34.intervirt.data
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.io.files.Path
+import io.ktor.client.statement.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 
 @Serializable
 data class Image(
@@ -27,10 +25,12 @@ data class Image(
 
 suspend fun HttpClient.getImages(url: String): Result<List<Image>> = runSuspendingCatching {
     if (url.startsWith("file:///")){
-        val text = Files.readString(File(url.substringAfter("file:///")).toPath())
+        val text = Files.readString(Path.of(url.substringAfter("file:///")))
         return@runSuspendingCatching defaultJson.decodeFromString(text)
     }
-    get(url).body<List<Image>>()
+    val text = get(url).bodyAsText()
+    println("Received: $text")
+    defaultJson.decodeFromString(text)
 }
 
 fun String.toReadableImage() = when {
