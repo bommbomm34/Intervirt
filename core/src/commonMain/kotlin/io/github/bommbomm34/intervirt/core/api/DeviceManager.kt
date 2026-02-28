@@ -22,6 +22,7 @@ class DeviceManager(
 ) : AsyncCloseable {
     private val logger = KotlinLogging.logger { }
     private val virtualContainerIO = appEnv.VIRTUAL_CONTAINER_IO
+    private val virtualContainerIOPort = appEnv.VIRTUAL_CONTAINER_IO_PORT
     private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
     private val dockerManagers = mutableMapOf<String, DockerManager>()
     private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()
@@ -212,11 +213,12 @@ class DeviceManager(
     suspend fun getIntervirtOSClient(computer: Device.Computer) = runSuspendingCatching {
         logger.debug { "Retrieving IntervirtOSClient of ${computer.id}" }
         intervirtOSClients[computer.id]?.let { return@runSuspendingCatching it }
+        val ioClient = getIOClient(computer).getOrThrow()
         val osClient = IntervirtOSClient(
             IntervirtOSClient.Client(
                 computer = computer,
-                ioClient = getIOClient(computer).getOrThrow(),
-                docker = getDockerManager(computer).getOrThrow(),
+                ioClient = ioClient,
+                docker = getDockerManager(computer, ioClient).getOrThrow(),
             ),
         )
         osClient.init().getOrThrow()
@@ -224,22 +226,13 @@ class DeviceManager(
         osClient
     }
 
-    suspend fun getDockerManager(computer: Device.Computer): Result<DockerManager> = runSuspendingCatching {
-        logger.debug { "Retrieving Docker manager of ${computer.id}" }
+    suspend fun getDockerManager(
+        computer: Device.Computer,
+        ioClient: ContainerIOClient,
+    ): Result<DockerManager> = runSuspendingCatching {
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
-        val port = if (!virtualContainerIO) {
-            val freePort = getFreePort()
-            addPortForwarding(
-                device = computer,
-                portForwarding = PortForwarding(
-                    protocol = "tcp",
-                    internalPort = 2375,
-                    externalPort = freePort,
-                ),
-            ).getOrThrow()
-            freePort
-        } else 2375
-        val dockerManager = DockerManager("tcp://127.0.0.1:$port", this)
+        val sshClient = ioClient as? ContainerSshClient
+        val dockerManager = DockerManager("ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
         dockerManagers[computer.id] = dockerManager
         dockerManager
     }

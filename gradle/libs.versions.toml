@@ -11,6 +11,7 @@ compose-table = "0.2.3"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.1"
 docker-java = "3.7.0"
+docker-java-transport-jsch = "1.4"
 filekit = "0.13.0"
 gobley = "0.3.7"
 jakarta-mail = "2.0.2"
@@ -53,7 +54,7 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-table = { module = "io.github.windedge.table:table-m3", version.ref = "compose-table" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
-docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
+docker-java-transport-jsch = { module = "com.github.mwiede.dockerjava:docker-java-transport-jsch", version.ref = "docker-java-transport-jsch" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 jakarta-mail = { module = "com.sun.mail:jakarta.mail", version.ref = "jakarta-mail" }

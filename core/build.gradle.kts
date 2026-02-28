@@ -25,7 +25,7 @@ kotlin {
         }
         jvmMain.dependencies {
             implementation(libs.docker.java.core)
-            implementation(libs.docker.java.transport.httpclient5)
+            implementation(libs.docker.java.transport.jsch)
             implementation(libs.zip4j)
             implementation(libs.jakarta.mail)
             implementation(libs.ktor.client.core)

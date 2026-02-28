@@ -7,8 +7,7 @@ import com.github.dockerjava.api.exception.NotModifiedException
 import com.github.dockerjava.api.model.*
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
@@ -29,9 +28,7 @@ import java.io.PipedOutputStream
 
 class DockerManager(
     private val host: String,
-    private val deviceManager: DeviceManager,
 ) : AsyncCloseable {
-    private val port = host.substringAfterLast(":").toInt()
     private var client: DockerClient? = null
     private val logger = KotlinLogging.logger { }
 
@@ -40,7 +37,7 @@ class DockerManager(
             .withDockerHost(host)
             .withDockerTlsVerify(false)
             .build()
-        val httpClient = ApacheDockerHttpClient.Builder()
+        val httpClient = JschDockerHttpClient.Builder()
             .dockerHost(config.dockerHost)
             .build()
         client = DockerClientImpl.getInstance(config, httpClient)
@@ -208,10 +205,6 @@ class DockerManager(
 
     override suspend fun close(): Result<Unit> = catch {
         getClient().close()
-        deviceManager.removePortForwarding(
-            externalPort = port,
-            protocol = "tcp",
-        ).getOrThrow()
     }
 
     private fun getClient(): DockerClient {
