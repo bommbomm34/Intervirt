@@ -31,13 +31,14 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
+import org.koin.dsl.KoinConfiguration
 import java.util.*
 import kotlin.system.exitProcess
 
 
 fun main() = application {
     KoinApplication(
-        application = {
+        configuration = KoinConfiguration {
             modules(coreModule, uiModule, intervirtOSViewModelsModule)
         },
     ) {
