@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.SshDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
@@ -233,7 +234,7 @@ class DeviceManager(
     ): Result<DockerManager> = runSuspendingCatching {
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
         val sshClient = ioClient as? ContainerSshClient
-        val dockerManager = DockerManager("ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
+        val dockerManager = SshDockerManager("ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
         dockerManagers[computer.id] = dockerManager
         dockerManager
     }
