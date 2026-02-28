@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.onClick
@@ -11,11 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -36,7 +37,6 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.toPx
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -52,7 +52,7 @@ fun DevicesView() {
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()
     val statefulConf = appState.statefulConf
-    AlignedBox(Alignment.Center) {
+    Box(Modifier.scale(appState.devicesViewZoom)){
         Canvas(
             Modifier
                 .fillMaxSize()
@@ -96,59 +96,57 @@ fun DevicesView() {
                     }
                 },
         ) {
-            scale(appState.devicesViewZoom) {
-                appState.drawingConnectionSource?.let {
-                    drawConnection(
-                        offset1 = it.fittingOffset(appState.devicesViewZoom),
-                        offset2 = appState.mousePosition,
-                        color = appEnv.DEVICE_CONNECTION_COLOR,
-                        strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
-                    )
-                }
-                statefulConf.connections.forEach {
-                    drawConnection(
-                        offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
-                        offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
-                        color = appEnv.DEVICE_CONNECTION_COLOR,
-                        strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
-                    )
-                }
+            appState.drawingConnectionSource?.let {
+                drawConnection(
+                    offset1 = it.fittingOffset(appState.devicesViewZoom),
+                    offset2 = appState.mousePosition,
+                    color = appEnv.DEVICE_CONNECTION_COLOR,
+                    strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
+                )
+            }
+            statefulConf.connections.forEach {
+                drawConnection(
+                    offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
+                    offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
+                    color = appEnv.DEVICE_CONNECTION_COLOR,
+                    strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
+                )
             }
         }
-    }
 
-    // This block will most likely be triggered if a file is opened
-    selectedDevice?.let { if (!statefulConf.exists(it)) selectedDevice = null }
-    appState.drawingConnectionSource?.let { if (!statefulConf.exists(it)) appState.drawingConnectionSource = null }
-    if (selectedDevice == null) appState.deviceSettingsVisible = false
-
-    statefulConf.devices.forEach { device ->
-        DeviceView(
-            device = device,
-            onClickDevice = {
-                if (selectedDevice != it || !appState.deviceSettingsVisible) {
-                    selectedDevice = it
-                    appState.deviceSettingsVisible = true
-                } else appState.deviceSettingsVisible = false
-            },
-            onSecondaryClick = {
-                val copy = appState.drawingConnectionSource
-                if (copy != null) {
-                    if (copy.id != it.id) {
-                        scope.launchDialogCatching(appState) {
-                            if (copy.canConnect(configuration) && it.canConnect(configuration)) {
-                                statefulConf.connections.add(copy connect it)
-                                deviceManager.connectDevice(copy.device, it.device).getOrThrow()
-                            } else appState.openDialog(
-                                severity = Severity.WARNING,
-                                message = getString(Res.string.too_many_devices_connected),
-                            )
+        statefulConf.devices.forEach { device ->
+            DeviceView(
+                device = device,
+                onClickDevice = {
+                    if (selectedDevice != it || !appState.deviceSettingsVisible) {
+                        selectedDevice = it
+                        appState.deviceSettingsVisible = true
+                    } else appState.deviceSettingsVisible = false
+                },
+                onSecondaryClick = {
+                    val copy = appState.drawingConnectionSource
+                    if (copy != null) {
+                        if (copy.id != it.id) {
+                            scope.launchDialogCatching(appState) {
+                                if (copy.canConnect(configuration) && it.canConnect(configuration)) {
+                                    statefulConf.connections.add(copy connect it)
+                                    deviceManager.connectDevice(copy.device, it.device).getOrThrow()
+                                } else appState.openDialog(
+                                    severity = Severity.WARNING,
+                                    message = getString(Res.string.too_many_devices_connected),
+                                )
+                            }
                         }
-                    }
-                    appState.drawingConnectionSource = null
-                } else appState.drawingConnectionSource = it
-            },
-        )
+                        appState.drawingConnectionSource = null
+                    } else appState.drawingConnectionSource = it
+                },
+            )
+        }
+    }
+    LaunchedEffect(statefulConf){
+        selectedDevice?.let { if (!statefulConf.exists(it)) selectedDevice = null }
+        appState.drawingConnectionSource?.let { if (!statefulConf.exists(it)) appState.drawingConnectionSource = null }
+        if (selectedDevice == null) appState.deviceSettingsVisible = false
     }
     AnimatedVisibility(appState.deviceSettingsVisible) {
         selectedDevice?.let {
