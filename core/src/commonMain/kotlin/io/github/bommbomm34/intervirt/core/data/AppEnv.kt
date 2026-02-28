@@ -91,6 +91,7 @@ data class AppEnv(
 
     var VIRTUAL_CONTAINER_IO_PORT: Int by delegate(22)
     var WIPE_VIRTUAL_ON_CLOSE: Boolean by delegate(false)
+    var ENABLE_TEMP_FILE: Boolean by delegate(true)
 
     var VM_DISK_URL: String by delegate("https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2")
 

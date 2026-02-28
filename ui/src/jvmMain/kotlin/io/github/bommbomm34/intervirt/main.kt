@@ -59,7 +59,7 @@ fun main() = application {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
                     runBlocking {
-                        tempConfFile.writeConf(configuration)
+                        if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(configuration)
                         deviceManager.close()
                         guestManager.close()
                         qemuClient.close()
@@ -69,7 +69,7 @@ fun main() = application {
             )
             setDefaultExceptionHandler()
             // Load temp file if exists
-            if (tempConfFile.exists()) tempConfFile.loadConf(configuration, appState, guestManager)
+            if (tempConfFile.exists() && appEnv.ENABLE_TEMP_FILE) tempConfFile.loadConf(configuration, appState, guestManager)
         }
         CatchingLaunchedEffect {
             appState.images.clear()
