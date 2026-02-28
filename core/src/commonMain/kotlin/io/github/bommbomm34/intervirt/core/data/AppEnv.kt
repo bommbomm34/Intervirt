@@ -87,11 +87,10 @@ data class AppEnv(
 
     var VIRTUAL_AGENT_MODE: Boolean by delegate(false)
 
-    var ENABLE_JAVASCRIPT: Boolean by delegate(true)
-
     var VIRTUAL_CONTAINER_IO: Boolean by delegate(false)
 
     var VIRTUAL_CONTAINER_IO_PORT: Int by delegate(22)
+    var WIPE_VIRTUAL_ON_CLOSE: Boolean by delegate(false)
 
     var VM_DISK_URL: String by delegate("https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2")
 

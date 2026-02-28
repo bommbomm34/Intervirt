@@ -23,6 +23,7 @@ class DeviceManager(
     private val logger = KotlinLogging.logger { }
     private val virtualContainerIO = appEnv.VIRTUAL_CONTAINER_IO
     private val virtualContainerIOPort = appEnv.VIRTUAL_CONTAINER_IO_PORT
+    private val wipeVirtualOnClose = appEnv.WIPE_VIRTUAL_ON_CLOSE
     private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
     private val dockerManagers = mutableMapOf<String, DockerManager>()
     private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()
@@ -205,7 +206,7 @@ class DeviceManager(
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
         logger.debug { "Initializing virtual container IO client for ${computer.id}" }
-        val client = VirtualContainerIOClient(computer.id, executor, fileManager)
+        val client = VirtualContainerIOClient(computer.id, wipeVirtualOnClose, executor, fileManager)
         containerIOClients[computer.id] = client
         return client
     }
