@@ -10,9 +10,11 @@ import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.syncConfiguration
 import io.github.bommbomm34.intervirt.core.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.UpdaterState
@@ -35,10 +37,16 @@ class HomeViewModel(
     private val guestManager: GuestManager,
     private val configuration: IntervirtConfiguration,
     private val downloader: Downloader,
+    private val qemuClient: QemuClient,
 ) : ViewModel() {
     var devicesViewRenderKey by mutableStateOf(0)
     var showOptions by mutableStateOf(false)
     val updaterState = UpdaterState()
+    var vmRunning by mutableStateOf(false)
+
+    init {
+        qemuClient.onRunningChange { vmRunning = it }
+    }
 
     fun onConfChange() {
         devicesViewRenderKey++
@@ -115,6 +123,32 @@ class HomeViewModel(
                     onClose = ::close,
                 )
             }
+        }
+    }
+
+    fun boot() {
+        viewModelScope.launchDialogCatching(appState) {
+            if (vmRunning){
+                qemuClient.shutdownAlpine()
+            } else {
+                qemuClient.bootAlpine().getOrThrow()
+            }
+        }
+    }
+
+    fun reboot() {
+        viewModelScope.launchDialogCatching(appState) {
+            qemuClient.shutdownAlpine()
+            qemuClient.bootAlpine().getOrThrow()
+        }
+    }
+
+    fun sync() {
+        appState.openDialog {
+            ProgressDialog(
+                flow = guestManager.syncConfiguration(configuration),
+                onClose = ::close,
+            )
         }
     }
 }

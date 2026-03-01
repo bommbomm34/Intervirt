@@ -14,33 +14,35 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun VMManagerView() {
-    val viewModel = koinViewModel<VMManagerViewModel>()
+fun VMManagerView(
+    running: Boolean,
+    onBoot: () -> Unit,
+    onReboot: () -> Unit,
+    onSync: () -> Unit,
+) {
     AlignedBox(Alignment.TopStart, padding = 16.dp) {
         CenterRow {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 // Shutdown button
-                Button(onClick = viewModel::boot) {
-                    Text(stringResource(if (viewModel.running) Res.string.shutdown else Res.string.boot))
+                Button(onClick = onBoot) {
+                    Text(stringResource(if (running) Res.string.shutdown else Res.string.boot))
                 }
                 GeneralSpacer(4.dp)
                 // Reboot button
                 Button(
-                    onClick = viewModel::reboot,
-                    enabled = viewModel.running
+                    onClick = onReboot,
+                    enabled = running,
                 ) {
                     Text(stringResource(Res.string.reboot))
                 }
             }
             GeneralSpacer()
             // Sync button
-            if (viewModel.running) {
-                IconButton(onClick = viewModel::sync) {
+            if (running) {
+                IconButton(onClick = onSync) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = stringResource(Res.string.sync_guest),
