@@ -11,7 +11,6 @@ import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
 import io.github.bommbomm34.intervirt.model.components.IOOptionsViewModel
-import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
 import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
 import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
 import org.koin.core.module.dsl.singleOf
@@ -30,7 +29,6 @@ val AVAILABLE_LANGUAGES = listOf(
 val uiModule = module {
     singleOf(::AppState)
 
-    viewModel<OptionDropdownViewModel>()
     viewModel<SettingsViewModel>()
     viewModel<VMManagerViewModel>()
     viewModel<UpdaterViewModel>()

@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.home.VMManagerView
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun Home() {
@@ -24,9 +25,6 @@ fun Home() {
     }
     AlignedBox(Alignment.TopEnd) {
         OptionsButton { viewModel.showOptions = true }
-        OptionDropdown(
-            expanded = viewModel.showOptions,
-            onConfChange = viewModel::onConfChange,
-        ) { viewModel.showOptions = false }
+        OptionDropdown(viewModel)
     }
 }

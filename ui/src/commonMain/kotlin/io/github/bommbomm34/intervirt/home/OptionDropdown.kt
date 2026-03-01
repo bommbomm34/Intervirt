@@ -9,22 +9,19 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.buttons.IconText
-import io.github.bommbomm34.intervirt.model.home.OptionDropdownViewModel
+import io.github.bommbomm34.intervirt.model.HomeViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun OptionDropdown(
-    expanded: Boolean,
-    onConfChange: () -> Unit,
-    onDismiss: () -> Unit,
+    viewModel: HomeViewModel,
 ) {
-    val viewModel = koinViewModel<OptionDropdownViewModel> { parametersOf(onConfChange, onDismiss) }
     Column {
         DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = onDismiss,
+            expanded = viewModel.showOptions,
+            onDismissRequest = viewModel::onDismiss,
         ) {
             // Open
             DropdownMenuItem(
