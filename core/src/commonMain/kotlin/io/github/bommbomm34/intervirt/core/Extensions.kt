@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.apache.log4j.BasicConfigurator
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
 import java.util.prefs.Preferences
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
@@ -93,4 +96,14 @@ fun getHttpClient(): HttpClient = HttpClient(CIO) {
     install(WebSockets) {
         contentConverter = KotlinxWebsocketSerializationConverter(Json)
     }
+}
+
+/**
+ * This command must be run **BEFORE** the first logger call.
+ */
+fun AppEnv.initLogging() {
+    BasicConfigurator.configure()
+    val effectiveLoggerLevel = if (DEBUG_ENABLED) "DEBUG" else LOGGER_LEVEL
+    val rootLogger = Logger.getRootLogger()
+    rootLogger.level = Level.toLevel(effectiveLoggerLevel)
 }

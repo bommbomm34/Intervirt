@@ -118,6 +118,7 @@ data class AppEnv(
     var IMAGES_URL: String by delegate("https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/metadata/images.json")
     var ACCENT_COLOR: ULong by delegate(0xFF648042.toULong())
     var SMALL_FAB_SIZE: Int by delegate(32)
+    var LOGGER_LEVEL: String by delegate("ERROR")
 
     init {
         custom()
