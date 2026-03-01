@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.intervirtos.model
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import intervirt.ui.generated.resources.Res
@@ -46,7 +47,7 @@ class MailClientViewModel(
     }
 
     fun clickMail(mail: Mail) {
-        appState.openDialog {
+        appState.openDialog(height = 600.dp) {
             val scope = rememberCoroutineScope()
             MailView(
                 mail = mail,
@@ -99,7 +100,7 @@ class MailClientViewModel(
     }
 
     fun newLogin(creds: MailConnectionDetails, proxy: Address) {
-        appState.openDialog {
+        appState.openDialog(height = 600.dp) {
             MailClientLogin(
                 credentials = creds,
             ) { details, saveCredentials ->

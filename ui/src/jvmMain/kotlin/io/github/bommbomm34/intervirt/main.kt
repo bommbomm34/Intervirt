@@ -134,6 +134,7 @@ fun main() = application {
                 DialogWindow(
                     onCloseRequest = dialogState::close,
                     title = dialogState.title,
+                    alwaysOnTop = true,
                     state = rememberDialogState(size = dialogState.size),
                 ) {
                     DefaultWindowScope {
