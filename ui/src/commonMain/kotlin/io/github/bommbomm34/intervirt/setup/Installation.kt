@@ -13,15 +13,14 @@ import io.github.bommbomm34.intervirt.components.FlowProgressView
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.model.setup.InstallationViewModel
+import io.github.bommbomm34.intervirt.model.SetupViewModel
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun Installation() {
-    val viewModel = koinViewModel<InstallationViewModel>()
+fun Installation(viewModel: SetupViewModel) {
     val appState = koinInject<AppState>()
     CenterColumn {
         NamedCheckbox(
@@ -31,7 +30,7 @@ fun Installation() {
         )
         GeneralSpacer(8.dp)
         Button(
-            onClick = viewModel::clickButton,
+            onClick = viewModel::onInstall,
             enabled = viewModel.allowInstallation,
             colors = if (viewModel.job != null) ButtonDefaults.buttonColors(containerColor = Color.Red) else ButtonDefaults.buttonColors(),
         ) {
