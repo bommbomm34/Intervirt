@@ -6,11 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.bommbomm34.intervirt.HELP_URL
+import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.UpdaterState
 import io.github.bommbomm34.intervirt.home.Updater
 import io.github.bommbomm34.intervirt.loadConf
 import io.github.bommbomm34.intervirt.writeConf
@@ -29,11 +34,13 @@ class HomeViewModel(
     private val appEnv: AppEnv,
     private val guestManager: GuestManager,
     private val configuration: IntervirtConfiguration,
+    private val downloader: Downloader,
 ) : ViewModel() {
     var devicesViewRenderKey by mutableStateOf(0)
     var showOptions by mutableStateOf(false)
+    val updaterState = UpdaterState()
 
-    fun onConfChange(){
+    fun onConfChange() {
         devicesViewRenderKey++
     }
 
@@ -73,7 +80,10 @@ class HomeViewModel(
 
     fun update() {
         appState.openDialog {
-            Updater(::close)
+            Updater(
+                state = updaterState,
+                onUpdate = ::onUpdate,
+            )
         }
     }
 
@@ -90,7 +100,21 @@ class HomeViewModel(
         onDismiss()
     }
 
-    fun onDismiss(){
+    fun onDismiss() {
         showOptions = false
+    }
+
+    fun onUpdate(){
+        viewModelScope.launchDialogCatching(appState) {
+            appState.openDialog {
+                ProgressDialog(
+                    flow = downloader.upgrade(updaterState.applyUpdates),
+                    onMessage = {
+                        if (it is ResultProgress.Result<String>) close()
+                    },
+                    onClose = ::close,
+                )
+            }
+        }
     }
 }

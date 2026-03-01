@@ -8,20 +8,23 @@ import intervirt.ui.generated.resources.update
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
+import io.github.bommbomm34.intervirt.core.api.Downloader
+import io.github.bommbomm34.intervirt.data.UpdaterState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun Updater(onClose: () -> Unit) {
-    val viewModel = koinViewModel<UpdaterViewModel> { parametersOf(onClose) }
+fun Updater(
+    state: UpdaterState,
+    onUpdate: () -> Unit,
+) {
     CenterColumn {
-        viewModel.updates.forEach { component ->
+        state.updates.forEach { component ->
             NamedCheckbox(
-                checked = viewModel.applyUpdates.contains(component),
+                checked = state.applyUpdates.contains(component),
                 onCheckedChange = {
-                    if (it) viewModel.applyUpdates.add(component) else viewModel.applyUpdates.remove(component)
+                    if (it) state.applyUpdates.add(component) else state.applyUpdates.remove(component)
                 },
                 name = component.readableName,
             )
@@ -31,7 +34,7 @@ fun Updater(onClose: () -> Unit) {
     GeneralSpacer()
     // Update button
     Button(
-        onClick = viewModel::update,
+        onClick = onUpdate,
     ) {
         Text(stringResource(Res.string.update))
     }

@@ -11,7 +11,6 @@ import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
 import io.github.bommbomm34.intervirt.model.components.IOOptionsViewModel
-import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
 import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -31,7 +30,6 @@ val uiModule = module {
 
     viewModel<SettingsViewModel>()
     viewModel<VMManagerViewModel>()
-    viewModel<UpdaterViewModel>()
     viewModel<IOOptionsViewModel>()
     viewModel<SetupViewModel>()
     viewModel<HomeViewModel>()
