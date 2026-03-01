@@ -10,11 +10,8 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.components.tables.SimpleTable
-import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
-import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
+import io.github.bommbomm34.intervirt.core.data.MailUser
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 private val headers = listOf(
     Res.string.username,
@@ -23,20 +20,20 @@ private val headers = listOf(
 
 @Composable
 fun MailServerUserManager(
-    mailServer: MailServerManager,
+    users: List<MailUser>,
+    onAddUser: () -> Unit,
+    onRemoveUser: (MailUser) -> Unit,
 ) {
-    val viewModel = koinViewModel<MailServerUserManagerViewModel> { parametersOf(mailServer) }
-    GeneralSpacer()
     SimpleTable(
         headers = headers.map { stringResource(it) } + "",
-        content = viewModel.users.map { listOf(it.username, it.address) },
-        customElements = viewModel.users.map {
+        content = users.map { listOf(it.username, it.address) },
+        customElements = users.map {
             {
-                RemoveButton { viewModel.removeUser(it) }
+                RemoveButton { onRemoveUser(it) }
             }
         },
     )
     AlignedBox(Alignment.BottomEnd) {
-        AddButton(onClick = viewModel::addUser)
+        AddButton(onClick = onAddUser)
     }
 }

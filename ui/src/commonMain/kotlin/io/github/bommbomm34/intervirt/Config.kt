@@ -6,7 +6,6 @@ import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContainerViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
-import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
@@ -36,7 +35,6 @@ val uiModule = module {
 val intervirtOSViewModelsModule = module {
     viewModel<DnsResolverViewModel>()
     viewModel<MailClientViewModel>()
-    viewModel<MailServerUserManagerViewModel>()
     viewModel<DockerContainerViewModel>()
     viewModel<SystemServiceViewModel>()
 }

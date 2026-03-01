@@ -1,7 +1,10 @@
-package io.github.bommbomm34.intervirt.intervirtos.model.mail
+package io.github.bommbomm34.intervirt.intervirtos.model
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import intervirt.ui.generated.resources.Res
@@ -9,21 +12,28 @@ import intervirt.ui.generated.resources.sure_to_delete_user
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.initDocker
 import io.github.bommbomm34.intervirt.intervirtos.mail.server.AddMailUserView
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 
 @KoinViewModel
-class MailServerUserManagerViewModel(
-    val appState: AppState,
-    @InjectedParam val mailServer: MailServerManager,
+class MailServerViewModel(
+    @InjectedParam val osClient: IntervirtOSClient,
+    private val appState: AppState,
 ) : ViewModel() {
+    val mailServer = MailServerManager(osClient)
+    var initialized by mutableStateOf(false)
     val users = mutableStateListOf<MailUser>()
 
     init {
-        retrieveUsers()
+        viewModelScope.initDocker(
+            appState = appState,
+            manager = mailServer,
+        ) { initialized = true }
     }
 
     fun retrieveUsers() {

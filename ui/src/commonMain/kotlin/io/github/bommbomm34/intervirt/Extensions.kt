@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
@@ -31,6 +32,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import io.ktor.utils.io.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -118,6 +120,33 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
         }
     }
     return initialized
+}
+
+fun CoroutineScope.initDocker(
+    appState: AppState,
+    manager: DockerBasedManager,
+    onInitialize: () -> Unit
+){
+    launchDialogCatching(appState) {
+        appState.openDialog {
+            ProgressDialog(
+                flow = manager.init(),
+                onClose = ::close,
+                onMessage = { progress ->
+                    if (progress is ResultProgress.Result) {
+                        progress.result.fold(
+                            onSuccess = { onInitialize() },
+                            onFailure = {
+                                launch {
+                                    appState.showExceptionDialog(it)
+                                }
+                            },
+                        )
+                    }
+                },
+            )
+        }
+    }
 }
 
 @Composable
