@@ -14,7 +14,6 @@ import io.github.bommbomm34.intervirt.model.home.UpdaterViewModel
 import io.github.bommbomm34.intervirt.model.home.VMManagerViewModel
 import io.github.bommbomm34.intervirt.model.setup.InstallationViewModel
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.viewModel
 import java.util.*

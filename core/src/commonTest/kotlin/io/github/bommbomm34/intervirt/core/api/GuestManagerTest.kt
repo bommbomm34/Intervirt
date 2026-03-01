@@ -12,12 +12,7 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
+import kotlin.test.*
 
 private const val TEST_CONTAINER_ID = "my-id"
 

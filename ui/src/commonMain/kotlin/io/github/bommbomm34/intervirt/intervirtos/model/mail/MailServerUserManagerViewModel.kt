@@ -15,7 +15,6 @@ import io.github.bommbomm34.intervirt.intervirtos.mail.server.AddMailUserView
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
-import kotlin.collections.remove
 
 @KoinViewModel
 class MailServerUserManagerViewModel(

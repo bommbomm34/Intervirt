@@ -2,13 +2,7 @@ package io.github.bommbomm34.intervirt.intervirtos.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ScreenShare
-import androidx.compose.material.icons.filled.AllInbox
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Http
-import androidx.compose.material.icons.filled.Mail
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Terminal
-import androidx.compose.material.icons.filled.Web
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import intervirt.ui.generated.resources.*

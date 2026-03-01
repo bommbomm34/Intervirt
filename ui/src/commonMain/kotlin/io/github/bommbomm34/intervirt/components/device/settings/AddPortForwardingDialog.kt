@@ -6,7 +6,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import intervirt.ui.generated.resources.*
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.add_port_forwarding
+import intervirt.ui.generated.resources.external_port_already_bound
+import intervirt.ui.generated.resources.internal_port_already_exposed
 import io.github.bommbomm34.intervirt.canPortBind
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -18,7 +21,6 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject

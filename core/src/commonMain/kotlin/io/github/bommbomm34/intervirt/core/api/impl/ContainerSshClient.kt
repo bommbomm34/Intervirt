@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
-import org.apache.sshd.common.channel.PtyChannelConfiguration
 import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems

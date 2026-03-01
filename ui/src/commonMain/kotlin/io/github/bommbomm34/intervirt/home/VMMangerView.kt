@@ -10,11 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.boot
-import intervirt.ui.generated.resources.reboot
-import intervirt.ui.generated.resources.shutdown
-import intervirt.ui.generated.resources.sync_guest
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer

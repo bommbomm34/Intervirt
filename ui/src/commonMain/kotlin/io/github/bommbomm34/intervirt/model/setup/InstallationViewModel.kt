@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.applying_configuration
-import intervirt.ui.generated.resources.cancel
 import intervirt.ui.generated.resources.creating_intervirt_folder
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
@@ -18,8 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.KoinViewModel
-import kotlin.invoke
-import kotlin.times
 
 @KoinViewModel
 class InstallationViewModel(

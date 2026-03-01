@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.data
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 
 data class DialogState(
     val title: String = "",
