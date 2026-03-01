@@ -1,4 +1,4 @@
-package io.github.bommbomm34.intervirt.model.components
+package io.github.bommbomm34.intervirt.model
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,22 +26,28 @@ import kotlin.io.path.copyTo
 import kotlin.io.path.name
 
 @KoinViewModel
-class IOOptionsViewModel(
+class DeviceSettingsViewModel(
     private val appState: AppState,
     private val deviceManager: DeviceManager,
-    @InjectedParam val device: ViewDevice.Computer
+    @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
+    val computer: ViewDevice.Computer
+        get(){
+            check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
+            return device
+        }
+    var showPortForwardings by mutableStateOf(false)
     private var containerFilePath: Path? by mutableStateOf(null)
     var ioClient: ContainerIOClient? by mutableStateOf(null)
     private val logger = KotlinLogging.logger { }
 
     init {
         viewModelScope.launchDialogCatching(appState) {
-            ioClient = deviceManager.getIOClient(device.device).getOrThrow()
+            ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
         }
     }
 
-    fun download(){
+    fun download() {
         logger.debug { "Downloading file from ${device.id}" }
         appState.openDialog(width = 1000.dp, height = 800.dp) {
             ContainerFilePicker(
@@ -67,7 +73,7 @@ class IOOptionsViewModel(
         }
     }
 
-    fun upload(){
+    fun upload() {
         logger.debug { "Uploading file to ${device.id}" }
         viewModelScope.launch {
             val file = FileKit.openFilePicker()
@@ -90,7 +96,25 @@ class IOOptionsViewModel(
         }
     }
 
-    fun openShell(){
-        appState.openComputerShell = device
+    fun openShell() {
+        appState.openComputerShell = computer
+    }
+
+    fun togglePortForwardings(){
+        showPortForwardings = !showPortForwardings
+    }
+
+    fun start(){
+        viewModelScope.launchDialogCatching(appState) {
+            deviceManager.start(computer.device).getOrThrow()
+            computer.running = true
+        }
+    }
+
+    fun stop(){
+        viewModelScope.launchDialogCatching(appState) {
+            deviceManager.stop(computer.device).getOrThrow()
+            computer.running = false
+        }
     }
 }

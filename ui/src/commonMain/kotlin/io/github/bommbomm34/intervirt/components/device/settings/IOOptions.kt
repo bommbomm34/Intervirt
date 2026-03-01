@@ -12,37 +12,34 @@ import intervirt.ui.generated.resources.terminal
 import intervirt.ui.generated.resources.upload_file
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.model.components.IOOptionsViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
-fun IOOptions(device: ViewDevice.Computer) {
-    val viewModel = koinViewModel<IOOptionsViewModel> { parametersOf(device) }
-    viewModel.ioClient?.let { _ ->
-        IconButton(
-            onClick = viewModel::download,
-        ) {
-            GeneralIcon(
-                imageVector = Icons.Default.FileDownload,
-                contentDescription = stringResource(Res.string.download_file),
-            )
-        }
-        GeneralSpacer()
-        IconButton(
-            onClick = viewModel::upload,
-        ) {
-            GeneralIcon(
-                imageVector = Icons.Default.FileUpload,
-                contentDescription = stringResource(Res.string.upload_file),
-            )
-        }
-        GeneralSpacer()
-    }
+fun IOOptions(
+    onDownload: () -> Unit,
+    onUpload: () -> Unit,
+    onOpenShell: () -> Unit,
+) {
     IconButton(
-        onClick = viewModel::openShell,
+        onClick = onDownload,
+    ) {
+        GeneralIcon(
+            imageVector = Icons.Default.FileDownload,
+            contentDescription = stringResource(Res.string.download_file),
+        )
+    }
+    GeneralSpacer()
+    IconButton(
+        onClick = onUpload,
+    ) {
+        GeneralIcon(
+            imageVector = Icons.Default.FileUpload,
+            contentDescription = stringResource(Res.string.upload_file),
+        )
+    }
+    GeneralSpacer()
+    IconButton(
+        onClick = onOpenShell,
     ) {
         GeneralIcon(
             imageVector = Icons.Default.Terminal,

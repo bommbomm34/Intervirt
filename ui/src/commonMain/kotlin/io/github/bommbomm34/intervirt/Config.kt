@@ -7,10 +7,10 @@ import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContainerViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
+import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
-import io.github.bommbomm34.intervirt.model.components.IOOptionsViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.viewModel
@@ -28,7 +28,7 @@ val uiModule = module {
     singleOf(::AppState)
 
     viewModel<SettingsViewModel>()
-    viewModel<IOOptionsViewModel>()
+    viewModel<DeviceSettingsViewModel>()
     viewModel<SetupViewModel>()
     viewModel<HomeViewModel>()
 }
