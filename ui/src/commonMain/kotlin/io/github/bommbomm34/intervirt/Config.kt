@@ -7,6 +7,7 @@ import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContainerViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.mail.MailServerUserManagerViewModel
+import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
 import io.github.bommbomm34.intervirt.model.components.IOOptionsViewModel
@@ -38,6 +39,7 @@ val uiModule = module {
     viewModel<UpdaterViewModel>()
     viewModel<IOOptionsViewModel>()
     viewModel<SetupViewModel>()
+    viewModel<HomeViewModel>()
 }
 
 val intervirtOSViewModelsModule = module {

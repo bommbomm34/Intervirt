@@ -10,23 +10,23 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.home.DevicesView
 import io.github.bommbomm34.intervirt.home.OptionDropdown
 import io.github.bommbomm34.intervirt.home.VMManagerView
+import io.github.bommbomm34.intervirt.model.HomeViewModel
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun Home() {
-    val appState = koinInject<AppState>()
-    var devicesViewRenderKey by remember { mutableStateOf(0) }
-    key(devicesViewRenderKey) { DevicesView() }
+    val viewModel = koinViewModel<HomeViewModel>()
+    key(viewModel.devicesViewRenderKey) { DevicesView() }
     VMManagerView()
     AlignedBox(Alignment.BottomCenter) {
-        Text("${appState.devicesViewZoom.roundBy(1)}x")
+        Text(viewModel.getZoom())
     }
     AlignedBox(Alignment.TopEnd) {
-        var showOptions by remember { mutableStateOf(false) }
-        OptionsButton { showOptions = true }
+        OptionsButton { viewModel.showOptions = true }
         OptionDropdown(
-            expanded = showOptions,
-            onConfChange = { devicesViewRenderKey++ },
-        ) { showOptions = false }
+            expanded = viewModel.showOptions,
+            onConfChange = viewModel::onConfChange,
+        ) { viewModel.showOptions = false }
     }
 }
