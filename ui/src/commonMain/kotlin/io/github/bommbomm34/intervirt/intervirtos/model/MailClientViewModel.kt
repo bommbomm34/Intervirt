@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.sure_to_delete_mail
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.data.Address
@@ -19,7 +19,6 @@ import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 
@@ -53,17 +52,12 @@ class MailClientViewModel(
                 mail = mail,
                 onDelete = {
                     close()
-                    appState.openDialog {
-                        AcceptDialog(
-                            message = stringResource(Res.string.sure_to_delete_mail),
-                            onCancel = ::close,
-                        ) {
-                            close()
-                            scope.launch {
-                                appState.runDialogCatching {
-                                    client.deleteMail(mail).getOrThrow()
-                                    mails.remove(mail)
-                                }
+                    appState.openAcceptDialog(Res.string.sure_to_delete_mail) {
+                        close()
+                        scope.launch {
+                            appState.runDialogCatching {
+                                client.deleteMail(mail).getOrThrow()
+                                mails.remove(mail)
                             }
                         }
                     }

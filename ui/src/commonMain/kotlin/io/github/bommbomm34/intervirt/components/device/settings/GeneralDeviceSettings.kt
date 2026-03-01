@@ -12,8 +12,8 @@ import intervirt.ui.generated.resources.are_you_sure_to_remove_device
 import intervirt.ui.generated.resources.delete
 import intervirt.ui.generated.resources.name
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
@@ -46,21 +46,15 @@ fun GeneralDeviceSettings(
     GeneralSpacer()
     Button(
         onClick = {
-            appState.openDialog {
-                AcceptDialog(
-                    message = stringResource(Res.string.are_you_sure_to_remove_device, device.name),
-                    onCancel = ::close,
-                ) {
-                    scope.launchDialogCatching(appState) {
-                        close()
-                        onClose()
-                        appState.statefulConf.devices.remove(device)
-                        appState.statefulConf.connections.removeIf { it.containsDevice(device) }
-                        deviceManager.removeDevice(device.device).getOrThrow()
-                    }
+            appState.openAcceptDialog(Res.string.are_you_sure_to_remove_device, device.name) {
+                scope.launchDialogCatching(appState) {
+                    close()
+                    onClose()
+                    appState.statefulConf.devices.remove(device)
+                    appState.statefulConf.connections.removeIf { it.containsDevice(device) }
+                    deviceManager.removeDevice(device.device).getOrThrow()
                 }
             }
-
         },
         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
     ) {

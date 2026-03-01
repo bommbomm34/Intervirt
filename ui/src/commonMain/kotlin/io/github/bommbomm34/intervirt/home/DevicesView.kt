@@ -27,8 +27,8 @@ import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.buttons.AddDeviceButton
 import io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -38,7 +38,6 @@ import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.toPx
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.math.sqrt
 
@@ -52,7 +51,7 @@ fun DevicesView() {
     val appState = koinInject<AppState>()
     val configuration = koinInject<IntervirtConfiguration>()
     val statefulConf = appState.statefulConf
-    Box(Modifier.scale(appState.devicesViewZoom)){
+    Box(Modifier.scale(appState.devicesViewZoom)) {
         Canvas(
             Modifier
                 .fillMaxSize()
@@ -73,23 +72,18 @@ fun DevicesView() {
                                 strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
                             )
                         }?.let {
-                            appState.openDialog {
-                                AcceptDialog(
-                                    message = stringResource(
-                                        Res.string.are_you_sure_to_remove_connection,
-                                        it.device1.name,
-                                        it.device2.name,
-                                    ),
-                                    onCancel = ::close,
-                                ) {
-                                    close()
-                                    statefulConf.connections.remove(it)
-                                    scope.launchDialogCatching(appState) {
-                                        deviceManager.disconnectDevice(
-                                            it.device1.device,
-                                            it.device2.device,
-                                        ).getOrThrow()
-                                    }
+                            appState.openAcceptDialog(
+                                Res.string.are_you_sure_to_remove_connection,
+                                it.device1.name,
+                                it.device2.name,
+                            ) {
+                                close()
+                                statefulConf.connections.remove(it)
+                                scope.launchDialogCatching(appState) {
+                                    deviceManager.disconnectDevice(
+                                        it.device1.device,
+                                        it.device2.device,
+                                    ).getOrThrow()
                                 }
                             }
                         }
@@ -143,9 +137,11 @@ fun DevicesView() {
             )
         }
     }
-    LaunchedEffect(statefulConf){
+    LaunchedEffect(statefulConf) {
         selectedDevice?.let { if (!statefulConf.exists(it)) selectedDevice = null }
-        appState.drawingConnectionSource?.let { if (!statefulConf.exists(it)) appState.drawingConnectionSource = null }
+        appState.drawingConnectionSource?.let {
+            if (!statefulConf.exists(it)) appState.drawingConnectionSource = null
+        }
         if (selectedDevice == null) appState.deviceSettingsVisible = false
     }
     AnimatedVisibility(appState.deviceSettingsVisible) {

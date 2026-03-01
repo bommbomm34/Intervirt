@@ -10,6 +10,9 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.no
 import intervirt.ui.generated.resources.yes
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.DialogState
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -41,4 +44,16 @@ fun AcceptDialog(
             }
         }
     }
+}
+
+fun AppState.openAcceptDialog(
+    res: StringResource,
+    vararg formatArgs: String,
+    onAccept: DialogState.() -> Unit,
+) = openDialog {
+    AcceptDialog(
+        message = stringResource(res, *formatArgs),
+        onCancel = ::close,
+        onAccept = { onAccept() },
+    )
 }

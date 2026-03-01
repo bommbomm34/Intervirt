@@ -6,13 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.sure_to_delete_user
-import io.github.bommbomm34.intervirt.components.dialogs.AcceptDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.mail.server.AddMailUserView
-import org.jetbrains.compose.resources.stringResource
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 
@@ -35,23 +34,17 @@ class MailServerUserManagerViewModel(
         }
     }
 
-    fun removeUser(user: MailUser){
-        appState.openDialog {
-            val scope = rememberCoroutineScope()
-            AcceptDialog(
-                message = stringResource(Res.string.sure_to_delete_user),
-                onCancel = ::close,
-            ) {
-                close()
-                scope.launchDialogCatching(appState) {
-                    mailServer.removeMailUser(user).getOrThrow()
-                    users.remove(user)
-                }
+    fun removeUser(user: MailUser) {
+        appState.openAcceptDialog(Res.string.sure_to_delete_user) {
+            close()
+            viewModelScope.launchDialogCatching(appState) {
+                mailServer.removeMailUser(user).getOrThrow()
+                users.remove(user)
             }
         }
     }
 
-    fun addUser(){
+    fun addUser() {
         appState.openDialog {
             val scope = rememberCoroutineScope()
             AddMailUserView(mailServer) {
