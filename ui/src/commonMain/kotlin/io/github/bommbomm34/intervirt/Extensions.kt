@@ -31,7 +31,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import io.ktor.utils.io.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
@@ -103,14 +103,14 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
                 flow = init(),
                 onClose = ::close,
                 onMessage = { progress ->
-                    if (progress is ResultProgress.Result){
+                    if (progress is ResultProgress.Result) {
                         progress.result.fold(
                             onSuccess = { initialized.value = true },
                             onFailure = {
                                 scope.launch {
                                     appState.showExceptionDialog(it)
                                 }
-                            }
+                            },
                         )
                     }
                 },
@@ -142,14 +142,21 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
 
 fun File.writeConf(configuration: IntervirtConfiguration) = writeText(defaultJson.encodeToString(configuration))
 
-suspend fun File.loadConf(
+fun File.loadConf(
     configuration: IntervirtConfiguration,
     appState: AppState,
     guestManager: GuestManager,
+    onComplete: () -> Unit = {},
 ) {
     val fileContent = readText()
     val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
     configuration.update(newConfiguration)
-    guestManager.syncConfiguration(configuration).collect()
+    val flow = guestManager.syncConfiguration(configuration).onCompletion { onComplete() }
+    appState.openDialog {
+        ProgressDialog(
+            flow = flow,
+            onClose = ::close,
+        )
+    }
     appState.statefulConf.update(ViewConfiguration(newConfiguration))
 }

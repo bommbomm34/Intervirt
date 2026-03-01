@@ -25,6 +25,7 @@ import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
 import java.awt.Desktop
@@ -59,8 +60,7 @@ class HomeViewModel(
             val file = FileKit.openFilePicker(
                 type = FileKitType.File(extensions = listOf("ivrt")),
             )
-            if (file != null) {
-                file.file.loadConf(configuration, appState, guestManager)
+            file?.file?.loadConf(configuration, appState, guestManager){
                 onConfChange()
             }
         }
@@ -112,7 +112,7 @@ class HomeViewModel(
         showOptions = false
     }
 
-    fun onUpdate(){
+    fun onUpdate() {
         viewModelScope.launchDialogCatching(appState) {
             appState.openDialog {
                 ProgressDialog(
@@ -128,7 +128,7 @@ class HomeViewModel(
 
     fun boot() {
         viewModelScope.launchDialogCatching(appState) {
-            if (vmRunning){
+            if (vmRunning) {
                 qemuClient.shutdownAlpine()
             } else {
                 qemuClient.bootAlpine().getOrThrow()
