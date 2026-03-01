@@ -76,7 +76,7 @@ fun MailClient(
         } else {
             var credentials: MailConnectionDetails? by remember { mutableStateOf(null) }
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(client) {
                 credentials = client.loadCredentials()
             }
 

@@ -19,7 +19,7 @@ fun <T> FlowProgressView(
     var progress by remember { mutableStateOf(0f) }
     var messageColor by remember { mutableStateOf(defaultMessageColor) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(flow) {
         onJobChange(coroutineContext.job)
         flow.collect { resultProgress ->
             messageColor =

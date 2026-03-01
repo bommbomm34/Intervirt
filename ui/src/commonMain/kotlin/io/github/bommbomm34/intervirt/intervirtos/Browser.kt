@@ -29,7 +29,7 @@ fun Browser(
     var url by remember { mutableStateOf("") } // URL in the search bar
     var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
     var proxyUrl: Address? by remember { mutableStateOf(null) }
-    CatchingLaunchedEffect {
+    CatchingLaunchedEffect(browser) {
         proxyUrl = browser.getProxyUrl().getOrThrow()
     }
     CenterColumn {

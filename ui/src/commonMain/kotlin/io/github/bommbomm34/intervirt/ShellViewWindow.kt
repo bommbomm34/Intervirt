@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.runtime.*
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.ShellView
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
@@ -14,10 +15,8 @@ fun ShellViewWindow(computer: ViewDevice.Computer) {
     val deviceManager = koinInject<DeviceManager>()
     val appState = koinInject<AppState>()
     var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
-    LaunchedEffect(computer) {
-        appState.runDialogCatching {
-            ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
-        }
+    CatchingLaunchedEffect(computer) {
+        ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
     }
     CenterColumn {
         ioClient?.let {

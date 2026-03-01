@@ -30,7 +30,7 @@ fun DnsServer(
     val records = remember { mutableStateListOf<DnsRecord>() }
 
     if (initialized) {
-        CatchingLaunchedEffect {
+        CatchingLaunchedEffect(dnsServer) {
             records.clear()
             records.addAll(dnsServer.listRecords().getOrThrow())
         }

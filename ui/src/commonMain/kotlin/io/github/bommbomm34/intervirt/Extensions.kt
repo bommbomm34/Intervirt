@@ -85,7 +85,7 @@ fun AppEnv.isDarkMode() = state { ::DARK_MODE }.value ?: isSystemInDarkTheme()
 fun Dp.toPx() = density.run { toPx() }
 
 @Composable
-fun <T> IntervirtOSClient.rememberManager(func: (IntervirtOSClient) -> T): T = remember { func(this) }
+fun <T> IntervirtOSClient.rememberManager(func: (IntervirtOSClient) -> T): T = remember(this) { func(this) }
 
 @Composable
 fun <T> IntervirtOSClient.rememberManager(func: (AppEnv, IntervirtOSClient) -> T): T {
@@ -130,7 +130,7 @@ fun rememberProxyManager(
     appEnv: AppEnv,
     deviceManager: DeviceManager,
     osClient: IntervirtOSClient,
-) = remember { ProxyManager(appEnv, deviceManager, osClient) }
+) = remember(osClient) { ProxyManager(appEnv, deviceManager, osClient) }
 
 @OptIn(ExperimentalComposeUiApi::class)
 suspend fun Clipboard.copyToClipboard(text: String) {

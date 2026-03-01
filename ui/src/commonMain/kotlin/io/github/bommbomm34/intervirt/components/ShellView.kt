@@ -17,7 +17,7 @@ fun ShellView(ioClient: ContainerIOClient) {
     val appState = koinInject<AppState>()
     if (ioClient is ContainerSshClient) {
         val state = rememberEmbeddableTerminalState()
-        val platformServices = remember { ContainerPlatformServices(ioClient) }
+        val platformServices = remember(ioClient) { ContainerPlatformServices(ioClient) }
         EmbeddableTerminal(
             state = state,
             platformServices = platformServices,

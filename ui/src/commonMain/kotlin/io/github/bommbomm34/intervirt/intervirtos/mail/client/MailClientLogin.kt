@@ -28,7 +28,7 @@ fun MailClientLogin(
     var isSmtpAddressValid by remember { mutableStateOf(true) }
     var isImapAddressValid by remember { mutableStateOf(true) }
     var username by remember { mutableStateOf(credentials.username) }
-    var password = rememberTextFieldState(credentials.password)
+    val password = rememberTextFieldState(credentials.password)
     var saveDetails by remember { mutableStateOf(false) }
     CenterColumn {
         // SMTP Address

@@ -8,11 +8,11 @@ import org.koin.compose.koinInject
 
 @Composable
 fun CatchingLaunchedEffect(
-    key: Any? = Unit,
+    vararg keys: Any?,
     block: suspend CoroutineScope.() -> Unit,
 ) {
     val appState = koinInject<AppState>()
-    LaunchedEffect(key) {
+    LaunchedEffect(*keys) {
         appState.runDialogCatching { block() }
     }
 }

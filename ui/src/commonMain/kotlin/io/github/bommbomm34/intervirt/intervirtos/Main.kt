@@ -20,7 +20,7 @@ fun Main(computer: ViewDevice.Computer) {
     val deviceManager = koinInject<DeviceManager>()
     var osClient: IntervirtOSClient? by remember { mutableStateOf(null) }
     var appInfo: AppInfo? by remember { mutableStateOf(null) }
-    CatchingLaunchedEffect {
+    CatchingLaunchedEffect(deviceManager) {
         osClient = deviceManager.getIntervirtOSClient(computer.device).getOrThrow()
     }
     osClient?.let { osClient ->
