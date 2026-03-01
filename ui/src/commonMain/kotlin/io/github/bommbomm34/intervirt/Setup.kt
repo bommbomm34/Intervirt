@@ -12,18 +12,14 @@ import io.github.bommbomm34.intervirt.components.buttons.NextButton
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.model.SetupViewModel
 import io.github.bommbomm34.intervirt.setup.Installation
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun Setup() {
-    val appEnv = koinInject<AppEnv>()
-    var currentSetupScreenIndex by remember { mutableStateOf(0) }
-    val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
-        { VMConfiguration(appEnv) },
-        { AppConfiguration(appEnv) },
-        { Installation() },
-    )
+    val viewModel = koinViewModel<SetupViewModel>()
     AlignedBox(Alignment.TopCenter) {
         Text(
             text = "Intervirt Setup",
@@ -32,24 +28,24 @@ fun Setup() {
     }
     AlignedBox(Alignment.Center) {
         MultipleAnimatedVisibility(
-            visible = currentSetupScreenIndex,
-            screens = setupScreens,
+            visible = viewModel.currentSetupScreenIndex,
+            screens = viewModel.setupScreens,
         )
     }
     AlignedBox(Alignment.BottomStart) {
-        BackButton(currentSetupScreenIndex > 0) {
-            currentSetupScreenIndex--
+        BackButton(viewModel.currentSetupScreenIndex > 0) {
+            viewModel.currentSetupScreenIndex--
         }
     }
     AlignedBox(Alignment.BottomCenter) {
         Text(
-            text = (currentSetupScreenIndex + 1).toString(),
+            text = (viewModel.currentSetupScreenIndex + 1).toString(),
             fontSize = 25.sp,
         )
     }
     AlignedBox(Alignment.BottomEnd) {
-        NextButton(currentSetupScreenIndex < setupScreens.size - 1) {
-            currentSetupScreenIndex++
+        NextButton(viewModel.currentSetupScreenIndex < viewModel.setupScreens.size - 1) {
+            viewModel.currentSetupScreenIndex++
         }
     }
 }
