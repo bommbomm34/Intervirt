@@ -53,18 +53,22 @@ fun DeviceSettings(
                             ComputerStartButton(device, viewModel::start, viewModel::stop)
                         }
                         GeneralSpacer()
-                        Ipv4TextField(device)
+                        Ipv4TextField(device.ipv4, viewModel::changeIpv4)
                         GeneralSpacer()
-                        Ipv6TextField(device)
+                        Ipv6TextField(device.ipv6, viewModel::changeIpv6)
                         GeneralSpacer()
                         MacTextField(device)
                         GeneralSpacer()
-                        InternetEnabledOption(device)
+                        InternetEnabledOption(device.internetEnabled, viewModel::enableInternetAccess)
                         GeneralSpacer()
                     }
                 }
                 AnimatedVisibility(viewModel.showPortForwardings) {
-                    PortForwardingSettings(device)
+                    PortForwardingSettings(
+                        device = device,
+                        onAdd = viewModel::openAddPortForwarding,
+                        onRemove = viewModel::removePortForwarding,
+                    )
                 }
                 GeneralSpacer()
                 // Show/Hide port forwardings

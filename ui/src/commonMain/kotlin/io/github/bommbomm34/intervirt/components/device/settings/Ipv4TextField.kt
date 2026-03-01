@@ -16,21 +16,16 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun Ipv4TextField(device: ViewDevice.Computer) {
+fun Ipv4TextField(
+    ipv4: String,
+    onIpv4Change: (String) -> Unit
+) {
     var validIpv4 by remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
-    val deviceManager = koinInject<DeviceManager>()
-    val appState = koinInject<AppState>()
     OutlinedTextField(
-        value = device.ipv4,
+        value = ipv4,
         onValueChange = {
-            scope.launchDialogCatching(appState) {
-                validIpv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
-                if (validIpv4) {
-                    device.ipv4 = it
-                    deviceManager.setIpv4(device.device, it).getOrThrow()
-                }
-            }
+            validIpv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
+            if (validIpv4) onIpv4Change(it)
         },
         label = {
             if (validIpv4) {

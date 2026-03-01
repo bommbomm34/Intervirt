@@ -25,26 +25,21 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-private val protocols = listOf("TCP", "UDP")
-
 @Composable
 fun AddPortForwardingDialog(
-    device: ViewDevice.Computer,
+    onAdd: (PortForwarding) -> Unit,
+    onLint: suspend (PortForwarding) -> Result<Unit>,
     onCancel: () -> Unit,
 ) {
     CenterColumn {
         var portForwarding by remember { mutableStateOf(PortForwarding.DEFAULT) }
         var result by remember { mutableStateOf(Result.success(Unit)) }
-        val scope = rememberCoroutineScope()
-        val deviceManager = koinInject<DeviceManager>()
-        val configuration = koinInject<IntervirtConfiguration>()
-        val appState = koinInject<AppState>()
         PortForwardingChooser(
             portForwarding = portForwarding,
             onChangePortForwarding = { portForwarding = it },
         )
-        LaunchedEffect(portForwarding.externalPort, portForwarding.internalPort) {
-            result = configuration.lint(device, portForwarding)
+        LaunchedEffect(portForwarding) {
+            result = onLint(portForwarding)
         }
         if (result.isFailure) {
             result.exceptionOrNull()?.let { exp ->
@@ -69,44 +64,13 @@ fun AddPortForwardingDialog(
             GeneralSpacer()
             Button(
                 onClick = {
-                    scope.launchDialogCatching(appState) {
-                        device.portForwardings.add(portForwarding)
-                        deviceManager.addPortForwarding(device.device, portForwarding).getOrThrow()
-                        onCancel()
-                    }
+                    onAdd(portForwarding)
+                    onCancel()
                 },
                 enabled = result.isSuccess,
             ) {
                 Text(stringResource(Res.string.add_port_forwarding))
             }
         }
-    }
-}
-
-
-private suspend fun IntervirtConfiguration.lint(
-    device: ViewDevice.Computer,
-    portForwarding: PortForwarding,
-): Result<Unit> {
-    val bindResult = portForwarding.externalPort.canPortBind()
-    return when {
-        device.portForwardings.any { it.internalPort == portForwarding.internalPort } -> Result.failure(
-            IllegalArgumentException(
-                getString(
-                    Res.string.internal_port_already_exposed,
-                ),
-            ),
-        )
-
-        devices.any { device ->
-            if (device is Device.Computer) device.portForwardings.any {
-                it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
-            } else false
-        } -> Result.failure(
-            IllegalArgumentException(getString(Res.string.external_port_already_bound)),
-        )
-
-        bindResult.isFailure -> Result.failure(bindResult.exceptionOrNull()!!)
-        else -> Result.success(Unit)
     }
 }

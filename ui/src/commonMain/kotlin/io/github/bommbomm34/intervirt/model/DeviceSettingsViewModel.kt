@@ -7,10 +7,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.external_port_already_bound
+import intervirt.ui.generated.resources.internal_port_already_exposed
+import io.github.bommbomm34.intervirt.canPortBind
+import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -19,6 +27,7 @@ import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.name
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 import java.nio.file.Path
@@ -29,6 +38,7 @@ import kotlin.io.path.name
 class DeviceSettingsViewModel(
     private val appState: AppState,
     private val deviceManager: DeviceManager,
+    private val configuration: IntervirtConfiguration,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
     val computer: ViewDevice.Computer
@@ -115,6 +125,76 @@ class DeviceSettingsViewModel(
         viewModelScope.launchDialogCatching(appState) {
             deviceManager.stop(computer.device).getOrThrow()
             computer.running = false
+        }
+    }
+
+    fun changeIpv4(ipv4: String){
+        viewModelScope.launchDialogCatching(appState){
+            computer.ipv4 = ipv4
+            deviceManager.setIpv4(computer.device, ipv4).getOrThrow()
+        }
+    }
+
+    fun changeIpv6(ipv6: String){
+        viewModelScope.launchDialogCatching(appState){
+            computer.ipv6 = ipv6
+            deviceManager.setIpv6(computer.device, ipv6).getOrThrow()
+        }
+    }
+
+    fun enableInternetAccess(enabled: Boolean){
+        viewModelScope.launchDialogCatching(appState){
+            computer.internetEnabled = enabled
+            deviceManager.setInternetEnabled(computer.device, enabled).getOrThrow()
+        }
+    }
+
+    fun openAddPortForwarding(){
+        appState.openDialog(width = 800.dp) {
+            AddPortForwardingDialog(
+                onAdd = ::addPortForwarding,
+                onLint = ::lintPortForwarding,
+                onCancel = ::close,
+            )
+        }
+    }
+
+    fun addPortForwarding(portForwarding: PortForwarding){
+        viewModelScope.launchDialogCatching(appState){
+            computer.portForwardings.add(portForwarding)
+            deviceManager.addPortForwarding(computer.device, portForwarding).getOrThrow()
+        }
+    }
+
+    fun removePortForwarding(portForwarding: PortForwarding){
+        viewModelScope.launchDialogCatching(appState) {
+            computer.portForwardings.remove(portForwarding)
+            deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
+                .getOrThrow()
+        }
+    }
+
+    suspend fun lintPortForwarding(portForwarding: PortForwarding): Result<Unit> {
+        val bindResult = portForwarding.externalPort.canPortBind()
+        return when {
+            computer.portForwardings.any { it.internalPort == portForwarding.internalPort } -> Result.failure(
+                IllegalArgumentException(
+                    getString(
+                        Res.string.internal_port_already_exposed,
+                    ),
+                ),
+            )
+
+            configuration.devices.any { device ->
+                if (device is Device.Computer) device.portForwardings.any {
+                    it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
+                } else false
+            } -> Result.failure(
+                IllegalArgumentException(getString(Res.string.external_port_already_bound)),
+            )
+
+            bindResult.isFailure -> Result.failure(bindResult.exceptionOrNull()!!)
+            else -> Result.success(Unit)
         }
     }
 }
