@@ -35,3 +35,5 @@ plugins {
 include(":ui")
 include(":core")
 include(":webview")
+
+include("secret")
