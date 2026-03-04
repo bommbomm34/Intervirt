@@ -21,7 +21,7 @@ kotlin {
         commonTest.dependencies {
             compileOnly(libs.koin.test)
             compileOnly(libs.kotlin.test)
-            implementation(libs.kotlinx.coroutines.test)
+            compileOnly(libs.kotlinx.coroutines.test)
         }
         jvmMain.dependencies {
             implementation(libs.docker.java.core)

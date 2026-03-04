@@ -6,6 +6,7 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Composable
@@ -18,10 +19,8 @@ fun Dialog(state: DialogState) {
 fun CoroutineScope.launchDialogCatching(
     appState: AppState,
     block: suspend CoroutineScope.() -> Unit,
-) {
-    launch {
-        appState.runDialogCatching {
-            block()
-        }
+): Job = launch {
+    appState.runDialogCatching {
+        block()
     }
 }

@@ -114,39 +114,29 @@ class DeviceSettingsViewModel(
         showPortForwardings = !showPortForwardings
     }
 
-    fun start(){
-        viewModelScope.launchDialogCatching(appState) {
-            deviceManager.start(computer.device).getOrThrow()
-            computer.running = true
-        }
+    fun start() = viewModelScope.launchDialogCatching(appState) {
+        deviceManager.start(computer.device).getOrThrow()
+        computer.running = true
     }
 
-    fun stop(){
-        viewModelScope.launchDialogCatching(appState) {
-            deviceManager.stop(computer.device).getOrThrow()
-            computer.running = false
-        }
+    fun stop() = viewModelScope.launchDialogCatching(appState) {
+        deviceManager.stop(computer.device).getOrThrow()
+        computer.running = false
     }
 
-    fun changeIpv4(ipv4: String){
-        viewModelScope.launchDialogCatching(appState){
-            computer.ipv4 = ipv4
-            deviceManager.setIpv4(computer.device, ipv4).getOrThrow()
-        }
+    fun changeIpv4(ipv4: String) = viewModelScope.launchDialogCatching(appState){
+        computer.ipv4 = ipv4
+        deviceManager.setIpv4(computer.device, ipv4).getOrThrow()
     }
 
-    fun changeIpv6(ipv6: String){
-        viewModelScope.launchDialogCatching(appState){
-            computer.ipv6 = ipv6
-            deviceManager.setIpv6(computer.device, ipv6).getOrThrow()
-        }
+    fun changeIpv6(ipv6: String) = viewModelScope.launchDialogCatching(appState){
+        computer.ipv6 = ipv6
+        deviceManager.setIpv6(computer.device, ipv6).getOrThrow()
     }
 
-    fun enableInternetAccess(enabled: Boolean){
-        viewModelScope.launchDialogCatching(appState){
-            computer.internetEnabled = enabled
-            deviceManager.setInternetEnabled(computer.device, enabled).getOrThrow()
-        }
+    fun enableInternetAccess(enabled: Boolean) = viewModelScope.launchDialogCatching(appState){
+        computer.internetEnabled = enabled
+        deviceManager.setInternetEnabled(computer.device, enabled).getOrThrow()
     }
 
     fun openAddPortForwarding(){
@@ -159,19 +149,15 @@ class DeviceSettingsViewModel(
         }
     }
 
-    fun addPortForwarding(portForwarding: PortForwarding){
-        viewModelScope.launchDialogCatching(appState){
-            computer.portForwardings.add(portForwarding)
-            deviceManager.addPortForwarding(computer.device, portForwarding).getOrThrow()
-        }
+    fun addPortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState){
+        computer.portForwardings.add(portForwarding)
+        deviceManager.addPortForwarding(computer.device, portForwarding).getOrThrow()
     }
 
-    fun removePortForwarding(portForwarding: PortForwarding){
-        viewModelScope.launchDialogCatching(appState) {
-            computer.portForwardings.remove(portForwarding)
-            deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
-                .getOrThrow()
-        }
+    fun removePortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
+        computer.portForwardings.remove(portForwarding)
+        deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
+            .getOrThrow()
     }
 
     suspend fun lintPortForwarding(portForwarding: PortForwarding): Result<Unit> {
