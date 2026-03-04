@@ -34,12 +34,5 @@ val coreModule = module {
     single { SecretService("io.github.bommbomm34.intervirt") }
     single { getAppEnv() }
     single { getHttpClient() }
-    single {
-        IntervirtConfiguration(
-            version = CURRENT_VERSION,
-            author = "",
-            devices = mutableListOf(),
-            connections = mutableListOf(),
-        )
-    }
+    single { IntervirtConfiguration.default() }
 }

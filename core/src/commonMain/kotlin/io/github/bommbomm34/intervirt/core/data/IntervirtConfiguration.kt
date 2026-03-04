@@ -15,6 +15,15 @@ data class IntervirtConfiguration(
     val devices: MutableList<Device> = mutableListOf(),
     val connections: MutableList<DeviceConnection> = mutableListOf(),
 ) {
+    companion object {
+        fun default() = IntervirtConfiguration(
+            version = CURRENT_VERSION,
+            author = "",
+            devices = mutableListOf(),
+            connections = mutableListOf(),
+        )
+    }
+
     fun update(configuration: IntervirtConfiguration) {
         author = configuration.author
         devices.clear()

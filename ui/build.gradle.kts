@@ -42,6 +42,10 @@ kotlin {
             implementation(libs.material.kolor)
             implementation(libs.compose.colorpicker)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.koin.test)
+        }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
