@@ -59,7 +59,6 @@ class IntervirtOSStore(ioClient: ContainerIOClient) {
         val name = this::class.simpleName!!
 
         object MAIL_USERNAME : Accessor<String>({ it ?: "" })
-        object MAIL_PASSWORD : Accessor<String>({ it ?: "" })
         object SMTP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
         object IMAP_SERVER_ADDRESS : Accessor<Address>({ it?.parseAddress() ?: Address.EXAMPLE })
         object SMTP_SAFETY : Accessor<MailConnectionSafety>(

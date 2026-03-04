@@ -8,8 +8,10 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.sure_to_delete_mail
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
@@ -18,6 +20,7 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
+import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
@@ -25,10 +28,14 @@ import org.koin.core.annotation.KoinViewModel
 @KoinViewModel
 class MailClientViewModel(
     private val appState: AppState,
-    private val appEnv: AppEnv,
-    @InjectedParam val client: MailClientManager,
-    @InjectedParam val proxyClient: ProxyManager,
+    appEnv: AppEnv,
+    deviceManager: DeviceManager,
+    secretService: SecretService,
+    @InjectedParam val osClient: IntervirtOSClient,
 ) : ViewModel() {
+    val proxyClient = ProxyManager(appEnv, deviceManager, osClient)
+    val client = MailClientManager(osClient, secretService)
+
     val mails = mutableStateListOf<Mail>()
     var proxyUrl: Address? by mutableStateOf(null)
     var initialized by mutableStateOf(false)

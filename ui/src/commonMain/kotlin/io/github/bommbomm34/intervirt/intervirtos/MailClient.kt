@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
 import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -36,11 +37,7 @@ import org.koin.core.parameter.parametersOf
 fun MailClient(
     osClient: IntervirtOSClient,
 ) {
-    val appEnv = koinInject<AppEnv>()
-    val deviceManager = koinInject<DeviceManager>()
-    val client = osClient.rememberManager(::MailClientManager)
-    val proxyClient = rememberProxyManager(appEnv, deviceManager, osClient)
-    val viewModel = koinViewModel<MailClientViewModel> { parametersOf(client, proxyClient) }
+    val viewModel = koinViewModel<MailClientViewModel> { parametersOf(osClient) }
 
     viewModel.proxyUrl?.let { proxy ->
         if (viewModel.initialized) {
@@ -71,8 +68,8 @@ fun MailClient(
         } else {
             var credentials: MailConnectionDetails? by remember { mutableStateOf(null) }
 
-            LaunchedEffect(client) {
-                credentials = client.loadCredentials()
+            CatchingLaunchedEffect(viewModel.client) {
+                credentials = viewModel.client.loadCredentials().getOrThrow()
             }
 
             credentials?.let { creds ->

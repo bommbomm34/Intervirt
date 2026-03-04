@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.kommand)
             implementation(libs.sshd.core)
             implementation(libs.sshd.sftp)
+            api(projects.secret)
         }
     }
 }

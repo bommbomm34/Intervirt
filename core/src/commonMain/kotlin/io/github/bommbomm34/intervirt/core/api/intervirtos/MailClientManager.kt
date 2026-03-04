@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.core.data.toMail
 import io.github.bommbomm34.intervirt.core.parseMailAddress
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.mail.*
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +20,11 @@ import java.util.*
 
 class MailClientManager(
     osClient: IntervirtOSClient,
+    private val secretService: SecretService,
 ) : AsyncCloseable {
-    private val store = osClient.getClient(this).store
+    private val client = osClient.getClient(this)
+    private val store = client.store
+    private val mailPasswordKey = "MAIL_PASSWORD_${client.computer.id}"
     private val logger = KotlinLogging.logger { }
     private var smtpSession: Session? = null
     private var imapStore: Store? = null
@@ -148,25 +152,27 @@ class MailClientManager(
 
     suspend fun saveCredentials(details: MailConnectionDetails) = runSuspendingCatching {
         store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.MAIL_PASSWORD, details.password).getOrThrow()
+        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray()).getOrThrow()
         store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress).getOrThrow()
         store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress).getOrThrow()
         store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety).getOrThrow()
         store.set(IntervirtOSStore.Accessor.IMAP_SAFETY, details.imapSafety).getOrThrow()
     }
 
-    suspend fun loadCredentials() = MailConnectionDetails(
-        smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS],
-        imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS],
-        username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
-        password = store[IntervirtOSStore.Accessor.MAIL_PASSWORD],
-        smtpSafety = store[IntervirtOSStore.Accessor.SMTP_SAFETY],
-        imapSafety = store[IntervirtOSStore.Accessor.IMAP_SAFETY],
-    )
+    suspend fun loadCredentials(): Result<MailConnectionDetails> = runSuspendingCatching {
+        MailConnectionDetails(
+            smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS],
+            imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS],
+            username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
+            password = secretService.getEntry(mailPasswordKey).getOrThrow()?.decodeToString() ?: "",
+            smtpSafety = store[IntervirtOSStore.Accessor.SMTP_SAFETY],
+            imapSafety = store[IntervirtOSStore.Accessor.IMAP_SAFETY],
+        )
+    }
 
     suspend fun clearCredentials(): Result<Unit> = runSuspendingCatching {
         store.delete(IntervirtOSStore.Accessor.MAIL_USERNAME).getOrThrow()
-        store.delete(IntervirtOSStore.Accessor.MAIL_PASSWORD).getOrThrow()
+        secretService.removeEntry(mailPasswordKey).getOrThrow()
         store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS).getOrThrow()
         store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS).getOrThrow()
         store.delete(IntervirtOSStore.Accessor.SMTP_SAFETY).getOrThrow()
