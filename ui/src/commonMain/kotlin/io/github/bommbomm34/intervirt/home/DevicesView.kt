@@ -185,7 +185,6 @@ fun isPointOnLine(
     val dy = end.y - start.y
 
     val lengthSquared = dx * dx + dy * dy
-    if (lengthSquared == 0f) return false
 
     val t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared
 
