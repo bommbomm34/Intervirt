@@ -1,14 +1,17 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
+import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.getAppEnv
+import io.github.bommbomm34.intervirt.core.getHttpClient
+import io.ktor.client.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -21,10 +24,17 @@ class GuestManagerTest : KoinTest {
 
     @BeforeTest
     fun startTest() {
+        val testWithAgentClient = System.getenv("INTERVIRT_TEST_WITH_AGENT").toBoolean()
         startKoin {
             modules(
                 module {
-                    singleOf(::VirtualGuestManager).binds(arrayOf(GuestManager::class))
+                    if (testWithAgentClient) {
+                        single<AppEnv> { getAppEnv() }
+                        single<HttpClient> { getHttpClient() }
+                        single<GuestManager> { AgentClient(get(), get()) }
+                    } else {
+                        single<GuestManager> { VirtualGuestManager() }
+                    }
                 },
             )
         }
@@ -146,6 +156,7 @@ class GuestManagerTest : KoinTest {
         internet = false,
         image = "my-image",
     ).getOrThrow()
+
 
     private suspend fun addTestPortForwarding() = guestManager.addPortForwarding(
         id = TEST_CONTAINER_ID,
