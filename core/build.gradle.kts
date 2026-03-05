@@ -19,9 +19,9 @@ kotlin {
             implementation(libs.multiplatform.settings.serialization)
         }
         commonTest.dependencies {
-            compileOnly(libs.koin.test)
-            compileOnly(libs.kotlin.test)
-            compileOnly(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
         jvmMain.dependencies {
             implementation(libs.docker.java.core)
