@@ -1,10 +1,14 @@
 package io.github.bommbomm34.intervirt.core
 
 import com.russhwolf.settings.PreferencesSettings
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.secret.SecretService
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -106,4 +110,22 @@ fun AppEnv.initLogging() {
     val effectiveLoggerLevel = if (DEBUG_ENABLED) "DEBUG" else LOGGER_LEVEL
     val rootLogger = Logger.getRootLogger()
     rootLogger.level = Level.toLevel(effectiveLoggerLevel)
+}
+
+/**
+ * Shuts all services down gracefully.
+ * This method doesn't exit the application.
+ */
+suspend fun gracefulShutdown(
+    deviceManager: DeviceManager? = null,
+    guestManager: GuestManager? = null,
+    qemuClient: QemuClient? = null,
+    httpClient: HttpClient? = null,
+    secretService: SecretService? = null,
+){
+    deviceManager?.close()
+    guestManager?.close()
+    qemuClient?.close()
+    httpClient?.close()
+    secretService?.close()
 }

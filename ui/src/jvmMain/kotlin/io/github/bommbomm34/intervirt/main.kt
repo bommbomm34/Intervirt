@@ -21,11 +21,13 @@ import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.gracefulShutdown
 import io.github.bommbomm34.intervirt.core.initLogging
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
+import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.FileKit
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
@@ -48,6 +50,7 @@ fun main() = application {
         val guestManager = koinInject<GuestManager>()
         val qemuClient = koinInject<QemuClient>()
         val httpClient = koinInject<HttpClient>()
+        val secretService = koinInject<SecretService>()
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
         val configuration = koinInject<IntervirtConfiguration>()
@@ -63,23 +66,24 @@ fun main() = application {
                 Thread {
                     runBlocking {
                         if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(configuration)
-                        deviceManager.close()
-                        guestManager.close()
-                        qemuClient.close()
-                        httpClient.close()
+                        gracefulShutdown(deviceManager, guestManager, qemuClient, httpClient, secretService)
                     }
                 },
             )
             setDefaultExceptionHandler()
             // Load temp file if exists
-            if (tempConfFile.exists() && appEnv.ENABLE_TEMP_FILE) tempConfFile.loadConf(configuration, appState, guestManager)
+            if (tempConfFile.exists() && appEnv.ENABLE_TEMP_FILE) tempConfFile.loadConf(
+                configuration,
+                appState,
+                guestManager,
+            )
         }
         CatchingLaunchedEffect {
             appState.images.clear()
             appState.images.addAll(httpClient.getImages(appEnv.IMAGES_URL).getOrThrow())
         }
         density = LocalDensity.current
-        key(appState.appEnvChangeKey){
+        key(appState.appEnvChangeKey) {
             // Main Window
             Window(
                 onCloseRequest = {
