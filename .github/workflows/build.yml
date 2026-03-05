@@ -31,7 +31,7 @@ jobs:
       - name: Build .rpm
         run: ./gradlew :ui:packageRpm
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: intervirt_linux
           path: |
@@ -57,7 +57,7 @@ jobs:
       - name: Build .exe
         run: ./gradlew :ui:packageExe
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: intervirt_windows
           path: |
