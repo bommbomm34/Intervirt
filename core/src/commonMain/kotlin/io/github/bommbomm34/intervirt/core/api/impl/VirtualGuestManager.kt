@@ -4,6 +4,7 @@ import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -122,6 +123,21 @@ class VirtualGuestManager : GuestManager {
     override suspend fun reboot() = Result.success(Unit)
 
     override suspend fun getVersion() = Result.success(CURRENT_VERSION)
+
+    override suspend fun getContainers(): Result<List<ContainerInfo>> = runCatching {
+        containers.map {
+            ContainerInfo(
+                id = it.id,
+                ipv4 = it.ipv4,
+                ipv6 = it.ipv6,
+                mac = it.mac,
+                internet = it.internet,
+                image = it.image,
+                portForwardings = it.portForwardings,
+                running = it.running,
+            )
+        }
+    }
 
     private fun getContainerByID(id: String) = containers.first { it.id == id }
 

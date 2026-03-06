@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.core.api.impl
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.agent.RequestBody
 import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
 import io.github.bommbomm34.intervirt.core.data.agent.commandBody
@@ -94,14 +95,15 @@ class AgentClient(
 
     override suspend fun getVersion(): Result<String> {
         logger.debug { "Retrieving version of guest" }
-        val response = send<ResponseBody.Version>("version".commandBody())
-        return response.map {
-            val res = it.firstOrNull()!!
-            return if (res.version != null) {
-                Result.success(res.version)
-            } else {
-                Result.failure(AgentTimeoutException(res.refID))
-            }
+        return firstSend<ResponseBody.Version>("version".commandBody()).mapCatching {
+            it.version ?: throw AgentTimeoutException(it.refID)
+        }
+    }
+
+    override suspend fun getContainers(): Result<List<ContainerInfo>> {
+        logger.debug { "Retrieving containers of guest" }
+        return firstSend<ResponseBody.ContainerList>("containers".commandBody()).mapCatching {
+            it.containers ?: throw AgentTimeoutException(it.refID)
         }
     }
 
@@ -110,6 +112,11 @@ class AgentClient(
         return response.map {
             it.firstOrNull()?.exception()?.result() ?: Result.success(Unit)
         }
+    }
+
+    private suspend fun <T : ResponseBody> firstSend(body: RequestBody): Result<T> {
+        val response = send<T>(body)
+        return response.map { it.first() }
     }
 
     private fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
@@ -147,20 +154,18 @@ class AgentClient(
                 .timeout(timeout)
                 .catch { exception ->
                     if (exception is TimeoutCancellationException) {
-                        if (body is RequestBody.Command && body.command == "version") {
-                            // Request was version request
+                        if (body is RequestBody.Command) {
                             emit(
-                                ResponseBody.Version(
-                                    refID = body.uuid,
-                                ) as T,
+                                when (body.command) {
+                                    "version" -> ResponseBody.Version(body.uuid, null) as T
+                                    "containers" -> ResponseBody.ContainerList(body.uuid, null) as T
+                                    else -> ResponseBody.General(
+                                        refID = body.uuid,
+                                        code = 100,
+                                    ) as T
+                                },
                             )
                         }
-                        emit(
-                            ResponseBody.General(
-                                refID = body.uuid,
-                                code = 100,
-                            ) as T,
-                        )
                     } else throw exception
                 }
         }

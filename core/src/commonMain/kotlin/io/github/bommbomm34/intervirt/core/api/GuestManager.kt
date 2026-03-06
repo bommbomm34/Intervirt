@@ -1,6 +1,8 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
+import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 
@@ -43,4 +45,6 @@ interface GuestManager : AsyncCloseable {
     suspend fun reboot(): Result<Unit>
 
     suspend fun getVersion(): Result<String>
+
+    suspend fun getContainers(): Result<List<ContainerInfo>>
 }

@@ -42,5 +42,10 @@ sealed class ResponseBody {
         val version: String? = null,
     ) : ResponseBody()
 
-
+    @SerialName("ContainerList")
+    @Serializable
+    data class ContainerList(
+        override val refID: String,
+        val containers: List<ContainerInfo>? = null,
+    ) : ResponseBody()
 }
