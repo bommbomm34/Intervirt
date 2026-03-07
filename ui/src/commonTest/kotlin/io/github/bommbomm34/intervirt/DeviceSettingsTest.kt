@@ -12,7 +12,6 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
-import io.github.bommbomm34.intervirt.core.initLogging
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.toViewDevice
@@ -57,11 +56,9 @@ class DeviceSettingsTest : KoinTest {
     val appState: AppState by inject()
     val deviceManager: DeviceManager by inject()
     val configuration: IntervirtConfiguration by inject()
-    val appEnv: AppEnv by inject()
 
     @BeforeTest
     fun init() = runTest {
-        appEnv.initLogging()
         startKoin {
             modules(
                 module {

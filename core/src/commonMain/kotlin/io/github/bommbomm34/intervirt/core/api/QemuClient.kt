@@ -78,6 +78,7 @@ class QemuClient(
             }
             if (!currentProcess.isAlive) throw IllegalStateException()
         }
+        logger.debug { "Booted Alpine Linux" }
     }
 
     suspend fun shutdownAlpine() {
@@ -109,6 +110,7 @@ class QemuClient(
     }
 
     suspend fun addPortForwarding(protocol: String, externalPort: Int, internalPort: Int): Result<Unit> {
+        logger.debug { "Adding port forwarding $protocol:$externalPort:$internalPort" }
         return qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
@@ -116,10 +118,13 @@ class QemuClient(
                     put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$externalPort-:$internalPort")
                 }
             },
-        ).map {  }
+        ).map {
+            logger.debug { "Added port forwarding $protocol:$externalPort:$internalPort" }
+        }
     }
 
     suspend fun removePortForwarding(protocol: String, externalPort: Int): Result<Unit> {
+        logger.debug { "Removing port forwarding $protocol:$externalPort" }
         return qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
@@ -127,7 +132,9 @@ class QemuClient(
                     put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$externalPort")
                 }
             },
-        ).map {  }
+        ).map {
+            logger.debug { "Removed port forwarding $protocol:$externalPort" }
+        }
     }
 
     suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession) = qmpSend(
@@ -196,12 +203,15 @@ class QemuClient(
             // Negotiate capabilities
             qmpSend("qmp_capabilities", session).getOrThrow()
             qemuMonitorSession = session
+            logger.info { "Initialized monitor socket connection" }
             return@withTimeout session
         }
     }
 
     override suspend fun close() = withCatchingContext(Dispatchers.IO){
+        logger.debug { "Closing QemuClient" }
         isRunningLoopJob?.cancel()
         shutdownAlpine()
+        logger.debug { "Closed QemuClient" }
     }
 }

@@ -28,10 +28,6 @@ class KLogger(
     val name: String,
     val severity: LoggerSeverity,
 ) {
-    companion object {
-        val UNKNOWN_LOGGER = KLogger("Unknown", LoggerSeverity.ERROR)
-    }
-
     fun trace(block: Output) {
         if (severity.priority == LoggerSeverity.TRACE.priority) {
             block().log("TRACE")

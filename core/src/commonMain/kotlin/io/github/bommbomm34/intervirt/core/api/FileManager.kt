@@ -93,6 +93,7 @@ class FileManager(
             logger.debug { "Extracting ${file.name}" }
             val zip = ZipFile(file)
             zip.extractAll(destination.absolutePath)
+            logger.info { "Extracted zip ${file.name}" }
             Result.success(Unit)
         } catch (e: ZipException) {
             logger.error { "Error occurred while extracting ${file.name}: ${e.message}" }
