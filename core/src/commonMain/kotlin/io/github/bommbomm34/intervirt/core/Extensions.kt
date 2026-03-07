@@ -15,7 +15,10 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
@@ -102,6 +105,10 @@ fun getHttpClient(): HttpClient = HttpClient(CIO) {
     }
 }
 
+fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catch {
+    if (it is TimeoutCancellationException) action() else throw it
+}
+
 /**
  * This command must be run **BEFORE** the first logger call.
  */
@@ -122,7 +129,7 @@ suspend fun gracefulShutdown(
     qemuClient: QemuClient? = null,
     httpClient: HttpClient? = null,
     secretService: SecretService? = null,
-){
+) {
     deviceManager?.close()
     guestManager?.close()
     qemuClient?.close()

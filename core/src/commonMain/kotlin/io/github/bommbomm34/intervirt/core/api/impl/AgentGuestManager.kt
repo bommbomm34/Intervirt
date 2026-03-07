@@ -1,6 +1,7 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.catchTimeout
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
@@ -95,42 +96,48 @@ class AgentGuestManager(
 
     override suspend fun getVersion(): Result<String> {
         logger.debug { "Retrieving version of guest" }
-        return firstSend<ResponseBody.Version>("version".commandBody()).mapCatching {
-            it.version ?: throw AgentTimeoutException(it.refID)
-        }
+        return firstSend<ResponseBody.Version>("version".commandBody()).map { it.version }
     }
 
     override suspend fun getContainers(): Result<List<ContainerInfo>> {
         logger.debug { "Retrieving containers of guest" }
-        return firstSend<ResponseBody.ContainerList>("containers".commandBody()).mapCatching {
-            it.containers ?: throw AgentTimeoutException(it.refID)
-        }
+        return firstSend<ResponseBody.ContainerList>("containers".commandBody()).map { it.containers }
     }
 
     private suspend fun justSend(body: RequestBody): Result<Unit> {
         val response = send<ResponseBody.General>(body)
         return response.map {
-            it.firstOrNull()?.exception()?.result() ?: Result.success(Unit)
+            it
+                .catchTimeout { throw AgentTimeoutException(body.uuid) }
+                .firstOrNull()?.exception()?.result() ?: Result.success(Unit)
         }
     }
 
     private suspend fun <T : ResponseBody> firstSend(body: RequestBody): Result<T> {
         val response = send<T>(body)
-        return response.map { it.first() }
+        return response.mapCatching {
+            it
+                .catchTimeout { throw AgentTimeoutException(body.uuid) }
+                .first()
+        }
     }
 
     private fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
         var failed = false
         send<ResponseBody.General>(body)
             .onSuccess { flow ->
-                flow.collect {
-                    if (it.code != 0) {
-                        failed = true
-                        emit(ResultProgress.failure(it.exception()!!))
-                    } else {
-                        emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
+                flow
+                    .catchTimeout {
+                        this@flow.emit(ResultProgress.failure(AgentTimeoutException(body.uuid)))
                     }
-                }
+                    .collect {
+                        if (it.code != 0) {
+                            failed = true
+                            emit(ResultProgress.failure(it.exception()!!))
+                        } else {
+                            emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
+                        }
+                    }
             }
             .onFailure {
                 failed = true
@@ -152,22 +159,6 @@ class AgentGuestManager(
                 }
                 .map { it as T }
                 .timeout(timeout)
-                .catch { exception ->
-                    if (exception is TimeoutCancellationException) {
-                        if (body is RequestBody.Command) {
-                            emit(
-                                when (body.command) {
-                                    "version" -> ResponseBody.Version(body.uuid, null) as T
-                                    "containers" -> ResponseBody.ContainerList(body.uuid, null) as T
-                                    else -> ResponseBody.General(
-                                        refID = body.uuid,
-                                        code = 100,
-                                    ) as T
-                                },
-                            )
-                        }
-                    } else throw exception
-                }
         }
     }
 

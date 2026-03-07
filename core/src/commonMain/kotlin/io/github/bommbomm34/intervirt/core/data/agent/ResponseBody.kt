@@ -39,13 +39,13 @@ sealed class ResponseBody {
     @Serializable
     data class Version(
         override val refID: String,
-        val version: String? = null,
+        val version: String,
     ) : ResponseBody()
 
     @SerialName("ContainerList")
     @Serializable
     data class ContainerList(
         override val refID: String,
-        val containers: List<ContainerInfo>? = null,
+        val containers: List<ContainerInfo>,
     ) : ResponseBody()
 }

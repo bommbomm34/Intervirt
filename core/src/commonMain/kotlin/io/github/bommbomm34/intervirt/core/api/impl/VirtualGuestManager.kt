@@ -8,11 +8,12 @@ import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
-private const val DELAY = 500L
 
 // Virtual Guest Manager
-class VirtualGuestManager : GuestManager {
+class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : GuestManager {
     private val containers = mutableListOf<Container>()
     private val connections = mutableListOf<ContainerConnection>()
 
@@ -125,6 +126,7 @@ class VirtualGuestManager : GuestManager {
     override suspend fun getVersion() = Result.success(CURRENT_VERSION)
 
     override suspend fun getContainers(): Result<List<ContainerInfo>> = runCatching {
+        delay()
         containers.map {
             ContainerInfo(
                 id = it.id,
@@ -143,7 +145,7 @@ class VirtualGuestManager : GuestManager {
 
     private fun String.exists() = containers.any { it.id == this }
 
-    private suspend fun delay() = kotlinx.coroutines.delay(DELAY)
+    private suspend fun delay() = kotlinx.coroutines.delay(delay)
 
     override suspend fun close() = Result.success(Unit) // Nothing to close
 }
