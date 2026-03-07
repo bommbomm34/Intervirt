@@ -8,8 +8,8 @@ Currently, only artifacts generated with Actions are provided. See the *Build* j
 Currently, it is required to execute the program with the following environment variables:
 
 ```env
-VIRTUAL_CONTAINER_IO=true
-VIRTUAL_AGENT_MODE=true
+INTERVIRT_VIRTUAL_CONTAINER_IO=true
+INTERVIRT_VIRTUAL_AGENT_MODE=true
 ```
 
 This is required because the Agent isn't finished yet.
