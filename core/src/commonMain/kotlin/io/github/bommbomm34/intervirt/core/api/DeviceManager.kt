@@ -279,6 +279,7 @@ class DeviceManager(
             .forEach {
                 guestManager.removeNetwork(it.key).getOrThrow()
             }
+        logger.debug { "Cleared unused networks" }
     }
 
     private fun generateID(prefix: String): String {

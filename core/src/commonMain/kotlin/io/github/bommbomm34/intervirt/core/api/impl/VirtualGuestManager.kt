@@ -122,8 +122,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         emit(ResultProgress.success(Unit))
     }
 
-    override suspend fun shutdown() =
-        Result.failure<Unit>(NotImplementedError("Shutdown through VirtualGuestManager isn't possible."))
+    override suspend fun shutdown() = Result.success(Unit)
 
     override suspend fun reboot() = Result.success(Unit)
 
