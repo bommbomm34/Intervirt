@@ -17,7 +17,7 @@ plugins {
     alias(libs.plugins.koin.compiler) apply false
     // Apply in every module
     alias(libs.plugins.versionCatalogUpdate)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 versionCatalogUpdate {

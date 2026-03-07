@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Intervirt Contributors
+ * Licensed under the GNU General Public License 3.
+ */
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.kotlinSerialization)

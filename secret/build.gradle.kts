@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Intervirt Contributors
+ * Licensed under the GNU General Public License 3.
+ */
+
 import gobley.gradle.GobleyHost
 import gobley.gradle.cargo.dsl.jvm
 

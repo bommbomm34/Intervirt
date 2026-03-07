@@ -31,8 +31,8 @@ slf4j = "2.0.17"
 sshd = "3.0.0-M2"
 version-catalog-update = "1.1.0"
 zip4j = "2.11.6"
-ktlint = "14.1.0"
 kotlinx-datetime = "0.7.1"
+detekt = "2.0.0-alpha.2"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
@@ -97,5 +97,5 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 osdetector = { id = "com.google.osdetector", version.ref = "osdetector" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 koin-compiler = { id = "io.insert-koin.compiler.plugin", version.ref = "koin-plugin" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
