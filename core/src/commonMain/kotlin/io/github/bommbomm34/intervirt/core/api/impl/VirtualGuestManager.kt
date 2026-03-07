@@ -5,6 +5,7 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
+import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,7 +17,6 @@ import kotlin.time.Duration.Companion.milliseconds
 class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : GuestManager {
     private val containers = mutableListOf<Container>()
     private val networks = mutableMapOf<String, MutableList<String>>()
-    private val connections = mutableListOf<ContainerConnection>()
 
     override suspend fun addContainer(
         id: String,
@@ -47,19 +47,17 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         containers.first { it.id == id }.ipv6 = newIP
     }
 
-    override suspend fun connect(id1: String, id2: String): Result<Unit> {
+    override suspend fun connect(container: String, network: String): Result<Unit> {
         delay()
-        if (!id1.exists()) return Result.failure(NotFoundException("Container $id1 doesn't exist."))
-        if (!id2.exists()) return Result.failure(NotFoundException("Container $id2 doesn't exist."))
-        connections.add(ContainerConnection(id1, id2))
+        if (!container.exists()) return Result.failure(NotFoundException("Container $container doesn't exist."))
+        networks[network]?.add(container) ?: return Result.failure(NotFoundException("Network $network doesn't exist."))
         return Result.success(Unit)
     }
 
-    override suspend fun disconnect(id1: String, id2: String): Result<Unit> {
+    override suspend fun disconnect(container: String, network: String): Result<Unit> {
         delay()
-        if (!id1.exists()) return Result.failure(NotFoundException("Container $id1 doesn't exist."))
-        if (!id2.exists()) return Result.failure(NotFoundException("Container $id2 doesn't exist."))
-        connections.remove(ContainerConnection(id1, id2))
+        if (!container.exists()) return Result.failure(NotFoundException("Container $container doesn't exist."))
+        networks[network]?.remove(container) ?: return Result.failure(NotFoundException("Network $network doesn't exist."))
         return Result.success(Unit)
     }
 
@@ -109,8 +107,8 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         emit(ResultProgress.proceed(0.2f, "Deleting containers..."))
         containers.clear()
         delay()
-        emit(ResultProgress.proceed(0.5f, "Deleting connections..."))
-        connections.clear()
+        emit(ResultProgress.proceed(0.5f, "Deleting networks..."))
+        networks.clear()
         emit(ResultProgress.success(Unit))
     }
 
@@ -150,7 +148,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         networks.remove(name)
     }
 
-    override suspend fun getNetworks(): Result<Map<String, List<String>>> = Result.success(networks)
+    override suspend fun getNetworks(): Result<Map<String, Network>> = Result.success(networks)
 
     private fun getContainerByID(id: String) = containers.first { it.id == id }
 
@@ -170,9 +168,4 @@ private data class Container(
     val image: String,
     val portForwardings: MutableList<PortForwarding> = mutableListOf(),
     var running: Boolean = false,
-)
-
-private data class ContainerConnection(
-    val id1: String,
-    val id2: String,
 )

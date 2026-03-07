@@ -22,6 +22,7 @@ import org.koin.test.inject
 import kotlin.test.*
 
 private const val TEST_CONTAINER_ID = "my-id"
+private const val TEST_NETWORK_NAME = "test-network"
 
 class GuestManagerTest : KoinTest {
     val fwd = PortForwarding(
@@ -86,17 +87,19 @@ class GuestManagerTest : KoinTest {
 
     @Test
     fun shouldConnect() = runTest {
-        addTestContainer("id1")
-        addTestContainer("id2")
-        guestManager.connect("id1", "id2").getOrThrow()
+        addTestContainer()
+        addTestNetwork()
+        guestManager.connect(TEST_CONTAINER_ID, TEST_NETWORK_NAME).getOrThrow()
+        assertContains(getNetworks()[TEST_NETWORK_NAME]!!, TEST_CONTAINER_ID)
     }
 
     @Test
     fun shouldDisconnect() = runTest {
-        addTestContainer("id1")
-        addTestContainer("id2")
-        guestManager.connect("id1", "id2").getOrThrow()
-        guestManager.disconnect("id1", "id2").getOrThrow()
+        addTestContainer()
+        addTestNetwork()
+        guestManager.connect(TEST_CONTAINER_ID, TEST_NETWORK_NAME).getOrThrow()
+        guestManager.disconnect(TEST_CONTAINER_ID, TEST_NETWORK_NAME).getOrThrow()
+        assertFalse { getNetworks()[TEST_NETWORK_NAME]!!.contains(TEST_CONTAINER_ID) }
     }
 
     @Test
@@ -137,8 +140,12 @@ class GuestManagerTest : KoinTest {
 
     @Test
     fun shouldWipe() = runTest {
+        val container = addTestContainer()
+        addTestNetwork()
         val progress = guestManager.wipe().toList()
         assertContains(progress, ResultProgress.success(Unit))
+        assertFalse { getContainers().contains(container) }
+        assertFalse { getNetworks().containsKey(TEST_NETWORK_NAME) }
     }
 
     @Test
@@ -177,14 +184,14 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldAddNetwork() = runTest {
         addTestNetwork()
-        assertContains(getNetworks(), "test-network")
+        assertContains(getNetworks(), TEST_NETWORK_NAME)
     }
 
     @Test
     fun shouldRemoveNetwork() = runTest {
         addTestNetwork()
-        guestManager.removeNetwork("test-network").getOrThrow()
-        assertFalse { getNetworks().contains("test-network") }
+        guestManager.removeNetwork(TEST_NETWORK_NAME).getOrThrow()
+        assertFalse { getNetworks().contains(TEST_NETWORK_NAME) }
     }
 
     @Test
@@ -226,7 +233,7 @@ class GuestManagerTest : KoinTest {
         protocol = fwd.protocol,
     ).getOrThrow()
 
-    private suspend fun addTestNetwork(name: String = "test-network") = guestManager.addNetwork(name).getOrThrow()
+    private suspend fun addTestNetwork(name: String = TEST_NETWORK_NAME) = guestManager.addNetwork(name).getOrThrow()
 
     private suspend fun ContainerInfo.getContainer() = getContainers().first { it.id == id }
 

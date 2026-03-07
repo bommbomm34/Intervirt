@@ -61,7 +61,8 @@ sealed class DeviceConnection {
      * @param device device to check
      * @return `true` if device is in the connection and `false` otherwise
      */
-    fun containsDevice(device: Device) = id1 == device.id || id2 == device.id
+    fun containsDevice(device: Device) = containsID(device.id)
+    fun containsID(id: String) = id1 == id || id2 == id
 
     override fun equals(other: Any?): Boolean {
         return other is DeviceConnection && ((id1 == other.id1 && id2 == other.id2) ||

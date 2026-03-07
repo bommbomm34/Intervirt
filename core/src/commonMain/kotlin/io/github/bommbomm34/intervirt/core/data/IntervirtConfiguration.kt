@@ -2,7 +2,12 @@ package io.github.bommbomm34.intervirt.core.data
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.addNetworkIfNotExists
+import io.github.bommbomm34.intervirt.core.data.addNetworks
+import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.DeprecatedException
+import io.github.bommbomm34.intervirt.core.flowCatching
+import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
@@ -33,108 +38,107 @@ data class IntervirtConfiguration(
     }
 }
 
-fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultProgress<Unit>> = flow {
-    getVersion()
-        .onSuccess { version ->
-            if (version != CURRENT_VERSION) {
-                emit(ResultProgress.failure(DeprecatedException()))
-            } else {
-                emit(
-                    ResultProgress.proceed(
-                        percentage = 0f,
-                        message = "Starting synchronisation...",
-                    ),
-                )
-                emit(
-                    ResultProgress.proceed(
-                        percentage = 0f,
-                        message = "Wiping old data...",
-                    ),
-                )
-                wipe().collect { emit(it.clone(percentage = it.percentage * 0.2f)) }
-                emit(
-                    ResultProgress.proceed(
-                        percentage = 0.2f,
-                        message = "Creating devices...",
-                    ),
-                )
-                conf.devices.forEachIndexed { i, device ->
-                    if (device is Device.Computer) {
-                        val progress = 0.2f + (i.toFloat() / conf.devices.size) * 0.6f
-                        emit(
-                            ResultProgress.proceed(
-                                percentage = progress,
-                                message = "Creating device ${device.name} with id ${device.id}",
-                            ),
-                        )
-                        addContainer(
-                            id = device.id,
-                            ipv4 = device.ipv4,
-                            ipv6 = device.ipv6,
-                            mac = device.mac,
-                            internet = device.internetEnabled,
-                            image = device.image,
-                        )
-                        device.portForwardings.forEach { portForwarding ->
-                            emit(
-                                ResultProgress.proceed(
-                                    percentage = progress,
-                                    message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
-                                ),
-                            )
-                            addPortForwarding(
-                                device.id,
-                                portForwarding.internalPort,
-                                portForwarding.externalPort,
-                                portForwarding.protocol,
-                            )
-                        }
-                    }
-                }
-                emit(
-                    ResultProgress.proceed(
-                        percentage = 0.8f,
-                        message = "Connecting devices...",
-                    ),
-                )
+fun IntervirtConfiguration.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
+    val networks = mutableMapOf<String, Network>()
+    val connections = connections.ifEmpty { this.connections.toTypedArray() }
+    // Add switch networks
+    devices.forEach { device ->
+        if (device is Device.Switch && connections.any { it.containsDevice(device) }){
+            val name = networkNameOfSwitch(device.id)
+            networks[name] = getConnectedComputers(device).map { it.id }
+        }
+    }
+    // Add computer networks
+    connections.forEach { conn ->
+        if (conn is DeviceConnection.Computer) {
+            val name = networkNameOfComputers(conn.id1, conn.id2)
+            networks[name] = listOf(conn.id1, conn.id2)
+        }
+    }
+    return networks
+}
 
-                conf.connections.forEachIndexed { i, conn ->
+suspend fun GuestManager.addNetworks(networks: Map<String, Network>): Result<Unit> = runSuspendingCatching {
+    networks.forEach { (name, network) ->
+        addNetworkIfNotExists(name).getOrThrow()
+        network.forEach {
+            connect(it, name).getOrThrow()
+        }
+    }
+}
+
+fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultProgress<Unit>> = flowCatching {
+    val version = getVersion().getOrThrow()
+    if (version != CURRENT_VERSION) {
+        emit(ResultProgress.failure(DeprecatedException()))
+    } else {
+        emit(
+            ResultProgress.proceed(
+                percentage = 0f,
+                message = "Starting synchronisation...",
+            ),
+        )
+        emit(
+            ResultProgress.proceed(
+                percentage = 0f,
+                message = "Wiping old data...",
+            ),
+        )
+        wipe().collect { emit(it.clone(percentage = it.percentage * 0.2f)) }
+        emit(
+            ResultProgress.proceed(
+                percentage = 0.2f,
+                message = "Creating devices...",
+            ),
+        )
+        conf.devices.forEachIndexed { i, device ->
+            if (device is Device.Computer) {
+                val progress = 0.2f + (i.toFloat() / conf.devices.size) * 0.6f
+                emit(
+                    ResultProgress.proceed(
+                        percentage = progress,
+                        message = "Creating device ${device.name} with id ${device.id}",
+                    ),
+                )
+                addContainer(
+                    id = device.id,
+                    ipv4 = device.ipv4,
+                    ipv6 = device.ipv6,
+                    mac = device.mac,
+                    internet = device.internetEnabled,
+                    image = device.image,
+                ).getOrThrow()
+                device.portForwardings.forEach { portForwarding ->
                     emit(
                         ResultProgress.proceed(
-                            percentage = 0.8f + (i.toFloat() / conf.connections.size) * 0.2f,
-                            message = "Connecting device ${conn.id1} with ${conn.id2}",
+                            percentage = progress,
+                            message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
                         ),
                     )
-                    when (conn) {
-                        is DeviceConnection.Computer -> connect(conn.id1, conn.id2)
-                        is DeviceConnection.Switch -> {
-                            val (switch1, switch2) = conn.getDevices(conf)
-                            val switch1ConnectedComputers = conf.getConnectedComputers(switch1)
-                            conf.getConnectedComputers(switch2).forEach { computer1 ->
-                                switch1ConnectedComputers.forEach { computer2 ->
-                                    connect(
-                                        computer1.id,
-                                        computer2.id,
-                                    )
-                                }
-                            }
-                        }
-
-                        is DeviceConnection.SwitchComputer -> {
-                            val (switch, computer) = conn.getDevices(conf)
-                            conf.getConnectedComputers(switch).forEach { connect(it.id, computer.id) }
-                        }
-                    }
+                    addPortForwarding(
+                        device.id,
+                        portForwarding.internalPort,
+                        portForwarding.externalPort,
+                        portForwarding.protocol,
+                    ).getOrThrow()
                 }
-                emit(
-                    ResultProgress.proceed(
-                        percentage = 1f,
-                        message = "Synchronisation successfully completed",
-                    ),
-                )
             }
         }
-        .onFailure {
-            emit(ResultProgress.failure(it))
-        }
+        emit(
+            ResultProgress.proceed(
+                percentage = 0.8f,
+                message = "Connecting devices...",
+            ),
+        )
+        addNetworks(conf.resolveNetworks()).getOrThrow()
+        emit(
+            ResultProgress.proceed(
+                percentage = 1f,
+                message = "Synchronisation successfully completed",
+            ),
+        )
+    }
 }
+
+fun networkNameOfComputers(id1: String, id2: String) = "$id1-$id2-network"
+fun networkNameOfSwitch(id: String) = "$id-network"

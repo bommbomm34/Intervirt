@@ -36,15 +36,15 @@ sealed class RequestBody {
     @SerialName("Connect")
     @Serializable
     data class Connect(
-        val id1: String,
-        val id2: String,
+        val container: String,
+        val network: String,
     ) : RequestBody()
 
     @SerialName("Disconnect")
     @Serializable
     data class Disconnect(
-        val id1: String,
-        val id2: String,
+        val container: String,
+        val network: String,
     ) : RequestBody()
 
     @SerialName("SetInternetAccess")

@@ -2,6 +2,8 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
+import io.github.bommbomm34.intervirt.core.data.agent.Network
+import io.github.bommbomm34.intervirt.core.recoverAlreadyPerformed
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 
@@ -30,9 +32,9 @@ interface GuestManager : AsyncCloseable {
 
     suspend fun setIpv6(id: String, newIP: String): Result<Unit>
 
-    suspend fun connect(id1: String, id2: String): Result<Unit>
+    suspend fun connect(container: String, network: String): Result<Unit>
 
-    suspend fun disconnect(id1: String, id2: String): Result<Unit>
+    suspend fun disconnect(container: String, network: String): Result<Unit>
 
     suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit>
 
@@ -60,5 +62,7 @@ interface GuestManager : AsyncCloseable {
 
     suspend fun removeNetwork(name: String): Result<Unit>
 
-    suspend fun getNetworks(): Result<Map<String, List<String>>>
+    suspend fun getNetworks(): Result<Map<String, Network>>
 }
+
+suspend fun GuestManager.addNetworkIfNotExists(name: String): Result<Unit> = addNetwork(name).recoverAlreadyPerformed()

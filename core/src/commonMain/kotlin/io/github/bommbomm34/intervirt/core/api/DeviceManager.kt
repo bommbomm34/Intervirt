@@ -92,30 +92,25 @@ class DeviceManager(
         }
     }
 
-    suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> {
+    suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> = runSuspendingCatching {
         logger.debug { "Connecting device $device1 to $device2" }
-        configuration.connections.add(device1 connect device2)
-        val device1ConnectedComputers = configuration.getConnectedComputers(device1)
-        configuration.getConnectedComputers(device2).forEach { computer1 ->
-            device1ConnectedComputers.forEach { computer2 ->
-                val res = guestManager.connect(computer1.id, computer2.id)
-                res.onFailure { return res }
-            }
-        }
-        return Result.success(Unit)
+        val conn = device1 connect device2
+        configuration.connections.add(conn)
+        val networks = configuration.resolveNetworks(conn)
+        guestManager.addNetworks(networks).getOrThrow()
     }
 
-    suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> {
+    suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> = runSuspendingCatching {
         logger.debug { "Disconnecting device $device1 to $device2" }
-        configuration.connections.removeIf { it == device1 connect device2 }
-        val device1ConnectedComputers = configuration.getConnectedComputers(device1)
-        configuration.getConnectedComputers(device2).forEach { computer1 ->
-            device1ConnectedComputers.forEach { computer2 ->
-                val res = guestManager.disconnect(computer1.id, computer2.id)
-                res.onFailure { return res }
+        val conn = device1 connect device2
+        configuration.connections.removeIf { it == conn }
+        val networks = configuration.resolveNetworks(conn)
+        networks.forEach { (name, network) ->
+            network.forEach {
+                guestManager.disconnect(it, name).getOrThrow()
             }
         }
-        return Result.success(Unit)
+        clearUnusedNetworks()
     }
 
     suspend fun setIpv4(device: Device.Computer, ipv4: String): Result<Unit> {
@@ -238,9 +233,18 @@ class DeviceManager(
     ): Result<DockerManager> = runSuspendingCatching {
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
         val sshClient = ioClient as? ContainerSshClient
-        val dockerManager = ActualDockerManager(dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
+        val dockerManager =
+            ActualDockerManager(dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
         dockerManagers[computer.id] = dockerManager
         dockerManager
+    }
+
+    private suspend fun clearUnusedNetworks(): Result<Unit> = guestManager.getNetworks().map { networks ->
+        networks
+            .filter { it.value.isEmpty() }
+            .forEach {
+                guestManager.removeNetwork(it.key).getOrThrow()
+            }
     }
 
     private fun generateID(prefix: String): String {

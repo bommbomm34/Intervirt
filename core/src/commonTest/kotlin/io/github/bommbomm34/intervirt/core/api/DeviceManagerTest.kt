@@ -20,7 +20,7 @@ import kotlin.test.*
 class DeviceManagerTest : KoinTest {
     val testModule = module {
         singleOf(::DeviceManager)
-        singleOf(::VirtualGuestManager).binds(arrayOf(GuestManager::class))
+        single<GuestManager> { VirtualGuestManager() }
         singleOf(::QemuClient)
         singleOf(::Executor)
         singleOf(::FileManager)

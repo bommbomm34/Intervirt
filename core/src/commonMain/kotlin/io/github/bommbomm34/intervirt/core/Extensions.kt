@@ -8,6 +8,7 @@ import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -19,6 +20,8 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
@@ -135,4 +138,12 @@ suspend fun gracefulShutdown(
     qemuClient?.close()
     httpClient?.close()
     secretService?.close()
+}
+
+fun <T> flowCatching(block: suspend FlowCollector<ResultProgress<T>>.() -> Unit) = flow(block).catch {
+    if (it is CancellationException) throw it else emit(ResultProgress.failure(it))
+}
+
+fun Result<Unit>.recoverAlreadyPerformed(): Result<Unit> = recoverCatching {
+    if (it is OperationAlreadyPerformedException) Unit else throw it
 }

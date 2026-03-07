@@ -5,6 +5,7 @@ import io.github.bommbomm34.intervirt.core.catchTimeout
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
+import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.data.agent.RequestBody
 import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
 import io.github.bommbomm34.intervirt.core.data.agent.commandBody
@@ -51,10 +52,15 @@ class AgentGuestManager(
     override suspend fun setIpv6(id: String, newIP: String): Result<Unit> =
         justSend(RequestBody.IDWithNewIpv6(id, newIP))
 
-    override suspend fun connect(id1: String, id2: String): Result<Unit> = justSend(RequestBody.Connect(id1, id2))
+    override suspend fun connect(container: String, network: String): Result<Unit> {
+        logger.debug { "Connecting $container to $network" }
+        return justSend(RequestBody.Connect(container, network))
+    }
 
-    override suspend fun disconnect(id1: String, id2: String): Result<Unit> =
-        justSend(RequestBody.Disconnect(id1, id2))
+    override suspend fun disconnect(container: String, network: String): Result<Unit> {
+        logger.debug { "Disconnecting $container from $network" }
+        return justSend(RequestBody.Disconnect(container, network))
+    }
 
     override suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> =
         justSend(RequestBody.SetInternetAccess(id, enabled))
@@ -114,7 +120,7 @@ class AgentGuestManager(
         return justSend(RequestBody.RemoveNetwork(name))
     }
 
-    override suspend fun getNetworks(): Result<Map<String, List<String>>> {
+    override suspend fun getNetworks(): Result<Map<String, Network>> {
         logger.debug { "Retrieving networks" }
         return firstSend<ResponseBody.NetworkList>("networks".commandBody()).map { it.networks }
     }
