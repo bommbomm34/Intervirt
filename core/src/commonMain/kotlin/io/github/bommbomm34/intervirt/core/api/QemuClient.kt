@@ -7,8 +7,9 @@ import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.*
@@ -30,7 +31,7 @@ class QemuClient(
             field = value
         }
     private var isRunningLoopJob: Job? = null
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(QemuClient::class)
     private lateinit var currentProcess: Process
     private var qemuMonitorSession: QemuMonitorSession? = null
     private val onRunningChangeListeners = mutableListOf<(Boolean) -> Unit>()

@@ -3,6 +3,7 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
@@ -11,8 +12,9 @@ import io.github.bommbomm34.intervirt.core.data.toMail
 import io.github.bommbomm34.intervirt.core.parseMailAddress
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.secret.SecretService
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import jakarta.mail.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,12 +22,13 @@ import java.util.*
 
 class MailClientManager(
     osClient: IntervirtOSClient,
+    appEnv: AppEnv,
     private val secretService: SecretService,
 ) : AsyncCloseable {
     private val client = osClient.getClient(this)
     private val store = client.store
     private val mailPasswordKey = "MAIL_PASSWORD_${client.computer.id}"
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(MailClientManager::class)
     private var smtpSession: Session? = null
     private var imapStore: Store? = null
     var mailUser: MailUser? = null

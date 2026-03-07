@@ -1,0 +1,84 @@
+package io.github.bommbomm34.intervirt.core.util
+
+import io.github.bommbomm34.intervirt.core.data.AppEnv
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
+import kotlin.reflect.KClass
+import kotlin.time.Clock
+
+private const val ANSI_RESET = "\u001B[0m"
+
+class KLogger(
+    val name: String,
+    val severity: LoggerSeverity,
+) {
+    fun trace(block: Output) {
+        if (severity.priority == LoggerSeverity.TRACE.priority) {
+            block().log("TRACE")
+        }
+    }
+
+    fun debug(block: Output) {
+        if (severity.priority <= LoggerSeverity.DEBUG.priority) {
+            block().log("DEBUG", LoggerColor.GREEN)
+        }
+    }
+
+    fun info(block: Output) {
+        if (severity.priority <= LoggerSeverity.INFO.priority) {
+            block().log("INFO", LoggerColor.BLUE)
+        }
+    }
+
+    fun warn(block: Output) {
+        if (severity.priority <= LoggerSeverity.WARN.priority) {
+            block().log("WARN", LoggerColor.YELLOW)
+        }
+    }
+
+    fun error(throwable: Throwable? = null, block: Output) {
+        if (severity.priority <= LoggerSeverity.ERROR.priority) {
+            block().log("ERROR", LoggerColor.RED, true)
+            throwable?.printStackTrace()
+        }
+    }
+
+    private fun Any?.log(
+        prefix: String,
+        color: String = LoggerColor.DEFAULT,
+        stderr: Boolean = false,
+    ) {
+        val time = Clock.System.now()
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .format(LocalDateTime.Formats.ISO)
+        val output = "$color[$prefix] $name: ${toString()} [$time]$ANSI_RESET"
+        if (stderr) System.err.println(output) else println(output)
+    }
+}
+
+enum class LoggerSeverity(val priority: Int) {
+    TRACE(0),
+    DEBUG(1),
+    INFO(2),
+    WARN(3),
+    ERROR(4),
+}
+
+object LoggerColor {
+    const val RED = "\u001B[31m"
+    const val GREEN = "\u001B[32m"
+    const val YELLOW = "\u001B[33m"
+    const val BLUE = "\u001B[34m"
+    const val DEFAULT = ""
+}
+
+fun AppEnv.getLogger(clazz: KClass<*>) = getLogger(clazz.simpleName ?: "")
+
+fun AppEnv.getLogger(name: String) = KLogger(
+    name = name,
+    severity = if (DEBUG_ENABLED) LoggerSeverity.DEBUG else LoggerSeverity.ERROR,
+)
+
+private typealias Output = () -> Any?

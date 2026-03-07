@@ -1,16 +1,19 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.addFirst
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 
 // Simple wrapper for systemd
 class SystemServiceManager(
+    appEnv: AppEnv,
     private val ioClient: ContainerIOClient,
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(SystemServiceManager::class)
 
     suspend fun start(name: String): Result<Unit> = exec("systemctl", "start", name).map { }
 

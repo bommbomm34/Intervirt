@@ -11,7 +11,8 @@ import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.generateIpv4
 import io.github.bommbomm34.intervirt.core.util.generateIpv6
 import io.github.bommbomm34.intervirt.core.util.generateMac
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 import java.net.ServerSocket
 import kotlin.random.Random
 
@@ -22,9 +23,9 @@ class DeviceManager(
     private val executor: Executor,
     private val fileManager: FileManager,
     private val configuration: IntervirtConfiguration,
-    appEnv: AppEnv,
+    private val appEnv: AppEnv,
 ) : AsyncCloseable {
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(DeviceManager::class)
     private val virtualContainerIO = appEnv.VIRTUAL_CONTAINER_IO
     private val virtualContainerIOPort = appEnv.VIRTUAL_CONTAINER_IO_PORT
     private val wipeVirtualOnClose = appEnv.WIPE_VIRTUAL_ON_CLOSE
@@ -197,7 +198,7 @@ class DeviceManager(
                 externalPort = port,
             ),
         ).mapCatching {
-            val sshClient = ContainerSshClient(port, this)
+            val sshClient = ContainerSshClient(appEnv, port, this)
             sshClient.init().getOrThrow()
             containerIOClients[computer.id] = sshClient
             sshClient
@@ -217,6 +218,7 @@ class DeviceManager(
         val ioClient = getIOClient(computer).getOrThrow()
         val osClient = IntervirtOSClient(
             IntervirtOSClient.Client(
+                appEnv = appEnv,
                 computer = computer,
                 ioClient = ioClient,
                 docker = getDockerManager(computer, ioClient).getOrThrow(),
@@ -234,7 +236,7 @@ class DeviceManager(
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
         val sshClient = ioClient as? ContainerSshClient
         val dockerManager =
-            ActualDockerManager(dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
+            ActualDockerManager(appEnv, dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
         dockerManagers[computer.id] = dockerManager
         dockerManager
     }

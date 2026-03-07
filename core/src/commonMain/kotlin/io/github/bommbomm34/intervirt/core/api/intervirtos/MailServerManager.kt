@@ -3,16 +3,20 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.parseMailAddress
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 
 class MailServerManager(
+    appEnv: AppEnv,
     osClient: IntervirtOSClient,
 ) : DockerBasedManager(
+    appEnv = appEnv,
     osClient = osClient,
     containerName = "mailserver",
     containerImage = "ghcr.io/docker-mailserver/docker-mailserver:latest",
@@ -33,7 +37,7 @@ class MailServerManager(
     ),
 ) {
     val docker = client.docker
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(MailServerManager::class)
 
     suspend fun listMailUsers(): Result<List<MailUser>> = runSuspendingCatching {
         logger.debug { "Listing mail users" }

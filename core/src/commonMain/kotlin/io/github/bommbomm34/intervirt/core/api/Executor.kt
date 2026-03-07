@@ -1,16 +1,18 @@
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class Executor {
-    private val logger = KotlinLogging.logger { }
+class Executor(appEnv: AppEnv) {
+    private val logger = appEnv.getLogger(Executor::class)
 
     fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
         flow {

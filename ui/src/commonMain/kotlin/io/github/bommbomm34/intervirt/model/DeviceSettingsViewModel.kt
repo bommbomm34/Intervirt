@@ -16,12 +16,14 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
@@ -36,6 +38,7 @@ import kotlin.io.path.name
 
 @KoinViewModel
 class DeviceSettingsViewModel(
+    appEnv: AppEnv,
     private val appState: AppState,
     private val deviceManager: DeviceManager,
     private val configuration: IntervirtConfiguration,
@@ -49,7 +52,7 @@ class DeviceSettingsViewModel(
     var showPortForwardings by mutableStateOf(false)
     private var containerFilePath: Path? by mutableStateOf(null)
     var ioClient: ContainerIOClient? by mutableStateOf(null)
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(DeviceSettingsViewModel::class)
 
     init {
         viewModelScope.launchDialogCatching(appState) {

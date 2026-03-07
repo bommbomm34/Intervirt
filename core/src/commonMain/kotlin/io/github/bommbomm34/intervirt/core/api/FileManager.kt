@@ -5,7 +5,8 @@ import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.exceptions.ZipExtractionException
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -26,7 +27,7 @@ class FileManager(
     appEnv: AppEnv,
     private val client: HttpClient,
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(FileManager::class)
     private val dataDir = appEnv.DATA_DIR
 
     suspend fun init() = withContext(Dispatchers.IO) {

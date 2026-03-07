@@ -5,7 +5,8 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.serialization.decodeValue
 import com.russhwolf.settings.serialization.encodeValue
 import io.github.bommbomm34.intervirt.core.toPrimitive
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.KLogger
+import io.github.bommbomm34.intervirt.core.util.LoggerSeverity
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.File
 import java.util.*
@@ -20,7 +21,7 @@ data class AppEnv(
     private val onChange: () -> Unit = {},
     private val custom: AppEnv.() -> Unit = {},
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val logger = KLogger("AppEnv", getLoggerSeverity())
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
@@ -30,6 +31,7 @@ data class AppEnv(
     private val cacheInvalidators = mutableSetOf<() -> Unit>()
 
     var DEBUG_ENABLED: Boolean by delegate(false)
+    var LOGGER_SEVERITY: String by delegate(if (DEBUG_ENABLED) "DEBUG" else "ERROR")
 
     var AGENT_TIMEOUT: Int by delegate(30000)
 
@@ -168,7 +170,7 @@ data class AppEnv(
                 )
             }
 
-            fun invalidateCache(){
+            fun invalidateCache() {
                 value = null
             }
 
@@ -185,4 +187,11 @@ data class AppEnv(
         serializer = { it },
         deserializer = { it },
     )
+
+    private fun getLoggerSeverity(): LoggerSeverity {
+        val severity = System.getenv("INTERVIRT_LOGGER_SEVERITY")
+            ?.let { LoggerSeverity.valueOf(it) }
+            ?: LoggerSeverity.ERROR
+        return severity
+    }
 }

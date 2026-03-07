@@ -22,7 +22,6 @@ import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.gracefulShutdown
-import io.github.bommbomm34.intervirt.core.initLogging
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
@@ -58,7 +57,6 @@ fun main() = application {
         if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
         LaunchedEffect(Unit) {
             // These things should be only called once
-            appEnv.initLogging()
             Locale.setDefault(appEnv.LANGUAGE)
             FileKit.init("intervirt")
             // Add shutdown hook

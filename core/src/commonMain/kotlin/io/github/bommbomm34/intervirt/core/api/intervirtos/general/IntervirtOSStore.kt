@@ -2,11 +2,13 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.Address
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.parseAddress
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.io.path.*
@@ -14,8 +16,11 @@ import kotlin.io.path.*
 /**
  * Saves data of IntervirtOS
  */
-class IntervirtOSStore(ioClient: ContainerIOClient) {
-    private val logger = KotlinLogging.logger { }
+class IntervirtOSStore(
+    appEnv: AppEnv,
+    ioClient: ContainerIOClient
+) {
+    private val logger = appEnv.getLogger(IntervirtOSStore::class)
     private val dataPath = ioClient.getPath("/opt/intervirt/data.json")
     private val data = mutableMapOf<String, String>()
 

@@ -17,6 +17,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.serialization)
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.koin.test)
@@ -31,8 +32,6 @@ kotlin {
             implementation(libs.jakarta.mail)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
-            implementation(libs.kotlin.logging.jvm)
-            implementation(libs.slf4j.reload4j)
             implementation(libs.kommand)
             implementation(libs.sshd.core)
             implementation(libs.sshd.sftp)

@@ -4,7 +4,8 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -19,7 +20,7 @@ class Downloader(
     private val appEnv: AppEnv,
     private val client: HttpClient,
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(Downloader::class)
 
     suspend fun checkUpdates(): Result<List<Component>> = runSuspendingCatching {
         buildList {

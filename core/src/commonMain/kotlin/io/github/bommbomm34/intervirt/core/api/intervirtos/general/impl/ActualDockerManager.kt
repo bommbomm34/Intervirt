@@ -10,14 +10,16 @@ import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
 import io.github.bommbomm34.intervirt.core.readablePercentage
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -28,10 +30,11 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 
 class ActualDockerManager(
+    appEnv: AppEnv,
     private val host: String,
 ) : DockerManager {
     private var client: DockerClient? = null
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(ActualDockerManager::class)
 
     override suspend fun init(): Result<Unit> = catch {
         logger.debug { "Initializing ActualDockerManager with host $host" }

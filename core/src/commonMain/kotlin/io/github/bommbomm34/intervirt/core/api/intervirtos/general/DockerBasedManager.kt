@@ -1,11 +1,13 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.lastResult
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,6 +19,7 @@ import kotlin.io.path.createDirectories
  * for the container.
  */
 abstract class DockerBasedManager(
+    appEnv: AppEnv,
     osClient: IntervirtOSClient,
     val containerName: String,
     val containerImage: String,
@@ -32,7 +35,7 @@ abstract class DockerBasedManager(
             check(internalId != null) { "Manager of $containerName isn't successfully initialized" }
             return internalId!!
         }
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(DockerBasedManager::class)
 
     fun init(): Flow<ResultProgress<String>> = flow {
         withCatchingContext(Dispatchers.IO) {

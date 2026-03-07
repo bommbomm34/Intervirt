@@ -34,7 +34,7 @@ class MailClientViewModel(
     @InjectedParam val osClient: IntervirtOSClient,
 ) : ViewModel() {
     val proxyClient = ProxyManager(appEnv, deviceManager, osClient)
-    val client = MailClientManager(osClient, secretService)
+    val client = MailClientManager(osClient, appEnv, secretService)
 
     val mails = mutableStateListOf<Mail>()
     var proxyUrl: Address? by mutableStateOf(null)

@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
@@ -10,11 +11,12 @@ class IntervirtOSClient(private val client: Client) : AsyncCloseable {
     private val managers = mutableListOf<AsyncCloseable>()
 
     data class Client(
+        private val appEnv: AppEnv,
         val computer: Device.Computer,
         val ioClient: ContainerIOClient,
         val docker: DockerManager,
-        val store: IntervirtOSStore = IntervirtOSStore(ioClient),
-        val serviceManager: SystemServiceManager = SystemServiceManager(ioClient),
+        val store: IntervirtOSStore = IntervirtOSStore(appEnv, ioClient),
+        val serviceManager: SystemServiceManager = SystemServiceManager(appEnv, ioClient),
     )
 
     suspend fun init(): Result<Unit> = runSuspendingCatching {

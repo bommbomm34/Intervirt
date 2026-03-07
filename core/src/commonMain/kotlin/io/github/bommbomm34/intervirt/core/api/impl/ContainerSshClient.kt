@@ -3,10 +3,12 @@ package io.github.bommbomm34.intervirt.core.api.impl
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +26,7 @@ private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
 class ContainerSshClient(
+    appEnv: AppEnv,
     val port: Int,
     val deviceManager: DeviceManager,
 ) : ContainerIOClient {
@@ -36,7 +39,7 @@ class ContainerSshClient(
     )
     private val sshClient = SshClient.setUpDefaultClient()
     private lateinit var session: ClientSession
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(ContainerSshClient::class)
 
     suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing ContainerSshClient" }

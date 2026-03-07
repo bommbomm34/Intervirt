@@ -12,8 +12,9 @@ import io.github.bommbomm34.intervirt.core.data.agent.commandBody
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.result
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -28,7 +29,7 @@ class AgentGuestManager(
     appEnv: AppEnv,
     private val client: HttpClient,
 ) : GuestManager {
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(AgentGuestManager::class)
     private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()

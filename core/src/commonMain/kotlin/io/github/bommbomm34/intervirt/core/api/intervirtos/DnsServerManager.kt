@@ -2,6 +2,7 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.withCatchingContext
@@ -11,8 +12,10 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 class DnsServerManager(
+    appEnv: AppEnv,
     osClient: IntervirtOSClient,
 ) : DockerBasedManager(
+    appEnv = appEnv,
     osClient = osClient,
     containerName = "coredns",
     containerImage = "coredns/coredns",

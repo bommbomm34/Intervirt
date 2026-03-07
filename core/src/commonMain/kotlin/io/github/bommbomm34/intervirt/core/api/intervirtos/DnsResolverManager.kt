@@ -1,17 +1,20 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 
 class DnsResolverManager(
+    appEnv: AppEnv,
     osClient: IntervirtOSClient,
 ) {
     private val ioClient = osClient.getClient().ioClient
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(DnsResolverManager::class)
 
     suspend fun lookupDns(
         name: String,

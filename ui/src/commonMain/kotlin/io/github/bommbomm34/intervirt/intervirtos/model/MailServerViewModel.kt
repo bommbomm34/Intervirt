@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.initDocker
@@ -24,8 +25,9 @@ import org.koin.core.annotation.KoinViewModel
 class MailServerViewModel(
     @InjectedParam val osClient: IntervirtOSClient,
     private val appState: AppState,
+    appEnv: AppEnv,
 ) : ViewModel() {
-    val mailServer = MailServerManager(osClient)
+    val mailServer = MailServerManager(appEnv, osClient)
     var initialized by mutableStateOf(false)
     val users = mutableStateListOf<MailUser>()
 

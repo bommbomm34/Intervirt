@@ -17,18 +17,10 @@ import io.ktor.serialization.kotlinx.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import org.apache.log4j.BasicConfigurator
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
 import java.util.prefs.Preferences
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
@@ -110,16 +102,6 @@ fun getHttpClient(): HttpClient = HttpClient(CIO) {
 
 fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catch {
     if (it is TimeoutCancellationException) action() else throw it
-}
-
-/**
- * This command must be run **BEFORE** the first logger call.
- */
-fun AppEnv.initLogging() {
-    BasicConfigurator.configure()
-    val effectiveLoggerLevel = if (DEBUG_ENABLED) "DEBUG" else LOGGER_LEVEL
-    val rootLogger = Logger.getRootLogger()
-    rootLogger.level = Level.toLevel(effectiveLoggerLevel)
 }
 
 /**

@@ -7,7 +7,8 @@ import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.bommbomm34.intervirt.core.util.getLogger
+
 
 class ProxyManager(
     appEnv: AppEnv,
@@ -15,7 +16,7 @@ class ProxyManager(
     osClient: IntervirtOSClient,
 ) : AsyncCloseable {
     private val client = osClient.getClient(this)
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(ProxyManager::class)
     private val computer = client.computer
     private val virtual = appEnv.VIRTUAL_CONTAINER_IO
     private var proxyUrl: Address? = null

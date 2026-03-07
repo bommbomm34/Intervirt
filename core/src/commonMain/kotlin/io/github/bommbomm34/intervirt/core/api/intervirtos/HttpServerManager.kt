@@ -2,17 +2,21 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
-import io.github.oshai.kotlinlogging.KotlinLogging
+
 import kotlinx.coroutines.Dispatchers
 import kotlin.io.path.writeText
 
 class HttpServerManager(
+    appEnv: AppEnv,
     osClient: IntervirtOSClient,
 ) : DockerBasedManager(
+    appEnv = appEnv,
     osClient = osClient,
     containerName = "apache2",
     containerImage = "ubuntu/apache2",
@@ -21,7 +25,7 @@ class HttpServerManager(
 ) {
     val docker = client.docker
     private val ioClient = client.ioClient
-    private val logger = KotlinLogging.logger { }
+    private val logger = appEnv.getLogger(HttpServerManager::class)
 
     suspend fun loadHttpConf(conf: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Loading Apache2 configuration" }

@@ -21,12 +21,13 @@ val defaultJson = Json {
 val coreModule = module {
     singleOf(::Executor)
     singleOf(::Downloader)
-    single {
-        (if (get<AppEnv>().VIRTUAL_AGENT_MODE) VirtualGuestManager() else AgentGuestManager(
-            get(),
-            get(),
-        ))
-    }.binds(arrayOf(GuestManager::class))
+    single<GuestManager> {
+        if (get<AppEnv>().VIRTUAL_AGENT_MODE) {
+            VirtualGuestManager()
+        } else {
+            AgentGuestManager(get(), get())
+        }
+    }
     singleOf(::DeviceManager)
     singleOf(::FileManager)
     singleOf(::QemuClient)
