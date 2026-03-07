@@ -155,9 +155,19 @@ fun main() = application {
     }
 }
 
-private fun setDefaultExceptionHandler() {
-    Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
-        System.err.println("UNCAUGHT EXCEPTION: ${throwable.stackTraceToString()}")
+fun setDefaultExceptionHandler() {
+    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+        System.err.println(
+            """
+An unexpected error occurred. This seems like an internal error.
+It is recommended to report this error: https://github.com/bommbomm34/Intervirt/issues
+Please send the full stacktrace and some system information. Don't send personal data!
+
+Thread: ${thread.name}
+Stacktrace:
+${throwable.stackTraceToString()}
+""".trimIndent(),
+        )
         exitProcess(1)
     }
 }
