@@ -56,13 +56,13 @@ class ContainerIOClientTest : KoinTest {
     }
 
     @Test
-    fun testGetIOClient() = runTest {
+    fun shouldGetIOClient() = runTest {
         val device = createDevice()
         deviceManager.getIOClient(device).getOrThrow()
     }
 
     @Test
-    fun testExec() = runTest {
+    fun shouldExec() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         val res = ioClient.exec(listOf("echo", "Hello World")).getOrThrow().getCommandResult()
@@ -71,14 +71,14 @@ class ContainerIOClientTest : KoinTest {
     }
 
     @Test
-    fun testWriteFile() = runTest {
+    fun shouldWriteFile() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         ioClient.getTestPath().writeText("Hello Test!")
     }
 
     @Test
-    fun testReadFile() = runTest {
+    fun shouldReadFile() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         val path = ioClient.getTestPath()
@@ -87,7 +87,7 @@ class ContainerIOClientTest : KoinTest {
     }
 
     @Test
-    fun testCloseClient() = runTest {
+    fun shouldCloseClient() = runTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device).getOrThrow()
         ioClient.close().getOrThrow()
