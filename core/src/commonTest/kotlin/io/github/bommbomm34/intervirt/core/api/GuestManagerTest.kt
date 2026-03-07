@@ -1,13 +1,12 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
-import io.github.bommbomm34.intervirt.core.api.impl.AgentClient
+import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
-import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
@@ -43,7 +42,7 @@ class GuestManagerTest : KoinTest {
                     } else {
                         single<AppEnv> { appEnv }
                         single<HttpClient> { getHttpClient() }
-                        single<GuestManager> { AgentClient(get(), get()) }
+                        single<GuestManager> { AgentGuestManager(get(), get()) }
                     }
                 },
             )

@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
-class AgentClient(
+class AgentGuestManager(
     appEnv: AppEnv,
     private val client: HttpClient,
 ) : GuestManager {
