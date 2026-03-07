@@ -6,9 +6,8 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.parseAddress
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.getLogger
-
+import io.github.bommbomm34.intervirt.core.withCatchingContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.io.path.*
@@ -18,23 +17,22 @@ import kotlin.io.path.*
  */
 class IntervirtOSStore(
     appEnv: AppEnv,
-    ioClient: ContainerIOClient
+    ioClient: ContainerIOClient,
 ) {
-    private val logger = appEnv.getLogger(IntervirtOSStore::class)
+    private val logger = appEnv.getLogger(IntervirtOSStore::class, ioClient.id)
     private val dataPath = ioClient.getPath("/opt/intervirt/data.json")
     private val data = mutableMapOf<String, String>()
 
-    suspend fun init(): Result<Unit> = withContext(Dispatchers.IO) {
-        runSuspendingCatching {
-            logger.debug { "Initializing" }
-            data.clear()
-            if (dataPath.exists()) data.putAll(defaultJson.decodeFromString(dataPath.readText()))
-            else {
-                dataPath.createParentDirectories() // If missing
-                dataPath.createFile()
-                flush().getOrThrow()
-            }
+    suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+        logger.debug { "Initializing" }
+        data.clear()
+        if (dataPath.exists()) data.putAll(defaultJson.decodeFromString(dataPath.readText()))
+        else {
+            dataPath.createParentDirectories() // If missing
+            dataPath.createFile()
+            flush().getOrThrow()
         }
+        logger.debug { "Initialized" }
     }
 
     suspend fun <T> set(accessor: Accessor<T>, value: T): Result<Unit> {

@@ -13,13 +13,28 @@ class SystemServiceManager(
     appEnv: AppEnv,
     private val ioClient: ContainerIOClient,
 ) {
-    private val logger = appEnv.getLogger(SystemServiceManager::class)
+    private val logger = appEnv.getLogger(SystemServiceManager::class, ioClient.id)
 
-    suspend fun start(name: String): Result<Unit> = exec("systemctl", "start", name).map { }
+    suspend fun start(name: String): Result<Unit> {
+        logger.debug { "Starting system service $name" }
+        return exec("systemctl", "start", name).map {
+            logger.debug { "Started system service $name" }
+        }
+    }
 
-    suspend fun stop(name: String): Result<Unit> = exec("systemctl", "stop", name).map { }
+    suspend fun stop(name: String): Result<Unit> {
+        logger.debug { "Stopping system service $name" }
+        return exec("systemctl", "stop", name).map {
+            logger.debug { "Stopped system service $name" }
+        }
+    }
 
-    suspend fun restart(name: String): Result<Unit> = exec("systemctl", "restart", name).map { }
+    suspend fun restart(name: String): Result<Unit> {
+        logger.debug { "Restarting system service $name" }
+        return exec("systemctl", "restart", name).map {
+            logger.debug { "Restarted system service $name" }
+        }
+    }
 
     suspend fun status(name: String) = exec("systemctl", "show", "--no-pager", name).map { raw ->
         val map = raw.lines()

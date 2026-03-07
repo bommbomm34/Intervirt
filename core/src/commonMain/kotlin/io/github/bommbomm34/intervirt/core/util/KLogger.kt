@@ -28,6 +28,10 @@ class KLogger(
     val name: String,
     val severity: LoggerSeverity,
 ) {
+    companion object {
+        val UNKNOWN_LOGGER = KLogger("Unknown", LoggerSeverity.ERROR)
+    }
+
     fun trace(block: Output) {
         if (severity.priority == LoggerSeverity.TRACE.priority) {
             block().log("TRACE")
@@ -52,9 +56,9 @@ class KLogger(
         }
     }
 
-    fun error(throwable: Throwable? = null, block: Output) {
+    fun error(throwable: Throwable? = null, block: Output? = null) {
         if (severity.priority <= LoggerSeverity.ERROR.priority) {
-            block().log("ERROR", LoggerColor.RED, true)
+            block?.invoke()?.log("ERROR", LoggerColor.RED, true)
             throwable?.printStackTrace()
         }
     }
@@ -88,7 +92,13 @@ object LoggerColor {
     const val DEFAULT = ""
 }
 
-fun AppEnv.getLogger(clazz: KClass<*>) = getLogger(clazz.simpleName ?: "")
+fun AppEnv.getLogger(clazz: KClass<*>, vararg suffix: String): KLogger {
+    val clazzName = clazz.simpleName ?: ""
+    val joined = suffix
+        .ifEmpty { null }
+        ?.joinToString()
+    return getLogger(joined?.let { "$clazzName ($it)" } ?: clazzName)
+}
 
 fun AppEnv.getLogger(name: String) = KLogger(
     name = name,

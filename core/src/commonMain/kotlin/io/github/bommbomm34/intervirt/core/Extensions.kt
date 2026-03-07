@@ -9,6 +9,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
+import io.github.bommbomm34.intervirt.core.util.KLogger
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -32,6 +33,7 @@ suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> 
     } catch (e: CancellationException) {
         throw e
     } catch (e: Throwable) {
+        KLogger.UNKNOWN_LOGGER.error(e)
         Result.failure(e)
     }
 }

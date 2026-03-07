@@ -13,6 +13,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class Downloader(
@@ -64,6 +65,7 @@ class Downloader(
                 onSuccess = { hash ->
                     file.collect { resultProgress ->
                         if (resultProgress is ResultProgress.Result) {
+                            logger.debug { "Disk download succeeded" }
                             resultProgress.result.fold(
                                 onSuccess = {
                                     emit(ResultProgress.success("Download succeeded"))
@@ -93,6 +95,7 @@ class Downloader(
     }
 
     private fun downloadQemuZip(update: Boolean = false): Flow<ResultProgress<String>> = flow {
+        logger.debug { "Downloading QEMU" }
         if (!appEnv.QEMU_INSTALLED || update) {
             withContext(Dispatchers.IO) {
                 // Wipe previous installation if available
@@ -106,6 +109,7 @@ class Downloader(
                     onSuccess = { hash ->
                         file.collect { resultProgress ->
                             if (resultProgress is ResultProgress.Result) {
+                                logger.debug { "Successfully downloaded QEMU" }
                                 resultProgress.result.fold(
                                     onSuccess = { zipFile ->
                                         fileManager.extractZip(zipFile, fileManager.getFile("qemu"))

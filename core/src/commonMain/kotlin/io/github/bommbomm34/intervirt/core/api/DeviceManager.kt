@@ -61,7 +61,10 @@ class DeviceManager(
             mac = device.mac,
             internet = false,
             image = device.image,
-        ).map { device }
+        ).map {
+            logger.info { "Added device $device" }
+            device
+        }
     }
 
     fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
@@ -74,6 +77,7 @@ class DeviceManager(
         )
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
+        logger.info { "Added device $device" }
         return device
     }
 
@@ -91,6 +95,7 @@ class DeviceManager(
         if (device is Device.Computer) {
             guestManager.removeContainer(device.id).getOrThrow()
         }
+        logger.info { "Removed device $device" }
     }
 
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> = runSuspendingCatching {
@@ -99,6 +104,7 @@ class DeviceManager(
         configuration.connections.add(conn)
         val networks = configuration.resolveNetworks(conn)
         guestManager.addNetworks(networks).getOrThrow()
+        logger.info { "Connected device $device1 to $device2" }
     }
 
     suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> = runSuspendingCatching {
@@ -112,39 +118,50 @@ class DeviceManager(
             }
         }
         clearUnusedNetworks()
+        logger.info { "Disconnected device $device1 to $device2" }
     }
 
     suspend fun setIpv4(device: Device.Computer, ipv4: String): Result<Unit> {
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
-        return guestManager.setIpv4(device.id, ipv4)
+        return guestManager.setIpv4(device.id, ipv4).map {
+            logger.info { "Set $ipv4 of $device" }
+        }
     }
 
     suspend fun setIpv6(device: Device.Computer, ipv6: String): Result<Unit> {
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
-        return guestManager.setIpv6(device.id, ipv6)
+        return guestManager.setIpv6(device.id, ipv6).map {
+            logger.info { "Set $ipv6 of $device" }
+        }
     }
 
     fun setName(device: Device, name: String) {
-        logger.debug { "Setting name of ${device.name} to $name" }
         device.name = name
+        logger.debug { "Set name of ${device.name} to $name" }
     }
 
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean): Result<Unit> {
-        logger.debug { "Set internet enabled of ${device.id} to $enabled" }
+        logger.debug { "Setting internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled
-        return guestManager.setInternetAccess(device.id, enabled)
+        return guestManager.setInternetAccess(device.id, enabled).map {
+            logger.info { "Set internet enabled of ${device.id} to $enabled" }
+        }
     }
 
     suspend fun start(computer: Device.Computer): Result<Unit> {
         logger.debug { "Starting ${computer.id}" }
-        return guestManager.startContainer(computer.id)
+        return guestManager.startContainer(computer.id).map {
+            logger.info { "Started ${computer.id}" }
+        }
     }
 
     suspend fun stop(computer: Device.Computer): Result<Unit> {
         logger.debug { "Stopping ${computer.id}" }
-        return guestManager.stopContainer(computer.id)
+        return guestManager.stopContainer(computer.id).map {
+            logger.info { "Stopped ${computer.id}" }
+        }
     }
 
     suspend fun addPortForwarding(
@@ -163,7 +180,9 @@ class DeviceManager(
             internalPort = portForwarding.internalPort,
             externalPort = portForwarding.externalPort,
             protocol = portForwarding.protocol,
-        )
+        ).map {
+            logger.info { "Added port forwarding $portForwarding for ${device.id}" }
+        }
     }
 
     suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> {
@@ -176,7 +195,9 @@ class DeviceManager(
             protocol = protocol,
             externalPort = externalPort,
         ).onFailure { return Result.failure(it) }
-        return guestManager.removePortForwarding(externalPort, protocol)
+        return guestManager.removePortForwarding(externalPort, protocol).map {
+            logger.info { "Removed port forwarding of $externalPort" }
+        }
     }
 
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> {
@@ -198,9 +219,10 @@ class DeviceManager(
                 externalPort = port,
             ),
         ).mapCatching {
-            val sshClient = ContainerSshClient(appEnv, port, this)
+            val sshClient = ContainerSshClient(appEnv, port, this, computer.id)
             sshClient.init().getOrThrow()
             containerIOClients[computer.id] = sshClient
+            logger.info { "Initialized SSH client for ${computer.id}" }
             sshClient
         }
     }
@@ -209,6 +231,7 @@ class DeviceManager(
         logger.debug { "Initializing virtual container IO client for ${computer.id}" }
         val client = VirtualContainerIOClient(computer.id, wipeVirtualOnClose, executor, fileManager)
         containerIOClients[computer.id] = client
+        logger.debug { "Initialized virtual container IO client for ${computer.id}" }
         return client
     }
 
@@ -226,6 +249,7 @@ class DeviceManager(
         )
         osClient.init().getOrThrow()
         intervirtOSClients[computer.id] = osClient
+        logger.debug { "Retrieved IntervirtOSClient of ${computer.id}" }
         osClient
     }
 
@@ -233,15 +257,18 @@ class DeviceManager(
         computer: Device.Computer,
         ioClient: ContainerIOClient,
     ): Result<DockerManager> = runSuspendingCatching {
+        logger.debug { "Initializing DockerManager for ${computer.id}" }
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
         val sshClient = ioClient as? ContainerSshClient
         val dockerManager =
             ActualDockerManager(appEnv, dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
         dockerManagers[computer.id] = dockerManager
+        logger.debug { "Initialized DockerManager for ${computer.id}" }
         dockerManager
     }
 
     private suspend fun clearUnusedNetworks(): Result<Unit> = guestManager.getNetworks().map { networks ->
+        logger.debug { "Clearing unused networks" }
         networks
             .filter { it.value.isEmpty() }
             .forEach {
@@ -261,6 +288,7 @@ class DeviceManager(
         intervirtOSClients.forEach { (_, client) -> client.close().getOrThrow() }
         dockerManagers.forEach { (_, manager) -> manager.close().getOrThrow() }
         containerIOClients.forEach { (_, client) -> client.close().getOrThrow() }
+        logger.debug { "Closed DeviceManager" }
     }
 }
 

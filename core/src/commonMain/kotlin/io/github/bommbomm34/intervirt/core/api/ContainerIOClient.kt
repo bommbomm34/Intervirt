@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
 interface ContainerIOClient : AsyncCloseable {
+    val id: String
 
     fun exec(commands: List<String>): Result<Flow<CommandStatus>>
 

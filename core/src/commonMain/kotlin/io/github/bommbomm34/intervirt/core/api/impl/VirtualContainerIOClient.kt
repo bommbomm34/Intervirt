@@ -13,7 +13,7 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
 
 class VirtualContainerIOClient(
-    id: String,
+    override val id: String,
     private val wipeOnClose: Boolean,
     private val executor: Executor,
     fileManager: FileManager,

@@ -29,6 +29,7 @@ class ContainerSshClient(
     appEnv: AppEnv,
     val port: Int,
     val deviceManager: DeviceManager,
+    override val id: String,
 ) : ContainerIOClient {
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
@@ -39,13 +40,14 @@ class ContainerSshClient(
     )
     private val sshClient = SshClient.setUpDefaultClient()
     private lateinit var session: ClientSession
-    private val logger = appEnv.getLogger(ContainerSshClient::class)
+    private val logger = appEnv.getLogger(ContainerSshClient::class, id)
 
     suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing ContainerSshClient" }
         sshClient.start()
         session = sshClient.connect(USERNAME, HOST, port).verify().session
         session.auth().verify()
+        logger.debug { "Initialized ContainerSshClient" }
     }
 
     suspend fun pty(
@@ -119,6 +121,7 @@ class ContainerSshClient(
             externalPort = port,
             protocol = "tcp",
         ).getOrThrow()
+        logger.debug { "Closed ContainerSshClient" }
     }
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> = runCatching {
