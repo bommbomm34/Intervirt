@@ -11,6 +11,6 @@ data class ContainerInfo(
     val mac: String,
     val internet: Boolean,
     val image: String,
-    val portForwardings: List<PortForwarding>,
-    val running: Boolean,
+    val portForwardings: List<PortForwarding> = listOf(),
+    val running: Boolean = false,
 )

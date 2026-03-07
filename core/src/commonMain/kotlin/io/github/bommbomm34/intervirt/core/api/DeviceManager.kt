@@ -8,6 +8,9 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDo
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.generateIpv4
+import io.github.bommbomm34.intervirt.core.util.generateIpv6
+import io.github.bommbomm34.intervirt.core.util.generateMac
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.ServerSocket
 import kotlin.random.Random
@@ -38,9 +41,9 @@ class DeviceManager(
             name = name ?: id,
             x = x,
             y = y,
-            ipv4 = generateIpv4(),
-            ipv6 = generateIpv6(),
-            mac = generateMac(),
+            ipv4 = configuration.generateIpv4(),
+            ipv6 = configuration.generateIpv6(),
+            mac = configuration.generateMac(),
             internetEnabled = false,
             portForwardings = mutableListOf(),
         )
@@ -244,31 +247,6 @@ class DeviceManager(
         while (true) {
             val id = prefix + "-" + Random.nextInt(999999)
             if (configuration.devices.all { it.id != id }) return id
-        }
-    }
-
-    private fun generateMac(): String {
-        val rand = { Random.nextInt(256).toString(16) }
-        while (true) {
-            val mac = "${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
-            if (configuration.devices.all { if (it is Device.Computer) it.mac != mac else true }) return mac
-        }
-    }
-
-    private fun generateIpv4(): String {
-        val rand = { Random.nextInt(256) }
-        while (true) {
-            val ipv4 = "192.168.${rand()}.${rand()}"
-            if (configuration.devices.all { if (it is Device.Computer) it.ipv4 != ipv4 else true }) return ipv4
-        }
-    }
-
-    private fun generateIpv6(): String {
-        val rand = { Random.nextInt(65536).toString(16) }
-        val randFirst = { Random.nextInt(256).toString(16) }
-        while (true) {
-            val ipv6 = "fd${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
-            if (configuration.devices.all { if (it is Device.Computer) it.ipv6 != ipv6 else true }) return ipv6
         }
     }
 

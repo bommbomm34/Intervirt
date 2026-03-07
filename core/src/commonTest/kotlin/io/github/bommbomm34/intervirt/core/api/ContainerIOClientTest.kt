@@ -47,12 +47,7 @@ class ContainerIOClientTest : KoinTest {
                     singleOf(::QemuClient)
                     singleOf(::Executor)
                     singleOf(::FileManager)
-                    single {
-                        getAppEnv {
-                            VIRTUAL_AGENT_MODE = true
-                            VIRTUAL_CONTAINER_IO = true
-                        }
-                    }
+                    single { getTestAppEnv() }
                     single { IntervirtConfiguration() }
                     single { getHttpClient() }
                 },

@@ -2,7 +2,6 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
-import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +14,15 @@ interface GuestManager : AsyncCloseable {
         internet: Boolean,
         image: String,
     ): Result<Unit>
+
+    suspend fun addContainer(container: ContainerInfo) = addContainer(
+        id = container.id,
+        initialIpv4 = container.ipv4,
+        initialIpv6 = container.ipv6,
+        mac = container.mac,
+        internet = container.internet,
+        image = container.image,
+    )
 
     suspend fun removeContainer(id: String): Result<Unit>
 

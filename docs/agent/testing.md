@@ -23,7 +23,7 @@ cd Intervirt
 #### Run tests
 
 ```bash
-export INTERVIRT_TEST_WITH_AGENT=true
+export INTERVIRT_TEST_VIRTUAL_AGENT_MODE=false
 ./gradlew :core:jvmTest --tests GuestManagerTest
 ```
 
