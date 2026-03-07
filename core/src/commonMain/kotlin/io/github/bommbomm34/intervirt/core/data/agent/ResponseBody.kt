@@ -48,4 +48,10 @@ sealed class ResponseBody {
         override val refID: String,
         val containers: List<ContainerInfo>,
     ) : ResponseBody()
+
+    @SerialName("NetworkList")
+    data class NetworkList(
+        override val refID: String,
+        val networks: Map<String, List<String>>,
+    ) : ResponseBody()
 }

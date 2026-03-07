@@ -55,8 +55,8 @@ class DeviceManager(
         configuration.devices.add(device)
         return guestManager.addContainer(
             id = device.id,
-            initialIpv4 = device.ipv4,
-            initialIpv6 = device.ipv6,
+            ipv4 = device.ipv4,
+            ipv6 = device.ipv6,
             mac = device.mac,
             internet = false,
             image = device.image,

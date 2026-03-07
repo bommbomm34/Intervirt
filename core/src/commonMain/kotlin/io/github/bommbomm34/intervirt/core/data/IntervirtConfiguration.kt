@@ -69,8 +69,8 @@ fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultPro
                         )
                         addContainer(
                             id = device.id,
-                            initialIpv4 = device.ipv4,
-                            initialIpv6 = device.ipv6,
+                            ipv4 = device.ipv4,
+                            ipv6 = device.ipv6,
                             mac = device.mac,
                             internet = device.internetEnabled,
                             image = device.image,

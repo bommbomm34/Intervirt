@@ -93,6 +93,16 @@ sealed class RequestBody {
     data class StopContainer(
         val id: String,
     ) : RequestBody()
+
+    @SerialName("AddNetwork")
+    data class AddNetwork(
+        val name: String,
+    ) : RequestBody()
+
+    @SerialName("RemoveNetwork")
+    data class RemoveNetwork(
+        val name: String
+    ) : RequestBody()
 }
 
 fun String.commandBody() = RequestBody.Command(this)

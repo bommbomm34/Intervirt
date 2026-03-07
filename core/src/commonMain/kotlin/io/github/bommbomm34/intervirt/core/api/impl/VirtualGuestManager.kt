@@ -15,18 +15,19 @@ import kotlin.time.Duration.Companion.milliseconds
 // Virtual Guest Manager
 class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : GuestManager {
     private val containers = mutableListOf<Container>()
+    private val networks = mutableMapOf<String, MutableList<String>>()
     private val connections = mutableListOf<ContainerConnection>()
 
     override suspend fun addContainer(
         id: String,
-        initialIpv4: String,
-        initialIpv6: String,
+        ipv4: String,
+        ipv6: String,
         mac: String,
         internet: Boolean,
         image: String,
     ): Result<Unit> {
         delay()
-        containers.add(Container(id, initialIpv4, initialIpv6, mac, internet, image))
+        containers.add(Container(id, ipv4, ipv6, mac, internet, image))
         return Result.success(Unit)
     }
 
@@ -140,6 +141,16 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
             )
         }
     }
+
+    override suspend fun addNetwork(name: String): Result<Unit> = runCatching {
+        networks[name] = mutableListOf()
+    }
+
+    override suspend fun removeNetwork(name: String): Result<Unit> = runCatching {
+        networks.remove(name)
+    }
+
+    override suspend fun getNetworks(): Result<Map<String, List<String>>> = Result.success(networks)
 
     private fun getContainerByID(id: String) = containers.first { it.id == id }
 

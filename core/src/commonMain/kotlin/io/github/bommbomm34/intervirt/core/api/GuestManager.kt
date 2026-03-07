@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface GuestManager : AsyncCloseable {
     suspend fun addContainer(
         id: String,
-        initialIpv4: String,
-        initialIpv6: String,
+        ipv4: String,
+        ipv6: String,
         mac: String,
         internet: Boolean,
         image: String,
@@ -17,8 +17,8 @@ interface GuestManager : AsyncCloseable {
 
     suspend fun addContainer(container: ContainerInfo) = addContainer(
         id = container.id,
-        initialIpv4 = container.ipv4,
-        initialIpv6 = container.ipv6,
+        ipv4 = container.ipv4,
+        ipv6 = container.ipv6,
         mac = container.mac,
         internet = container.internet,
         image = container.image,
@@ -55,4 +55,10 @@ interface GuestManager : AsyncCloseable {
     suspend fun getVersion(): Result<String>
 
     suspend fun getContainers(): Result<List<ContainerInfo>>
+
+    suspend fun addNetwork(name: String): Result<Unit>
+
+    suspend fun removeNetwork(name: String): Result<Unit>
+
+    suspend fun getNetworks(): Result<Map<String, List<String>>>
 }

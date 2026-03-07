@@ -164,6 +164,41 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
+    fun shouldGetContainers() = runTest {
+        val container1 = addTestContainer("id1")
+        val container2 = addTestContainer("id2")
+        val container3 = addTestContainer("id3")
+        val containers = getContainers()
+        assertContains(containers, container1)
+        assertContains(containers, container2)
+        assertContains(containers, container3)
+    }
+
+    @Test
+    fun shouldAddNetwork() = runTest {
+        addTestNetwork()
+        assertContains(getNetworks(), "test-network")
+    }
+
+    @Test
+    fun shouldRemoveNetwork() = runTest {
+        addTestNetwork()
+        guestManager.removeNetwork("test-network").getOrThrow()
+        assertFalse { getNetworks().contains("test-network") }
+    }
+
+    @Test
+    fun shouldGetNetworks() = runTest {
+        addTestNetwork("test-network1")
+        addTestNetwork("test-network2")
+        addTestNetwork("test-network3")
+        val networks = getNetworks()
+        assertContains(networks, "test-network1")
+        assertContains(networks, "test-network2")
+        assertContains(networks, "test-network3")
+    }
+
+    @Test
     fun shouldClose() = runTest {
         guestManager.close().getOrThrow()
     }
@@ -182,6 +217,7 @@ class GuestManagerTest : KoinTest {
     }
 
     private suspend fun getContainers() = guestManager.getContainers().getOrThrow()
+    private suspend fun getNetworks() = guestManager.getNetworks().getOrThrow()
 
     private suspend fun addTestPortForwarding() = guestManager.addPortForwarding(
         id = TEST_CONTAINER_ID,
@@ -189,6 +225,8 @@ class GuestManagerTest : KoinTest {
         externalPort = fwd.externalPort,
         protocol = fwd.protocol,
     ).getOrThrow()
+
+    private suspend fun addTestNetwork(name: String = "test-network") = guestManager.addNetwork(name).getOrThrow()
 
     private suspend fun ContainerInfo.getContainer() = getContainers().first { it.id == id }
 

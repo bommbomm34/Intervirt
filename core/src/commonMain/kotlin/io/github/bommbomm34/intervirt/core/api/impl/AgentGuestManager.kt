@@ -36,12 +36,12 @@ class AgentGuestManager(
 
     override suspend fun addContainer(
         id: String,
-        initialIpv4: String,
-        initialIpv6: String,
+        ipv4: String,
+        ipv6: String,
         mac: String,
         internet: Boolean,
         image: String,
-    ): Result<Unit> = justSend(RequestBody.AddContainer(id, initialIpv4, initialIpv6, mac, internet, image))
+    ): Result<Unit> = justSend(RequestBody.AddContainer(id, ipv4, ipv6, mac, internet, image))
 
     override suspend fun removeContainer(id: String): Result<Unit> = justSend(RequestBody.RemoveContainer(id))
 
@@ -102,6 +102,21 @@ class AgentGuestManager(
     override suspend fun getContainers(): Result<List<ContainerInfo>> {
         logger.debug { "Retrieving containers of guest" }
         return firstSend<ResponseBody.ContainerList>("containers".commandBody()).map { it.containers }
+    }
+
+    override suspend fun addNetwork(name: String): Result<Unit> {
+        logger.debug { "Adding network $name" }
+        return justSend(RequestBody.AddNetwork(name))
+    }
+
+    override suspend fun removeNetwork(name: String): Result<Unit> {
+        logger.debug { "Removing network $name" }
+        return justSend(RequestBody.RemoveNetwork(name))
+    }
+
+    override suspend fun getNetworks(): Result<Map<String, List<String>>> {
+        logger.debug { "Retrieving networks" }
+        return firstSend<ResponseBody.NetworkList>("networks".commandBody()).map { it.networks }
     }
 
     private suspend fun justSend(body: RequestBody): Result<Unit> {
