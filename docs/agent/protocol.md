@@ -469,6 +469,42 @@ Message from server:
 }
 ```
 
+### Get containers
+
+Message from client:
+
+```json
+{
+	"type": "Command",
+	"command": "containers"
+}
+```
+
+Message from server:
+
+```json
+{
+	"containers": [ // Array of containers
+		{
+			"id": "computer-67676",
+			"ipv4": "192.168.0.25",
+			"ipv6": "fd00:0000:0000:0000:6767:aaaa:bbbb:cccc",
+			"mac": "ff:ff:00:00:21:ff",
+			"internet": true,
+			"image": "debian/13",
+			"portForwardings": [ // Array of port forwardings
+				{
+					"protocol": "tcp",
+					"externalPort": 2222,
+					"internalPort": 22				
+				}
+			],
+			"running": false
+		}
+	]
+}
+```
+
 ### Intervirt Error Codes
 
 Intervirt has its own error codes:
