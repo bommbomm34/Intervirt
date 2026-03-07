@@ -38,7 +38,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 already exists" // Error message
+    "error": "Container computer-93281 already exists", // Error message
     "code": 3 // Status code of the error
 }
 ```
@@ -59,7 +59,7 @@ Successful message from server:
 ```json
 {
     "progress": 0.9, // Percentage of progress (0.9 means 90%)
-    "output": "Shutting down container..." // Progress message
+    "output": "Shutting down container...", // Progress message
     "status": -1
 }
 ```
@@ -74,7 +74,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist." // Error message
+    "error": "Container computer-93281 doesn't exist.", // Error message
     "code": 6
 } 
 ```
@@ -100,7 +100,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist." // Error message
+    "error": "Container computer-93281 doesn't exist.", // Error message
     "code": 6
 }
 ```
@@ -126,7 +126,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist." // Error message
+    "error": "Container computer-93281 doesn't exist.", // Error message
     "code": 6
 }
 ```
@@ -153,7 +153,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
@@ -180,7 +180,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
@@ -192,8 +192,8 @@ Message from client:
 ```json
 {
     "type": "Connect",
-    "id1": "computer-93281", // Name of the first container to connect
-    "id2": "computer-31222", // Name of the second container to connect
+    "container": "computer-93281", // Name of the container to connect
+    "network": "network-1" // Network
 }
 ```
 
@@ -207,12 +207,10 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 and computer-31222 don't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
-
-You should connect both containers via networking.
 
 ### Disconnect
 
@@ -221,8 +219,8 @@ Message from client:
 ```json
 {
     "type": "Disconnect",
-    "id1": "computer-93281", // Name of the first container to disconnect
-    "id2": "computer-31222", // Name of the second container to disconnect
+    "container": "computer-93281", // Name of the container to disconnect
+    "network": "network-1", // Network
 }
 ```
 
@@ -236,7 +234,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 and computer-31222 don't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
@@ -263,7 +261,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
@@ -292,7 +290,7 @@ Failed message from server:
 
 ```json
 {
-    "error": "Container computer-93281 doesn't exist"
+    "error": "Container computer-93281 doesn't exist",
     "code": 6
 }
 ```
@@ -505,6 +503,56 @@ Message from server:
 }
 ```
 
+### Add network
+
+Message from client:
+
+```json
+{
+    "type": "AddNetwork",
+    "name": "network-1"
+}
+```
+
+Successful message from server:
+
+```json
+{}
+```
+
+Failed message from server:
+
+```json
+{
+    "code": 2
+}
+```
+
+### Remove network
+
+Message from client:
+
+```json
+{
+    "type": "RemoveNetwork",
+    "name": "network-1"
+}
+```
+
+Successful message from server:
+
+```json
+{}
+```
+
+Failed message from server:
+
+```json
+{
+    "code": 2
+}
+```
+
 ### Intervirt Error Codes
 
 Intervirt has its own error codes:
@@ -533,5 +581,3 @@ Intervirt has its own error codes:
   the request which the response refers to.
 - Always return a ```type``` field in the JSON responses. It should be ```Version``` (if the client requests the
   version), otherwise ```General```
-
-If you have questions, simply contact me and I'll answer you as soon as possible.
