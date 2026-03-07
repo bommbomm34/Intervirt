@@ -20,7 +20,6 @@ koin = "4.2.0-RC1"
 koin-plugin = "0.3.0"
 kommand = "2.3.0"
 kotlin = "2.3.10"
-kotlin-logging = "8.0.01"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization-json = "1.10.0"
 ktor = "3.4.1"
@@ -68,7 +67,6 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 kommand = { module = "com.kgit2:kommand", version.ref = "kommand" }
-kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }

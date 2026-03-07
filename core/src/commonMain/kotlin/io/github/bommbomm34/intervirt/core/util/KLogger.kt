@@ -4,10 +4,24 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
+import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import kotlin.reflect.KClass
 import kotlin.time.Clock
 
+private val ISO_8601_FORMAT = LocalDateTime.Format {
+    year()
+    char('-')
+    monthNumber()
+    char('-')
+    day()
+    char('T')
+    hour()
+    char(':')
+    minute()
+    char(':')
+    second()
+}
 private const val ANSI_RESET = "\u001B[0m"
 
 class KLogger(
@@ -52,8 +66,8 @@ class KLogger(
     ) {
         val time = Clock.System.now()
             .toLocalDateTime(TimeZone.currentSystemDefault())
-            .format(LocalDateTime.Formats.ISO)
-        val output = "$color[$prefix] $name: ${toString()} [$time]$ANSI_RESET"
+            .format(ISO_8601_FORMAT)
+        val output = "$color$time [$prefix] $name - ${toString()}$ANSI_RESET"
         if (stderr) System.err.println(output) else println(output)
     }
 }
