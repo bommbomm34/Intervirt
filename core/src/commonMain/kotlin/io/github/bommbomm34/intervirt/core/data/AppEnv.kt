@@ -10,8 +10,8 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.serialization.decodeValue
 import com.russhwolf.settings.serialization.encodeValue
 import io.github.bommbomm34.intervirt.core.toPrimitive
-import io.github.bommbomm34.intervirt.core.util.KLogger
-import io.github.bommbomm34.intervirt.core.util.LoggerSeverity
+import io.github.bommbomm34.intervirt.logging.KLogger
+import io.github.bommbomm34.intervirt.logging.LogLevel
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.File
 import java.util.*
@@ -193,10 +193,10 @@ data class AppEnv(
         deserializer = { it },
     )
 
-    private fun getLoggerSeverity(): LoggerSeverity {
+    private fun getLoggerSeverity(): LogLevel {
         val severity = System.getenv("INTERVIRT_LOGGER_SEVERITY")
-            ?.let { LoggerSeverity.valueOf(it) }
-            ?: LoggerSeverity.ERROR
+            ?.let { LogLevel.valueOf(it) }
+            ?: LogLevel.ERROR
         return severity
     }
 }

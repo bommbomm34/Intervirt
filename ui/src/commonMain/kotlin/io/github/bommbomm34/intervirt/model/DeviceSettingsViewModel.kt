@@ -25,7 +25,6 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.data.excludeHidden
 import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice

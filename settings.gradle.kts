@@ -46,3 +46,4 @@ includeBuild("external/webview") {
         substitute(module("intervirt.webview:compose")).using(project(":webview-compose"))
     }
 }
+include("logging")

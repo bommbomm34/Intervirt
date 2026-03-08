@@ -22,7 +22,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.serialization)
-            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.koin.test)
@@ -40,6 +39,7 @@ kotlin {
             implementation(libs.kommand)
             implementation(libs.sshd.core)
             implementation(libs.sshd.sftp)
+            api(projects.logging)
             api(projects.secret)
         }
     }
