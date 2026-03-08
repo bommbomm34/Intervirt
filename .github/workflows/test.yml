@@ -13,8 +13,11 @@ on:
 
 jobs:
   test:
-    name: Test All
-    runs-on: ubuntu-latest
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -27,5 +30,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
-      - name: All Tests
+      - name: Test Core
         run: ./gradlew :core:allTests
+      - name: Test UI
+        run: ./gradlew :ui:allTests
+      - name: Test Secret
+        run: ./gradlew :secret:test
+      - name: Test Logging
+        run: ./gradlew :logging:allTests
