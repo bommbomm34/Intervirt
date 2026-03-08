@@ -1,5 +1,3 @@
-mod error;
-
 use keyring::Entry;
 
 #[derive(uniffi::Object)]
@@ -15,26 +13,26 @@ impl SecretService {
    }
 
    pub fn set(&self, key: &str, value: &[u8]) -> Result<(), SecretServiceError> {
-      let entry = get_entry(&self, key);
+      let entry = get_entry(&self, key)?;
       entry.set_secret(value)?;
       Ok(())
    }
 
    pub fn get(&self, key: &str) -> Result<Vec<u8>, SecretServiceError> {
-      let entry = get_entry(&self, key);
+      let entry = get_entry(&self, key)?;
       let value = entry.get_secret()?;
       Ok(value)
    }
 
    pub fn del(&self, key: &str) -> Result<(), SecretServiceError> {
-      let entry = get_entry(&self, key);
+      let entry = get_entry(&self, key)?;
       entry.delete_credential()?;
       Ok(())
    }
 }
 
-fn get_entry(secret_service: &SecretService, key: &str) -> Entry {
-   Entry::new(&secret_service.service_name, key).unwrap()
+fn get_entry(secret_service: &SecretService, key: &str) -> keyring::error::Result<Entry> {
+   Entry::new(&secret_service.service_name, key)
 }
 
 #[derive(Debug, thiserror::Error, uniffi::Error, PartialEq)]
