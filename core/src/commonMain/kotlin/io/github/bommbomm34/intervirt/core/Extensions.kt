@@ -135,3 +135,21 @@ fun <T> flowCatching(block: suspend FlowCollector<ResultProgress<T>>.() -> Unit)
 fun Result<Unit>.recoverAlreadyPerformed(): Result<Unit> = recoverCatching {
     if (it is OperationAlreadyPerformedException) Unit else throw it
 }
+
+fun String.toReadableImage() = when {
+    startsWith("debian/") -> "Debian"
+    startsWith("ubuntu/") -> "Ubuntu"
+    startsWith("intervirtos/") -> "IntervirtOS"
+    startsWith("almalinux/") -> "AlmaLinux"
+    startsWith("alpine/") -> "Alpine Linux"
+    startsWith("archlinux/") -> "Arch Linux"
+    startsWith("centos/") -> "CentOS"
+    startsWith("fedora/") -> "Fedora"
+    startsWith("gentoo/") -> "Gentoo"
+    startsWith("kali/") -> "Kali Linux"
+    startsWith("mint/") -> "Linux Mint"
+    startsWith("nixos/") -> "NixOS"
+    startsWith("opensuse/") -> "openSUSE"
+    startsWith("voidlinux/") -> "Void Linux"
+    else -> null
+}

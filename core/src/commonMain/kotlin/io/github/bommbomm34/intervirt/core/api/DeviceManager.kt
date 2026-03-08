@@ -12,12 +12,10 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
-import io.github.bommbomm34.intervirt.core.util.generateIpv4
-import io.github.bommbomm34.intervirt.core.util.generateIpv6
-import io.github.bommbomm34.intervirt.core.util.generateMac
-import io.github.bommbomm34.intervirt.core.util.getLogger
-
+import io.github.bommbomm34.intervirt.core.toReadableImage
+import io.github.bommbomm34.intervirt.core.util.*
+import org.apache.commons.validator.routines.InetAddressValidator
+import org.apache.commons.validator.routines.RegexValidator
 import java.net.ServerSocket
 import kotlin.random.Random
 
@@ -56,20 +54,20 @@ class DeviceManager(
         return addComputer(device)
     }
 
-    suspend fun addComputer(device: Device.Computer): Result<Device.Computer> {
+    suspend fun addComputer(device: Device.Computer): Result<Device.Computer> = runSuspendingCatching {
+        validateComputer(device)
         logger.debug { "Adding device $device" }
         configuration.devices.add(device)
-        return guestManager.addContainer(
+        guestManager.addContainer(
             id = device.id,
             ipv4 = device.ipv4,
             ipv6 = device.ipv6,
             mac = device.mac,
             internet = false,
             image = device.image,
-        ).map {
-            logger.info { "Added device $device" }
-            device
-        }
+        ).getOrThrow()
+        logger.info { "Added device $device" }
+        device
     }
 
     fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
@@ -87,6 +85,7 @@ class DeviceManager(
     }
 
     suspend fun removeDevice(device: Device): Result<Unit> = runSuspendingCatching {
+        device.requireExists()
         logger.debug { "Removing device $device" }
         configuration.connections.removeIf { it.containsDevice(device) }
         configuration.devices.remove(device)
@@ -104,6 +103,8 @@ class DeviceManager(
     }
 
     suspend fun connectDevice(device1: Device, device2: Device): Result<Unit> = runSuspendingCatching {
+        device1.requireExists()
+        device2.requireExists()
         logger.debug { "Connecting device $device1 to $device2" }
         val conn = device1 connect device2
         configuration.connections.add(conn)
@@ -113,6 +114,8 @@ class DeviceManager(
     }
 
     suspend fun disconnectDevice(device1: Device, device2: Device): Result<Unit> = runSuspendingCatching {
+        device1.requireExists()
+        device2.requireExists()
         logger.debug { "Disconnecting device $device1 to $device2" }
         val conn = device1 connect device2
         configuration.connections.removeIf { it == conn }
@@ -127,6 +130,7 @@ class DeviceManager(
     }
 
     suspend fun setIpv4(device: Device.Computer, ipv4: String): Result<Unit> {
+        device.requireExists()
         logger.debug { "Setting $ipv4 of $device" }
         device.ipv4 = ipv4
         return guestManager.setIpv4(device.id, ipv4).map {
@@ -135,6 +139,7 @@ class DeviceManager(
     }
 
     suspend fun setIpv6(device: Device.Computer, ipv6: String): Result<Unit> {
+        device.requireExists()
         logger.debug { "Setting $ipv6 of $device" }
         device.ipv6 = ipv6
         return guestManager.setIpv6(device.id, ipv6).map {
@@ -143,11 +148,13 @@ class DeviceManager(
     }
 
     fun setName(device: Device, name: String) {
+        device.requireExists()
         device.name = name
         logger.debug { "Set name of ${device.name} to $name" }
     }
 
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean): Result<Unit> {
+        device.requireExists()
         logger.debug { "Setting internet enabled of ${device.id} to $enabled" }
         device.internetEnabled = enabled
         return guestManager.setInternetAccess(device.id, enabled).map {
@@ -156,6 +163,7 @@ class DeviceManager(
     }
 
     suspend fun start(computer: Device.Computer): Result<Unit> {
+        computer.requireExists()
         logger.debug { "Starting ${computer.id}" }
         return guestManager.startContainer(computer.id).map {
             logger.info { "Started ${computer.id}" }
@@ -163,6 +171,7 @@ class DeviceManager(
     }
 
     suspend fun stop(computer: Device.Computer): Result<Unit> {
+        computer.requireExists()
         logger.debug { "Stopping ${computer.id}" }
         return guestManager.stopContainer(computer.id).map {
             logger.info { "Stopped ${computer.id}" }
@@ -173,6 +182,8 @@ class DeviceManager(
         device: Device.Computer,
         portForwarding: PortForwarding,
     ): Result<Unit> {
+        device.requireExists()
+        portForwarding.requireValid()
         logger.debug { "Add port forwarding $portForwarding for ${device.id}" }
         device.portForwardings.add(portForwarding)
         if (!virtualContainerIO) qemuClient.addPortForwarding(
@@ -191,6 +202,8 @@ class DeviceManager(
     }
 
     suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> {
+        require(externalPort.isValidPort()) { "External port $externalPort is not valid!" }
+        require(protocol.isValidProtocol()) { "Protocol $protocol is not valid!" }
         logger.debug { "Remove port forwarding of $externalPort" }
         configuration.devices.forEach { device ->
             if (device is Device.Computer)
@@ -206,6 +219,7 @@ class DeviceManager(
     }
 
     suspend fun getIOClient(computer: Device.Computer): Result<ContainerIOClient> {
+        computer.requireExists()
         logger.debug { "Retrieving IO client of ${computer.id}" }
         val cached = containerIOClients[computer.id]?.let { Result.success(it) }
         if (cached != null) return cached
@@ -214,6 +228,7 @@ class DeviceManager(
 
 
     suspend fun initSshClient(computer: Device.Computer): Result<ContainerSshClient> {
+        computer.requireExists()
         val port = getFreePort()
         logger.debug { "Initializing SSH client for ${computer.id} on port $port" }
         return addPortForwarding(
@@ -234,6 +249,7 @@ class DeviceManager(
     }
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
+        computer.requireExists()
         logger.debug { "Initializing virtual container IO client for ${computer.id}" }
         val client = VirtualContainerIOClient(computer.id, wipeVirtualOnClose, executor, fileManager)
         containerIOClients[computer.id] = client
@@ -242,6 +258,7 @@ class DeviceManager(
     }
 
     suspend fun getIntervirtOSClient(computer: Device.Computer) = runSuspendingCatching {
+        computer.requireExists()
         logger.debug { "Retrieving IntervirtOSClient of ${computer.id}" }
         intervirtOSClients[computer.id]?.let { return@runSuspendingCatching it }
         val ioClient = getIOClient(computer).getOrThrow()
@@ -263,11 +280,15 @@ class DeviceManager(
         computer: Device.Computer,
         ioClient: ContainerIOClient,
     ): Result<DockerManager> = runSuspendingCatching {
+        computer.requireExists()
         logger.debug { "Initializing DockerManager for ${computer.id}" }
         dockerManagers[computer.id]?.let { return@runSuspendingCatching it }
         val sshClient = ioClient as? ContainerSshClient
         val dockerManager =
-            ActualDockerManager(appEnv, dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}")
+            ActualDockerManager(
+                appEnv,
+                dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}",
+            )
         dockerManagers[computer.id] = dockerManager
         logger.debug { "Initialized DockerManager for ${computer.id}" }
         dockerManager
@@ -290,6 +311,28 @@ class DeviceManager(
         }
     }
 
+    private fun validateComputer(computer: Device.Computer) {
+        // Validate image
+        requireNotNull(computer.image.toReadableImage()) { "Invalid image: ${computer.image}" }
+        // Validate IP
+        val validator = InetAddressValidator.getInstance()
+        require(validator.isValidInet4Address(computer.ipv4)) { "IPv4 address is invalid: ${computer.ipv4}" }
+        require(validator.isValidInet6Address(computer.ipv6)) { "IPv6 address is invalid: ${computer.ipv6}" }
+        // Validate MAC
+        val macValidator = RegexValidator("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")
+        require(macValidator.isValid(computer.mac)) { "MAC address is invalid: ${computer.mac}" }
+        // Validate port forwardings
+        computer.portForwardings.forEach {
+            it.requireValid()
+        }
+    }
+
+    private fun Device.exists() = configuration.devices.any { it.id == id }
+
+    private fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
+
+    private fun PortForwarding.requireValid() = require(validate()) { "Port forwarding is invalid: $this" }
+
     override suspend fun close() = runSuspendingCatching {
         logger.debug { "Closing DeviceManager" }
         intervirtOSClients.forEach { (_, client) -> client.close().getOrThrow() }
@@ -300,3 +343,11 @@ class DeviceManager(
 }
 
 fun getFreePort() = ServerSocket(0).use { it.localPort }
+fun Int.isValidPort() = this in 1..65535
+
+fun String.isValidProtocol() = this == "tcp" || this == "udp"
+
+fun PortForwarding.validate(): Boolean {
+
+    return externalPort.isValidPort() && internalPort.isValidPort() && protocol.isValidProtocol()
+}

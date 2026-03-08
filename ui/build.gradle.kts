@@ -57,7 +57,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.slf4j.reload4j)
-            implementation(libs.commons.validator)
             implementation(libs.bossterm.core)
             implementation(projects.core)
         }

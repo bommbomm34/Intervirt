@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.data
 
 import io.github.bommbomm34.intervirt.core.defaultJson
+import io.github.bommbomm34.intervirt.core.toReadableImage
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -25,7 +26,7 @@ data class Image(
 ) {
     val fullName = "$name/$tag"
 
-    fun toReadableName() = fullName.toReadableImage()
+    fun toReadableName() = fullName.toReadableImage() ?: name
 }
 
 suspend fun HttpClient.getImages(url: String): Result<List<Image>> = runSuspendingCatching {
@@ -33,24 +34,6 @@ suspend fun HttpClient.getImages(url: String): Result<List<Image>> = runSuspendi
         Files.readString(Path.of(url.substringAfter("file:///")))
     } else get(url).bodyAsText()
     defaultJson.decodeFromString(text)
-}
-
-fun String.toReadableImage() = when {
-    startsWith("debian/") -> "Debian"
-    startsWith("ubuntu/") -> "Ubuntu"
-    startsWith("intervirtos/") -> "IntervirtOS"
-    startsWith("almalinux/") -> "AlmaLinux"
-    startsWith("alpine/") -> "Alpine Linux"
-    startsWith("archlinux/") -> "Arch Linux"
-    startsWith("centos/") -> "CentOS"
-    startsWith("fedora/") -> "Fedora"
-    startsWith("gentoo/") -> "Gentoo"
-    startsWith("kali/") -> "Kali Linux"
-    startsWith("mint/") -> "Linux Mint"
-    startsWith("nixos/") -> "NixOS"
-    startsWith("opensuse/") -> "openSUSE"
-    startsWith("voidlinux/") -> "Void Linux"
-    else -> substringBefore("/")
 }
 
 fun ViewDevice.Computer.hasIntervirtOS() = image.substringBefore("/") == "intervirtos"

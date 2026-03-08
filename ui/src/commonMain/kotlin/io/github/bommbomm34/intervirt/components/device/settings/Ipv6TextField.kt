@@ -30,7 +30,7 @@ fun Ipv6TextField(
     OutlinedTextField(
         value = ipv6,
         onValueChange = {
-            validIpv6 = InetAddressValidator.getInstance().isValidInet4Address(it)
+            validIpv6 = InetAddressValidator.getInstance().isValidInet6Address(it)
             if (validIpv6) onIpv6Change(it)
         },
         label = {

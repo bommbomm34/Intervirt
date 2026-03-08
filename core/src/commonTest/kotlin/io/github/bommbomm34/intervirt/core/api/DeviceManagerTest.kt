@@ -35,7 +35,7 @@ class DeviceManagerTest : KoinTest {
     }
     val mockComputer = Device.Computer(
         id = "rand-id",
-        image = "my-image",
+        image = "debian/13",
         name = "hello",
         x = 10,
         y = 10,
@@ -48,7 +48,7 @@ class DeviceManagerTest : KoinTest {
 
     val mockComputer2 = Device.Computer(
         id = "rand-id2",
-        image = "my-image",
+        image = "debian/13",
         name = "hello",
         x = 10,
         y = 10,
