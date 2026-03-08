@@ -161,7 +161,7 @@ class GuestManagerTest : KoinTest {
 
     @Test
     fun shouldShutdown() = runTest {
-        assertFails { guestManager.shutdown().getOrThrow() }
+        guestManager.shutdown().getOrThrow()
     }
 
     @Test
