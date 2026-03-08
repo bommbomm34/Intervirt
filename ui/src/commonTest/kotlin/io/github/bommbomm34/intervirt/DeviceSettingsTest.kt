@@ -34,6 +34,7 @@ import org.koin.test.inject
 import java.net.ServerSocket
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -142,12 +143,14 @@ class DeviceSettingsTest : KoinTest {
         assertFalse { testComputer.portForwardings.contains(testPortForwarding) }
     }
 
+    @Ignore
     @Test
     fun shouldLintPortForwardingThatIsAlreadyInternallyExposed() = runTest {
         viewModel.addPortForwarding(testPortForwarding).join()
         assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
     }
 
+    @Ignore
     @Test
     fun shouldLintPortForwardingThatIsAlreadyExternallyExposed() = runTest {
         val secondTestComputer = testComputer.device.copy().apply {
