@@ -17,8 +17,10 @@ import io.github.bommbomm34.intervirt.core.util.*
 import org.apache.commons.validator.routines.InetAddressValidator
 import org.apache.commons.validator.routines.RegexValidator
 import java.net.ServerSocket
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
 
+val MAC_VALIDATOR = RegexValidator("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")
 
 class DeviceManager(
     private val guestManager: GuestManager,
@@ -33,9 +35,9 @@ class DeviceManager(
     private val virtualContainerIOPort = appEnv.VIRTUAL_CONTAINER_IO_PORT
     private val wipeVirtualOnClose = appEnv.WIPE_VIRTUAL_ON_CLOSE
     private val dockerHostOverride = appEnv.OVERRIDE_DOCKER_HOST.ifBlank { null }
-    private val containerIOClients = mutableMapOf<String, ContainerIOClient>()
-    private val dockerManagers = mutableMapOf<String, DockerManager>()
-    private val intervirtOSClients = mutableMapOf<String, IntervirtOSClient>()
+    private val containerIOClients = ConcurrentHashMap<String, ContainerIOClient>()
+    private val dockerManagers = ConcurrentHashMap<String, DockerManager>()
+    private val intervirtOSClients = ConcurrentHashMap<String, IntervirtOSClient>()
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -319,8 +321,7 @@ class DeviceManager(
         require(validator.isValidInet4Address(computer.ipv4)) { "IPv4 address is invalid: ${computer.ipv4}" }
         require(validator.isValidInet6Address(computer.ipv6)) { "IPv6 address is invalid: ${computer.ipv6}" }
         // Validate MAC
-        val macValidator = RegexValidator("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")
-        require(macValidator.isValid(computer.mac)) { "MAC address is invalid: ${computer.mac}" }
+        require(MAC_VALIDATOR.isValid(computer.mac)) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings
         computer.portForwardings.forEach {
             it.requireValid()
