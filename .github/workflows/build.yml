@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
@@ -45,6 +47,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
