@@ -20,5 +20,5 @@ fun AppEnv.getLogger(clazz: KClass<*>, vararg suffix: String): KLogger {
 
 fun AppEnv.getLogger(name: String) = KLogger(
     name = name,
-    severity = if (DEBUG_ENABLED) LogLevel.DEBUG else LogLevel.ERROR,
+    level = if (DEBUG_ENABLED) LogLevel.DEBUG else LogLevel.ERROR,
 )

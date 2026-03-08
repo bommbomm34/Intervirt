@@ -5,25 +5,44 @@
 
 package io.github.bommbomm34.intervirt.secret
 
-import uniffi.secret.SecretService
+import io.github.bommbomm34.intervirt.logging.KLogger
+import io.github.bommbomm34.intervirt.logging.LogLevel
+import io.github.bommbomm34.intervirt.logging.logOnFailure
 import uniffi.secret.SecretServiceException
 
-class SecretService(serviceName: String) : AutoCloseable {
-    private val service = SecretService(serviceName)
+class SecretService(
+    serviceName: String,
+    logLevel: LogLevel = LogLevel.ERROR
+) : AutoCloseable {
+    private val service = uniffi.secret.SecretService(serviceName)
+    private val logger = KLogger(SecretService::class, logLevel)
 
     fun setEntry(key: String, value: ByteArray): Result<Unit> = runCatching {
         service.set(key, value)
+        logger.debug { "Set entry $key" }
     }
 
     fun getEntry(key: String): Result<ByteArray?> = runCatching {
-        service.get(key)
-    }.recoverCatching { if (it is SecretServiceException.NoEntry) null else throw it }
+        val value = service.get(key)
+        logger.debug { "Retrieved entry $key" }
+        value
+    }.recoverCatching {
+        if (it is SecretServiceException.NoEntry) {
+            logger.debug { "Entry $key does not exist" }
+            null
+        } else {
+            logger.error(it) { "Error while retrieving entry $key" }
+            throw it
+        }
+    }
 
     fun removeEntry(key: String): Result<Unit> = runCatching {
         service.del(key)
-    }
+        logger.debug { "Deleted entry $key" }
+    }.logOnFailure(logger) { "Error while deleting $key" }
 
     override fun close() {
         service.close()
+        logger.debug { "Closed SecretService" }
     }
 }

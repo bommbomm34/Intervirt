@@ -10,6 +10,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import kotlin.reflect.KClass
 import kotlin.time.Clock
 
 private val ISO_8601_FORMAT = LocalDateTime.Format {
@@ -29,34 +30,39 @@ private const val ANSI_RESET = "\u001B[0m"
 
 class KLogger(
     val name: String,
-    val severity: LogLevel,
+    val level: LogLevel,
 ) {
+    constructor(
+        name: KClass<*>,
+        level: LogLevel,
+    ) : this(name.simpleName ?: "", level)
+
     fun trace(block: Output) {
-        if (severity.priority == LogLevel.TRACE.priority) {
+        if (level.priority == LogLevel.TRACE.priority) {
             block().log("TRACE")
         }
     }
 
     fun debug(block: Output) {
-        if (severity.priority <= LogLevel.DEBUG.priority) {
+        if (level.priority <= LogLevel.DEBUG.priority) {
             block().log("DEBUG", LogColor.GREEN)
         }
     }
 
     fun info(block: Output) {
-        if (severity.priority <= LogLevel.INFO.priority) {
+        if (level.priority <= LogLevel.INFO.priority) {
             block().log("INFO", LogColor.BLUE)
         }
     }
 
     fun warn(block: Output) {
-        if (severity.priority <= LogLevel.WARN.priority) {
+        if (level.priority <= LogLevel.WARN.priority) {
             block().log("WARN", LogColor.YELLOW)
         }
     }
 
     fun error(throwable: Throwable? = null, block: Output? = null) {
-        if (severity.priority <= LogLevel.ERROR.priority) {
+        if (level.priority <= LogLevel.ERROR.priority) {
             block?.invoke()?.log("ERROR", LogColor.RED, true)
             throwable?.printStackTrace()
         }

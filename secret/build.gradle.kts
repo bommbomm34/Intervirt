@@ -16,6 +16,10 @@ plugins {
 group = "io.github.bommbomm34.intervirt"
 version = "0.0.1"
 
+dependencies {
+    implementation(projects.logging)
+}
+
 kotlin {
     jvmToolchain(21)
 }
