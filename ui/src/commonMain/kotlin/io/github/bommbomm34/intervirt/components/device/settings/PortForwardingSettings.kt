@@ -28,7 +28,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun PortForwardingSettings(
-    device: ViewDevice.Computer,
+    portForwardings: List<PortForwarding>,
     onAdd: () -> Unit,
     onRemove: (PortForwarding) -> Unit,
 ) {
@@ -42,7 +42,7 @@ fun PortForwardingSettings(
         )
         GeneralSpacer()
         LazyColumn {
-            items(device.portForwardings) { portForwarding ->
+            items(portForwardings) { portForwarding ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}")
                     GeneralSpacer(4.dp)

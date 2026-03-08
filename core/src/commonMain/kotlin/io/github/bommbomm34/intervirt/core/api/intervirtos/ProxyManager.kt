@@ -38,6 +38,7 @@ class ProxyManager(
                     protocol = "tcp",
                     internalPort = 1080,
                     externalPort = port,
+                    hidden = true,
                 ),
             )
                 .map { Address("127.0.0.1", port) }

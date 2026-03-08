@@ -6,12 +6,14 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class PortForwarding(
     val protocol: String,
     val externalPort: Int,
     val internalPort: Int,
+    @Transient val hidden: Boolean = false,
 ) {
     companion object {
         val DEFAULT = PortForwarding(
@@ -23,3 +25,5 @@ data class PortForwarding(
 
     override fun toString() = "$protocol:$externalPort:$internalPort"
 }
+
+fun Collection<PortForwarding>.excludeHidden() = filter { !it.hidden }

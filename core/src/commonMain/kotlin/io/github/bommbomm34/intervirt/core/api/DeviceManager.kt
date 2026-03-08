@@ -222,6 +222,7 @@ class DeviceManager(
                 protocol = "tcp",
                 internalPort = 22,
                 externalPort = port,
+                hidden = true,
             ),
         ).mapCatching {
             val sshClient = ContainerSshClient(appEnv, port, this, computer.id)
