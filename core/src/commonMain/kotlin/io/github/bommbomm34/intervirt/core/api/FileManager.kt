@@ -41,6 +41,7 @@ class FileManager(
         dataDir.createFileInDirectory("qemu", true)
         dataDir.createFileInDirectory("disk", true)
         dataDir.createFileInDirectory("cache", true)
+        logger.debug { "Initialized FileManager" }
     }
 
     fun getFile(name: String) = File(dataDir.absolutePath + File.separator + name)
@@ -55,6 +56,7 @@ class FileManager(
 
             client.prepareGet(url).execute { response ->
                 if (response.status != HttpStatusCode.OK) {
+                    logger.error { "Failed to download file '$url': ${response.status.description}" }
                     emit(
                         ResultProgress.result(
                             Result.failure(
@@ -78,7 +80,7 @@ class FileManager(
                             emit(ResultProgress.proceed(count.toFloat() / totalBytes))
                         }
                     }
-                    logger.debug { "Successfully downloaded $name" }
+                    logger.info { "Successfully downloaded $name" }
                     emit(ResultProgress.result(Result.success(file)))
                 }
             }
