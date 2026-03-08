@@ -31,6 +31,7 @@ private const val ANSI_RESET = "\u001B[0m"
 class KLogger(
     val name: String,
     val level: LogLevel,
+    val stream: OutputStream = getDefaultStream(),
 ) {
     constructor(
         name: KClass<*>,
@@ -71,14 +72,16 @@ class KLogger(
     private fun Any?.log(
         prefix: String,
         color: String = LogColor.DEFAULT,
-        stderr: Boolean = false,
+        err: Boolean = false,
     ) {
         val time = Clock.System.now()
             .toLocalDateTime(TimeZone.currentSystemDefault())
             .format(ISO_8601_FORMAT)
-        val output = "$color$time [$prefix] $name - ${toString()}$ANSI_RESET"
-        if (stderr) System.err.println(output) else println(output)
+        val output = "$time [$prefix] $name - ${toString()}".tryColor(color)
+        if (err) stream.printlnErr(output) else stream.println(output)
     }
+
+    private fun String.tryColor(color: String) = if (stream.colorSupported) "$color$this$ANSI_RESET" else this
 }
 
 private typealias Output = () -> Any?
