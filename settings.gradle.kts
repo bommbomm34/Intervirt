@@ -32,8 +32,17 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
+sourceControl {
+    gitRepository(uri("https://github.com/bommbomm34/ComposeNativeWebview.git")){
+        producesModule("io.github.bommbomm34:composenativewebview")
+    }
+}
+
 include(":ui")
 include(":core")
-include(":webview")
-
-include("secret")
+include(":secret")
+includeBuild("external/webview") {
+    dependencySubstitution {
+        substitute(module("intervirt.webview:compose")).using(project(":webview-compose"))
+    }
+}

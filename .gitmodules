@@ -1,0 +1,4 @@
+[submodule "external/webview"]
+	path = external/webview
+	url = https://github.com/bommbomm34/ComposeNativeWebview.git
+	branch = feature/add-proxy-support

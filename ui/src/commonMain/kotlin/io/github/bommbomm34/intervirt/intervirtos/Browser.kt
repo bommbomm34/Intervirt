@@ -5,11 +5,13 @@
 
 package io.github.bommbomm34.intervirt.intervirtos
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.browse
 import intervirt.ui.generated.resources.url
@@ -21,6 +23,10 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.rememberProxyManager
+import io.github.kdroidfilter.webview.setting.ProxyConfig
+import io.github.kdroidfilter.webview.web.WebView
+import io.github.kdroidfilter.webview.web.rememberWebViewNavigator
+import io.github.kdroidfilter.webview.web.rememberWebViewState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -32,8 +38,8 @@ fun Browser(
     val deviceManager = koinInject<DeviceManager>()
     val browser = rememberProxyManager(appEnv, deviceManager, osClient)
     var url by remember { mutableStateOf("") } // URL in the search bar
-    var currentUrl by remember { mutableStateOf(HOMEPAGE_URL) } // The URL which is loaded actually
     var proxyUrl: Address? by remember { mutableStateOf(null) }
+    val navigator = rememberWebViewNavigator()
     CatchingLaunchedEffect(browser) {
         proxyUrl = browser.getProxyUrl().getOrThrow()
     }
@@ -49,7 +55,7 @@ fun Browser(
             GeneralSpacer()
             AlignedColumn(Alignment.End) {
                 Button(
-                    onClick = { currentUrl = url },
+                    onClick = { navigator.loadUrl(url) },
                 ) {
                     Text(stringResource(Res.string.browse))
                 }
@@ -58,13 +64,14 @@ fun Browser(
         GeneralSpacer()
         val url = proxyUrl
         if (url != null) {
-            // TODO: Wait for PR #23 of kdroidFilter/ComposeNativeWebview to get merged
-//            WebView(
-//                url = currentUrl,
-//                navigator = rememberWebViewNavigator(),
-//                modifier = Modifier.fillMaxSize(),
-//                proxy = Proxy(url.host, url.port),
-//            )
+            val state = rememberWebViewState(HOMEPAGE_URL) {
+                desktopWebSettings.proxyConfig = ProxyConfig.Socks5(url.host, url.port)
+            }
+            WebView(
+                state = state,
+                navigator = navigator,
+                modifier = Modifier.fillMaxSize(),
+            )
         } else Text(stringResource(Res.string.waiting_for_container_proxy))
     }
 }
