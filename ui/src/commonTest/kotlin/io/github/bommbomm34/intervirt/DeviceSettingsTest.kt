@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
+import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.toViewDevice
@@ -41,7 +42,7 @@ import kotlin.test.assertFalse
 class DeviceSettingsTest : KoinTest {
     val testComputer = Device.Computer(
         id = "computer-22222",
-        image = "none",
+        image = "debian/13",
         name = "None",
         x = 0,
         y = 0,
@@ -68,7 +69,7 @@ class DeviceSettingsTest : KoinTest {
             modules(
                 module {
                     single<AppState>()
-                    single { getAppEnv() }
+                    single { getTestAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
                     single<IntervirtConfiguration> { IntervirtConfiguration.default() }

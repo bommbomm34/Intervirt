@@ -3,8 +3,12 @@
  * Licensed under the GNU General Public License 3.
  */
 
-package io.github.bommbomm34.intervirt.logging
+package io.github.bommbomm34.intervirt.io.github.bommbomm34.intervirt.logging
 
+import io.github.bommbomm34.intervirt.logging.KLogger
+import io.github.bommbomm34.intervirt.logging.LogLevel
+import io.github.bommbomm34.intervirt.logging.OutputStream
+import io.github.bommbomm34.intervirt.logging.getDefaultStream
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertTrue

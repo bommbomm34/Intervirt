@@ -24,6 +24,10 @@ jobs:
         with:
           distribution: 'jetbrains'
           java-version: '21'
+      - name: Install Rust dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libdbus-1-dev pkg-config libwebkit2gtk-4.1-dev -y
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
@@ -54,6 +58,10 @@ jobs:
         with:
           distribution: 'jetbrains'
           java-version: '21'
+      - name: Install Rust dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libdbus-1-dev pkg-config libwebkit2gtk-4.1-dev -y
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:

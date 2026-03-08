@@ -173,7 +173,7 @@ data class AppEnv(
             fun flush() = name?.let {
                 settings.encodeValue(
                     key = it,
-                    value = value,
+                    value = value.load(),
                 )
             }
 

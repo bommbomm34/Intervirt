@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
+import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -30,7 +31,7 @@ class ContainerIOClientTest : KoinTest {
     val deviceManager: DeviceManager by inject()
     val mockComputer = Device.Computer(
         id = "mock-computer",
-        image = "img",
+        image = "debian/13",
         name = "Mock Computer",
         x = 0,
         y = 0,

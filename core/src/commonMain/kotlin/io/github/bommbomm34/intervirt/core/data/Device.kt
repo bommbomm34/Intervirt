@@ -27,7 +27,7 @@ sealed class Device {
         var ipv6: String,
         val mac: String,
         var internetEnabled: Boolean,
-        val portForwardings: MutableList<PortForwarding>, // internalPort:externalPort
+        val portForwardings: MutableList<PortForwarding>,
     ) : Device()
 
     @Serializable

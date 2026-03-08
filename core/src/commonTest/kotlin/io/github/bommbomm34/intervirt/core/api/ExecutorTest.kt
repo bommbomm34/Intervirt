@@ -8,6 +8,7 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.getOS
+import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import kotlinx.coroutines.test.runTest
 import java.io.File
 import java.util.UUID
