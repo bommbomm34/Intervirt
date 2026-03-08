@@ -19,6 +19,7 @@ class SecretService(
 
     fun setEntry(key: String, value: ByteArray): Result<Unit> = runCatching {
         service.set(key, value)
+        value.zeroize()
         logger.debug { "Set entry $key" }
     }
 
@@ -46,3 +47,5 @@ class SecretService(
         logger.debug { "Closed SecretService" }
     }
 }
+
+private fun ByteArray.zeroize() = fill(0)
