@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.OSException
@@ -115,6 +116,8 @@ class QemuClient(
     }
 
     suspend fun addPortForwarding(protocol: String, externalPort: Int, internalPort: Int): Result<Unit> {
+        val fwd = PortForwarding(protocol, externalPort, internalPort)
+        require(fwd.validate()) { "Port forwarding is invalid: $fwd" }
         logger.debug { "Adding port forwarding $protocol:$externalPort:$internalPort" }
         return qmpSend(
             buildJsonObject {
@@ -129,6 +132,8 @@ class QemuClient(
     }
 
     suspend fun removePortForwarding(protocol: String, externalPort: Int): Result<Unit> {
+        require(protocol.isValidProtocol()) { "Invalid protocol $protocol" }
+        require(externalPort.isValidPort()) { "Invalid external port $externalPort" }
         logger.debug { "Removing port forwarding $protocol:$externalPort" }
         return qmpSend(
             buildJsonObject {
