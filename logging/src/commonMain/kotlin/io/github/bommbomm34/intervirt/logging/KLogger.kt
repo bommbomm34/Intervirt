@@ -31,7 +31,7 @@ private const val ANSI_RESET = "\u001B[0m"
 class KLogger(
     val name: String,
     val level: LogLevel,
-    val stream: OutputStream = getDefaultStream(),
+    private val stream: OutputStream = getDefaultStream(),
 ) {
     constructor(
         name: KClass<*>,

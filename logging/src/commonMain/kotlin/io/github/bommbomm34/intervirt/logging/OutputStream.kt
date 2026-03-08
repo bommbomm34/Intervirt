@@ -8,7 +8,7 @@ package io.github.bommbomm34.intervirt.logging
 interface OutputStream {
     val colorSupported: Boolean
 
-    fun println(line: String): Unit = println(line)
+    fun println(line: String): Unit = kotlin.io.println(line)
     fun printlnErr(line: String)
 }
 
