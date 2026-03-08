@@ -15,6 +15,8 @@ import io.github.bommbomm34.intervirt.logging.LogLevel
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.File
 import java.util.*
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -137,7 +139,7 @@ data class AppEnv(
 
     fun invalidateCache() = cacheInvalidators.forEach { it() }
 
-    @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
+    @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class, ExperimentalAtomicApi::class)
     private inline fun <reified T : Any, R> delegate(
         default: T,
         crossinline serializer: (R) -> T,
@@ -145,7 +147,7 @@ data class AppEnv(
     ): ReadWriteProperty<AppEnv, R> =
         object : ReadWriteProperty<AppEnv, R> {
             private var name: String? = null
-            private var value: T? = null
+            private var value: AtomicReference<T?> = AtomicReference(null)
 
             init {
                 flushers.add(::flush)
@@ -154,8 +156,8 @@ data class AppEnv(
 
             override operator fun getValue(thisRef: AppEnv, property: KProperty<*>): R {
                 name = property.name
-                if (value == null) value = getVar(property.name)
-                return deserializer(value!!)
+                if (value.load() == null) value.store(getVar(property.name))
+                return deserializer(value.load()!!)
             }
 
             override operator fun setValue(thisRef: AppEnv, property: KProperty<*>, value: R) {
@@ -163,7 +165,7 @@ data class AppEnv(
                 logger.debug { "Setting ${property.name} to $value" }
                 val serialized = serializer(value)
                 if (autoFlush) flush()
-                this.value = serialized
+                this.value.store(serialized)
                 onChange()
                 onChanges[name]?.invoke()
             }
@@ -176,7 +178,7 @@ data class AppEnv(
             }
 
             fun invalidateCache() {
-                value = null
+                value.store(null)
             }
 
             private fun getVar(name: String): T {
