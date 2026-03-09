@@ -12,15 +12,18 @@ import uniffi.secret.SecretServiceException
 
 class SecretService(
     serviceName: String,
-    logLevel: LogLevel = LogLevel.ERROR
+    logLevel: LogLevel = LogLevel.ERROR,
 ) : AutoCloseable {
     private val service = uniffi.secret.SecretService(serviceName)
     private val logger = KLogger(SecretService::class, logLevel)
 
     fun setEntry(key: String, value: ByteArray): Result<Unit> = runCatching {
-        service.set(key, value)
-        value.zeroize()
-        logger.debug { "Set entry $key" }
+        try {
+            service.set(key, value)
+            logger.debug { "Set entry $key" }
+        } finally {
+            value.zeroize()
+        }
     }
 
     fun getEntry(key: String): Result<ByteArray?> = runCatching {
