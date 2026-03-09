@@ -5,7 +5,6 @@
 
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.atomicfu")
     alias(libs.plugins.kotlinSerialization)
 }
 
