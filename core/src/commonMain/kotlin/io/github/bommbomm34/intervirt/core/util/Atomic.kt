@@ -44,12 +44,18 @@ class AtomicSerializer<T>(private val delegate: KSerializer<T>) : KSerializer<At
 }
 
 @OptIn(ExperimentalAtomicApi::class)
-fun <T, V> atomic(initial: V): ReadWriteProperty<T, V> = object : ReadWriteProperty<T, V> {
+fun <T, V> atomic(
+    initial: V,
+    onSet: (V) -> Unit = {},
+): ReadWriteProperty<T, V> = object : ReadWriteProperty<T, V> {
     private val ref = AtomicReference(initial)
 
     override fun getValue(thisRef: T, property: KProperty<*>) = ref.load()
 
-    override fun setValue(thisRef: T, property: KProperty<*>, value: V) = ref.store(value)
+    override fun setValue(thisRef: T, property: KProperty<*>, value: V) {
+        ref.store(value)
+        onSet(value)
+    }
 }
 
 fun <T> T.toAtomic() = Atomic(this)

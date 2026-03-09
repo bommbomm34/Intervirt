@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
 
@@ -31,11 +32,9 @@ class QemuClient(
     private val appEnv: AppEnv,
 ) : AsyncCloseable {
 
-    var running = false
-        set(value) {
-            onRunningChangeListeners.forEach { it(value) }
-            field = value
-        }
+    var running by atomic(false) { value ->
+        onRunningChangeListeners.forEach { it(value) }
+    }
     private var isRunningLoopJob: Job? = null
     private val logger = appEnv.getLogger(QemuClient::class)
     private lateinit var currentProcess: Process
