@@ -31,7 +31,7 @@ slf4j = "2.0.17"
 sshd = "3.0.0-M2"
 version-catalog-update = "1.1.0"
 zip4j = "2.11.6"
-kotlinx-datetime = "0.7.1"
+kotlinx-datetime = "0.7.1-0.6.x-compat"
 detekt = "2.0.0-alpha.2"
 
 [libraries]
