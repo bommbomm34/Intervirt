@@ -180,8 +180,11 @@ class DeviceSettingsViewModel(
             )
 
             configuration.devices.any { device ->
-                if (device is Device.Computer) device.portForwardings.any {
-                    it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
+
+                if (device is Device.Computer) device.portForwardings.withLock {
+                    any {
+                        it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
+                    }
                 } else false
             } -> Result.failure(
                 IllegalArgumentException(getString(Res.string.external_port_already_bound)),

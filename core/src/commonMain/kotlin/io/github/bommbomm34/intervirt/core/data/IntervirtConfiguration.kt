@@ -107,25 +107,27 @@ fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultPro
                 )
                 addContainer(
                     id = device.id,
-                    ipv4 = device.ipv4,
-                    ipv6 = device.ipv6,
-                    mac = device.mac,
-                    internet = device.internetEnabled,
+                    ipv4 = device.ipv4.get(),
+                    ipv6 = device.ipv6.get(),
+                    mac = device.mac.get(),
+                    internet = device.internetEnabled.get(),
                     image = device.image,
                 ).getOrThrow()
-                device.portForwardings.forEach { portForwarding ->
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = progress,
-                            message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
-                        ),
-                    )
-                    addPortForwarding(
-                        device.id,
-                        portForwarding.internalPort,
-                        portForwarding.externalPort,
-                        portForwarding.protocol,
-                    ).getOrThrow()
+                device.portForwardings.withLock {
+                    forEach { portForwarding ->
+                        emit(
+                            ResultProgress.proceed(
+                                percentage = progress,
+                                message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
+                            ),
+                        )
+                        addPortForwarding(
+                            device.id,
+                            portForwarding.internalPort,
+                            portForwarding.externalPort,
+                            portForwarding.protocol,
+                        ).getOrThrow()
+                    }
                 }
             }
         }

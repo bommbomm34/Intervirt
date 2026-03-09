@@ -206,10 +206,6 @@ fun isPointOnLine(
     return distance <= strokeWidth / 2f
 }
 
-fun Offset.isOn(device: Device, image: ImageBitmap): Boolean =
-    x in device.x.toFloat()..(device.x.toFloat() + image.width) &&
-            y in device.y.toFloat()..(device.y.toFloat() + image.height)
-
 fun ViewDevice.fittingOffset(devicesViewZoom: Float): Offset {
     val width = (getVector().defaultWidth * devicesViewZoom).toPx()
     val height = (getVector().defaultHeight * devicesViewZoom).toPx()

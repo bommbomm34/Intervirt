@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.util.Atomic
+import io.github.bommbomm34.intervirt.core.util.minus
+import io.github.bommbomm34.intervirt.core.util.plus
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.dpToPx
@@ -68,8 +71,8 @@ fun DeviceView(
                     offset = newOffset
                     device.x += it.x.toInt()
                     device.y += it.y.toInt()
-                    device.device.x += it.x.toInt()
-                    device.device.y += it.y.toInt()
+                    device.device.x.plus(it.x.toInt())
+                    device.device.y.minus(it.x.toInt())
                 }
             }
             .onClick(

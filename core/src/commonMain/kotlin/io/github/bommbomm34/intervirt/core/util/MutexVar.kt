@@ -10,10 +10,16 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MutexVar<T>(private var value: T){
-    private val mutex = Mutex()
+data class MutexVar<T>(val value: T){
+    val mutex = Mutex()
 
-    suspend fun withLock(block: (T) -> Unit) = mutex.withLock {
+    suspend inline fun <V> withLock(block: T.() -> V) = mutex.withLock {
         block(value)
     }
 }
+
+fun <T> T.toMutexVar() = MutexVar(this)
+
+suspend fun <T : MutableCollection<V>, V> MutexVar<T>.add(element: V) = withLock { add(element) }
+
+suspend fun <T : MutableCollection<V>, V> MutexVar<T>.remove(element: V) = withLock { remove(element) }

@@ -6,36 +6,38 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import io.github.bommbomm34.intervirt.core.data.Device.Computer
+import io.github.bommbomm34.intervirt.core.util.Atomic
+import io.github.bommbomm34.intervirt.core.util.MutexVar
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Device {
 
     abstract val id: String
-    abstract var name: String
-    abstract var x: Int
-    abstract var y: Int
+    abstract val name: Atomic<String>
+    abstract val x: Atomic<Int>
+    abstract val y: Atomic<Int>
 
     @Serializable
     data class Computer(
         override val id: String,
         val image: String,
-        override var name: String,
-        override var x: Int,
-        override var y: Int,
-        var ipv4: String,
-        var ipv6: String,
-        val mac: String,
-        var internetEnabled: Boolean,
-        val portForwardings: MutableList<PortForwarding>,
+        override val name: Atomic<String>,
+        override val x: Atomic<Int>,
+        override val y: Atomic<Int>,
+        val ipv4: Atomic<String>,
+        val ipv6: Atomic<String>,
+        val mac: Atomic<String>,
+        val internetEnabled: Atomic<Boolean>,
+        val portForwardings: MutexVar<MutableList<PortForwarding>>,
     ) : Device()
 
     @Serializable
     data class Switch(
         override val id: String,
-        override var name: String,
-        override var x: Int,
-        override var y: Int,
+        override val name: Atomic<String>,
+        override val x: Atomic<Int>,
+        override val y: Atomic<Int>,
     ) : Device()
 
     override fun equals(other: Any?): Boolean {

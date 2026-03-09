@@ -13,6 +13,8 @@ import io.github.bommbomm34.intervirt.core.data.connect
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.util.toAtomic
+import io.github.bommbomm34.intervirt.core.util.toMutexVar
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -37,27 +39,27 @@ class DeviceManagerTest : KoinTest {
     val mockComputer = Device.Computer(
         id = "rand-id",
         image = "debian/13",
-        name = "hello",
-        x = 10,
-        y = 10,
-        ipv4 = "0.0.0.0",
-        ipv6 = "::1",
-        mac = "ff:ff:ff:ff:ff:ff",
-        internetEnabled = false,
-        portForwardings = mutableListOf(),
+        name = "hello".toAtomic(),
+        x = 10.toAtomic(),
+        y = 10.toAtomic(),
+        ipv4 = "0.0.0.0".toAtomic(),
+        ipv6 = "::1".toAtomic(),
+        mac = "ff:ff:ff:ff:ff:ff".toAtomic(),
+        internetEnabled = false.toAtomic(),
+        portForwardings = mutableListOf<PortForwarding>().toMutexVar(),
     )
 
     val mockComputer2 = Device.Computer(
         id = "rand-id2",
         image = "debian/13",
-        name = "hello",
-        x = 10,
-        y = 10,
-        ipv4 = "0.1.0.0",
-        ipv6 = "::2",
-        mac = "ff:ff:2f:ff:ff:ff",
-        internetEnabled = false,
-        portForwardings = mutableListOf(),
+        name = "hello".toAtomic(),
+        x = 10.toAtomic(),
+        y = 10.toAtomic(),
+        ipv4 = "0.1.0.0".toAtomic(),
+        ipv6 = "::2".toAtomic(),
+        mac = "ff:ff:2f:ff:ff:ff".toAtomic(),
+        internetEnabled = false.toAtomic(),
+        portForwardings = mutableListOf<PortForwarding>().toMutexVar(),
     )
 
     val mockPortForwarding = PortForwarding(
@@ -146,28 +148,28 @@ class DeviceManagerTest : KoinTest {
     fun shouldSetIpv4() = runTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
         deviceManager.setIpv4(mockComputer, "192.168.0.200").getOrThrow()
-        assertEquals(computer.ipv4, "192.168.0.200")
+        assertEquals(computer.ipv4.get(), "192.168.0.200")
     }
 
     @Test
     fun shouldSetIpv6() = runTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
         deviceManager.setIpv6(mockComputer, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").getOrThrow()
-        assertEquals(computer.ipv6, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
+        assertEquals(computer.ipv6.get(), "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
     }
 
     @Test
     fun shouldSetName() = runTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
         deviceManager.setName(computer, "COMPUTER")
-        assertEquals(computer.name, "COMPUTER")
+        assertEquals(computer.name.get(), "COMPUTER")
     }
 
     @Test
     fun shouldSetInternetEnabled() = runTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
         deviceManager.setInternetEnabled(computer, true).getOrThrow()
-        assertEquals(computer.internetEnabled, true)
+        assertEquals(computer.internetEnabled.get(), true)
     }
 
     @Test
@@ -186,7 +188,9 @@ class DeviceManagerTest : KoinTest {
     fun shouldAddPortForwarding() = runTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
         deviceManager.addPortForwarding(computer, mockPortForwarding).getOrThrow()
-        assertContains(computer.portForwardings, mockPortForwarding)
+        computer.portForwardings.withLock {
+            assertContains(this, mockPortForwarding)
+        }
     }
 
     @Test
@@ -194,7 +198,7 @@ class DeviceManagerTest : KoinTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
         deviceManager.addPortForwarding(computer, mockPortForwarding).getOrThrow()
         deviceManager.removePortForwarding(mockPortForwarding.externalPort, mockPortForwarding.protocol).getOrThrow()
-        assertFalse { computer.portForwardings.contains(mockPortForwarding) }
+        assertFalse { computer.portForwardings.withLock { contains(mockPortForwarding) } }
     }
 
     @Test

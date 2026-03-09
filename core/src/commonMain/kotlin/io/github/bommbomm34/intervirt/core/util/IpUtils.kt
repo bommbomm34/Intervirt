@@ -12,21 +12,21 @@ import kotlin.random.Random
 fun IntervirtConfiguration.generateMac(): String {
     while (true) {
         val mac = randomMac()
-        if (devices.all { if (it is Device.Computer) it.mac != mac else true }) return mac
+        if (devices.all { if (it is Device.Computer) it.mac.get() != mac else true }) return mac
     }
 }
 
 fun IntervirtConfiguration.generateIpv4(): String {
     while (true) {
         val ipv4 = randomIpv4()
-        if (devices.all { if (it is Device.Computer) it.ipv4 != ipv4 else true }) return ipv4
+        if (devices.all { if (it is Device.Computer) it.ipv4.get() != ipv4 else true }) return ipv4
     }
 }
 
 fun IntervirtConfiguration.generateIpv6(): String {
     while (true) {
         val ipv6 = randomIpv6()
-        if (devices.all { if (it is Device.Computer) it.ipv6 != ipv6 else true }) return ipv6
+        if (devices.all { if (it is Device.Computer) it.ipv6.get() != ipv6 else true }) return ipv6
     }
 }
 
