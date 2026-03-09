@@ -33,6 +33,7 @@ import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewConfiguration
 import io.github.bommbomm34.intervirt.data.state
+import io.github.bommbomm34.intervirt.data.toViewConfiguration
 import io.github.bommbomm34.intervirt.logging.KLogger
 
 import io.github.vinceglb.filekit.PlatformFile
@@ -181,7 +182,7 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
 
 fun File.writeConf(configuration: IntervirtConfiguration) = writeText(defaultJson.encodeToString(configuration))
 
-fun File.loadConf(
+suspend fun File.loadConf(
     configuration: IntervirtConfiguration,
     appState: AppState,
     guestManager: GuestManager,
@@ -197,5 +198,5 @@ fun File.loadConf(
             onClose = ::close,
         )
     }
-    appState.statefulConf.update(ViewConfiguration(newConfiguration))
+    appState.statefulConf.update(newConfiguration.toViewConfiguration())
 }

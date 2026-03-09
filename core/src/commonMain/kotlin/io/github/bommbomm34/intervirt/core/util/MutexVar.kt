@@ -8,13 +8,32 @@ package io.github.bommbomm34.intervirt.core.util
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 @Serializable
 data class MutexVar<T>(val value: T){
     val mutex = Mutex()
 
-    suspend inline fun <V> withLock(block: T.() -> V) = mutex.withLock {
-        block(value)
+    @OptIn(ExperimentalContracts::class)
+    suspend inline fun <V> withLock(block: T.() -> V): V {
+        contract {
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        }
+        return mutex.withLock {
+            value.block()
+        }
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    suspend inline fun <V> withLockLet(block: (T) -> V): V {
+        contract {
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        }
+        return mutex.withLock {
+            block(value)
+        }
     }
 }
 
@@ -23,3 +42,13 @@ fun <T> T.toMutexVar() = MutexVar(this)
 suspend fun <T : MutableCollection<V>, V> MutexVar<T>.add(element: V) = withLock { add(element) }
 
 suspend fun <T : MutableCollection<V>, V> MutexVar<T>.remove(element: V) = withLock { remove(element) }
+
+suspend fun <T : MutableCollection<V>, V> MutexVar<T>.clearAndAddAll(other: MutexVar<T>) = withLock {
+    clear()
+    other.mutex.lock()
+    try {
+        addAll(other.value)
+    } finally {
+        other.mutex.unlock()
+    }
+}

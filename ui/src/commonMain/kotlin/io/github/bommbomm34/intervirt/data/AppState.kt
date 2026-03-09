@@ -27,7 +27,7 @@ class AppState(configuration: IntervirtConfiguration) {
     var currentScreenIndex by mutableStateOf(1)
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
-    val statefulConf = ViewConfiguration(configuration)
+    val statefulConf = configuration.toViewConfigurationUnsafe()
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)

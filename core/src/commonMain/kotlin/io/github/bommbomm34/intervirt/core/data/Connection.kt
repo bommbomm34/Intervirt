@@ -42,7 +42,7 @@ sealed class DeviceConnection {
         override val id2: String,
     ) : DeviceConnection() {
         @Suppress("UNCHECKED_CAST")
-        override fun getDevices(configuration: IntervirtConfiguration): Pair<Device.Computer, Device.Computer> {
+        override suspend fun getDevices(configuration: IntervirtConfiguration): Pair<Device.Computer, Device.Computer> {
             return Pair(id1.toDevice(configuration), id2.toDevice(configuration)) as Pair<Device.Computer, Device.Computer>
         }
     }
@@ -56,7 +56,7 @@ sealed class DeviceConnection {
         override val id2: String, // Computer
     ) : DeviceConnection() {
         @Suppress("UNCHECKED_CAST")
-        override fun getDevices(configuration: IntervirtConfiguration): Pair<Device.Switch, Device.Computer> {
+        override suspend fun getDevices(configuration: IntervirtConfiguration): Pair<Device.Switch, Device.Computer> {
             return Pair(id1.toDevice(configuration), id2.toDevice(configuration)) as Pair<Device.Switch, Device.Computer>
         }
     }
@@ -81,7 +81,7 @@ sealed class DeviceConnection {
         return result
     }
 
-    open fun getDevices(configuration: IntervirtConfiguration) = Pair(id1.toDevice(configuration), id2.toDevice(configuration))
+    open suspend fun getDevices(configuration: IntervirtConfiguration): Pair<Device, Device> = Pair(id1.toDevice(configuration), id2.toDevice(configuration))
 }
 
 infix fun Device.connect(other: Device) = when (this) {

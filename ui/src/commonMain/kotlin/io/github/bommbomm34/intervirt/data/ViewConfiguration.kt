@@ -9,19 +9,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.DeviceConnection
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 
 // Stateful IntervirtConfiguration for the UI
-data class ViewConfiguration(
-    private val intervirtConfiguration: IntervirtConfiguration,
+class ViewConfiguration(
+    version: String,
+    author: String,
+    devices: MutableList<Device>,
+    connections: MutableList<DeviceConnection>,
 ) {
-    var version by mutableStateOf(intervirtConfiguration.version)
-    var author by mutableStateOf(intervirtConfiguration.author)
+    var version by mutableStateOf(version)
+    var author by mutableStateOf(author)
     val devices =
-        mutableStateListOf<ViewDevice>().apply { intervirtConfiguration.devices.forEach { add(it.toViewDevice()) } }
+        mutableStateListOf<ViewDevice>().apply { devices.forEach { add(it.toViewDevice()) } }
     val connections =
-        mutableStateListOf<ViewConnection>().apply { intervirtConfiguration.connections.forEach { add(it.toViewConnection()) } }
+        mutableStateListOf<ViewConnection>().apply { connections.forEach { add(it.toViewConnection()) } }
 
     fun update(configuration: ViewConfiguration) {
         author = configuration.author
@@ -38,4 +42,26 @@ data class ViewConfiguration(
         val viewDevice2 = devices.first { it.id == id2 }
         return ViewConnection(viewDevice1, viewDevice2)
     }
+}
+
+suspend fun IntervirtConfiguration.toViewConfiguration(): ViewConfiguration {
+    devices.withLockLet { devices ->
+        connections.withLockLet { connections ->
+            return ViewConfiguration(
+                version = version,
+                author = author.get(),
+                devices = devices,
+                connections = connections,
+            )
+        }
+    }
+}
+
+fun IntervirtConfiguration.toViewConfigurationUnsafe(): ViewConfiguration {
+    return ViewConfiguration(
+        version = version,
+        author = author.get(),
+        devices = devices.value,
+        connections = connections.value,
+    )
 }

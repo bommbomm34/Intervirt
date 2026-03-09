@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.toViewDevice
 import io.github.bommbomm34.intervirt.imagepicker.ImagePicker
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.random.Random
@@ -80,11 +81,13 @@ fun AddDeviceButton() {
                 onClick = {
                     dropdownExpanded = false
                     // Add switch
-                    val device = deviceManager.addSwitch(
-                        x = Random.nextInt(300, 600),
-                        y = Random.nextInt(300, 600),
-                    )
-                    appState.statefulConf.devices.add(device.toViewDevice())
+                    scope.launch {
+                        val device = deviceManager.addSwitch(
+                            x = Random.nextInt(300, 600),
+                            y = Random.nextInt(300, 600),
+                        )
+                        appState.statefulConf.devices.add(device.toViewDevice())
+                    }
                 },
                 text = {
                     IconText(

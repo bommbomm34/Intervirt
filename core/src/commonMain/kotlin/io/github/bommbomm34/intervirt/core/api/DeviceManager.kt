@@ -72,7 +72,7 @@ class DeviceManager(
         device
     }
 
-    fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
+    suspend fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
         val id = generateID("switch")
         val device = Device.Switch(
             id = id,
@@ -89,7 +89,9 @@ class DeviceManager(
     suspend fun removeDevice(device: Device): Result<Unit> = runSuspendingCatching {
         device.requireExists()
         logger.debug { "Removing device $device" }
-        configuration.connections.removeIf { it.containsDevice(device) }
+        configuration.connections.withLock {
+            removeIf { it.containsDevice(device) }
+        }
         configuration.devices.remove(device)
         // Close services
         intervirtOSClients[device.id]?.close()?.getOrThrow()
@@ -120,7 +122,7 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Disconnecting device $device1 to $device2" }
         val conn = device1 connect device2
-        configuration.connections.removeIf { it == conn }
+        configuration.connections.withLock { removeIf { it == conn } }
         val networks = configuration.resolveNetworks(conn)
         networks.forEach { (name, network) ->
             network.forEach {
@@ -149,7 +151,7 @@ class DeviceManager(
         }
     }
 
-    fun setName(device: Device, name: String) {
+    suspend fun setName(device: Device, name: String) {
         device.requireExists()
         device.name.set(name)
         logger.debug { "Set name of ${device.name} to $name" }
@@ -207,11 +209,13 @@ class DeviceManager(
         require(externalPort.isValidPort()) { "External port $externalPort is not valid!" }
         require(protocol.isValidProtocol()) { "Protocol $protocol is not valid!" }
         logger.debug { "Remove port forwarding of $externalPort" }
-        configuration.devices.forEach { device ->
-            if (device is Device.Computer)
-                device.portForwardings.withLock {
-                    removeIf { it.externalPort == externalPort }
-                }
+        configuration.devices.withLock {
+            forEach { device ->
+                if (device is Device.Computer)
+                    device.portForwardings.withLock {
+                        removeIf { it.externalPort == externalPort }
+                    }
+            }
         }
         if (!virtualContainerIO) qemuClient.removePortForwarding(
             protocol = protocol,
@@ -252,7 +256,7 @@ class DeviceManager(
         }
     }
 
-    fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
+    suspend fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
         computer.requireExists()
         logger.debug { "Initializing virtual container IO client for ${computer.id}" }
         val client = VirtualContainerIOClient(computer.id, wipeVirtualOnClose, executor, fileManager)
@@ -308,10 +312,12 @@ class DeviceManager(
         logger.debug { "Cleared unused networks" }
     }
 
-    private fun generateID(prefix: String): String {
-        while (true) {
-            val id = prefix + "-" + Random.nextInt(999999)
-            if (configuration.devices.all { it.id != id }) return id
+    private suspend fun generateID(prefix: String): String {
+        configuration.devices.withLock {
+            while (true) {
+                val id = prefix + "-" + Random.nextInt(999999)
+                if (all { it.id != id }) return id
+            }
         }
     }
 
@@ -332,9 +338,11 @@ class DeviceManager(
         }
     }
 
-    private fun Device.exists() = configuration.devices.any { it.id == id }
+    private suspend fun Device.exists() = configuration.devices.withLock {
+        any { it.id == id }
+    }
 
-    private fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
+    private suspend fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
 
     private fun PortForwarding.requireValid() = require(validate()) { "Port forwarding is invalid: $this" }
 

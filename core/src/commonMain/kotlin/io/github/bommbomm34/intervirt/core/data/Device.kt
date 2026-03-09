@@ -47,9 +47,11 @@ sealed class Device {
     override fun hashCode(): Int = id.hashCode()
 }
 
-fun String.toDevice(configuration: IntervirtConfiguration) = configuration.devices.first { it.id == this }
+suspend fun String.toDevice(configuration: IntervirtConfiguration) = configuration.devices.withLock {
+    first { it.id == this@toDevice }
+}
 
-fun IntervirtConfiguration.getConnectedComputers(
+suspend fun IntervirtConfiguration.getConnectedComputers(
     device: Device,
     exceptDevices: Set<Device> = emptySet(),
 ): List<Computer> {
@@ -63,9 +65,11 @@ fun IntervirtConfiguration.getConnectedComputers(
     return connectedComputers.toList()
 }
 
-fun IntervirtConfiguration.getConnectedDevices(device: Device): List<Device> {
-    return connections.mapNotNull {
-        val (device1, device2) = it.getDevices(this)
-        if (device1 == device) device2 else if (device2 == device) device1 else null
+suspend fun IntervirtConfiguration.getConnectedDevices(device: Device): List<Device> {
+    return connections.withLock {
+        mapNotNull {
+            val (device1, device2) = it.getDevices(this@getConnectedDevices)
+            if (device1 == device) device2 else if (device2 == device) device1 else null
+        }
     }
 }

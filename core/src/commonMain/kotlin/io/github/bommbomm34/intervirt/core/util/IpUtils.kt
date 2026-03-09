@@ -9,24 +9,30 @@ import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
 import kotlin.random.Random
 
-fun IntervirtConfiguration.generateMac(): String {
-    while (true) {
-        val mac = randomMac()
-        if (devices.all { if (it is Device.Computer) it.mac.get() != mac else true }) return mac
+suspend fun IntervirtConfiguration.generateMac(): String {
+    devices.withLock {
+        while (true) {
+            val mac = randomMac()
+            if (all { if (it is Device.Computer) it.mac.get() != mac else true }) return mac
+        }
     }
 }
 
-fun IntervirtConfiguration.generateIpv4(): String {
-    while (true) {
-        val ipv4 = randomIpv4()
-        if (devices.all { if (it is Device.Computer) it.ipv4.get() != ipv4 else true }) return ipv4
+suspend fun IntervirtConfiguration.generateIpv4(): String {
+    devices.withLock {
+        while (true) {
+            val ipv4 = randomIpv4()
+            if (all { if (it is Device.Computer) it.ipv4.get() != ipv4 else true }) return ipv4
+        }
     }
 }
 
-fun IntervirtConfiguration.generateIpv6(): String {
-    while (true) {
-        val ipv6 = randomIpv6()
-        if (devices.all { if (it is Device.Computer) it.ipv6.get() != ipv6 else true }) return ipv6
+suspend fun IntervirtConfiguration.generateIpv6(): String {
+    devices.withLock {
+        while (true) {
+            val ipv6 = randomIpv6()
+            if (all { if (it is Device.Computer) it.ipv6.get() != ipv6 else true }) return ipv6
+        }
     }
 }
 

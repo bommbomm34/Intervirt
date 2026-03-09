@@ -8,49 +8,43 @@ package io.github.bommbomm34.intervirt.core.data
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.addNetworkIfNotExists
-import io.github.bommbomm34.intervirt.core.data.addNetworks
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.DeprecatedException
 import io.github.bommbomm34.intervirt.core.flowCatching
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
 
 // Configuration of an Intervirt project
 @Serializable
 data class IntervirtConfiguration(
     val version: String = CURRENT_VERSION,
-    var author: String = "",
-    val devices: MutableList<Device> = mutableListOf(),
-    val connections: MutableList<DeviceConnection> = mutableListOf(),
+    val author: Atomic<String> = "".toAtomic(),
+    val devices: MutexVar<MutableList<Device>> = mutableListOf<Device>().toMutexVar(),
+    val connections: MutexVar<MutableList<DeviceConnection>> = mutableListOf<DeviceConnection>().toMutexVar(),
 ) {
     companion object {
-        fun default() = IntervirtConfiguration(
-            version = CURRENT_VERSION,
-            author = "",
-            devices = mutableListOf(),
-            connections = mutableListOf(),
-        )
+        fun default() = IntervirtConfiguration()
     }
 
-    fun update(configuration: IntervirtConfiguration) {
-        author = configuration.author
-        devices.clear()
-        devices.addAll(configuration.devices)
-        connections.clear()
-        connections.addAll(configuration.connections)
+    suspend fun update(configuration: IntervirtConfiguration) {
+        author.set(configuration.author.get())
+        devices.clearAndAddAll(configuration.devices)
+        connections.clearAndAddAll(configuration.connections)
     }
 }
 
-fun IntervirtConfiguration.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
+suspend fun IntervirtConfiguration.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
     val networks = mutableMapOf<String, Network>()
-    val connections = connections.ifEmpty { this.connections.toTypedArray() }
+    val connections = connections.ifEmpty { this.connections.withLock { toTypedArray() } }
     // Add switch networks
-    devices.forEach { device ->
-        if (device is Device.Switch && connections.any { it.containsDevice(device) }){
-            val name = networkNameOfSwitch(device.id)
-            networks[name] = getConnectedComputers(device).map { it.id }
+    devices.withLock {
+        forEach { device ->
+            if (device is Device.Switch && connections.any { it.containsDevice(device) }) {
+                val name = networkNameOfSwitch(device.id)
+                networks[name] = getConnectedComputers(device).map { it.id }
+            }
         }
     }
     // Add computer networks
@@ -96,37 +90,39 @@ fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultPro
                 message = "Creating devices...",
             ),
         )
-        conf.devices.forEachIndexed { i, device ->
-            if (device is Device.Computer) {
-                val progress = 0.2f + (i.toFloat() / conf.devices.size) * 0.6f
-                emit(
-                    ResultProgress.proceed(
-                        percentage = progress,
-                        message = "Creating device ${device.name} with id ${device.id}",
-                    ),
-                )
-                addContainer(
-                    id = device.id,
-                    ipv4 = device.ipv4.get(),
-                    ipv6 = device.ipv6.get(),
-                    mac = device.mac.get(),
-                    internet = device.internetEnabled.get(),
-                    image = device.image,
-                ).getOrThrow()
-                device.portForwardings.withLock {
-                    forEach { portForwarding ->
-                        emit(
-                            ResultProgress.proceed(
-                                percentage = progress,
-                                message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
-                            ),
-                        )
-                        addPortForwarding(
-                            device.id,
-                            portForwarding.internalPort,
-                            portForwarding.externalPort,
-                            portForwarding.protocol,
-                        ).getOrThrow()
+        conf.devices.withLock {
+            forEachIndexed { i, device ->
+                if (device is Device.Computer) {
+                    val progress = 0.2f + (i.toFloat() / size) * 0.6f
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = progress,
+                            message = "Creating device ${device.name} with id ${device.id}",
+                        ),
+                    )
+                    addContainer(
+                        id = device.id,
+                        ipv4 = device.ipv4.get(),
+                        ipv6 = device.ipv6.get(),
+                        mac = device.mac.get(),
+                        internet = device.internetEnabled.get(),
+                        image = device.image,
+                    ).getOrThrow()
+                    device.portForwardings.withLock {
+                        forEach { portForwarding ->
+                            emit(
+                                ResultProgress.proceed(
+                                    percentage = progress,
+                                    message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
+                                ),
+                            )
+                            addPortForwarding(
+                                device.id,
+                                portForwarding.internalPort,
+                                portForwarding.externalPort,
+                                portForwarding.protocol,
+                            ).getOrThrow()
+                        }
                     }
                 }
             }

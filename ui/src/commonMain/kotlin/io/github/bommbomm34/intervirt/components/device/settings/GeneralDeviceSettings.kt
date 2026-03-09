@@ -22,6 +22,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -44,7 +45,9 @@ fun GeneralDeviceSettings(
         value = device.name,
         onValueChange = { newName ->
             device.name = newName
-            deviceManager.setName(device.device, newName)
+            scope.launch {
+                deviceManager.setName(device.device, newName)
+            }
         },
         label = { Text(stringResource(Res.string.name)) },
     )
