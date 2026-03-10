@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
+import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -96,11 +97,13 @@ suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress
 
 fun getAppEnv(
     settings: Settings = PreferencesSettings(Preferences.userRoot()),
+    logLevel: LogLevel? = null,
     custom: AppEnv.() -> Unit = {}
 ) = AppEnv(
     settings = settings,
     override = { System.getenv("INTERVIRT_$it") },
     custom = custom,
+    logLevel = logLevel,
 )
 
 fun getHttpClient(): HttpClient = HttpClient(CIO) {
@@ -160,7 +163,7 @@ fun String.toReadableImage() = when {
     else -> null
 }
 
-fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings) {
+fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings, LogLevel.DEBUG) {
     DEBUG_ENABLED = true
     VIRTUAL_AGENT_MODE = System.getenv("INTERVIRT_TEST_VIRTUAL_AGENT_MODE")?.toBoolean() ?: true
     VIRTUAL_CONTAINER_IO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true

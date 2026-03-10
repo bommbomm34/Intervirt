@@ -26,9 +26,10 @@ data class AppEnv(
     private val override: (String) -> String? = { null },
     private val autoFlush: Boolean = true,
     private val onChange: () -> Unit = {},
+    private val logLevel: LogLevel? = null,
     private val custom: AppEnv.() -> Unit = {},
 ) {
-    private val logger = KLogger("AppEnv", getLoggerSeverity())
+    private val logger = KLogger("AppEnv", logLevel ?: getLogLevel())
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
@@ -164,8 +165,8 @@ data class AppEnv(
                 name = property.name
                 logger.debug { "Setting ${property.name} to $value" }
                 val serialized = serializer(value)
-                if (autoFlush) flush()
                 this.value.store(serialized)
+                if (autoFlush) flush()
                 onChange()
                 onChanges[name]?.invoke()
             }
@@ -195,8 +196,8 @@ data class AppEnv(
         deserializer = { it },
     )
 
-    private fun getLoggerSeverity(): LogLevel {
-        val severity = System.getenv("INTERVIRT_LOGGER_SEVERITY")
+    private fun getLogLevel(): LogLevel {
+        val severity = System.getenv("INTERVIRT_LOG_LEVEL")
             ?.let { LogLevel.valueOf(it) }
             ?: LogLevel.ERROR
         return severity
