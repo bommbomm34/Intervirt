@@ -37,5 +37,7 @@ jobs:
         run: ./gradlew :core:allTests
       - name: Test UI
         run: ./gradlew :ui:allTests
+      - name: Test Secret
+        run: ./gradlew :secret:test
       - name: Test Logging
         run: ./gradlew :logging:allTests

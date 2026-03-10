@@ -5,7 +5,6 @@
 
 package io.github.bommbomm34.intervirt.secret
 
-import io.github.bommbomm34.intervirt.logging.LogLevel
 import uniffi.secret.SecretServiceException
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -14,13 +13,11 @@ import kotlin.test.assertNull
 
 class SecretServiceTest {
     val data = byteArrayOf(0, 1, 2, 3)
-    private val secretService = SecretService(
-        serviceName = "INTERVIRT-TEST",
-        logLevel = LogLevel.DEBUG,
-    )
+    private val secretService = getMockSecretService()
 
     @Test
     fun shouldAddEntry(){
+        println(data.clone().joinToString())
         secretService.setEntry("my-test-entry", data.clone()).getOrThrow()
         assertContentEquals(data, getTestEntry())
     }

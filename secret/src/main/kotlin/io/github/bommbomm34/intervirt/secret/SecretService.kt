@@ -9,12 +9,13 @@ import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.bommbomm34.intervirt.logging.logOnFailure
 import uniffi.secret.SecretServiceException
+import uniffi.secret.SecretServiceInterface
 
 class SecretService(
     serviceName: String,
     logLevel: LogLevel = LogLevel.ERROR,
+    private val service: SecretServiceInterface = uniffi.secret.SecretService(serviceName),
 ) : AutoCloseable {
-    private val service = uniffi.secret.SecretService(serviceName)
     private val logger = KLogger(SecretService::class, logLevel)
 
     fun setEntry(key: String, value: ByteArray): Result<Unit> = runCatching {
@@ -46,7 +47,7 @@ class SecretService(
     }.logOnFailure(logger) { "Error while deleting $key" }
 
     override fun close() {
-        service.close()
+        if (service is AutoCloseable) service.close()
         logger.debug { "Closed SecretService" }
     }
 }
