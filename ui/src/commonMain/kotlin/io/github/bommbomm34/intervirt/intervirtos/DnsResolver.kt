@@ -7,6 +7,7 @@ package io.github.bommbomm34.intervirt.intervirtos
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.AlignedBox
@@ -15,10 +16,12 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.rememberManager
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -38,7 +41,11 @@ val DNS_RECORD_TYPES = listOf(
 fun DnsResolver(
     osClient: IntervirtOSClient,
 ) {
-    val dnsResolver = osClient.rememberManager(::DnsResolverManager)
+    val appEnv = koinInject<AppEnv>()
+    val dnsResolver = remember {
+        val client = osClient.getClient()
+        DnsResolverManager(appEnv, client.ioClient)
+    }
     val viewModel = koinViewModel<DnsResolverViewModel> { parametersOf(dnsResolver) }
     AlignedBox(Alignment.Center) {
         CenterColumn {

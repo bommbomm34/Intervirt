@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.DNS_RECORD_TYPES
+import kotlinx.coroutines.Job
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 
@@ -34,9 +35,9 @@ class DnsResolverViewModel(
     var reverseLookup by mutableStateOf(false)
     val records = mutableStateListOf<DnsRecord>()
 
-    fun lookup() {
+    fun lookup(): Job {
         records.clear()
-        viewModelScope.launchDialogCatching(appState) {
+        return viewModelScope.launchDialogCatching(appState) {
             records.addAll(
                 dnsResolver.lookupDns(
                     name = domain,

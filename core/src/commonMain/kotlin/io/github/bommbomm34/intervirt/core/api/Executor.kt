@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class Executor(appEnv: AppEnv) {
+open class Executor(appEnv: AppEnv) {
     private val logger = appEnv.getLogger(Executor::class)
 
-    fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
+    open fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
         flow {
             require(workingFolder?.exists() ?: true) { "Working folder does not exist: ${workingFolder!!.absolutePath}" }
             val builder = ProcessBuilder(commands)
