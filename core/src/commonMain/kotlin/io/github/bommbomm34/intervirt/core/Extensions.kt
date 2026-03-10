@@ -5,7 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core
 
+import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
+import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
@@ -92,8 +94,11 @@ inline fun <reified T> String.toPrimitive(): T = when (T::class) {
 
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
 
-fun getAppEnv(custom: AppEnv.() -> Unit = {}) = AppEnv(
-    settings = PreferencesSettings(Preferences.userRoot()),
+fun getAppEnv(
+    settings: Settings = PreferencesSettings(Preferences.userRoot()),
+    custom: AppEnv.() -> Unit = {}
+) = AppEnv(
+    settings = settings,
     override = { System.getenv("INTERVIRT_$it") },
     custom = custom,
 )
@@ -155,7 +160,7 @@ fun String.toReadableImage() = when {
     else -> null
 }
 
-fun getTestAppEnv() = getAppEnv {
+fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings) {
     DEBUG_ENABLED = true
     VIRTUAL_AGENT_MODE = System.getenv("INTERVIRT_TEST_VIRTUAL_AGENT_MODE")?.toBoolean() ?: true
     VIRTUAL_CONTAINER_IO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true

@@ -22,6 +22,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.serialization)
+            implementation(libs.multiplatform.settings.test)
         }
         commonTest.dependencies {
             implementation(libs.koin.test)

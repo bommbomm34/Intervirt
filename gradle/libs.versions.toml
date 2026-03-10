@@ -78,6 +78,7 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
+multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatform-settings" }
 skiko-awt = { module = "org.jetbrains.skiko:skiko-awt", version.ref = "skiko" }
 slf4j-reload4j = { module = "org.slf4j:slf4j-reload4j", version.ref = "slf4j" }
 sshd-core = { module = "org.apache.sshd:sshd-core", version.ref = "sshd" }
