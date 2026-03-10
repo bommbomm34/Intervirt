@@ -39,11 +39,13 @@ suspend fun IntervirtConfiguration.resolveNetworks(vararg connections: DeviceCon
     val networks = mutableMapOf<String, Network>()
     val connections = connections.ifEmpty { this.connections.withLock { toTypedArray() } }
     // Add switch networks
-    devices.withLock {
-        forEach { device ->
-            if (device is Device.Switch && connections.any { it.containsDevice(device) }) {
-                val name = networkNameOfSwitch(device.id)
-                networks[name] = getConnectedComputers(device).map { it.id }
+    devices.withLockLet { devices ->
+        this.connections.withLockLet { connections ->
+            devices.forEach { device ->
+                if (device is Device.Switch && connections.any { it.containsDevice(device) }) {
+                    val name = networkNameOfSwitch(device.id)
+                    networks[name] = getConnectedComputers(device, devices, connections).map { it.id }
+                }
             }
         }
     }

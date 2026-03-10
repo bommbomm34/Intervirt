@@ -47,29 +47,31 @@ sealed class Device {
     override fun hashCode(): Int = id.hashCode()
 }
 
-suspend fun String.toDevice(configuration: IntervirtConfiguration) = configuration.devices.withLock {
-    first { it.id == this@toDevice }
-}
+fun String.toDevice(devices: List<Device>) = devices.first { it.id == this@toDevice }
 
-suspend fun IntervirtConfiguration.getConnectedComputers(
+fun getConnectedComputers(
     device: Device,
+    devices: List<Device>,
+    connections: List<DeviceConnection>,
     exceptDevices: Set<Device> = emptySet(),
 ): List<Computer> {
-    val connected = getConnectedDevices(device)
+    val connected = getConnectedDevices(device, devices, connections)
     val connectedComputers = mutableSetOf<Computer>() // Usage of a set is important because duplicates can occur
     connected.filter { device -> exceptDevices.all { device.id != it.id } }
         .forEach {
             if (it is Computer) connectedComputers.add(it) else
-                connectedComputers.addAll(getConnectedComputers(it, exceptDevices + device))
+                connectedComputers.addAll(getConnectedComputers(it, devices, connections, exceptDevices + device))
         }
     return connectedComputers.toList()
 }
 
-suspend fun IntervirtConfiguration.getConnectedDevices(device: Device): List<Device> {
-    return connections.withLock {
-        mapNotNull {
-            val (device1, device2) = it.getDevices(this@getConnectedDevices)
-            if (device1 == device) device2 else if (device2 == device) device1 else null
-        }
+fun getConnectedDevices(
+    device: Device,
+    devices: List<Device>,
+    connections: List<DeviceConnection>,
+): List<Device> {
+    return connections.mapNotNull {
+        val (device1, device2) = it.getDevices(devices)
+        if (device1 == device) device2 else if (device2 == device) device1 else null
     }
 }

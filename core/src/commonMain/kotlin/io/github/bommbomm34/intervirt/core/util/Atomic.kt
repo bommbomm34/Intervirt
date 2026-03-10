@@ -28,6 +28,8 @@ class Atomic<T>(initial: T){
 
     fun update(block: (T) -> T) = ref.update(block)
 
+    override fun toString(): String = get().toString()
+
     inline fun <reified T> getSerializer() = serializer<T>()
 }
 
