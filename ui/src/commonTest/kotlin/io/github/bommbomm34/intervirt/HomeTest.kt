@@ -10,7 +10,7 @@ import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.data.AppState
@@ -40,7 +40,7 @@ class HomeTest : KoinTest {
                     single { getAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
-                    single<IntervirtConfiguration> { IntervirtConfiguration.default() }
+                    single<Project> { Project.default() }
                     single<FileManager>()
                     single<QemuClient>()
                     single<Downloader>()

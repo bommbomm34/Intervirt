@@ -27,7 +27,7 @@ class DeviceManager(
     private val qemuClient: QemuClient,
     private val executor: Executor,
     private val fileManager: FileManager,
-    private val configuration: IntervirtConfiguration,
+    private val project: Project,
     private val appEnv: AppEnv,
 ) : AsyncCloseable {
     private val logger = appEnv.getLogger(DeviceManager::class)
@@ -47,9 +47,9 @@ class DeviceManager(
             name = (name ?: id).toAtomic(),
             x = x.toAtomic(),
             y = y.toAtomic(),
-            ipv4 = configuration.generateIpv4().toAtomic(),
-            ipv6 = configuration.generateIpv6().toAtomic(),
-            mac = configuration.generateMac().toAtomic(),
+            ipv4 = project.generateIpv4().toAtomic(),
+            ipv6 = project.generateIpv6().toAtomic(),
+            mac = project.generateMac().toAtomic(),
             internetEnabled = false.toAtomic(),
             portForwardings = mutableListOf<PortForwarding>().toMutexVar(),
         )
@@ -59,7 +59,7 @@ class DeviceManager(
     suspend fun addComputer(device: Device.Computer): Result<Device.Computer> = runSuspendingCatching {
         validateComputer(device)
         logger.debug { "Adding device $device" }
-        configuration.devices.add(device)
+        project.devices.add(device)
         guestManager.addContainer(
             id = device.id,
             ipv4 = device.ipv4.get(),
@@ -81,7 +81,7 @@ class DeviceManager(
             y = y.toAtomic(),
         )
         logger.debug { "Adding device $device" }
-        configuration.devices.add(device)
+        project.devices.add(device)
         logger.info { "Added device $device" }
         return device
     }
@@ -89,10 +89,10 @@ class DeviceManager(
     suspend fun removeDevice(device: Device): Result<Unit> = runSuspendingCatching {
         device.requireExists()
         logger.debug { "Removing device $device" }
-        configuration.connections.withLock {
+        project.connections.withLock {
             removeIf { it.containsDevice(device) }
         }
-        configuration.devices.remove(device)
+        project.devices.remove(device)
         // Close services
         intervirtOSClients[device.id]?.close()?.getOrThrow()
         intervirtOSClients.remove(device.id)
@@ -111,8 +111,8 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Connecting device $device1 to $device2" }
         val conn = device1 connect device2
-        configuration.connections.add(conn)
-        val networks = configuration.resolveNetworks(conn)
+        project.connections.add(conn)
+        val networks = project.resolveNetworks(conn)
         guestManager.addNetworks(networks).getOrThrow()
         logger.info { "Connected device $device1 to $device2" }
     }
@@ -122,8 +122,8 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Disconnecting device $device1 to $device2" }
         val conn = device1 connect device2
-        configuration.connections.withLock { removeIf { it == conn } }
-        val networks = configuration.resolveNetworks(conn)
+        project.connections.withLock { removeIf { it == conn } }
+        val networks = project.resolveNetworks(conn)
         networks.forEach { (name, network) ->
             network.forEach {
                 guestManager.disconnect(it, name).getOrThrow()
@@ -209,7 +209,7 @@ class DeviceManager(
         require(externalPort.isValidPort()) { "External port $externalPort is not valid!" }
         require(protocol.isValidProtocol()) { "Protocol $protocol is not valid!" }
         logger.debug { "Remove port forwarding of $externalPort" }
-        configuration.devices.withLock {
+        project.devices.withLock {
             forEach { device ->
                 if (device is Device.Computer)
                     device.portForwardings.withLock {
@@ -313,7 +313,7 @@ class DeviceManager(
     }
 
     private suspend fun generateID(prefix: String): String {
-        configuration.devices.withLock {
+        project.devices.withLock {
             while (true) {
                 val id = prefix + "-" + Random.nextInt(999999)
                 if (all { it.id != id }) return id
@@ -338,7 +338,7 @@ class DeviceManager(
         }
     }
 
-    private suspend fun Device.exists() = configuration.devices.withLock {
+    private suspend fun Device.exists() = project.devices.withLock {
         any { it.id == id }
     }
 

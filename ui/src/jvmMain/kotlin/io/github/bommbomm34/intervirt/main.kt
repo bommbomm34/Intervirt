@@ -25,7 +25,7 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.gracefulShutdown
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
@@ -57,7 +57,7 @@ fun main() = application {
         val secretService = koinInject<SecretService>()
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
-        val configuration = koinInject<IntervirtConfiguration>()
+        val project = koinInject<Project>()
         val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
         if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
         LaunchedEffect(Unit) {
@@ -68,7 +68,7 @@ fun main() = application {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
                     runBlocking {
-                        if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(configuration)
+                        if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(project)
                         gracefulShutdown(deviceManager, guestManager, qemuClient, httpClient, secretService)
                     }
                 },
@@ -76,7 +76,7 @@ fun main() = application {
             setDefaultExceptionHandler()
             // Load temp file if exists
             if (tempConfFile.exists() && appEnv.ENABLE_TEMP_FILE) tempConfFile.loadConf(
-                configuration,
+                project,
                 appState,
                 guestManager,
             )

@@ -23,7 +23,7 @@ import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
@@ -46,7 +46,7 @@ class DeviceSettingsViewModel(
     appEnv: AppEnv,
     private val appState: AppState,
     private val deviceManager: DeviceManager,
-    private val configuration: IntervirtConfiguration,
+    private val project: Project,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
     val computer: ViewDevice.Computer
@@ -179,7 +179,7 @@ class DeviceSettingsViewModel(
                 ),
             )
 
-            configuration.devices.withLock {
+            project.devices.withLock {
                 any { device ->
                     if (device is Device.Computer) device.portForwardings.withLock {
                         any {

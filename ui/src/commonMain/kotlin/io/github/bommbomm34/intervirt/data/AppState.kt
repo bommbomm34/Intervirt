@@ -12,11 +12,11 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
 
-class AppState(configuration: IntervirtConfiguration) {
+class AppState(project: Project) {
     val logs = mutableStateListOf<String>()
     var showLogs by mutableStateOf(false)
     var dialogStates = mutableStateListOf<DialogState>()
@@ -27,7 +27,7 @@ class AppState(configuration: IntervirtConfiguration) {
     var currentScreenIndex by mutableStateOf(1)
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
-    val statefulConf = configuration.toViewConfigurationUnsafe()
+    val statefulProject = project.toViewProjectUnsafe()
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)

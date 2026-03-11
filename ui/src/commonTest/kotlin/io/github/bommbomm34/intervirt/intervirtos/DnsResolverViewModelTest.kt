@@ -12,7 +12,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
@@ -46,7 +46,7 @@ class DnsResolverViewModelTest : KoinTest {
                 module {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
-                    single { IntervirtConfiguration.default() }
+                    single { Project.default() }
                     single<AppState>()
                     single<Executor> { MockExecutor(get()) }
                     single<FileManager>()

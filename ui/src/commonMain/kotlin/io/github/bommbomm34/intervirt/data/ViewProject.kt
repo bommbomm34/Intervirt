@@ -11,10 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.DeviceConnection
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 
-// Stateful IntervirtConfiguration for the UI
-class ViewConfiguration(
+// Stateful Project for the UI
+class ViewProject(
     version: String,
     author: String,
     devices: MutableList<Device>,
@@ -27,12 +27,12 @@ class ViewConfiguration(
     val connections =
         mutableStateListOf<ViewConnection>().apply { connections.forEach { add(it.toViewConnection()) } }
 
-    fun update(configuration: ViewConfiguration) {
-        author = configuration.author
+    fun update(project: ViewProject) {
+        author = project.author
         devices.clear()
-        devices.addAll(configuration.devices)
+        devices.addAll(project.devices)
         connections.clear()
-        connections.addAll(configuration.connections)
+        connections.addAll(project.connections)
     }
 
     fun exists(device: ViewDevice) = devices.any { it.id == device.id }
@@ -44,10 +44,10 @@ class ViewConfiguration(
     }
 }
 
-suspend fun IntervirtConfiguration.toViewConfiguration(): ViewConfiguration {
+suspend fun Project.toViewProject(): ViewProject {
     devices.withLockLet { devices ->
         connections.withLockLet { connections ->
-            return ViewConfiguration(
+            return ViewProject(
                 version = version,
                 author = author.get(),
                 devices = devices,
@@ -57,8 +57,8 @@ suspend fun IntervirtConfiguration.toViewConfiguration(): ViewConfiguration {
     }
 }
 
-fun IntervirtConfiguration.toViewConfigurationUnsafe(): ViewConfiguration {
-    return ViewConfiguration(
+fun Project.toViewProjectUnsafe(): ViewProject {
+    return ViewProject(
         version = version,
         author = author.get(),
         devices = devices.value,

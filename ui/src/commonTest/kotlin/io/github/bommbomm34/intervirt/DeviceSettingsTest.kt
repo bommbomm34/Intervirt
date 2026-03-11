@@ -11,11 +11,9 @@ import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.util.add
@@ -65,7 +63,7 @@ class DeviceSettingsTest : KoinTest {
     val viewModel: DeviceSettingsViewModel by inject { parametersOf(testComputer) }
     val appState: AppState by inject()
     val deviceManager: DeviceManager by inject()
-    val configuration: IntervirtConfiguration by inject()
+    val project: Project by inject()
 
     @BeforeTest
     fun init() = runTest {
@@ -76,7 +74,7 @@ class DeviceSettingsTest : KoinTest {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
-                    single<IntervirtConfiguration> { IntervirtConfiguration.default() }
+                    single<Project> { Project.default() }
                     single<FileManager>()
                     single<QemuClient>()
                     single<Executor>()
@@ -159,7 +157,7 @@ class DeviceSettingsTest : KoinTest {
         val secondTestComputer = testComputer.device.copy().apply {
             portForwardings.add(PortForwarding("tcp", 2222, 22))
         }
-        configuration.devices.add(secondTestComputer)
+        project.devices.add(secondTestComputer)
         assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
     }
 

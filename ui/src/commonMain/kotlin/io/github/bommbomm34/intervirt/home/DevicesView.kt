@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -36,8 +35,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
@@ -54,8 +52,8 @@ fun DevicesView() {
     val deviceManager = koinInject<DeviceManager>()
     val appEnv = koinInject<AppEnv>()
     val appState = koinInject<AppState>()
-    val configuration = koinInject<IntervirtConfiguration>()
-    val statefulConf = appState.statefulConf
+    val project = koinInject<Project>()
+    val statefulProject = appState.statefulProject
     Box(Modifier.scale(appState.devicesViewZoom)) {
         Canvas(
             Modifier
@@ -69,7 +67,7 @@ fun DevicesView() {
                 .onPointerEvent(PointerEventType.Press) { event ->
                     if (event.button?.equals(PointerButton.Secondary) ?: false && appState.drawingConnectionSource == null) {
                         val position = event.changes.first().position
-                        statefulConf.connections.firstOrNull { (device1, device2) ->
+                        statefulProject.connections.firstOrNull { (device1, device2) ->
                             isPointOnLine(
                                 point = position,
                                 start = device1.fittingOffset(appState.devicesViewZoom),
@@ -83,7 +81,7 @@ fun DevicesView() {
                                 it.device2.name,
                             ) {
                                 close()
-                                statefulConf.connections.remove(it)
+                                statefulProject.connections.remove(it)
                                 scope.launchDialogCatching(appState) {
                                     deviceManager.disconnectDevice(
                                         it.device1.device,
@@ -103,7 +101,7 @@ fun DevicesView() {
                     strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
                 )
             }
-            statefulConf.connections.forEach {
+            statefulProject.connections.forEach {
                 drawConnection(
                     offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
                     offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
@@ -113,7 +111,7 @@ fun DevicesView() {
             }
         }
 
-        statefulConf.devices.forEach { device ->
+        statefulProject.devices.forEach { device ->
             DeviceView(
                 device = device,
                 onClickDevice = {
@@ -127,8 +125,8 @@ fun DevicesView() {
                     if (copy != null) {
                         if (copy.id != it.id) {
                             scope.launchDialogCatching(appState) {
-                                if (copy.canConnect(configuration) && it.canConnect(configuration)) {
-                                    statefulConf.connections.add(copy connect it)
+                                if (copy.canConnect(project) && it.canConnect(project)) {
+                                    statefulProject.connections.add(copy connect it)
                                     deviceManager.connectDevice(copy.device, it.device).getOrThrow()
                                 } else appState.openDialog(
                                     severity = Severity.WARNING,
@@ -142,10 +140,10 @@ fun DevicesView() {
             )
         }
     }
-    LaunchedEffect(statefulConf) {
-        selectedDevice?.let { if (!statefulConf.exists(it)) selectedDevice = null }
+    LaunchedEffect(statefulProject) {
+        selectedDevice?.let { if (!statefulProject.exists(it)) selectedDevice = null }
         appState.drawingConnectionSource?.let {
-            if (!statefulConf.exists(it)) appState.drawingConnectionSource = null
+            if (!statefulProject.exists(it)) appState.drawingConnectionSource = null
         }
         if (selectedDevice == null) appState.deviceSettingsVisible = false
     }

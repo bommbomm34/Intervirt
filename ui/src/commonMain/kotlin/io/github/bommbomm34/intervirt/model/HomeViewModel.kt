@@ -17,9 +17,9 @@ import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.core.data.syncConfiguration
+import io.github.bommbomm34.intervirt.core.data.syncProject
 import io.github.bommbomm34.intervirt.core.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.UpdaterState
@@ -30,7 +30,6 @@ import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
 import java.awt.Desktop
@@ -41,7 +40,7 @@ class HomeViewModel(
     private val appState: AppState,
     private val appEnv: AppEnv,
     private val guestManager: GuestManager,
-    private val configuration: IntervirtConfiguration,
+    private val project: Project,
     private val downloader: Downloader,
     private val qemuClient: QemuClient,
 ) : ViewModel() {
@@ -65,7 +64,7 @@ class HomeViewModel(
             val file = FileKit.openFilePicker(
                 type = FileKitType.File(extensions = listOf("ivrt")),
             )
-            file?.file?.loadConf(configuration, appState, guestManager){
+            file?.file?.loadConf(project, appState, guestManager){
                 onConfChange()
             }
         }
@@ -78,7 +77,7 @@ class HomeViewModel(
                 suggestedName = appEnv.SUGGESTED_FILENAME,
                 extension = "ivrt",
             )
-            file?.file?.writeConf(configuration)
+            file?.file?.writeConf(project)
         }
         onDismiss()
     }
@@ -86,7 +85,7 @@ class HomeViewModel(
     fun saveAs() {
         val file = appState.currentFile
         if (file != null) {
-            viewModelScope.launch { file.file.writeConf(configuration) }
+            viewModelScope.launch { file.file.writeConf(project) }
             onDismiss()
         } else save()
     }
@@ -151,7 +150,7 @@ class HomeViewModel(
     fun sync() {
         appState.openDialog {
             ProgressDialog(
-                flow = guestManager.syncConfiguration(configuration),
+                flow = guestManager.syncProject(project),
                 onClose = ::close,
             )
         }

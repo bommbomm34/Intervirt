@@ -16,26 +16,28 @@ import io.github.bommbomm34.intervirt.core.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 
-// Configuration of an Intervirt project
+/**
+ * Intervirt project
+ */
 @Serializable
-data class IntervirtConfiguration(
+data class Project(
     val version: String = CURRENT_VERSION,
     val author: Atomic<String> = "".toAtomic(),
     val devices: MutexVar<MutableList<Device>> = mutableListOf<Device>().toMutexVar(),
     val connections: MutexVar<MutableList<DeviceConnection>> = mutableListOf<DeviceConnection>().toMutexVar(),
 ) {
     companion object {
-        fun default() = IntervirtConfiguration()
+        fun default() = Project()
     }
 
-    suspend fun update(configuration: IntervirtConfiguration) {
-        author.set(configuration.author.get())
-        devices.clearAndAddAll(configuration.devices)
-        connections.clearAndAddAll(configuration.connections)
+    suspend fun update(project: Project) {
+        author.set(project.author.get())
+        devices.clearAndAddAll(project.devices)
+        connections.clearAndAddAll(project.connections)
     }
 }
 
-suspend fun IntervirtConfiguration.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
+suspend fun Project.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
     val networks = mutableMapOf<String, Network>()
     val connections = connections.ifEmpty { this.connections.withLock { toTypedArray() } }
     // Add switch networks
@@ -68,7 +70,7 @@ suspend fun GuestManager.addNetworks(networks: Map<String, Network>): Result<Uni
     }
 }
 
-fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultProgress<Unit>> = flowCatching {
+fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flowCatching {
     val version = getVersion().getOrThrow()
     if (version != CURRENT_VERSION) {
         emit(ResultProgress.failure(DeprecatedException()))
@@ -92,7 +94,7 @@ fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultPro
                 message = "Creating devices...",
             ),
         )
-        conf.devices.withLock {
+        project.devices.withLock {
             forEachIndexed { i, device ->
                 if (device is Device.Computer) {
                     val progress = 0.2f + (i.toFloat() / size) * 0.6f
@@ -135,7 +137,7 @@ fun GuestManager.syncConfiguration(conf: IntervirtConfiguration): Flow<ResultPro
                 message = "Connecting devices...",
             ),
         )
-        addNetworks(conf.resolveNetworks()).getOrThrow()
+        addNetworks(project.resolveNetworks()).getOrThrow()
         emit(
             ResultProgress.proceed(
                 percentage = 1f,

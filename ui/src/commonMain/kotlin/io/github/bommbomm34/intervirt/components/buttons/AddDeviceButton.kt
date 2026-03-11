@@ -62,7 +62,7 @@ fun AddDeviceButton() {
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName,
                                     ).getOrThrow().toViewDevice()
-                                    appState.statefulConf.devices.add(viewDevice)
+                                    appState.statefulProject.devices.add(viewDevice)
                                 }
                             },
                         )
@@ -86,7 +86,7 @@ fun AddDeviceButton() {
                             x = Random.nextInt(300, 600),
                             y = Random.nextInt(300, 600),
                         )
-                        appState.statefulConf.devices.add(device.toViewDevice())
+                        appState.statefulProject.devices.add(device.toViewDevice())
                     }
                 },
                 text = {

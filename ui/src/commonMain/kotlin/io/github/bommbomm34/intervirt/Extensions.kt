@@ -25,15 +25,14 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.core.data.syncConfiguration
+import io.github.bommbomm34.intervirt.core.data.syncProject
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewConfiguration
 import io.github.bommbomm34.intervirt.data.state
-import io.github.bommbomm34.intervirt.data.toViewConfiguration
+import io.github.bommbomm34.intervirt.data.toViewProject
 import io.github.bommbomm34.intervirt.logging.KLogger
 
 import io.github.vinceglb.filekit.PlatformFile
@@ -180,23 +179,23 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
     onResult = onResult,
 )
 
-fun File.writeConf(configuration: IntervirtConfiguration) = writeText(defaultJson.encodeToString(configuration))
+fun File.writeConf(project: Project) = writeText(defaultJson.encodeToString(project))
 
 suspend fun File.loadConf(
-    configuration: IntervirtConfiguration,
+    project: Project,
     appState: AppState,
     guestManager: GuestManager,
     onComplete: () -> Unit = {},
 ) {
     val fileContent = readText()
-    val newConfiguration = Json.decodeFromString<IntervirtConfiguration>(fileContent)
-    configuration.update(newConfiguration)
-    val flow = guestManager.syncConfiguration(configuration).onCompletion { onComplete() }
+    val newConfiguration = Json.decodeFromString<Project>(fileContent)
+    project.update(newConfiguration)
+    val flow = guestManager.syncProject(project).onCompletion { onComplete() }
     appState.openDialog {
         ProgressDialog(
             flow = flow,
             onClose = ::close,
         )
     }
-    appState.statefulConf.update(newConfiguration.toViewConfiguration())
+    appState.statefulProject.update(newConfiguration.toViewProject())
 }

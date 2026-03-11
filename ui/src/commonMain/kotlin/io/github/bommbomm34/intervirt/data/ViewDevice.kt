@@ -15,7 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 
 sealed class ViewDevice {
@@ -42,8 +42,8 @@ sealed class ViewDevice {
             mutableStateListOf<PortForwarding>().apply { addAll(device.portForwardings.value) }
 
         override fun getVector() = Icons.Default.Computer
-        override suspend fun canConnect(configuration: IntervirtConfiguration) =
-            configuration.connections.withLock {
+        override suspend fun canConnect(project: Project) =
+            project.connections.withLock {
                 count { it.containsDevice(device) } == 0
             }
     }
@@ -56,12 +56,12 @@ sealed class ViewDevice {
         override var x by mutableStateOf(device.x.get())
         override var y by mutableStateOf(device.y.get())
         override fun getVector() = Icons.Default.Hub // Switches aren't hubs!
-        override suspend fun canConnect(configuration: IntervirtConfiguration) = true
+        override suspend fun canConnect(project: Project) = true
     }
 
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
-    abstract suspend fun canConnect(configuration: IntervirtConfiguration): Boolean
+    abstract suspend fun canConnect(project: Project): Boolean
 }
 
 fun Device.toViewDevice() = when (this) {

@@ -6,13 +6,12 @@
 package io.github.bommbomm34.intervirt
 
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
@@ -34,7 +33,7 @@ class SettingsViewModelTest : KoinTest {
         startKoin { 
             modules(
                 module { 
-                    single { IntervirtConfiguration.default() }
+                    single { Project.default() }
                     single { getTestAppEnv() }
                     single<AppState>()
 

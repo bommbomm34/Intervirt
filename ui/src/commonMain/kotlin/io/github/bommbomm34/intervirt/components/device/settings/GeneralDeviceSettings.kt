@@ -58,8 +58,8 @@ fun GeneralDeviceSettings(
                 scope.launchDialogCatching(appState) {
                     close()
                     onClose()
-                    appState.statefulConf.devices.remove(device)
-                    appState.statefulConf.connections.removeIf { it.containsDevice(device) }
+                    appState.statefulProject.devices.remove(device)
+                    appState.statefulProject.connections.removeIf { it.containsDevice(device) }
                     deviceManager.removeDevice(device.device).getOrThrow()
                 }
             }

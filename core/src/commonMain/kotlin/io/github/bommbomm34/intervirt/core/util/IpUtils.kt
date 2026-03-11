@@ -6,10 +6,10 @@
 package io.github.bommbomm34.intervirt.core.util
 
 import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import kotlin.random.Random
 
-suspend fun IntervirtConfiguration.generateMac(): String {
+suspend fun Project.generateMac(): String {
     devices.withLock {
         while (true) {
             val mac = randomMac()
@@ -18,7 +18,7 @@ suspend fun IntervirtConfiguration.generateMac(): String {
     }
 }
 
-suspend fun IntervirtConfiguration.generateIpv4(): String {
+suspend fun Project.generateIpv4(): String {
     devices.withLock {
         while (true) {
             val ipv4 = randomIpv4()
@@ -27,7 +27,7 @@ suspend fun IntervirtConfiguration.generateIpv4(): String {
     }
 }
 
-suspend fun IntervirtConfiguration.generateIpv6(): String {
+suspend fun Project.generateIpv6(): String {
     devices.withLock {
         while (true) {
             val ipv6 = randomIpv6()

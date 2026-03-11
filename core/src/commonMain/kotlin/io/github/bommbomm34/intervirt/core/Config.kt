@@ -9,11 +9,10 @@ import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.IntervirtConfiguration
+import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.binds
 import org.koin.dsl.module
 
 
@@ -39,5 +38,5 @@ val coreModule = module {
     single { SecretService("io.github.bommbomm34.intervirt") }
     single { getAppEnv() }
     single { getHttpClient() }
-    single { IntervirtConfiguration.default() }
+    single { Project.default() }
 }
