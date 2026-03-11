@@ -56,7 +56,6 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation(libs.slf4j.reload4j)
             implementation(libs.bossterm.core)
             implementation(projects.core)
         }

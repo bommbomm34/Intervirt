@@ -41,7 +41,6 @@ kotlin {
             implementation(libs.kommand)
             implementation(libs.sshd.core)
             implementation(libs.sshd.sftp)
-            api(libs.commons.validator)
             api(projects.logging)
             api(projects.secret)
         }

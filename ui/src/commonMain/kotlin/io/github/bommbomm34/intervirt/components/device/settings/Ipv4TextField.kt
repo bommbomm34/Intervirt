@@ -12,13 +12,8 @@ import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.invalid_ipv4_address
 import intervirt.ui.generated.resources.ipv4_address
-import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewDevice
-import org.apache.commons.validator.routines.InetAddressValidator
+import io.github.bommbomm34.intervirt.core.util.validateIpv4
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun Ipv4TextField(
@@ -29,7 +24,7 @@ fun Ipv4TextField(
     OutlinedTextField(
         value = ipv4,
         onValueChange = {
-            validIpv4 = InetAddressValidator.getInstance().isValidInet4Address(it)
+            validIpv4 = it.validateIpv4()
             if (validIpv4) onIpv4Change(it)
         },
         label = {

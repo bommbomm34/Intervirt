@@ -14,13 +14,9 @@ import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.toReadableImage
 import io.github.bommbomm34.intervirt.core.util.*
-import org.apache.commons.validator.routines.InetAddressValidator
-import org.apache.commons.validator.routines.RegexValidator
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
-
-val MAC_VALIDATOR = RegexValidator("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")
 
 class DeviceManager(
     private val guestManager: GuestManager,
@@ -325,11 +321,10 @@ class DeviceManager(
         // Validate image
         requireNotNull(computer.image.toReadableImage()) { "Invalid image: ${computer.image}" }
         // Validate IP
-        val validator = InetAddressValidator.getInstance()
-        require(validator.isValidInet4Address(computer.ipv4.get())) { "IPv4 address is invalid: ${computer.ipv4}" }
-        require(validator.isValidInet6Address(computer.ipv6.get())) { "IPv6 address is invalid: ${computer.ipv6}" }
+        require(computer.ipv4.get().validateIpv4()) { "IPv4 address is invalid: ${computer.ipv4}" }
+        require(computer.ipv6.get().validateIpv6()) { "IPv6 address is invalid: ${computer.ipv6}" }
         // Validate MAC
-        require(MAC_VALIDATOR.isValid(computer.mac.get())) { "MAC address is invalid: ${computer.mac}" }
+        require(computer.mac.get().validateMac()) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings
         computer.portForwardings.withLock {
             forEach {
