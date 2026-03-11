@@ -37,7 +37,9 @@ suspend fun Project.generateIpv6(): String {
 }
 
 fun randomMac(): String {
-    fun rand() = Random.nextInt(256).toString(16)
+    fun rand() = Random.nextInt(256)
+        .toString(16)
+        .padZero(2)
     return "${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
 }
 
@@ -46,7 +48,13 @@ fun randomIpv4(): String {
     return "192.168.${rand()}.${rand()}"
 }
 fun randomIpv6(): String {
-    fun rand() = Random.nextInt(65536).toString(16)
-    fun randFirst() = Random.nextInt(256).toString(16)
+    fun rand() = Random.nextInt(65536)
+        .toString(16)
+        .padZero(4)
+    fun randFirst() = Random.nextInt(256)
+        .toString(16)
+        .padZero(2)
     return "fd${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
 }
+
+fun String.padZero(len: Int) = padStart(len, '0')
