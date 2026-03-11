@@ -27,31 +27,31 @@ class SettingsViewModelTest : KoinTest {
     private val appState: AppState by inject()
     private val appEnv: AppEnv by inject()
     private val viewModel: SettingsViewModel by inject()
-    
+
     @BeforeTest
-    fun start(){
-        startKoin { 
+    fun start() {
+        startKoin {
             modules(
-                module { 
+                module {
                     single { Project.default() }
                     single { getTestAppEnv() }
                     single<AppState>()
 
                     viewModel<SettingsViewModel>()
-                }
+                },
             )
         }
     }
-    
+
     @Test
-    fun shouldDiscardChangesIfNotSaved(){
+    fun shouldDiscardChangesIfNotSaved() {
         performChanges()
         assertNotEquals("MOCK", appEnv.OVERRIDE_DOCKER_HOST)
         assertNotEquals(6767, appEnv.VIRTUAL_CONTAINER_IO_PORT)
     }
 
     @Test
-    fun shouldChangeAppEnvChangeKeyIfSaved(){
+    fun shouldChangeAppEnvChangeKeyIfSaved() {
         performChanges()
         val previousAppEnvChangeKey = appState.appEnvChangeKey
         viewModel.saveChanges()
@@ -59,7 +59,7 @@ class SettingsViewModelTest : KoinTest {
     }
 
     @Test
-    fun shouldSaveChanges(){
+    fun shouldSaveChanges() {
         performChanges()
         val previousAppEnvChangeKey = appState.appEnvChangeKey
         viewModel.saveChanges()
@@ -68,13 +68,13 @@ class SettingsViewModelTest : KoinTest {
         assertEquals(6767, appEnv.VIRTUAL_CONTAINER_IO_PORT)
     }
 
-    private fun performChanges(){
+    private fun performChanges() {
         viewModel.appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
         viewModel.appEnv.VIRTUAL_CONTAINER_IO_PORT = 6767
     }
-    
+
     @AfterTest
-    fun stop(){
+    fun stop() {
         stopKoin()
     }
 }

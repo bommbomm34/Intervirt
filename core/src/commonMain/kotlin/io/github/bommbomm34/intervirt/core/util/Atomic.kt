@@ -19,7 +19,7 @@ import kotlin.reflect.KProperty
 
 @Serializable(with = AtomicSerializer::class)
 @OptIn(ExperimentalAtomicApi::class)
-class Atomic<T>(initial: T){
+class Atomic<T>(initial: T) {
     private val ref = AtomicReference(initial)
 
     fun set(value: T) = ref.store(value)

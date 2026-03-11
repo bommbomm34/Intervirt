@@ -106,7 +106,7 @@ sealed class RequestBody {
 
     @SerialName("RemoveNetwork")
     data class RemoveNetwork(
-        val name: String
+        val name: String,
     ) : RequestBody()
 }
 

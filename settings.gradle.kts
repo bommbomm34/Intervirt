@@ -33,7 +33,7 @@ plugins {
 }
 
 sourceControl {
-    gitRepository(uri("https://github.com/bommbomm34/ComposeNativeWebview.git")){
+    gitRepository(uri("https://github.com/bommbomm34/ComposeNativeWebview.git")) {
         producesModule("io.github.bommbomm34:composenativewebview")
     }
 }

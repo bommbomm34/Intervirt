@@ -34,7 +34,7 @@ kotlin {
     mingwX64()
 }
 
-fun KotlinJsTargetDsl.defaultBrowser(){
+fun KotlinJsTargetDsl.defaultBrowser() {
     browser {
         testTask {
             useKarma {

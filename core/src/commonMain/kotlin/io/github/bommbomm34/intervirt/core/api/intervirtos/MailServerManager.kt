@@ -37,7 +37,8 @@ class MailServerManager(
     ),
     hostName = osClient.getClient().store[IntervirtOSStore.Accessor.HOSTNAME] ?: osClient.getClient().computer.id,
     env = mapOf(
-        "OVERRIDE_HOSTNAME" to (osClient.getClient().store[IntervirtOSStore.Accessor.HOSTNAME] ?: osClient.getClient().computer.id),
+        "OVERRIDE_HOSTNAME" to (osClient.getClient().store[IntervirtOSStore.Accessor.HOSTNAME]
+            ?: osClient.getClient().computer.id),
         "ACCOUNT_PROVISIONER" to "FILE",
     ),
 ) {

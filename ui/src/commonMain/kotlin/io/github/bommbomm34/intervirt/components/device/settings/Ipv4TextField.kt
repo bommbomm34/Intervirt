@@ -23,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 fun Ipv4TextField(
     ipv4: String,
-    onIpv4Change: (String) -> Unit
+    onIpv4Change: (String) -> Unit,
 ) {
     var validIpv4 by remember { mutableStateOf(true) }
     OutlinedTextField(

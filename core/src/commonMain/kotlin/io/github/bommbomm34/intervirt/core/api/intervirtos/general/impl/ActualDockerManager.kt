@@ -53,6 +53,7 @@ class ActualDockerManager(
                     .dockerHost(config.dockerHost)
                     .build()
             }
+
             else -> {
                 ApacheDockerHttpClient.Builder()
                     .dockerHost(config.dockerHost)

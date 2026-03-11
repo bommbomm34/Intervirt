@@ -42,7 +42,7 @@ fun <T> ProgressDialog(
                 )
             }
         } else {
-            Button(onClick = onClose){
+            Button(onClick = onClose) {
                 Text(stringResource(Res.string.close))
             }
         }

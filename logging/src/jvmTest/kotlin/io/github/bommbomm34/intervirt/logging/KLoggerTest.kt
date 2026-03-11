@@ -18,42 +18,42 @@ const val TEST_LINE = "Hello, this is a test!"
 class KLoggerTest {
 
     @Test
-    fun shouldTraceWhenLogLevelIsTrace(){
+    fun shouldTraceWhenLogLevelIsTrace() {
         val (logger, stream) = getLogger(LogLevel.TRACE)
         logger.trace { TEST_LINE }
         assertContains(stream.stdoutLast(), TEST_LINE)
     }
 
     @Test
-    fun shouldDebug(){
+    fun shouldDebug() {
         val (logger, stream) = getLogger(LogLevel.DEBUG)
         logger.debug { TEST_LINE }
         assertContains(stream.stdoutLast(), TEST_LINE)
     }
 
     @Test
-    fun shouldInfo(){
+    fun shouldInfo() {
         val (logger, stream) = getLogger(LogLevel.INFO)
         logger.info { TEST_LINE }
         assertContains(stream.stdoutLast(), TEST_LINE)
     }
 
     @Test
-    fun shouldNotDebugWhenLogLevelIsInfo(){
+    fun shouldNotDebugWhenLogLevelIsInfo() {
         val (logger, stream) = getLogger(LogLevel.INFO)
         logger.debug { TEST_LINE }
         assertTrue(stream.stdout.isEmpty())
     }
 
     @Test
-    fun shouldErrorToStderr(){
+    fun shouldErrorToStderr() {
         val (logger, stream) = getLogger(LogLevel.ERROR)
         logger.error { TEST_LINE }
         assertContains(stream.stderrLast(), TEST_LINE)
     }
 
     @Test
-    fun shouldNotTraceWhenLogLevelIsDebug(){
+    fun shouldNotTraceWhenLogLevelIsDebug() {
         val (logger, stream) = getLogger(LogLevel.DEBUG)
         logger.trace { TEST_LINE }
         assertTrue(stream.stdout.isEmpty())

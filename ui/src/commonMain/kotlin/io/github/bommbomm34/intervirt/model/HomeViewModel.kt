@@ -64,7 +64,7 @@ class HomeViewModel(
             val file = FileKit.openFilePicker(
                 type = FileKitType.File(extensions = listOf("ivrt")),
             )
-            file?.file?.loadConf(project, appState, guestManager){
+            file?.file?.loadConf(project, appState, guestManager) {
                 onConfChange()
             }
         }

@@ -1,6 +1,7 @@
 # Testing Intervirt Agent
 
-Intervirt provides the test `GuestManagerTest` to test any Intervirt Agent and ensuring it's compatible with the protocol.
+Intervirt provides the test `GuestManagerTest` to test any Intervirt Agent and ensuring it's compatible with the
+protocol.
 Please keep in mind that this test is also experimental and it can also be the test's fault.
 
 ## Requirements

@@ -87,13 +87,13 @@ class DeviceSettingsTest : KoinTest {
     }
 
     @Test
-    fun shouldOpenShell(){
+    fun shouldOpenShell() {
         viewModel.openShell()
         assertEquals(testComputer, appState.openComputerShell)
     }
 
     @Test
-    fun shouldTogglePortForwardings(){
+    fun shouldTogglePortForwardings() {
         viewModel.togglePortForwardings()
         assertEquals(true, viewModel.showPortForwardings)
         viewModel.togglePortForwardings()

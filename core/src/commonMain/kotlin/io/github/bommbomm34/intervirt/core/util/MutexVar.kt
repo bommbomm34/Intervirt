@@ -14,8 +14,9 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @Serializable
-data class MutexVar<T>(val value: T){
-    @Transient val mutex = Mutex()
+data class MutexVar<T>(val value: T) {
+    @Transient
+    val mutex = Mutex()
 
     @OptIn(ExperimentalContracts::class)
     suspend inline fun <V> withLock(block: T.() -> V): V {

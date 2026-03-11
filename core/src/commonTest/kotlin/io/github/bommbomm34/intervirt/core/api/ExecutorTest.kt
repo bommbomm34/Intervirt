@@ -31,7 +31,7 @@ class ExecutorTest {
 
     @Test
     fun shouldRunSuccessfulCommandOnHostWithWorkingFolder() = runTest {
-        val testFolder = when (getOS()){
+        val testFolder = when (getOS()) {
             OS.WINDOWS -> File("C:\\Windows\\System32\\drivers\\etc\\")
             OS.LINUX -> File("/etc/")
         }
@@ -50,12 +50,12 @@ class ExecutorTest {
         assertNotEquals(0, status)
     }
 
-    private fun getCatPath(): Array<String> = when (getOS()){
+    private fun getCatPath(): Array<String> = when (getOS()) {
         OS.WINDOWS -> arrayOf("C:\\Windows\\System32\\cmd.exe", "type")
         OS.LINUX -> arrayOf("/usr/bin/cat")
     }
 
-    private fun getEchoPath(): Array<String> = when (getOS()){
+    private fun getEchoPath(): Array<String> = when (getOS()) {
         OS.WINDOWS -> arrayOf("C:\\Windows\\System32\\cmd.exe", "echo")
         OS.LINUX -> arrayOf("/usr/bin/echo")
     }

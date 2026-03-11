@@ -45,7 +45,7 @@ class SetupViewModel(
     var job: Job? by mutableStateOf(null)
     var currentSetupScreenIndex by mutableStateOf(0)
 
-    fun onInstall(){
+    fun onInstall() {
         if (job != null) {
             job?.cancel()
             job = null

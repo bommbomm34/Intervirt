@@ -22,7 +22,9 @@ open class Executor(appEnv: AppEnv) {
 
     open fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
         flow {
-            require(workingFolder?.exists() ?: true) { "Working folder does not exist: ${workingFolder!!.absolutePath}" }
+            require(
+                workingFolder?.exists() ?: true,
+            ) { "Working folder does not exist: ${workingFolder!!.absolutePath}" }
             val builder = ProcessBuilder(commands)
             workingFolder?.let { builder.directory(it) }
             builder.redirectErrorStream()

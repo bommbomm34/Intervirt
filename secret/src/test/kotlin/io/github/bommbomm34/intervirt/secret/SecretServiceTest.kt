@@ -16,14 +16,14 @@ class SecretServiceTest {
     private val secretService = getMockSecretService()
 
     @Test
-    fun shouldAddEntry(){
+    fun shouldAddEntry() {
         println(data.clone().joinToString())
         secretService.setEntry("my-test-entry", data.clone()).getOrThrow()
         assertContentEquals(data, getTestEntry())
     }
 
     @Test
-    fun shouldSetEntryTwice(){
+    fun shouldSetEntryTwice() {
         val otherData = byteArrayOf(2, 8, 9, 1)
         secretService.setEntry("my-test-entry", data.clone()).getOrThrow()
         secretService.setEntry("my-test-entry", otherData.clone()).getOrThrow()
@@ -31,26 +31,26 @@ class SecretServiceTest {
     }
 
     @Test
-    fun shouldDeleteEntry(){
+    fun shouldDeleteEntry() {
         secretService.setEntry("my-test-entry", data.clone()).getOrThrow()
         secretService.removeEntry("my-test-entry").getOrThrow()
         assertNull(getTestEntry())
     }
 
     @Test
-    fun shouldReturnNullWhenEntryNotExists(){
+    fun shouldReturnNullWhenEntryNotExists() {
         assertNull(secretService.getEntry("non-existing-entry").getOrThrow())
     }
 
     @Test
-    fun shouldZeroizeAfterAdd(){
+    fun shouldZeroizeAfterAdd() {
         val data = byteArrayOf(5, 0, 1, 2)
         secretService.setEntry("my-test-entry", data)
         assertContentEquals(byteArrayOf(0, 0, 0, 0), data)
     }
 
     @AfterTest
-    fun cleanup(){
+    fun cleanup() {
         secretService.removeEntry("my-test-entry").muteNoEntry().getOrThrow()
     }
 

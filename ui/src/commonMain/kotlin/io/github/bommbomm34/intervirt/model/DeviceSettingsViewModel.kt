@@ -50,7 +50,7 @@ class DeviceSettingsViewModel(
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
     val computer: ViewDevice.Computer
-        get(){
+        get() {
             check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
             return device
         }
@@ -118,7 +118,7 @@ class DeviceSettingsViewModel(
         appState.openComputerShell = computer
     }
 
-    fun togglePortForwardings(){
+    fun togglePortForwardings() {
         showPortForwardings = !showPortForwardings
     }
 
@@ -132,22 +132,22 @@ class DeviceSettingsViewModel(
         computer.running = false
     }
 
-    fun changeIpv4(ipv4: String) = viewModelScope.launchDialogCatching(appState){
+    fun changeIpv4(ipv4: String) = viewModelScope.launchDialogCatching(appState) {
         computer.ipv4 = ipv4
         deviceManager.setIpv4(computer.device, ipv4).getOrThrow()
     }
 
-    fun changeIpv6(ipv6: String) = viewModelScope.launchDialogCatching(appState){
+    fun changeIpv6(ipv6: String) = viewModelScope.launchDialogCatching(appState) {
         computer.ipv6 = ipv6
         deviceManager.setIpv6(computer.device, ipv6).getOrThrow()
     }
 
-    fun enableInternetAccess(enabled: Boolean) = viewModelScope.launchDialogCatching(appState){
+    fun enableInternetAccess(enabled: Boolean) = viewModelScope.launchDialogCatching(appState) {
         computer.internetEnabled = enabled
         deviceManager.setInternetEnabled(computer.device, enabled).getOrThrow()
     }
 
-    fun openAddPortForwarding(){
+    fun openAddPortForwarding() {
         appState.openDialog(width = 800.dp) {
             AddPortForwardingDialog(
                 onAdd = ::addPortForwarding,
@@ -157,7 +157,7 @@ class DeviceSettingsViewModel(
         }
     }
 
-    fun addPortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState){
+    fun addPortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
         computer.portForwardings.add(portForwarding)
         deviceManager.addPortForwarding(computer.device, portForwarding).getOrThrow()
     }

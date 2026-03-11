@@ -217,7 +217,7 @@ class QemuClient(
         }
     }
 
-    override suspend fun close() = withCatchingContext(Dispatchers.IO){
+    override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Closing QemuClient" }
         isRunningLoopJob?.cancel()
         shutdownAlpine()

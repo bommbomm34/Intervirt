@@ -44,7 +44,7 @@ class GuestManagerTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    if (appEnv.VIRTUAL_AGENT_MODE){
+                    if (appEnv.VIRTUAL_AGENT_MODE) {
                         single<GuestManager> { VirtualGuestManager() }
                     } else {
                         single<AppEnv> { appEnv }
@@ -216,7 +216,7 @@ class GuestManagerTest : KoinTest {
         guestManager.close().getOrThrow()
     }
 
-    private suspend fun addTestContainer(id: String = TEST_CONTAINER_ID, ): ContainerInfo {
+    private suspend fun addTestContainer(id: String = TEST_CONTAINER_ID): ContainerInfo {
         val info = ContainerInfo(
             id = id,
             ipv4 = randomIpv4(),

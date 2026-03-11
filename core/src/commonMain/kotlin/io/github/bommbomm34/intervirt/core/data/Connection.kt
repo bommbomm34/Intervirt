@@ -79,7 +79,8 @@ sealed class DeviceConnection {
         return result
     }
 
-    open fun getDevices(devices: List<Device>): Pair<Device, Device> = Pair(id1.toDevice(devices), id2.toDevice(devices))
+    open fun getDevices(devices: List<Device>): Pair<Device, Device> =
+        Pair(id1.toDevice(devices), id2.toDevice(devices))
 }
 
 infix fun Device.connect(other: Device) = when (this) {

@@ -51,37 +51,37 @@ class HomeTest : KoinTest {
     }
 
     @Test
-    fun shouldChangeDeviceRenderKey(){
+    fun shouldChangeDeviceRenderKey() {
         viewModel.devicesViewRenderKey = 0
         viewModel.onConfChange()
         assertEquals(1, viewModel.devicesViewRenderKey)
     }
 
     @Test
-    fun getZoom(){
+    fun getZoom() {
         assertEquals("1.0x", viewModel.getZoom())
     }
 
     @Test
-    fun shouldOpenSettings(){
+    fun shouldOpenSettings() {
         viewModel.openSettings()
         assertEquals(2, appState.currentScreenIndex)
     }
 
     @Test
-    fun shouldOpenAbout(){
+    fun shouldOpenAbout() {
         viewModel.openAbout()
         assertEquals(3, appState.currentScreenIndex)
     }
 
     @Test
-    fun shouldDismiss(){
+    fun shouldDismiss() {
         viewModel.onDismiss()
         assertEquals(false, viewModel.showOptions)
     }
 
     @AfterTest
-    fun stop(){
+    fun stop() {
         stopKoin()
     }
 }

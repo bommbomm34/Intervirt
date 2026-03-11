@@ -38,12 +38,12 @@ fun ImageInfo(
     onDismiss: () -> Unit,
 ) {
     val sourcesText = buildAnnotatedString {
-        withStyle(SpanStyle(fontWeight = FontWeight.Bold)){
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
             append(stringResource(Res.string.source_of_description))
         }
         append(image.descriptionSource)
         append("\n")
-        withStyle(SpanStyle(fontWeight = FontWeight.Bold)){
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
             append(stringResource(Res.string.source_of_icon))
         }
         append(image.iconSource)

@@ -21,7 +21,7 @@ fun ImageItem(image: Image, onShowImage: () -> Unit) {
         Card(
             onClick = onShowImage,
         ) {
-            Column(Modifier.padding(16.dp)){
+            Column(Modifier.padding(16.dp)) {
                 ImageIcon(image)
                 GeneralSpacer(2.dp)
                 Text(image.toReadableName())

@@ -135,8 +135,8 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
 fun CoroutineScope.initDocker(
     appState: AppState,
     manager: DockerBasedManager,
-    onInitialize: () -> Unit
-){
+    onInitialize: () -> Unit,
+) {
     launchDialogCatching(appState) {
         appState.openDialog {
             ProgressDialog(

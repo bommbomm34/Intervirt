@@ -47,10 +47,12 @@ fun randomIpv4(): String {
     fun rand() = Random.nextInt(256)
     return "192.168.${rand()}.${rand()}"
 }
+
 fun randomIpv6(): String {
     fun rand() = Random.nextInt(65536)
         .toString(16)
         .padZero(4)
+
     fun randFirst() = Random.nextInt(256)
         .toString(16)
         .padZero(2)

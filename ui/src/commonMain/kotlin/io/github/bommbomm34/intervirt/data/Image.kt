@@ -30,7 +30,7 @@ data class Image(
 }
 
 suspend fun HttpClient.getImages(url: String): Result<List<Image>> = runSuspendingCatching {
-    val text = if (url.startsWith("file:///")){
+    val text = if (url.startsWith("file:///")) {
         Files.readString(Path.of(url.substringAfter("file:///")))
     } else get(url).bodyAsText()
     defaultJson.decodeFromString(text)

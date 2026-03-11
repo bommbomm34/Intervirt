@@ -23,7 +23,7 @@ fun ProgressView(
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
     )
     CenterColumn {
         SelectionContainer {

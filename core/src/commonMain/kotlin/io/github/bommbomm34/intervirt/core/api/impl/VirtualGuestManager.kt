@@ -62,7 +62,8 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     override suspend fun disconnect(container: String, network: String): Result<Unit> {
         delay()
         if (!container.exists()) return Result.failure(NotFoundException("Container $container doesn't exist."))
-        networks[network]?.remove(container) ?: return Result.failure(NotFoundException("Network $network doesn't exist."))
+        networks[network]?.remove(container)
+            ?: return Result.failure(NotFoundException("Network $network doesn't exist."))
         return Result.success(Unit)
     }
 

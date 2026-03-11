@@ -21,20 +21,20 @@ class AppEnvTest {
     private val appEnv = getTestAppEnv(settings)
 
     @Test
-    fun shouldNotSaveReallyPersistent(){
+    fun shouldNotSaveReallyPersistent() {
         appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
         val realAppEnv = getAppEnv()
         assertNotEquals("MOCK", realAppEnv.OVERRIDE_DOCKER_HOST)
     }
 
     @Test
-    fun shouldSaveTemporarily(){
+    fun shouldSaveTemporarily() {
         appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
         assertEquals("MOCK", appEnv.OVERRIDE_DOCKER_HOST)
     }
 
     @Test
-    fun shouldSavePersistent(){
+    fun shouldSavePersistent() {
         appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
         val otherAppEnv = getTestAppEnv(settings)
         assertEquals("MOCK", otherAppEnv.OVERRIDE_DOCKER_HOST)
@@ -42,7 +42,7 @@ class AppEnvTest {
     }
 
     @Test
-    fun shouldGetDefault(){
+    fun shouldGetDefault() {
         assertEquals(true, appEnv.DEBUG_ENABLED)
     }
 }

@@ -24,7 +24,7 @@ class SettingsViewModel(
         onChange = { changed = true },
     )
 
-    fun saveChanges(){
+    fun saveChanges() {
         appEnv.flush()
         baseAppEnv.invalidateCache()
         appState.appEnvChangeKey++

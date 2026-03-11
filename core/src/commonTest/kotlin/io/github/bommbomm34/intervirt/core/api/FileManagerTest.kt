@@ -35,14 +35,14 @@ class FileManagerTest : KoinTest {
     private val fileManager: FileManager by inject()
 
     @BeforeTest
-    fun init(){
+    fun init() {
         startKoin {
             modules(
                 module {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
                     single<FileManager>()
-                }
+                },
             )
         }
     }
@@ -61,13 +61,14 @@ class FileManagerTest : KoinTest {
         fileManager.init()
         var finishedSuccessfully = false
         fileManager.downloadFile(DOWNLOAD_URL, "license").collect {
-            when (it){
+            when (it) {
                 is ResultProgress.Result<File> -> {
                     val file = it.result.getOrThrow()
                     assertTrue(file.exists())
                     assertContains(file.readText(), "GNU")
                     finishedSuccessfully = true
                 }
+
                 else -> {}
             }
         }
@@ -86,7 +87,7 @@ class FileManagerTest : KoinTest {
     }
 
     @AfterTest
-    fun tearDown(){
+    fun tearDown() {
         stopKoin()
     }
 }

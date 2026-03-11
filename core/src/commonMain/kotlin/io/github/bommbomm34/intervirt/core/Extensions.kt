@@ -98,7 +98,7 @@ suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress
 fun getAppEnv(
     settings: Settings = PreferencesSettings(Preferences.userRoot()),
     logLevel: LogLevel? = null,
-    custom: AppEnv.() -> Unit = {}
+    custom: AppEnv.() -> Unit = {},
 ) = AppEnv(
     settings = settings,
     override = { System.getenv("INTERVIRT_$it") },
