@@ -8,13 +8,14 @@ package io.github.bommbomm34.intervirt.core.util
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @Serializable
 data class MutexVar<T>(val value: T){
-    val mutex = Mutex()
+    @Transient val mutex = Mutex()
 
     @OptIn(ExperimentalContracts::class)
     suspend inline fun <V> withLock(block: T.() -> V): V {
