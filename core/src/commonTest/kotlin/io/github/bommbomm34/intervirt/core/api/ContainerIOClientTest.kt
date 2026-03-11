@@ -19,6 +19,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import java.nio.file.Path
@@ -49,11 +50,11 @@ class ContainerIOClientTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    singleOf(::DeviceManager)
+                    single<DeviceManager>()
                     single<GuestManager> { VirtualGuestManager() }
-                    singleOf(::QemuClient)
-                    singleOf(::Executor)
-                    singleOf(::FileManager)
+                    single<QemuClient>()
+                    single<Executor>()
+                    single<FileManager>()
                     single { getTestAppEnv() }
                     single { Project() }
                     single { getHttpClient() }

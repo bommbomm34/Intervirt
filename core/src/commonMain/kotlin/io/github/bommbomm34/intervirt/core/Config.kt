@@ -14,6 +14,7 @@ import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
 
 
 const val CURRENT_VERSION = "0.0.1"
@@ -23,8 +24,8 @@ val defaultJson = Json {
 }
 
 val coreModule = module {
-    singleOf(::Executor)
-    singleOf(::Downloader)
+    single<Executor>()
+    single<Downloader>()
     single<GuestManager> {
         if (get<AppEnv>().VIRTUAL_AGENT_MODE) {
             VirtualGuestManager()
@@ -32,9 +33,9 @@ val coreModule = module {
             AgentGuestManager(get(), get())
         }
     }
-    singleOf(::DeviceManager)
-    singleOf(::FileManager)
-    singleOf(::QemuClient)
+    single<DeviceManager>()
+    single<FileManager>()
+    single<QemuClient>()
     single { SecretService("io.github.bommbomm34.intervirt") }
     single { getAppEnv() }
     single { getHttpClient() }

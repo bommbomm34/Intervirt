@@ -41,7 +41,7 @@ class FileManagerTest : KoinTest {
                 module {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
-                    singleOf(::FileManager)
+                    single<FileManager>()
                 }
             )
         }

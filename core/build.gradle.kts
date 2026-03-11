@@ -6,6 +6,7 @@
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.koin.compiler)
 }
 
 group = "io.github.bommbomm34.intervirt"

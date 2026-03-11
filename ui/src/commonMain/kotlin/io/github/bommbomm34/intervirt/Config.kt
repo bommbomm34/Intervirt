@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
 import java.util.*
 
@@ -29,7 +30,7 @@ val AVAILABLE_LANGUAGES = listOf(
 )
 
 val uiModule = module {
-    singleOf(::AppState)
+    single<AppState>()
 
     viewModel<SettingsViewModel>()
     viewModel<DeviceSettingsViewModel>()
