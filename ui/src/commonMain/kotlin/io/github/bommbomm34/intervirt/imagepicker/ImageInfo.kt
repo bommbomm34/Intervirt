@@ -13,10 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.install_os
+import intervirt.ui.generated.resources.source_of_description
+import intervirt.ui.generated.resources.source_of_icon
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -31,6 +37,17 @@ fun ImageInfo(
     onInstall: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val sourcesText = buildAnnotatedString {
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)){
+            append(stringResource(Res.string.source_of_description))
+        }
+        append(image.descriptionSource)
+        append("\n")
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)){
+            append(stringResource(Res.string.source_of_icon))
+        }
+        append(image.iconSource)
+    }
     Overlay(0.8f) {
         AlignedBox(Alignment.TopStart) {
             ImageIcon(image)
@@ -58,7 +75,7 @@ fun ImageInfo(
         AlignedBox(Alignment.BottomStart) {
             SelectionContainer {
                 Text(
-                    text = "Source of description: ${image.descriptionSource}\nSource of icon: ${image.iconSource}",
+                    text = sourcesText,
                     color = Color.Gray,
                 )
             }
