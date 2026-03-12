@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.secret
 
+import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import uniffi.secret.SecretServiceException
 import uniffi.secret.SecretServiceInterface
@@ -29,6 +30,6 @@ class MockSecretService : SecretServiceInterface {
 
 fun getMockSecretService(): SecretService = SecretService(
     serviceName = "mock-secret-service",
-    logLevel = LogLevel.DEBUG,
+    logger = KLogger(SecretService::class, LogLevel.DEBUG),
     service = MockSecretService(),
 )
