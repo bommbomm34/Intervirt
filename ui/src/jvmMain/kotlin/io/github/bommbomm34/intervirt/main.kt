@@ -47,7 +47,6 @@ fun main() = application {
         },
     ) {
         val shutdownHandler = koinInject<ShutdownHandler>()
-        shutdownHandler.crash(Thread.currentThread(), IllegalArgumentException())
         val appEnv = koinInject<AppEnv>()
         val guestManager = koinInject<GuestManager>()
         val httpClient = koinInject<HttpClient>()

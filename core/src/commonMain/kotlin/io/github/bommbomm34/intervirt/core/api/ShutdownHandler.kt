@@ -9,6 +9,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.totalDiskSpace
 import io.github.bommbomm34.intervirt.core.unixTimestamp
 import io.github.bommbomm34.intervirt.core.usableDiskSpace
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ListOutputStream
 import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.logging.getDefaultStream
@@ -18,6 +19,7 @@ import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.writeString
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -31,7 +33,8 @@ class ShutdownHandler(
     private val httpClient: HttpClient,
     private val secretService: SecretService,
 ){
-    private var closed by atomic(false)
+    @VisibleForTesting
+    internal var closed: Atomic<Boolean> = Atomic(false)
 
     /**
      * Every exception thrown in [block] will be reported gracefully to the user via [crash].
@@ -55,8 +58,8 @@ class ShutdownHandler(
      * @see gracefulShutdown
      */
     suspend fun gracefulShutdown() {
-        if (!closed){
-            closed = true
+        if (!closed.get()){
+            closed.set(true)
             deviceManager.close()
             guestManager.close()
             qemuClient.close()
