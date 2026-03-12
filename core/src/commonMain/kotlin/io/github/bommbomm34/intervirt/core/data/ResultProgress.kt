@@ -5,8 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
-import io.github.bommbomm34.intervirt.core.readablePercentage
-
+import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
 
 sealed class ResultProgress<T> {
     abstract val percentage: Float

@@ -10,9 +10,9 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.addNetworkIfNotExists
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.DeprecatedException
-import io.github.bommbomm34.intervirt.core.flowCatching
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.*
+import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 

@@ -11,11 +11,11 @@ import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.atomic
-import io.github.bommbomm34.intervirt.core.util.getLogger
-import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.vinceglb.filekit.absolutePath
 
 import io.ktor.network.selector.*

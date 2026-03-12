@@ -17,11 +17,11 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsServerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.initialize
 import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.dns.server.AddDnsRecordView
-import io.github.bommbomm34.intervirt.rememberManager
+import io.github.bommbomm34.intervirt.util.ext.initialize
+import io.github.bommbomm34.intervirt.util.ext.rememberManager
 import org.koin.compose.koinInject
 
 @Composable

@@ -3,12 +3,11 @@
  * Licensed under the GNU General Public License 3.
  */
 
-package io.github.bommbomm34.intervirt.core.util
+package io.github.bommbomm34.intervirt.core.util.ext
 
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.util.ListOutputStream
 import io.github.bommbomm34.intervirt.logging.KLogger
-import io.github.bommbomm34.intervirt.logging.LogLevel
-import io.github.bommbomm34.intervirt.logging.OutputStream
 import io.github.bommbomm34.intervirt.logging.getDefaultStream
 import kotlin.reflect.KClass
 
@@ -26,4 +25,4 @@ fun AppEnv.getLogger(name: String) = KLogger(
     streams = getDefaultStreams()
 )
 
-fun getDefaultStreams() = arrayOf(ListOutputStream.DEFAULT, getDefaultStream())
+fun getDefaultStreams() = arrayOf(ListOutputStream.Companion.DEFAULT, getDefaultStream())

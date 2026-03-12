@@ -11,8 +11,8 @@ import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
-import io.github.bommbomm34.intervirt.core.util.getLogger
-import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

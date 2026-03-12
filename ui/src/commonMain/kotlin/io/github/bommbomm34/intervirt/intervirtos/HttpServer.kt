@@ -15,10 +15,10 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.initialize
 import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.intervirtos.http.VirtualHostsManager
-import io.github.bommbomm34.intervirt.rememberManager
+import io.github.bommbomm34.intervirt.util.ext.initialize
+import io.github.bommbomm34.intervirt.util.ext.rememberManager
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

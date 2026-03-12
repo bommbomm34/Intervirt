@@ -5,12 +5,12 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import io.github.bommbomm34.intervirt.core.addFirst
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.addFirst
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 
 
 // Simple wrapper for systemd

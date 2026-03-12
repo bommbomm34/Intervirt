@@ -11,9 +11,10 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.bommbomm34.intervirt.core.toReadableImage
 import io.github.bommbomm34.intervirt.core.util.*
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.ext.toReadableImage
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random

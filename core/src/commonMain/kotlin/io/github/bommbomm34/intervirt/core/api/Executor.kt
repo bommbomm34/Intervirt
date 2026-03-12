@@ -8,7 +8,7 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.exists

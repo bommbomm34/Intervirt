@@ -8,8 +8,8 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.agent.Network
-import io.github.bommbomm34.intervirt.core.recoverAlreadyPerformed
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.ext.recoverAlreadyPerformed
 import kotlinx.coroutines.flow.Flow
 
 interface GuestManager : AsyncCloseable {

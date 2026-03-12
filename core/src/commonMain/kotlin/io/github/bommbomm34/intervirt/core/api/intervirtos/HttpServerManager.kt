@@ -11,8 +11,8 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.bommbomm34.intervirt.core.util.getLogger
-import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 
 import kotlinx.coroutines.Dispatchers
 import kotlin.io.path.writeText

@@ -19,7 +19,6 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
-import io.github.bommbomm34.intervirt.rememberManager
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel

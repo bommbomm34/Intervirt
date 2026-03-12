@@ -22,7 +22,7 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.rememberProxyManager
+import io.github.bommbomm34.intervirt.util.ext.rememberProxyManager
 import io.github.kdroidfilter.webview.setting.ProxyConfig
 import io.github.kdroidfilter.webview.web.WebView
 import io.github.kdroidfilter.webview.web.rememberWebViewNavigator

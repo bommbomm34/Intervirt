@@ -18,7 +18,7 @@ import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.components.textfields.AddressTextField
 import io.github.bommbomm34.intervirt.components.textfields.PasswordTextField
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
-import io.github.bommbomm34.intervirt.core.parseAddress
+import io.github.bommbomm34.intervirt.core.util.ext.parseAddress
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

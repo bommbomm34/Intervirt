@@ -9,16 +9,14 @@ import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.patch
-import io.github.bommbomm34.intervirt.core.toJavaPath
-import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.patch
+import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.vinceglb.filekit.createDirectories
-import io.github.vinceglb.filekit.toKotlinxIoPath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.deleteRecursively
 
 class VirtualContainerIOClient(
     override val id: String,

@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.catchTimeout
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
@@ -15,10 +14,11 @@ import io.github.bommbomm34.intervirt.core.data.agent.RequestBody
 import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
 import io.github.bommbomm34.intervirt.core.data.agent.commandBody
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
-import io.github.bommbomm34.intervirt.core.result
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.bommbomm34.intervirt.core.util.getLogger
-import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.catchTimeout
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.result
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*

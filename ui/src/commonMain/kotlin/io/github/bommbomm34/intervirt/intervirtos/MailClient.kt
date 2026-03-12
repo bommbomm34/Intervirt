@@ -17,24 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
-import io.github.bommbomm34.intervirt.components.AlignedBox
-import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
-import io.github.bommbomm34.intervirt.components.CenterColumn
-import io.github.bommbomm34.intervirt.components.GeneralIcon
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.*
 import io.github.bommbomm34.intervirt.components.buttons.SendButton
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailListView
 import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
-import io.github.bommbomm34.intervirt.rememberManager
-import io.github.bommbomm34.intervirt.rememberProxyManager
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

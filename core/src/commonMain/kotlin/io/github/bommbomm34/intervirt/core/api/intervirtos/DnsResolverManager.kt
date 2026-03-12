@@ -6,13 +6,12 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
-import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 
 
 class DnsResolverManager(

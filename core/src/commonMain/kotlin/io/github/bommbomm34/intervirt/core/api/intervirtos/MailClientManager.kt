@@ -14,10 +14,10 @@ import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
-import io.github.bommbomm34.intervirt.core.parseMailAddress
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.bommbomm34.intervirt.secret.SecretService
 
 import jakarta.mail.*

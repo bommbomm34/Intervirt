@@ -20,12 +20,12 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.syncProject
-import io.github.bommbomm34.intervirt.core.roundBy
+import io.github.bommbomm34.intervirt.core.util.ext.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.UpdaterState
 import io.github.bommbomm34.intervirt.home.Updater
-import io.github.bommbomm34.intervirt.loadConf
-import io.github.bommbomm34.intervirt.writeConf
+import io.github.bommbomm34.intervirt.util.ext.loadConf
+import io.github.bommbomm34.intervirt.util.ext.writeConf
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker

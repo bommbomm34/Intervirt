@@ -8,8 +8,8 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.DownloadException
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.list
 

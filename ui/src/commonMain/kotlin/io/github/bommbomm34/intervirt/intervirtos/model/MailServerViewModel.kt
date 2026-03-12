@@ -21,8 +21,8 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.initDocker
 import io.github.bommbomm34.intervirt.intervirtos.mail.server.AddMailUserView
+import io.github.bommbomm34.intervirt.util.ext.initDocker
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 

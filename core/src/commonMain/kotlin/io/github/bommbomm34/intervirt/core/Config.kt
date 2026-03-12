@@ -10,10 +10,9 @@ import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.serialization.json.Json
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 

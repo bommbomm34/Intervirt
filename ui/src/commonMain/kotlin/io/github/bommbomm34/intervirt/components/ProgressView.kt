@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.core.readablePercentage
+import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

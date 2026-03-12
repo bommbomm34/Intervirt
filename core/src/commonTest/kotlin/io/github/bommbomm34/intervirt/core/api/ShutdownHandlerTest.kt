@@ -10,7 +10,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin

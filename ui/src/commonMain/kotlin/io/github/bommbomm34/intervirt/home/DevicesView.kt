@@ -39,7 +39,7 @@ import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.toPx
+import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import kotlin.math.sqrt

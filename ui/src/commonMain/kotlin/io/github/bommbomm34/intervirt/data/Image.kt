@@ -6,8 +6,8 @@
 package io.github.bommbomm34.intervirt.data
 
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.toReadableImage
-import io.github.bommbomm34.intervirt.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.ext.toReadableImage
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

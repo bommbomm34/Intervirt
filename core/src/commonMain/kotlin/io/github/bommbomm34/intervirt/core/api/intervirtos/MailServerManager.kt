@@ -12,9 +12,9 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
-import io.github.bommbomm34.intervirt.core.parseMailAddress
-import io.github.bommbomm34.intervirt.core.runSuspendingCatching
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
+import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 
 
 class MailServerManager(

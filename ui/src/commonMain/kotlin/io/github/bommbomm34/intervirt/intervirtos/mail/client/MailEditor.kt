@@ -18,7 +18,7 @@ import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.SendButton
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
-import io.github.bommbomm34.intervirt.core.parseMailAddress
+import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

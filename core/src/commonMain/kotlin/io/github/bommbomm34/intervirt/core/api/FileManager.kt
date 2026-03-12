@@ -5,13 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import io.github.bommbomm34.intervirt.core.createFile
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.exceptions.ZipExtractionException
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.createFile
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.vinceglb.filekit.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -108,7 +108,7 @@ class FileManager(
     }
 }
 
-suspend fun PlatformFile.createFileInDirectory(name: String, directory: Boolean = false): PlatformFile {
+private suspend fun PlatformFile.createFileInDirectory(name: String, directory: Boolean = false): PlatformFile {
     if (!isDirectory()) error("File ${absolutePath()} must be a directory!")
     val file = this / name
     if (file.exists()) return file

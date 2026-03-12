@@ -15,7 +15,6 @@ import androidx.lifecycle.viewModelScope
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.external_port_already_bound
 import intervirt.ui.generated.resources.internal_port_already_exposed
-import io.github.bommbomm34.intervirt.canPortBind
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
@@ -25,9 +24,10 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.util.ext.canPortBind
 
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.openFilePicker

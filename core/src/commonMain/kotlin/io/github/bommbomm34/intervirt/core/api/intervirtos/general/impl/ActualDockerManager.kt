@@ -21,9 +21,9 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
-import io.github.bommbomm34.intervirt.core.readablePercentage
-import io.github.bommbomm34.intervirt.core.util.getLogger
-import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -29,6 +29,8 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
+import io.github.bommbomm34.intervirt.util.ext.loadConf
+import io.github.bommbomm34.intervirt.util.ext.writeConf
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.exists
 import io.ktor.client.*
