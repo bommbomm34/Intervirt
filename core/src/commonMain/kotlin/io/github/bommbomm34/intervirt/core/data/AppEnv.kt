@@ -232,7 +232,7 @@ private class EnvDelegateProvider<T : Any, R>(
             }
 
             fun flush() {
-                settings.encodeValue(clazzSerializer, name, value!!)
+                value?.let { settings.encodeValue(clazzSerializer, name, it) }
             }
 
             fun invalidateCache() {
