@@ -150,7 +150,7 @@ fun String.validateIpv6(): Boolean {
         } else {
             emptyOctets = 0
             // Is last chunk an IPv4 address?
-            if (index == octets.size - 1 && octet!!.contains(".")) {
+            if (index == octets.size - 1 && octet.contains(".")) {
                 if (!octet.validateIpv4()) {
                     return false
                 }

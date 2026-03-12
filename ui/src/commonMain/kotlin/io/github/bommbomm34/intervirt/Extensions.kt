@@ -38,11 +38,14 @@ import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
+import io.github.vinceglb.filekit.readString
+import io.github.vinceglb.filekit.writeString
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.internal.writeJson
 import org.koin.compose.koinInject
 import java.awt.datatransfer.StringSelection
 import java.io.File
@@ -179,15 +182,15 @@ fun rememberFileSaverLauncher(onResult: (PlatformFile?) -> Unit) = rememberFileS
     onResult = onResult,
 )
 
-fun File.writeConf(project: Project) = writeText(defaultJson.encodeToString(project))
+suspend fun PlatformFile.writeConf(project: Project) = writeString(defaultJson.encodeToString(project))
 
-suspend fun File.loadConf(
+suspend fun PlatformFile.loadConf(
     project: Project,
     appState: AppState,
     guestManager: GuestManager,
     onComplete: () -> Unit = {},
 ) {
-    val fileContent = readText()
+    val fileContent = readString()
     val newConfiguration = Json.decodeFromString<Project>(fileContent)
     project.update(newConfiguration)
     val flow = guestManager.syncProject(project).onCompletion { onComplete() }

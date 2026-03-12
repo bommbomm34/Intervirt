@@ -10,6 +10,8 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.core.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.vinceglb.filekit.delete
+import io.github.vinceglb.filekit.list
 
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -103,7 +105,7 @@ class Downloader(
         if (!appEnv.QEMU_INSTALLED || update) {
             withContext(Dispatchers.IO) {
                 // Wipe previous installation if available
-                fileManager.getFile("qemu").listFiles().forEach { it.delete() }
+                fileManager.getFile("qemu").list().forEach { it.delete() }
                 // Invalidate previous installation
                 appEnv.QEMU_INSTALLED = false
                 // Install fresh QEMU

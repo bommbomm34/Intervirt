@@ -10,7 +10,10 @@ import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.patch
+import io.github.bommbomm34.intervirt.core.toJavaPath
 import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.vinceglb.filekit.createDirectories
+import io.github.vinceglb.filekit.toKotlinxIoPath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
@@ -23,7 +26,7 @@ class VirtualContainerIOClient(
     private val executor: Executor,
     fileManager: FileManager,
 ) : ContainerIOClient {
-    private val _virtualRoot = lazy { fileManager.getFile("virtual/$id").apply { mkdirs() }.toPath() }
+    private val _virtualRoot = lazy { fileManager.getFile("virtual/$id").apply { createDirectories() }.toJavaPath() }
     private val virtualRoot by _virtualRoot
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =
@@ -33,7 +36,7 @@ class VirtualContainerIOClient(
 
     @OptIn(ExperimentalPathApi::class)
     override suspend fun close(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
-        if (wipeOnClose && _virtualRoot.isInitialized()) virtualRoot.deleteRecursively()
+        if (wipeOnClose && _virtualRoot.isInitialized()) virtualRoot
     }
 
     private fun String.normalize() = if (startsWith("/")) substringAfter("/") else this

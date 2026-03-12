@@ -16,19 +16,22 @@ import intervirt.ui.generated.resources.folder
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
 import org.jetbrains.compose.resources.stringResource
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.name
 
 private val headers = listOf("", "Filename")
 
 @Composable
 fun FilesTable(
-    files: List<File>,
+    files: List<Path>,
     selectable: Boolean,
-    onClick: (File) -> Unit,
+    onClick: (Path) -> Unit,
 ) = ClickableTable(
     headers = headers,
     data = files.map { file ->
-        val isFile = file.isFile
+        val isFile = file.isRegularFile()
         listOf(
             {
                 // Icon
@@ -45,5 +48,5 @@ fun FilesTable(
     },
 ) {
     val file = files[it]
-    if (selectable || file.isDirectory) onClick(files[it])
+    if (selectable || file.isDirectory()) onClick(files[it])
 }

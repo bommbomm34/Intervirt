@@ -5,13 +5,14 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.createFile
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.exceptions.ZipExtractionException
 import io.github.bommbomm34.intervirt.core.util.getLogger
-
+import io.github.vinceglb.filekit.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -23,9 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.io.asSink
 import net.lingala.zip4j.ZipFile
-import java.io.File
 import java.util.zip.ZipException
 
 class FileManager(
@@ -35,24 +34,24 @@ class FileManager(
     private val logger = appEnv.getLogger(FileManager::class)
     private val dataDir = appEnv.DATA_DIR
 
-    suspend fun init() = withContext(Dispatchers.IO) {
+    suspend fun init() {
         logger.debug { "Initializing FileManager" }
-        dataDir.mkdir()
+        dataDir.createDirectories()
         dataDir.createFileInDirectory("qemu", true)
         dataDir.createFileInDirectory("disk", true)
         dataDir.createFileInDirectory("cache", true)
         logger.debug { "Initialized FileManager" }
     }
 
-    fun getFile(name: String) = File(dataDir.absolutePath + File.separator + name)
+    fun getFile(name: String) = dataDir / name
 
     // Based on: https://ktor.io/docs/client-responses.html#streaming
-    fun downloadFile(url: String, name: String, destination: File = getFile("cache")): Flow<ResultProgress<File>> =
+    fun downloadFile(url: String, name: String, destination: PlatformFile = getFile("cache")): Flow<ResultProgress<PlatformFile>> =
         flow {
             logger.debug { "Downloading file $url as $name" }
             val bufferSize: Long = 1024 * 1024
-            val file = File(destination.absolutePath + "/" + name)
-            val stream = file.outputStream().asSink()
+            val file = destination / name
+            val stream = file.sink()
 
             client.prepareGet(url).execute { response ->
                 if (response.status != HttpStatusCode.OK) {
@@ -86,20 +85,20 @@ class FileManager(
             }
         }.flowOn(Dispatchers.IO)
 
-    fun getQemuFile(): File {
+    fun getQemuFile(): PlatformFile {
         return when (getOS()) {
             OS.WINDOWS -> getFile("qemu/qemu-system-x86_64")
             OS.LINUX -> getFile("qemu/usr/local/bin/qemu-system-x86_64")
         }
     }
 
-    fun getAlpineDisk(): File = getFile("disk/alpine-linux.qcow2")
+    fun getAlpineDisk(): PlatformFile = getFile("disk/alpine-linux.qcow2")
 
-    suspend fun extractZip(file: File, destination: File) = withContext(Dispatchers.IO) {
+    suspend fun extractZip(file: PlatformFile, destination: PlatformFile) = withContext(Dispatchers.IO) {
         try {
             logger.debug { "Extracting ${file.name}" }
-            val zip = ZipFile(file)
-            zip.extractAll(destination.absolutePath)
+            val zip = ZipFile(file.file)
+            zip.extractAll(destination.absolutePath())
             logger.info { "Extracted zip ${file.name}" }
             Result.success(Unit)
         } catch (e: ZipException) {
@@ -109,9 +108,9 @@ class FileManager(
     }
 }
 
-fun File.createFileInDirectory(name: String, directory: Boolean = false): File {
-    if (!isDirectory) error("File $absolutePath must be a directory!")
-    val file = File(absolutePath + File.separator + name)
+suspend fun PlatformFile.createFileInDirectory(name: String, directory: Boolean = false): PlatformFile {
+    if (!isDirectory()) error("File ${absolutePath()} must be a directory!")
+    val file = this / name
     if (file.exists()) return file
-    return file.apply { if (directory) mkdir() else createNewFile() }
+    return file.apply { if (directory) createDirectories() else createFile() }
 }

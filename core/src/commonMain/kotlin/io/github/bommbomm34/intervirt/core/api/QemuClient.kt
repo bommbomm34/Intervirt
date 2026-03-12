@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.core.withCatchingContext
+import io.github.vinceglb.filekit.absolutePath
 
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -42,12 +43,12 @@ class QemuClient(
     private val onRunningChangeListeners = mutableListOf<(Boolean) -> Unit>()
 
     private val startAlpineVMCommands = buildList {
-        add(fileManager.getQemuFile().absolutePath)
+        add(fileManager.getQemuFile().absolutePath())
         if (appEnv.VM_ENABLE_KVM) add("-enable-kvm")
         addAll(
             listOf(
                 "-smp", appEnv.VM_CPU.toString(),
-                "-drive", "file=${fileManager.getAlpineDisk().absolutePath}",
+                "-drive", "file=${fileManager.getAlpineDisk().absolutePath()}",
                 "-m", appEnv.VM_RAM.toString(),
                 "-netdev", "user,id=net0,hostfwd=tcp:127.0.0.1:${appEnv.AGENT_PORT}-:55436,dns=9.9.9.9",
                 "-qmp", "tcp:127.0.0.1:${appEnv.QEMU_MONITOR_PORT},server,nowait",
@@ -60,7 +61,7 @@ class QemuClient(
     suspend fun bootAlpine(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Booting Alpine Linux" }
         val builder = ProcessBuilder(*startAlpineVMCommands.toTypedArray())
-        builder.directory(fileManager.getFile("qemu"))
+        builder.directory(fileManager.getFile("qemu").file)
         builder.redirectErrorStream(true)
         currentProcess = builder.start()
         BufferedReader(InputStreamReader(currentProcess.inputStream)).use { tempReader ->

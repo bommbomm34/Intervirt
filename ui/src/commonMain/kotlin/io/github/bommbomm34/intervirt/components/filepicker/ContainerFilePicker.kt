@@ -18,7 +18,10 @@ import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.rememberLogger
+import io.github.vinceglb.filekit.PlatformFile
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.isDirectory
 
 @Composable
 fun ContainerFilePicker(
@@ -27,7 +30,9 @@ fun ContainerFilePicker(
     onPick: (Path?) -> Unit,
 ) {
     var currentPath by remember { mutableStateOf(ioClient.getPath("/")) }
-    val files = currentPath.toFile().listFiles().toList()
+    val files = currentPath.toFile()
+        .listFiles()
+        .map { it.toPath() }
     val logger = rememberLogger("ContainerFilePicker")
     Column(
         modifier = Modifier
@@ -51,9 +56,9 @@ fun ContainerFilePicker(
             files = files,
             selectable = saveFilename == null,
         ) {
-            if (it.isDirectory) currentPath = it.toPath() else {
-                logger.debug { "Selected ${it.absolutePath}" }
-                onPick(it.toPath())
+            if (it.isDirectory()) currentPath = it else {
+                logger.debug { "Selected ${it.absolutePathString()}" }
+                onPick(it)
             }
         }
         saveFilename?.let { default ->

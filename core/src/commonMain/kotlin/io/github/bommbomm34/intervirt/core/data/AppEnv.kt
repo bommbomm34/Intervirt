@@ -12,6 +12,8 @@ import com.russhwolf.settings.serialization.encodeValue
 import io.github.bommbomm34.intervirt.core.toPrimitive
 import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.absolutePath
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.File
 import java.util.*
@@ -54,10 +56,10 @@ data class AppEnv(
 
     var VM_ENABLE_KVM: Boolean by delegate(false)
 
-    var DATA_DIR: File by delegate<String, File>(
+    var DATA_DIR: PlatformFile by delegate(
         default = "${System.getProperty("user.home")}${File.separator}Intervirt",
-        serializer = { it.absolutePath },
-        deserializer = { File(it) },
+        serializer = { it.absolutePath() },
+        deserializer = { PlatformFile(it) },
     )
 
     var DARK_MODE: Boolean? by delegate(

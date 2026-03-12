@@ -33,6 +33,7 @@ import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.exists
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource

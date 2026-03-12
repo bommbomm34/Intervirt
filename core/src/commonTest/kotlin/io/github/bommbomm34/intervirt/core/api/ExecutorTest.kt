@@ -9,8 +9,9 @@ import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.test.runTest
-import java.io.File
+import java.nio.file.Paths
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -32,8 +33,8 @@ class ExecutorTest {
     @Test
     fun shouldRunSuccessfulCommandOnHostWithWorkingFolder() = runTest {
         val testFolder = when (getOS()) {
-            OS.WINDOWS -> File("C:\\Windows\\System32\\drivers\\etc\\")
-            OS.LINUX -> File("/etc/")
+            OS.WINDOWS -> PlatformFile("C:\\Windows\\System32\\drivers\\etc\\")
+            OS.LINUX -> PlatformFile("/etc/")
         }
 
         val (_, status) = executor

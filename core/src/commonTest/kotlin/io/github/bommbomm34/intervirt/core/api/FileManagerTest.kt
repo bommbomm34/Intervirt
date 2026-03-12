@@ -9,24 +9,20 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.toList
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.exists
+import io.github.vinceglb.filekit.list
+import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.readString
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import java.io.File
-import kotlin.getValue
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 const val DOWNLOAD_URL = "https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/LICENSE"
 
@@ -50,7 +46,7 @@ class FileManagerTest : KoinTest {
     @Test
     fun shouldInitSuccessfully() = runTest {
         fileManager.init()
-        val files = appEnv.DATA_DIR.listFiles().map { it.name }
+        val files = appEnv.DATA_DIR.list().map { it.name }
         assertContains(files, "qemu")
         assertContains(files, "disk")
         assertContains(files, "cache")
@@ -62,10 +58,10 @@ class FileManagerTest : KoinTest {
         var finishedSuccessfully = false
         fileManager.downloadFile(DOWNLOAD_URL, "license").collect {
             when (it) {
-                is ResultProgress.Result<File> -> {
+                is ResultProgress.Result<PlatformFile> -> {
                     val file = it.result.getOrThrow()
                     assertTrue(file.exists())
-                    assertContains(file.readText(), "GNU")
+                    assertContains(file.readString(), "GNU")
                     finishedSuccessfully = true
                 }
 
@@ -78,12 +74,12 @@ class FileManagerTest : KoinTest {
     @Test
     fun shouldExtractZip() = runTest {
         val tempFolder = fileManager.getFile("cache/temp-folder")
-        val file = File(javaClass.getResource("/hello.zip")!!.file)
+        val file = PlatformFile(File(javaClass.getResource("/hello.zip")!!.file))
         fileManager.extractZip(file, tempFolder)
-        val files = tempFolder.listFiles()
-        val hello: File? = files.firstOrNull { it.name == "hello.txt" }
+        val files = tempFolder.list()
+        val hello: PlatformFile? = files.firstOrNull { it.name == "hello.txt" }
         assertNotNull(hello)
-        assertContains(hello.readText(), "Hello World")
+        assertContains(hello.readString(), "Hello World")
     }
 
     @AfterTest

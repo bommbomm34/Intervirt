@@ -18,6 +18,8 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.bommbomm34.intervirt.secret.SecretService
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.write
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -30,8 +32,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.prefs.Preferences
 import kotlin.coroutines.CoroutineContext
+import kotlin.io.path.absolutePathString
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -167,5 +171,9 @@ fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings, LogL
     DEBUG_ENABLED = true
     VIRTUAL_AGENT_MODE = System.getenv("INTERVIRT_TEST_VIRTUAL_AGENT_MODE")?.toBoolean() ?: true
     VIRTUAL_CONTAINER_IO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true
-    DATA_DIR = Files.createTempDirectory("intervirt-test").toFile()
+    DATA_DIR = PlatformFile(Files.createTempDirectory("intervirt-test").absolutePathString())
 }
+
+suspend fun PlatformFile.createFile() = write(byteArrayOf(0))
+
+fun PlatformFile.toJavaPath() = file.toPath()

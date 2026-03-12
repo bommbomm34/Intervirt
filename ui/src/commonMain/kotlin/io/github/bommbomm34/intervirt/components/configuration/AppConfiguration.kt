@@ -14,6 +14,7 @@ import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.state
 import io.github.bommbomm34.intervirt.isDarkMode
+import io.github.vinceglb.filekit.absolutePath
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -39,8 +40,8 @@ fun AppConfiguration(appEnv: AppEnv) {
         FilePicker(
             label = stringResource(Res.string.intervirt_folder),
             directory = true,
-            defaultPath = dataDir.absolutePath,
-        ) { appEnv.DATA_DIR = it.file }
+            defaultPath = dataDir.absolutePath(),
+        ) { appEnv.DATA_DIR = it }
         GeneralSpacer()
         NamedCheckbox(
             checked = appEnv.isDarkMode(),

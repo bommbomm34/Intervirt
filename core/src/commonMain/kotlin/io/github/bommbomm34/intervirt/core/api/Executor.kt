@@ -9,24 +9,26 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.getLogger
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.absolutePath
+import io.github.vinceglb.filekit.exists
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.io.File
 
 open class Executor(appEnv: AppEnv) {
     private val logger = appEnv.getLogger(Executor::class)
 
-    open fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> =
+    open fun runCommandOnHost(workingFolder: PlatformFile?, commands: List<String>): Flow<CommandStatus> =
         flow {
             require(
                 workingFolder?.exists() ?: true,
-            ) { "Working folder does not exist: ${workingFolder!!.absolutePath}" }
+            ) { "Working folder does not exist: ${workingFolder!!.absolutePath()}" }
             val builder = ProcessBuilder(commands)
-            workingFolder?.let { builder.directory(it) }
+            workingFolder?.let { builder.directory(it.file) }
             builder.redirectErrorStream()
             logger.info { "Running '${commands.joinToString(" ")}' on host" }
             val process = builder.start()

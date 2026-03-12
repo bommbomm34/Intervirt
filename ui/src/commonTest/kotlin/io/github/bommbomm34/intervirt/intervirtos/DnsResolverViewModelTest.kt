@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -30,7 +31,6 @@ import org.koin.plugin.module.dsl.viewModel
 import org.koin.test.KoinTest
 import org.koin.test.get
 import org.koin.test.inject
-import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -110,7 +110,7 @@ class DnsResolverViewModelTest : KoinTest {
 }
 
 class MockExecutor(appEnv: AppEnv) : Executor(appEnv) {
-    override fun runCommandOnHost(workingFolder: File?, commands: List<String>): Flow<CommandStatus> = flow {
+    override fun runCommandOnHost(workingFolder: PlatformFile?, commands: List<String>): Flow<CommandStatus> = flow {
         val text = when {
             commands.contains("A") -> LOOKUP_DNS_A
             commands.contains("AAAA") -> LOOKUP_DNS_AAAA
