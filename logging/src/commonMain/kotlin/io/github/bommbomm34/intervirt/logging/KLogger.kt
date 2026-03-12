@@ -31,12 +31,15 @@ private const val ANSI_RESET = "\u001B[0m"
 class KLogger(
     val name: String,
     val level: LogLevel,
-    private val stream: OutputStream = getDefaultStream(),
+    vararg streams: OutputStream,
 ) {
+    private val streams = streams.ifEmpty { arrayOf(getDefaultStream()) }
+
     constructor(
         name: KClass<*>,
         level: LogLevel,
-    ) : this(name.simpleName ?: "", level)
+        vararg streams: OutputStream,
+    ) : this(name.simpleName ?: "", level, *streams)
 
     fun trace(block: Output) {
         if (level.priority == LogLevel.TRACE.priority) {
@@ -77,11 +80,17 @@ class KLogger(
         val time = Clock.System.now()
             .toLocalDateTime(TimeZone.currentSystemDefault())
             .format(ISO_8601_FORMAT)
-        val output = "$time [$prefix] $name - ${toString()}".tryColor(color)
-        if (err) stream.printlnErr(output) else stream.println(output)
+        val output = "$time [$prefix] $name - ${toString()}"
+        if (err) output.printlnErr(color) else output.println(color)
     }
 
-    private fun String.tryColor(color: String) = if (stream.colorSupported) "$color$this$ANSI_RESET" else this
+    private fun String.println(color: String) =
+        streams.forEach { it.println(this.tryColor(color, it.colorSupported)) }
+
+    private fun String.printlnErr(color: String) =
+        streams.forEach { it.printlnErr(this.tryColor(color, it.colorSupported)) }
+
+    private fun String.tryColor(color: String, colorSupported: Boolean) = if (colorSupported) "$color$this$ANSI_RESET" else this
 }
 
 private typealias Output = () -> Any?

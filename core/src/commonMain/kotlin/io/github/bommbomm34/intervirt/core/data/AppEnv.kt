@@ -10,16 +10,22 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.serialization.decodeValue
 import com.russhwolf.settings.serialization.encodeValue
 import io.github.bommbomm34.intervirt.core.toPrimitive
+import io.github.bommbomm34.intervirt.core.util.atomic
+import io.github.bommbomm34.intervirt.core.util.getDefaultStreams
 import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.json.JsonArray.Companion.serializer
+import kotlinx.serialization.serializer
 import java.io.File
 import java.util.*
-import kotlin.concurrent.atomics.AtomicReference
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 @Suppress("PropertyName")
@@ -31,14 +37,13 @@ data class AppEnv(
     private val logLevel: LogLevel? = null,
     private val custom: AppEnv.() -> Unit = {},
 ) {
-    private val logger = KLogger("AppEnv", logLevel ?: getLogLevel())
+    private val logger = KLogger(AppEnv::class, logLevel ?: getLogLevel(), *getDefaultStreams())
     private val defaultQemuZipUrl = when (getOS()) {
         OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
         OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
     }
-    private val flushers = mutableSetOf<() -> Unit>()
-    private val onChanges = mutableMapOf<String, () -> Unit>()
-    private val cacheInvalidators = mutableSetOf<() -> Unit>()
+    private val onChanges = ConcurrentHashMap<String, () -> Unit>()
+    private val properties = mutableListOf<EnvProperty<*>>()
 
     var DEBUG_ENABLED: Boolean by delegate(false)
 
@@ -139,67 +144,13 @@ data class AppEnv(
         custom()
     }
 
-    fun flush() = flushers.forEach { it() }
+    fun flush() = properties.forEach { it.flush() }
 
     fun addOnChange(name: String, block: () -> Unit) = onChanges.put(name, block)
 
-    fun invalidateCache() = cacheInvalidators.forEach { it() }
+    fun invalidateCache() = properties.forEach { it.invalidateCache() }
 
-    @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class, ExperimentalAtomicApi::class)
-    private inline fun <reified T : Any, R> delegate(
-        default: T,
-        crossinline serializer: (R) -> T,
-        crossinline deserializer: (T) -> R,
-    ): ReadWriteProperty<AppEnv, R> =
-        object : ReadWriteProperty<AppEnv, R> {
-            private var name: String? = null
-            private var value: AtomicReference<T?> = AtomicReference(null)
-
-            init {
-                flushers.add(::flush)
-                cacheInvalidators.add(::invalidateCache)
-            }
-
-            override operator fun getValue(thisRef: AppEnv, property: KProperty<*>): R {
-                name = property.name
-                if (value.load() == null) value.store(getVar(property.name))
-                return deserializer(value.load()!!)
-            }
-
-            override operator fun setValue(thisRef: AppEnv, property: KProperty<*>, value: R) {
-                name = property.name
-                logger.debug { "Setting ${property.name} to $value" }
-                val serialized = serializer(value)
-                this.value.store(serialized)
-                if (autoFlush) flush()
-                onChange()
-                onChanges[name]?.invoke()
-            }
-
-            fun flush() = name?.let {
-                settings.encodeValue(
-                    key = it,
-                    value = value.load(),
-                )
-            }
-
-            fun invalidateCache() {
-                value.store(null)
-            }
-
-            private fun getVar(name: String): T {
-                return override(name)?.toPrimitive() ?: settings.decodeValue(
-                    key = name,
-                    defaultValue = default,
-                )
-            }
-        }
-
-    private inline fun <reified T : Any> delegate(default: T) = delegate(
-        default = default,
-        serializer = { it },
-        deserializer = { it },
-    )
+    override fun toString(): String = properties.joinToString("\n")
 
     private fun getLogLevel(): LogLevel {
         val severity = System.getenv("INTERVIRT_LOG_LEVEL")
@@ -207,4 +158,108 @@ data class AppEnv(
             ?: LogLevel.ERROR
         return severity
     }
+
+    private inline fun <reified T : Any, R> delegate(
+        default: T,
+        noinline serializer: (R) -> T,
+        noinline deserializer: (T) -> R,
+    ) = EnvDelegateProvider(
+        logger = logger,
+        autoFlush = autoFlush,
+        onChange = {
+            onChange()
+            onChanges[it]?.invoke()
+        },
+        settings = settings,
+        override = override,
+        addProperty = properties::add,
+        default = default,
+        serializer = serializer,
+        deserializer = deserializer,
+        tClass = T::class,
+    )
+
+    private inline fun <reified T : Any> delegate(default: T) = delegate(
+        default = default,
+        serializer = { it },
+        deserializer = { it },
+    )
+
+}
+
+private class EnvDelegateProvider<T : Any, R>(
+    private val logger: KLogger,
+    private val autoFlush: Boolean = true,
+    private val onChange: (String) -> Unit,
+    private val settings: Settings,
+    private val override: (String) -> String?,
+    private val addProperty: (EnvProperty<R>) -> Unit,
+    private val default: T,
+    private val serializer: (R) -> T,
+    private val deserializer: (T) -> R,
+    private val tClass: KClass<T>,
+) {
+    @OptIn(InternalSerializationApi::class)
+    val clazzSerializer = tClass.serializer()
+
+    @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class, ExperimentalAtomicApi::class)
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): ReadWriteProperty<AppEnv, R> {
+        val name = property.name
+        return object : ReadWriteProperty<AppEnv, R> {
+            private var value: T? by atomic(null)
+
+            init {
+                addProperty(
+                    EnvProperty(
+                        name = name,
+                        get = ::get,
+                        flush = ::flush,
+                        invalidateCache = ::invalidateCache,
+                    ),
+                )
+            }
+
+            override operator fun getValue(thisRef: AppEnv, property: KProperty<*>): R {
+                return get()
+            }
+
+            override operator fun setValue(thisRef: AppEnv, property: KProperty<*>, value: R) {
+                logger.debug { "Setting ${property.name} to $value" }
+                val serialized = serializer(value)
+                this.value = serialized
+                if (autoFlush) flush()
+                onChange(name)
+            }
+
+            fun flush() {
+                settings.encodeValue(clazzSerializer, name, value!!)
+            }
+
+            fun invalidateCache() {
+                value = null
+            }
+
+            private fun get(): R {
+                if (value == null) value = getVar(name)
+                return deserializer(value!!)
+            }
+
+            private fun getVar(name: String): T {
+                return override(name)?.toPrimitive(tClass) ?: settings.decodeValue(
+                    serializer = clazzSerializer,
+                    key = name,
+                    defaultValue = default,
+                )
+            }
+        }
+    }
+}
+
+private data class EnvProperty<T>(
+    val name: String,
+    val get: () -> T,
+    val flush: () -> Unit,
+    val invalidateCache: () -> Unit,
+) {
+    override fun toString() = "${name}=${get()}"
 }

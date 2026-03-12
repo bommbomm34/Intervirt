@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.util.getLogger
 import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
@@ -36,7 +37,13 @@ val coreModule = module {
     single<DeviceManager>()
     single<FileManager>()
     single<QemuClient>()
-    single { SecretService("io.github.bommbomm34.intervirt") }
+    single<ShutdownHandler>()
+    single {
+        SecretService(
+            serviceName = "io.github.bommbomm34.intervirt",
+            logger = get<AppEnv>().getLogger(SecretService::class)
+        )
+    }
     single { getAppEnv() }
     single { getHttpClient() }
     single { Project.default() }

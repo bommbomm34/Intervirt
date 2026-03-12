@@ -16,10 +16,14 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
+import io.github.bommbomm34.intervirt.core.util.ListOutputStream
 import io.github.bommbomm34.intervirt.logging.LogLevel
+import io.github.bommbomm34.intervirt.logging.getDefaultStream
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.write
+import io.github.vinceglb.filekit.writeString
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -31,13 +35,18 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
 import java.util.prefs.Preferences
 import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.absolutePathString
 import kotlin.math.pow
 import kotlin.math.round
+import kotlin.reflect.KClass
+import kotlin.stackTraceToString
+import kotlin.system.exitProcess
+import kotlin.time.Clock
 
 suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> {
     return try {
@@ -87,14 +96,15 @@ suspend fun <T> withCatchingContext(
 
 fun ByteArray.zeroize() = fill(0)
 
-inline fun <reified T> String.toPrimitive(): T = when (T::class) {
+@Suppress("UNCHECKED_CAST")
+fun <T : Any> String.toPrimitive(clazz: KClass<T>): T = when (clazz) {
     String::class -> this
     Int::class -> toInt()
     Long::class -> toLong()
     ULong::class -> toULong()
     Boolean::class -> toBoolean()
     Float::class -> toFloat()
-    else -> throw SerializationException("${T::class.qualifiedName} is not supported!")
+    else -> throw SerializationException("${clazz.qualifiedName} is not supported!")
 } as T
 
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
@@ -123,23 +133,20 @@ fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catc
     if (it is TimeoutCancellationException) action() else throw it
 }
 
-/**
- * Shuts all services down gracefully.
- * This method doesn't exit the application.
- */
-suspend fun gracefulShutdown(
-    deviceManager: DeviceManager? = null,
-    guestManager: GuestManager? = null,
-    qemuClient: QemuClient? = null,
-    httpClient: HttpClient? = null,
-    secretService: SecretService? = null,
-) {
-    deviceManager?.close()
-    guestManager?.close()
-    qemuClient?.close()
-    httpClient?.close()
-    secretService?.close()
-}
+val totalDiskSpace: Long
+    get() = FileSystems.getDefault()
+        .rootDirectories
+        .sumOf { Files.getFileStore(it).totalSpace }
+
+val usableDiskSpace: Long
+    get() = FileSystems.getDefault()
+        .rootDirectories
+        .sumOf { Files.getFileStore(it).usableSpace }
+
+val unixTimestamp: Long
+    get() = Clock.System.now().epochSeconds
+
+
 
 fun <T> flowCatching(block: suspend FlowCollector<ResultProgress<T>>.() -> Unit) = flow(block).catch {
     if (it is CancellationException) throw it else emit(ResultProgress.failure(it))
@@ -176,4 +183,4 @@ fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings, LogL
 
 suspend fun PlatformFile.createFile() = write(byteArrayOf(0))
 
-fun PlatformFile.toJavaPath() = file.toPath()
+fun PlatformFile.toJavaPath(): Path = file.toPath()

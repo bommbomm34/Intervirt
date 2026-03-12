@@ -17,7 +17,8 @@ import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
 class AppEnvTest {
-    private val settings = MapSettings()
+    private val map = mutableMapOf<String, Any>()
+    private val settings = MapSettings(map)
     private val appEnv = getTestAppEnv(settings)
 
     @Test
@@ -38,7 +39,7 @@ class AppEnvTest {
         appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
         val otherAppEnv = getTestAppEnv(settings)
         assertEquals("MOCK", otherAppEnv.OVERRIDE_DOCKER_HOST)
-        assertEquals("MOCK", settings.decodeValueOrNull("OVERRIDE_DOCKER_HOST"))
+        assertEquals("MOCK", map["OVERRIDE_DOCKER_HOST"])
     }
 
     @Test

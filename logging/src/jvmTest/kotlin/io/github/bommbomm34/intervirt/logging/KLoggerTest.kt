@@ -65,7 +65,7 @@ class KLoggerTest {
         return KLogger(
             name = "KLoggerTest",
             level = level,
-            stream = mockStream,
+            streams = arrayOf(mockStream),
         ) to mockStream
     }
 }

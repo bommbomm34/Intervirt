@@ -85,4 +85,11 @@ fun DebugOptions() {
     ) {
         Text("Remove example port forwarding")
     }
+    Button(
+        onClick = {
+            throw IllegalStateException("Someone has thrown a exception!")
+        }
+    ){
+        Text("Throw exception")
+    }
 }

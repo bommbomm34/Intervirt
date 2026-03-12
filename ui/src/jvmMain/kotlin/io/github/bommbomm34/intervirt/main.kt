@@ -19,19 +19,16 @@ import intervirt.ui.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.components.dialogs.Dialog
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.ShutdownHandler
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.gracefulShutdown
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
-import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.exists
 import io.ktor.client.*
@@ -41,7 +38,6 @@ import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.dsl.KoinConfiguration
 import java.util.*
-import kotlin.system.exitProcess
 
 
 fun main() = application {
@@ -50,18 +46,21 @@ fun main() = application {
             modules(coreModule, uiModule, intervirtOSViewModelsModule)
         },
     ) {
+        val shutdownHandler = koinInject<ShutdownHandler>()
+        shutdownHandler.crash(Thread.currentThread(), IllegalArgumentException())
         val appEnv = koinInject<AppEnv>()
-        val deviceManager = koinInject<DeviceManager>()
         val guestManager = koinInject<GuestManager>()
-        val qemuClient = koinInject<QemuClient>()
         val httpClient = koinInject<HttpClient>()
-        val secretService = koinInject<SecretService>()
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
         val project = koinInject<Project>()
         val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
         if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
         LaunchedEffect(Unit) {
+            // Set exception handler
+            Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+                shutdownHandler.crash(thread, throwable)
+            }
             // These things should be only called once
             Locale.setDefault(appEnv.LANGUAGE)
             FileKit.init("intervirt")
@@ -70,11 +69,10 @@ fun main() = application {
                 Thread {
                     runBlocking {
                         if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(project)
-                        gracefulShutdown(deviceManager, guestManager, qemuClient, httpClient, secretService)
+                        shutdownHandler.gracefulShutdown()
                     }
                 },
             )
-            setDefaultExceptionHandler()
             // Load temp file if exists
             if (tempConfFile.exists() && appEnv.ENABLE_TEMP_FILE) tempConfFile.loadConf(
                 project,
@@ -153,22 +151,5 @@ fun main() = application {
                 }
             }
         }
-    }
-}
-
-fun setDefaultExceptionHandler() {
-    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-        System.err.println(
-            """
-An unexpected error occurred. This seems like an internal error.
-It is recommended to report this error: https://github.com/bommbomm34/Intervirt/issues
-Please send the full stacktrace and some system information. Don't send personal data!
-
-Thread: ${thread.name}
-Stacktrace:
-${throwable.stackTraceToString()}
-""".trimIndent(),
-        )
-        exitProcess(1)
     }
 }
