@@ -39,7 +39,6 @@ data class AppEnv(
     private val cacheInvalidators = mutableSetOf<() -> Unit>()
 
     var DEBUG_ENABLED: Boolean by delegate(false)
-    var LOGGER_SEVERITY: String by delegate(if (DEBUG_ENABLED) "DEBUG" else "ERROR")
 
     var AGENT_TIMEOUT: Int by delegate(30000)
 
@@ -128,7 +127,11 @@ data class AppEnv(
     var IMAGES_URL: String by delegate("https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/metadata/images.json")
     var ACCENT_COLOR: ULong by delegate(0xFF648042.toULong())
     var SMALL_FAB_SIZE: Int by delegate(32)
-    var LOGGER_LEVEL: String by delegate("ERROR")
+    var LOG_LEVEL: LogLevel by delegate(
+        default = if (DEBUG_ENABLED) "DEBUG" else "ERROR",
+        serializer = { it.toString() },
+        deserializer = { LogLevel.valueOf(it) },
+    )
 
     init {
         custom()
