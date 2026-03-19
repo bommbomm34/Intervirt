@@ -1,6 +1,6 @@
 [versions]
 aboutLibraries = "13.2.1"
-androidx-lifecycle = "2.9.6"
+androidx-lifecycle = "2.10.0"
 bossterm = "1.0.92"
 coil = "3.4.0"
 colorpicker = "1.1.3"
