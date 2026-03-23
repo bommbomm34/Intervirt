@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
+import io.github.bommbomm34.intervirt.core.util.ext.exec
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 
@@ -129,19 +130,10 @@ class ContainerSshClient(
         logger.debug { "Closed ContainerSshClient" }
     }
 
-    override fun exec(commands: List<String>): Result<Flow<CommandStatus>> = runCatching {
+    override fun exec(commands: List<String>): Result<Flow<CommandStatus>> {
         val command = commands.joinToString(" ")
         logger.info { "Running '$command' on container" }
-        val channel = session.createExecChannel(command)
-        channel.open().verify()
-        flow {
-            val reader = channel.`in`.bufferedReader()
-            while (!channel.isClosed) {
-                val line = reader.readLine() ?: continue
-                emit(line.toCommandStatus())
-            }
-            emit(channel.exitStatus.toCommandStatus())
-        }.flowOn(Dispatchers.IO)
+        return session.exec(command)
     }
 
     override fun getPath(path: String): Path = fs.getPath(path)

@@ -131,6 +131,12 @@ class QemuClient(
         }
     }
 
+    suspend fun addPortForwarding(portForwarding: PortForwarding): Result<Unit> = addPortForwarding(
+        protocol = portForwarding.protocol,
+        externalPort = portForwarding.externalPort,
+        internalPort = portForwarding.internalPort,
+    )
+
     suspend fun removePortForwarding(protocol: String, externalPort: Int): Result<Unit> {
         require(protocol.isValidProtocol()) { "Invalid protocol $protocol" }
         require(externalPort.isValidPort()) { "Invalid external port $externalPort" }
@@ -146,6 +152,11 @@ class QemuClient(
             logger.debug { "Removed port forwarding $protocol:$externalPort" }
         }
     }
+
+    suspend fun removePortForwarding(portForwarding: PortForwarding): Result<Unit> = removePortForwarding(
+        protocol = portForwarding.protocol,
+        externalPort = portForwarding.externalPort,
+    )
 
     suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession) = qmpSend(
         json = buildJsonObject { put("execute", command) },
