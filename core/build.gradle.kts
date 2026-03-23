@@ -47,3 +47,7 @@ kotlin {
         }
     }
 }
+
+koinCompiler {
+    compileSafety = false
+}

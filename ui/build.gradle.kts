@@ -95,3 +95,7 @@ compose.desktop {
         }
     }
 }
+
+koinCompiler {
+    compileSafety = false
+}

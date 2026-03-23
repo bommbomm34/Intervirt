@@ -56,7 +56,7 @@ class ContainerIOClientTest : KoinTest {
                     single<Executor>()
                     single<FileManager>()
                     single { getTestAppEnv() }
-                    single { Project() }
+                    single<Project>()
                     single { getHttpClient() }
                 },
             )

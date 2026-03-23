@@ -17,7 +17,6 @@ import io.github.bommbomm34.intervirt.core.util.toMutexVar
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
@@ -32,7 +31,7 @@ class DeviceManagerTest : KoinTest {
         single<Executor>()
         single<FileManager>()
         single { getTestAppEnv() }
-        single { Project() }
+        single<Project>()
         single { getHttpClient() }
     }
     val mockComputer = Device.Computer(
