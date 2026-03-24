@@ -89,6 +89,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     }
 
     override suspend fun removePortForwarding(
+        id: String,
         externalPort: Int,
         protocol: String,
     ): Result<Unit> = runCatching {

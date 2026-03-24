@@ -45,7 +45,7 @@ interface GuestManager : AsyncCloseable {
 
     suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int, protocol: String): Result<Unit>
 
-    suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit>
+    suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String): Result<Unit>
 
     suspend fun startContainer(id: String): Result<Unit>
 

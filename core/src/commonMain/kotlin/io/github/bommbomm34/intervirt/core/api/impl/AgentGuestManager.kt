@@ -79,7 +79,7 @@ class AgentGuestManager(
     ): Result<Unit> =
         justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort, protocol))
 
-    override suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> =
+    override suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String): Result<Unit> =
         justSend(RequestBody.RemovePortForwarding(externalPort, protocol))
 
     override suspend fun startContainer(id: String): Result<Unit> = justSend(RequestBody.StartContainer(id))
