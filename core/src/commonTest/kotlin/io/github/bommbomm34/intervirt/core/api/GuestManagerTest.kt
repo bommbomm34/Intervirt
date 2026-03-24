@@ -126,7 +126,7 @@ class GuestManagerTest : KoinTest {
     fun shouldRemovePortForwarding() = runTest {
         val container = addTestContainer()
         addTestPortForwarding()
-        guestManager.removePortForwarding(fwd.externalPort, fwd.protocol).getOrThrow()
+        guestManager.removePortForwarding(TEST_CONTAINER_ID, fwd.externalPort, fwd.protocol).getOrThrow()
         assertFalse { container.getContainer().portForwardings.contains(fwd) }
     }
 

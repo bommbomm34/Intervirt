@@ -202,23 +202,27 @@ class DeviceManager(
         }
     }
 
-    suspend fun removePortForwarding(externalPort: Int, protocol: String): Result<Unit> {
+    suspend fun removePortForwarding(
+        externalPort: Int,
+        protocol: String,
+    ): Result<Unit> {
         require(externalPort.isValidPort()) { "External port $externalPort is not valid!" }
         require(protocol.isValidProtocol()) { "Protocol $protocol is not valid!" }
         logger.debug { "Remove port forwarding of $externalPort" }
-        project.devices.withLock {
-            forEach { device ->
+        val device = project.devices.withLock {
+            firstOrNull { device ->
                 if (device is Device.Computer)
                     device.portForwardings.withLock {
-                        removeIf { it.externalPort == externalPort }
-                    }
+                        removeIf { it.externalPort == externalPort && it.protocol == protocol }
+                    } else false
             }
         }
+        requireNotNull(device) { "There was no device binding external port $externalPort on protocol $protocol" }
         if (!virtualContainerIO) qemuClient.removePortForwarding(
             protocol = protocol,
             externalPort = externalPort,
         ).onFailure { return Result.failure(it) }
-        return guestManager.removePortForwarding(externalPort, protocol).map {
+        return guestManager.removePortForwarding(device.id, externalPort, protocol).map {
             logger.info { "Removed port forwarding of $externalPort" }
         }
     }
