@@ -138,6 +138,7 @@ data class AppEnv(
         serializer = { it.toString() },
         deserializer = { LogLevel.valueOf(it) },
     )
+    var EXPERIMENTAL_SSH_GUEST_MODE: Boolean by delegate(false)
 
     init {
         custom()

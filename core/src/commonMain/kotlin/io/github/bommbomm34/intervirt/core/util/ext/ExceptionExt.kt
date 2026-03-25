@@ -52,4 +52,6 @@ fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catc
     if (it is TimeoutCancellationException) action() else throw it
 }
 
+fun <T> T.asSuccess(): Result<T> = Result.success(this)
+
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result

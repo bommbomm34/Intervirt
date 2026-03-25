@@ -31,7 +31,7 @@ class SshGuestManager(
     private val client: SshGuestClient,
 ) : GuestManager {
     init {
-        require(client.isInitialized) { "Given SshGuestClient isn't initialized" }
+        check(client.isInitialized) { "Given SshGuestClient isn't initialized" }
     }
 
     override suspend fun addContainer(
