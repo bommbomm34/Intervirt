@@ -149,9 +149,9 @@ class SshGuestManager(
     override suspend fun getVersion(): Result<String> = Result.success(CURRENT_VERSION)
 
     override suspend fun getContainers(): Result<List<ContainerInfo>> = runSuspendingCatching {
-        incusGet<List<IncusInstanceInfo>>("incus list").getOrThrow()
-            .map {
-                it.run {
+        incusGet<List<IncusInstanceInfo>>("list").getOrThrow()
+            .map { list ->
+                list.run {
                     val network =
                         state.network[name] ?: error("Expected network with name $name, but none found in $name")
                     val portForwardings = networkForwardInfo(name).getOrThrow()

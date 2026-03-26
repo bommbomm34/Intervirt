@@ -7,12 +7,14 @@ package io.github.bommbomm34.intervirt.core
 
 import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
+import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.serialization.json.Json
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 
@@ -24,7 +26,7 @@ val defaultJson = Json {
 }
 
 val coreModule = module {
-    single<Executor>()
+    single<DefaultExecutor>() bind Executor::class
     single<Downloader>()
     single<GuestManager> {
         if (get<AppEnv>().VIRTUAL_AGENT_MODE) {

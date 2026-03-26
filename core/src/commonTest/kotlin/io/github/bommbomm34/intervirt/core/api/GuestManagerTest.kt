@@ -7,17 +7,16 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
+import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.SshGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
-import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.mock.MockSshGuestClient
 import io.github.bommbomm34.intervirt.core.util.ext.asSuccess
+import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
@@ -36,6 +35,7 @@ import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.*
+import kotlin.time.Duration.Companion.seconds
 
 private const val TEST_CONTAINER_ID = "my-id"
 private const val TEST_NETWORK_NAME = "test-network"
@@ -55,12 +55,12 @@ class GuestManagerTest : KoinTest {
             modules(
                 module {
                     if (appEnv.VIRTUAL_AGENT_MODE) {
-                        single<GuestManager> { VirtualGuestManager() }
+                        single<GuestManager> { VirtualGuestManager(0.seconds) }
                     } else {
                         single<AppEnv> { appEnv }
                         if (appEnv.EXPERIMENTAL_SSH_GUEST_MODE) {
-                            single<LocalSshGuestClient>() bind SshGuestClient::class
-                            single<SshGuestManager>()
+                            single<MockSshGuestClient>() bind SshGuestClient::class
+                            single<SshGuestManager>() bind GuestManager::class
                         } else {
                             single<HttpClient> { getHttpClient() }
                             single<AgentGuestManager>() bind GuestManager::class
@@ -259,27 +259,9 @@ class GuestManagerTest : KoinTest {
     private suspend fun ContainerInfo.getContainer() = getContainers().first { it.id == id }
 
     @AfterTest
-    fun stopTest() {
+    fun stopTest() = runTest {
+        guestManager.wipe().lastResult().getOrThrow()
         stopKoin()
     }
 }
 
-class LocalSshGuestClient : SshGuestClient {
-    private val executor = Executor(getTestAppEnv())
-
-    override val isInitialized = true
-
-    override suspend fun init(): Result<Unit> = runSuspendingCatching {
-        check(exec("incus", "--help").isSuccess) { "Incus is not installed!" }
-    }
-
-    override fun runCommand(vararg commands: String): Result<Flow<CommandStatus>> = flow {
-        emitAll(executor.runCommandOnHost(null, commands.toList()))
-    }.asSuccess()
-
-    override suspend fun close(): Result<Unit> = Result.success(Unit)
-
-    private suspend fun exec(vararg commands: String): Result<String> = executor.runCommandOnHost(null, commands.toList())
-        .getCommandResult()
-        .asResult()
-}

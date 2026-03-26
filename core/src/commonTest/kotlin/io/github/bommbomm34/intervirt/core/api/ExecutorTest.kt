@@ -5,13 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.test.runTest
-import java.nio.file.Paths
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -19,12 +19,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ExecutorTest {
-    val executor = Executor(getTestAppEnv())
+    val executor = DefaultExecutor(getTestAppEnv())
 
     @Test
     fun shouldRunSuccessfulCommandOnHost() = runTest {
         val (output, status) = executor
-            .runCommandOnHost(null, listOf(*getEchoPath(), "Hello World"))
+            .runCommand(null, listOf(*getEchoPath(), "Hello World"))
             .getCommandResult()
         assertEquals(0, status)
         assertContains(output, "Hello World")
@@ -38,7 +38,7 @@ class ExecutorTest {
         }
 
         val (_, status) = executor
-            .runCommandOnHost(testFolder, listOf(*getCatPath(), "hosts"))
+            .runCommand(testFolder, listOf(*getCatPath(), "hosts"))
             .getCommandResult()
         assertEquals(0, status)
     }
@@ -46,7 +46,7 @@ class ExecutorTest {
     @Test
     fun shouldRunNotExistingCommandOnHost() = runTest {
         val (_, status) = executor
-            .runCommandOnHost(null, listOf("invalid_command_intervirt_${UUID.randomUUID().hashCode()}"))
+            .runCommand(null, listOf("invalid_command_intervirt_${UUID.randomUUID().hashCode()}"))
             .getCommandResult()
         assertNotEquals(0, status)
     }

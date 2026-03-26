@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
@@ -18,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
@@ -53,7 +55,7 @@ class ContainerIOClientTest : KoinTest {
                     single<DeviceManager>()
                     single<GuestManager> { VirtualGuestManager() }
                     single<QemuClient>()
-                    single<Executor>()
+                    single<DefaultExecutor>() bind Executor::class
                     single<FileManager>()
                     single { getTestAppEnv() }
                     single<Project>()

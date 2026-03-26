@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
@@ -15,6 +16,7 @@ import io.github.bommbomm34.intervirt.secret.SecretService
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
@@ -32,7 +34,7 @@ class ShutdownHandlerTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    single<Executor>()
+                    single<DefaultExecutor>() bind Executor::class
                     single<Downloader>()
                     single<GuestManager> { MockGuestManager() }
                     single<DeviceManager>()

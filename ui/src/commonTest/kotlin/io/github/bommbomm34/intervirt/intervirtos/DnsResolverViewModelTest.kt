@@ -110,7 +110,7 @@ class DnsResolverViewModelTest : KoinTest {
 }
 
 class MockExecutor(appEnv: AppEnv) : Executor(appEnv) {
-    override fun runCommandOnHost(workingFolder: PlatformFile?, commands: List<String>): Flow<CommandStatus> = flow {
+    override fun runCommand(workingFolder: PlatformFile?, commands: List<String>): Flow<CommandStatus> = flow {
         val text = when {
             commands.contains("A") -> LOOKUP_DNS_A
             commands.contains("AAAA") -> LOOKUP_DNS_AAAA

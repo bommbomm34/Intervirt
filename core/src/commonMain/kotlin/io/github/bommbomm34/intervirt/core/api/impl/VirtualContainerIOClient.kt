@@ -28,7 +28,7 @@ class VirtualContainerIOClient(
     private val virtualRoot by _virtualRoot
 
     override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =
-        Result.success(executor.runCommandOnHost(null, commands.patch("sudo", "pkexec")))
+        Result.success(executor.runCommand(null, commands.patch("sudo", "pkexec")))
 
     override fun getPath(path: String): Path = virtualRoot.resolve(path.normalize())
 

@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
@@ -27,6 +28,7 @@ import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
@@ -77,7 +79,7 @@ class DeviceSettingsTest : KoinTest {
                     single<Project> { Project.default() }
                     single<FileManager>()
                     single<QemuClient>()
-                    single<Executor>()
+                    single<DefaultExecutor>() bind Executor::class
                     single<DeviceManager>()
                     viewModel<DeviceSettingsViewModel>()
                 },
