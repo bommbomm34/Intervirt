@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.core.util.toMutexVar
 import kotlinx.coroutines.test.runTest
@@ -58,7 +59,7 @@ class ContainerIOClientTest : KoinTest {
                     single<DefaultExecutor>() bind Executor::class
                     single<FileManager>()
                     single { getTestAppEnv() }
-                    single<Project>()
+                    singleProject()
                     single { getHttpClient() }
                 },
             )

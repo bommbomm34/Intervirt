@@ -44,24 +44,9 @@ class ViewProject(
     }
 }
 
-suspend fun Project.toViewProject(): ViewProject {
-    devices.withLockLet { devices ->
-        connections.withLockLet { connections ->
-            return ViewProject(
-                version = version,
-                author = author.get(),
-                devices = devices,
-                connections = connections,
-            )
-        }
-    }
-}
-
-fun Project.toViewProjectUnsafe(): ViewProject {
-    return ViewProject(
-        version = version,
-        author = author.get(),
-        devices = devices.value,
-        connections = connections.value,
-    )
-}
+fun Project.toViewProject() = ViewProject(
+    version = version,
+    author = author,
+    devices = devices.toMutableList(),
+    connections = connections.toMutableList(),
+)

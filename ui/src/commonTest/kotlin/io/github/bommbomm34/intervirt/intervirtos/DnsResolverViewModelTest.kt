@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.vinceglb.filekit.PlatformFile
@@ -47,7 +48,7 @@ class DnsResolverViewModelTest : KoinTest {
                 module {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
-                    single { Project.default() }
+                    singleProject()
                     single<AppState>()
                     single<MockExecutor>() bind Executor::class
                     single<FileManager>()

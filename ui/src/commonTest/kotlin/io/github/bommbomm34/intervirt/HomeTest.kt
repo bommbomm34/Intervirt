@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
+import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import org.koin.core.context.startKoin
@@ -40,7 +41,7 @@ class HomeTest : KoinTest {
                     single { getAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
-                    single<Project> { Project.default() }
+                    singleProject()
                     single<FileManager>()
                     single<QemuClient>()
                     single<Downloader>()

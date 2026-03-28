@@ -31,6 +31,10 @@ class Atomic<T>(initial: T) {
     override fun toString(): String = get().toString()
 
     inline fun <reified T> getSerializer() = serializer<T>()
+
+    operator fun getValue(ref: Any?, property: KProperty<*>): T = get()
+
+    operator fun setValue(ref: Any?, property: KProperty<*>, value: T) = set(value)
 }
 
 class AtomicSerializer<T>(private val delegate: KSerializer<T>) : KSerializer<Atomic<T>> {

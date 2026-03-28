@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.material.kolor)
             implementation(libs.compose.colorpicker)
             implementation(libs.webview.compose)
+            implementation(libs.arrow.optics)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

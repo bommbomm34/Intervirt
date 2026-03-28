@@ -13,6 +13,8 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.connect
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.core.util.toMutexVar
 import kotlinx.coroutines.test.runTest
@@ -33,7 +35,7 @@ class DeviceManagerTest : KoinTest {
         single<DefaultExecutor>() bind Executor::class
         single<FileManager>()
         single { getTestAppEnv() }
-        single<Project>()
+        singleProject()
         single { getHttpClient() }
     }
     val mockComputer = Device.Computer(
@@ -69,7 +71,10 @@ class DeviceManagerTest : KoinTest {
     )
 
     private val deviceManager: DeviceManager by inject()
-    private val project: Project by inject()
+    private val _project: Atomic<Project> by inject()
+    private var project: Project
+        get() = _project.get()
+        set(value) = _project.set(value)
 
     @BeforeTest
     fun setup() {
@@ -81,14 +86,14 @@ class DeviceManagerTest : KoinTest {
     @Test
     fun shouldAddComputer() = runTest {
         val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        assertContains(project.devices.value, computer)
+        assertContains(project.devices, computer)
     }
 
     @Test
     fun shouldRemoveDevice() = runTest {
         deviceManager.addComputer(mockComputer)
         deviceManager.removeDevice(mockComputer).getOrThrow()
-        assertFalse { project.devices.value.contains(mockComputer) }
+        assertFalse { project.devices.contains(mockComputer) }
     }
 
     @Test
@@ -97,7 +102,7 @@ class DeviceManagerTest : KoinTest {
             x = 20,
             y = 20,
         )
-        assertContains(project.devices.value, switch)
+        assertContains(project.devices, switch)
     }
 
     @Test
@@ -106,7 +111,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.addComputer(mockComputer2).getOrThrow()
         deviceManager.connectDevice(mockComputer, mockComputer2).getOrThrow()
         assertContains(
-            iterable = project.connections.value,
+            iterable = project.connections,
             element = mockComputer connect mockComputer2,
         )
     }
@@ -118,7 +123,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.connectDevice(mockComputer, mockComputer2).getOrThrow()
         deviceManager.disconnectDevice(mockComputer, mockComputer2).getOrThrow()
         assertFalse {
-            project.connections.value.contains(mockComputer connect mockComputer2)
+            project.connections.contains(mockComputer connect mockComputer2)
         }
     }
 
@@ -128,7 +133,7 @@ class DeviceManagerTest : KoinTest {
         val switch = deviceManager.addSwitch(x = 20, y = 20)
         deviceManager.connectDevice(mockComputer, switch).getOrThrow()
         assertContains(
-            iterable = project.connections.value,
+            iterable = project.connections,
             element = mockComputer connect switch,
         )
     }
@@ -140,7 +145,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.connectDevice(mockComputer, switch).getOrThrow()
         deviceManager.disconnectDevice(mockComputer, switch).getOrThrow()
         assertFalse {
-            project.connections.value.contains(mockComputer connect switch)
+            project.connections.contains(mockComputer connect switch)
         }
     }
 

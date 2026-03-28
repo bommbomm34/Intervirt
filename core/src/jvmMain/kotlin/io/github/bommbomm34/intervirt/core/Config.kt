@@ -47,5 +47,5 @@ val coreModule = module {
     }
     single { getAppEnv() }
     single { getHttpClient() }
-    single { Project.default() }
+    singleProject()
 }

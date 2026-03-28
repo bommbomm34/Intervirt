@@ -5,12 +5,12 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
+import arrow.optics.optics
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.addNetworkIfNotExists
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.DeprecatedException
-import io.github.bommbomm34.intervirt.core.util.*
 import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import kotlinx.coroutines.flow.Flow
@@ -20,35 +20,24 @@ import kotlinx.serialization.Serializable
  * Intervirt project
  */
 @Serializable
+@optics
 data class Project(
     val version: String = CURRENT_VERSION,
-    val author: Atomic<String> = "".toAtomic(),
-    val devices: MutexVar<MutableList<Device>> = mutableListOf<Device>().toMutexVar(),
-    val connections: MutexVar<MutableList<DeviceConnection>> = mutableListOf<DeviceConnection>().toMutexVar(),
+    val author: String = "",
+    val devices: List<Device> = listOf(),
+    val connections: List<DeviceConnection> = listOf(),
 ) {
-    companion object {
-        fun default() = Project()
-    }
-
-    suspend fun update(project: Project) {
-        author.set(project.author.get())
-        devices.clearAndAddAll(project.devices)
-        connections.clearAndAddAll(project.connections)
-    }
+    companion object
 }
 
 suspend fun Project.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
     val networks = mutableMapOf<String, Network>()
-    val connections = connections.ifEmpty { this.connections.withLock { toTypedArray() } }
+    val connections = connections.ifEmpty { this.connections.toTypedArray() }
     // Add switch networks
-    devices.withLockLet { devices ->
-        this.connections.withLockLet { connections ->
-            devices.forEach { device ->
-                if (device is Device.Switch && connections.any { it.containsDevice(device) }) {
-                    val name = networkNameOfSwitch(device.id)
-                    networks[name] = getConnectedComputers(device, devices, connections).map { it.id }
-                }
-            }
+    devices.forEach { device ->
+        if (device is Device.Switch && connections.any { it.containsDevice(device) }) {
+            val name = networkNameOfSwitch(device.id)
+            networks[name] = getConnectedComputers(device, devices, this.connections).map { it.id }
         }
     }
     // Add computer networks
@@ -94,39 +83,37 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
                 message = "Creating devices...",
             ),
         )
-        project.devices.withLock {
-            forEachIndexed { i, device ->
-                if (device is Device.Computer) {
-                    val progress = 0.2f + (i.toFloat() / size) * 0.6f
-                    emit(
-                        ResultProgress.proceed(
-                            percentage = progress,
-                            message = "Creating device ${device.name} with id ${device.id}",
-                        ),
-                    )
-                    addContainer(
-                        id = device.id,
-                        ipv4 = device.ipv4.get(),
-                        ipv6 = device.ipv6.get(),
-                        mac = device.mac.get(),
-                        internet = device.internetEnabled.get(),
-                        image = device.image,
-                    ).getOrThrow()
-                    device.portForwardings.withLock {
-                        forEach { portForwarding ->
-                            emit(
-                                ResultProgress.proceed(
-                                    percentage = progress,
-                                    message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
-                                ),
-                            )
-                            addPortForwarding(
-                                device.id,
-                                portForwarding.internalPort,
-                                portForwarding.externalPort,
-                                portForwarding.protocol,
-                            ).getOrThrow()
-                        }
+        project.devices.forEachIndexed { i, device ->
+            if (device is Device.Computer) {
+                val progress = 0.2f + (i.toFloat() / project.devices.size) * 0.6f
+                emit(
+                    ResultProgress.proceed(
+                        percentage = progress,
+                        message = "Creating device ${device.name} with id ${device.id}",
+                    ),
+                )
+                addContainer(
+                    id = device.id,
+                    ipv4 = device.ipv4.get(),
+                    ipv6 = device.ipv6.get(),
+                    mac = device.mac.get(),
+                    internet = device.internetEnabled.get(),
+                    image = device.image,
+                ).getOrThrow()
+                device.portForwardings.withLock {
+                    forEach { portForwarding ->
+                        emit(
+                            ResultProgress.proceed(
+                                percentage = progress,
+                                message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
+                            ),
+                        )
+                        addPortForwarding(
+                            device.id,
+                            portForwarding.internalPort,
+                            portForwarding.externalPort,
+                            portForwarding.protocol,
+                        ).getOrThrow()
                     }
                 }
             }

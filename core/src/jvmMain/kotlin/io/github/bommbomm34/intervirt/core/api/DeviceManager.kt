@@ -24,8 +24,8 @@ class DeviceManager(
     private val qemuClient: QemuClient,
     private val executor: Executor,
     private val fileManager: FileManager,
-    private val project: Project,
     private val appEnv: AppEnv,
+    project: Atomic<Project>,
 ) : AsyncCloseable {
     private val logger = appEnv.getLogger(DeviceManager::class)
     private val virtualContainerIO = appEnv.VIRTUAL_CONTAINER_IO
@@ -35,6 +35,7 @@ class DeviceManager(
     private val containerIOClients = ConcurrentHashMap<String, ContainerIOClient>()
     private val dockerManagers = ConcurrentHashMap<String, DockerManager>()
     private val intervirtOSClients = ConcurrentHashMap<String, IntervirtOSClient>()
+    private var project by project
 
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Result<Device.Computer> {
         val id = generateID("computer")
@@ -56,7 +57,7 @@ class DeviceManager(
     suspend fun addComputer(device: Device.Computer): Result<Device.Computer> = runSuspendingCatching {
         validateComputer(device)
         logger.debug { "Adding device $device" }
-        project.devices.add(device)
+        project = Project.devices.modify(project) { it + device }
         guestManager.addContainer(
             id = device.id,
             ipv4 = device.ipv4.get(),
@@ -69,7 +70,7 @@ class DeviceManager(
         device
     }
 
-    suspend fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
+    fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
         val id = generateID("switch")
         val device = Device.Switch(
             id = id,
@@ -78,7 +79,7 @@ class DeviceManager(
             y = y.toAtomic(),
         )
         logger.debug { "Adding device $device" }
-        project.devices.add(device)
+        project = Project.devices.modify(project) { it + device }
         logger.info { "Added device $device" }
         return device
     }
@@ -86,10 +87,10 @@ class DeviceManager(
     suspend fun removeDevice(device: Device): Result<Unit> = runSuspendingCatching {
         device.requireExists()
         logger.debug { "Removing device $device" }
-        project.connections.withLock {
-            removeIf { it.containsDevice(device) }
+        project = Project.connections.modify(project) { project ->
+            project.filterNot { it.containsDevice(device) }
         }
-        project.devices.remove(device)
+        project = Project.devices.modify(project) { it - device }
         // Close services
         intervirtOSClients[device.id]?.close()?.getOrThrow()
         intervirtOSClients.remove(device.id)
@@ -108,7 +109,7 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Connecting device $device1 to $device2" }
         val conn = device1 connect device2
-        project.connections.add(conn)
+        project = Project.connections.modify(project) { it + conn }
         val networks = project.resolveNetworks(conn)
         guestManager.addNetworks(networks).getOrThrow()
         logger.info { "Connected device $device1 to $device2" }
@@ -119,7 +120,7 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Disconnecting device $device1 to $device2" }
         val conn = device1 connect device2
-        project.connections.withLock { removeIf { it == conn } }
+        project = Project.connections.modify(project) { it - conn }
         val networks = project.resolveNetworks(conn)
         networks.forEach { (name, network) ->
             network.forEach {
@@ -209,13 +210,11 @@ class DeviceManager(
         require(externalPort.isValidPort()) { "External port $externalPort is not valid!" }
         require(protocol.isValidProtocol()) { "Protocol $protocol is not valid!" }
         logger.debug { "Remove port forwarding of $externalPort" }
-        val device = project.devices.withLock {
-            firstOrNull { device ->
-                if (device is Device.Computer)
-                    device.portForwardings.withLock {
-                        removeIf { it.externalPort == externalPort && it.protocol == protocol }
-                    } else false
-            }
+        val device = project.devices.firstOrNull { device ->
+            if (device is Device.Computer)
+                device.portForwardings.withLock {
+                    removeIf { it.externalPort == externalPort && it.protocol == protocol }
+                } else false
         }
         requireNotNull(device) { "There was no device binding external port $externalPort on protocol $protocol" }
         if (!virtualContainerIO) qemuClient.removePortForwarding(
@@ -313,12 +312,10 @@ class DeviceManager(
         logger.debug { "Cleared unused networks" }
     }
 
-    private suspend fun generateID(prefix: String): String {
-        project.devices.withLock {
-            while (true) {
-                val id = prefix + "-" + Random.nextInt(999999)
-                if (all { it.id != id }) return id
-            }
+    private fun generateID(prefix: String): String {
+        while (true) {
+            val id = prefix + "-" + Random.nextInt(999999)
+            if (project.devices.all { it.id != id }) return id
         }
     }
 
@@ -338,9 +335,7 @@ class DeviceManager(
         }
     }
 
-    private suspend fun Device.exists() = project.devices.withLock {
-        any { it.id == id }
-    }
+    private fun Device.exists() = project.devices.any { it.id == id }
 
     private suspend fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
 

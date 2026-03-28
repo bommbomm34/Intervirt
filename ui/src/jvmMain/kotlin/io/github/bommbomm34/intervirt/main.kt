@@ -25,6 +25,7 @@ import io.github.bommbomm34.intervirt.core.api.ShutdownHandler
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
@@ -54,7 +55,7 @@ fun main() = application {
         val httpClient = koinInject<HttpClient>()
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
-        val project = koinInject<Project>()
+        val project = koinInject<Atomic<Project>>()
         val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
         if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
         LaunchedEffect(Unit) {
@@ -69,7 +70,7 @@ fun main() = application {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
                     runBlocking {
-                        if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(project)
+                        if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(project.get())
                         shutdownHandler.gracefulShutdown()
                     }
                 },

@@ -13,10 +13,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
 
-class AppState(project: Project) {
+class AppState(project: Atomic<Project>) {
     val logs = mutableStateListOf<String>()
     var showLogs by mutableStateOf(false)
     var dialogStates = mutableStateListOf<DialogState>()
@@ -27,7 +28,7 @@ class AppState(project: Project) {
     var currentScreenIndex by mutableStateOf(1)
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
-    val statefulProject = project.toViewProjectUnsafe()
+    val statefulProject = project.get().toViewProject()
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)

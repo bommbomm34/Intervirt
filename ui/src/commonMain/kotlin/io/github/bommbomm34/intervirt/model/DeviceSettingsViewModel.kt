@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
@@ -44,9 +45,9 @@ import kotlin.io.path.name
 @KoinViewModel
 class DeviceSettingsViewModel(
     appEnv: AppEnv,
+    project: Atomic<Project>,
     private val appState: AppState,
     private val deviceManager: DeviceManager,
-    private val project: Project,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
     val computer: ViewDevice.Computer
@@ -58,6 +59,7 @@ class DeviceSettingsViewModel(
     private var containerFilePath: Path? by mutableStateOf(null)
     var ioClient: ContainerIOClient? by mutableStateOf(null)
     private val logger = appEnv.getLogger(DeviceSettingsViewModel::class)
+    var project by project
 
     init {
         viewModelScope.launchDialogCatching(appState) {
@@ -179,14 +181,12 @@ class DeviceSettingsViewModel(
                 ),
             )
 
-            project.devices.withLock {
-                any { device ->
-                    if (device is Device.Computer) device.portForwardings.withLock {
-                        any {
-                            it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
-                        }
-                    } else false
-                }
+            project.devices.any { device ->
+                if (device is Device.Computer) device.portForwardings.withLock {
+                    any {
+                        it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
+                    }
+                } else false
             } -> Result.failure(
                 IllegalArgumentException(getString(Res.string.external_port_already_bound)),
             )

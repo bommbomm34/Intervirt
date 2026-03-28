@@ -36,6 +36,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
@@ -52,7 +53,7 @@ fun DevicesView() {
     val deviceManager = koinInject<DeviceManager>()
     val appEnv = koinInject<AppEnv>()
     val appState = koinInject<AppState>()
-    val project = koinInject<Project>()
+    val project by koinInject<Atomic<Project>>()
     val statefulProject = appState.statefulProject
     Box(Modifier.scale(appState.devicesViewZoom)) {
         Canvas(

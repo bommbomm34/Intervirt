@@ -42,10 +42,8 @@ sealed class ViewDevice {
             mutableStateListOf<PortForwarding>().apply { addAll(device.portForwardings.value) }
 
         override fun getVector() = Icons.Default.Computer
-        override suspend fun canConnect(project: Project) =
-            project.connections.withLock {
-                count { it.containsDevice(device) } == 0
-            }
+        override fun canConnect(project: Project) =
+            project.connections.count { it.containsDevice(device) } == 0
     }
 
     data class Switch(
@@ -56,12 +54,12 @@ sealed class ViewDevice {
         override var x by mutableStateOf(device.x.get())
         override var y by mutableStateOf(device.y.get())
         override fun getVector() = Icons.Default.Hub // Switches aren't hubs!
-        override suspend fun canConnect(project: Project) = true
+        override fun canConnect(project: Project) = true
     }
 
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
     abstract fun getVector(): ImageVector
-    abstract suspend fun canConnect(project: Project): Boolean
+    abstract fun canConnect(project: Project): Boolean
 }
 
 fun Device.toViewDevice() = when (this) {

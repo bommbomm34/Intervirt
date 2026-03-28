@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.syncProject
 import io.github.bommbomm34.intervirt.core.defaultJson
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.toViewProject
 import io.github.vinceglb.filekit.PlatformFile
@@ -21,15 +22,15 @@ import kotlinx.serialization.json.Json
 suspend fun PlatformFile.writeConf(project: Project) = writeString(defaultJson.encodeToString(project))
 
 suspend fun PlatformFile.loadConf(
-    project: Project,
+    project: Atomic<Project>,
     appState: AppState,
     guestManager: GuestManager,
     onComplete: () -> Unit = {},
 ) {
     val fileContent = readString()
     val newConfiguration = Json.decodeFromString<Project>(fileContent)
-    project.update(newConfiguration)
-    val flow = guestManager.syncProject(project).onCompletion { onComplete() }
+    project.set(newConfiguration)
+    val flow = guestManager.syncProject(project.get()).onCompletion { onComplete() }
     appState.openDialog {
         ProgressDialog(
             flow = flow,

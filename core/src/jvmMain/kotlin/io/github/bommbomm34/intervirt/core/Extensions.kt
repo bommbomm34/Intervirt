@@ -8,44 +8,22 @@ package io.github.bommbomm34.intervirt.core
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.QemuClient
-import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.MailUser
-import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
-import io.github.bommbomm34.intervirt.core.util.ListOutputStream
+import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.logging.LogLevel
-import io.github.bommbomm34.intervirt.logging.getDefaultStream
-import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.absolutePath
-import io.github.vinceglb.filekit.write
-import io.github.vinceglb.filekit.writeString
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
-import io.ktor.utils.io.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.koin.core.module.KoinDslMarker
+import org.koin.core.module.Module
 import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Path
 import java.util.prefs.Preferences
-import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.absolutePathString
-import kotlin.math.pow
-import kotlin.math.round
-import kotlin.reflect.KClass
-import kotlin.stackTraceToString
-import kotlin.system.exitProcess
 import kotlin.time.Clock
 
 fun getAppEnv(
@@ -88,3 +66,5 @@ val usableDiskSpace: Long
 
 val unixTimestamp: Long
     get() = Clock.System.now().epochSeconds
+
+fun Module.singleProject() = single { Project().toAtomic() }

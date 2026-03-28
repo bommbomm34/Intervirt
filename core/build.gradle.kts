@@ -51,7 +51,7 @@ kotlin {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", libs.arrow.optics.ksp)
+    add("kspJvm", libs.arrow.optics.ksp)
 }
 
 koinCompiler {

@@ -15,30 +15,24 @@ private val DIGITS_PATTERN = Regex("\\d{1,3}")
 private val ID_CHECK_PATTERN = Regex("[^\\s/%]+")
 private val MAC_REGEX = Regex("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")
 
-suspend fun Project.generateMac(): String {
-    devices.withLock {
-        while (true) {
-            val mac = randomMac()
-            if (all { if (it is Device.Computer) it.mac.get() != mac else true }) return mac
-        }
+fun Project.generateMac(): String {
+    while (true) {
+        val mac = randomMac()
+        if (devices.all { if (it is Device.Computer) it.mac.get() != mac else true }) return mac
     }
 }
 
-suspend fun Project.generateIpv4(): String {
-    devices.withLock {
-        while (true) {
-            val ipv4 = randomIpv4()
-            if (all { if (it is Device.Computer) it.ipv4.get() != ipv4 else true }) return ipv4
-        }
+fun Project.generateIpv4(): String {
+    while (true) {
+        val ipv4 = randomIpv4()
+        if (devices.all { if (it is Device.Computer) it.ipv4.get() != ipv4 else true }) return ipv4
     }
 }
 
-suspend fun Project.generateIpv6(): String {
-    devices.withLock {
-        while (true) {
-            val ipv6 = randomIpv6()
-            if (all { if (it is Device.Computer) it.ipv6.get() != ipv6 else true }) return ipv6
-        }
+fun Project.generateIpv6(): String {
+    while (true) {
+        val ipv6 = randomIpv6()
+        if (devices.all { if (it is Device.Computer) it.ipv6.get() != ipv6 else true }) return ipv6
     }
 }
 

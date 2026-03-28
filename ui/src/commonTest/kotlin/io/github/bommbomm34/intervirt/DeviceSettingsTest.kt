@@ -15,8 +15,11 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.data.devices
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.add
 import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.core.util.toMutexVar
@@ -65,7 +68,10 @@ class DeviceSettingsTest : KoinTest {
     val viewModel: DeviceSettingsViewModel by inject { parametersOf(testComputer) }
     val appState: AppState by inject()
     val deviceManager: DeviceManager by inject()
-    val project: Project by inject()
+    val _project: Atomic<Project> by inject()
+    private var project: Project
+        get() = _project.get()
+        set(value) = _project.set(value)
 
     @BeforeTest
     fun init() = runTest {
@@ -76,7 +82,7 @@ class DeviceSettingsTest : KoinTest {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
-                    single<Project> { Project.default() }
+                    singleProject()
                     single<FileManager>()
                     single<QemuClient>()
                     single<DefaultExecutor>() bind Executor::class
@@ -159,7 +165,7 @@ class DeviceSettingsTest : KoinTest {
         val secondTestComputer = testComputer.device.copy().apply {
             portForwardings.add(PortForwarding("tcp", 2222, 22))
         }
-        project.devices.add(secondTestComputer)
+        project = Project.devices.modify(project) { it + secondTestComputer }
         assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
     }
 

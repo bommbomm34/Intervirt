@@ -20,6 +20,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.syncProject
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.UpdaterState
@@ -40,14 +41,15 @@ class HomeViewModel(
     private val appState: AppState,
     private val appEnv: AppEnv,
     private val guestManager: GuestManager,
-    private val project: Project,
     private val downloader: Downloader,
     private val qemuClient: QemuClient,
+    private val _project: Atomic<Project>,
 ) : ViewModel() {
     var devicesViewRenderKey by mutableStateOf(0)
     var showOptions by mutableStateOf(false)
     val updaterState = UpdaterState()
     var vmRunning by mutableStateOf(false)
+    var project by _project
 
     init {
         qemuClient.onRunningChange { vmRunning = it }
@@ -64,7 +66,7 @@ class HomeViewModel(
             val file = FileKit.openFilePicker(
                 type = FileKitType.File(extensions = listOf("ivrt")),
             )
-            file?.loadConf(project, appState, guestManager) {
+            file?.loadConf(_project, appState, guestManager) {
                 onConfChange()
             }
         }
