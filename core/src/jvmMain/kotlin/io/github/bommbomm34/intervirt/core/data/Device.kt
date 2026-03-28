@@ -5,39 +5,42 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
+import arrow.optics.optics
 import io.github.bommbomm34.intervirt.core.data.Device.Computer
-import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.MutexVar
 import kotlinx.serialization.Serializable
 
 @Serializable
+@optics
 sealed class Device {
 
     abstract val id: String
-    abstract val name: Atomic<String>
-    abstract val x: Atomic<Int>
-    abstract val y: Atomic<Int>
+    abstract val name: String
+    abstract val x: Int
+    abstract val y: Int
 
     @Serializable
+    @optics
     data class Computer(
         override val id: String,
         val image: String,
-        override val name: Atomic<String>,
-        override val x: Atomic<Int>,
-        override val y: Atomic<Int>,
-        val ipv4: Atomic<String>,
-        val ipv6: Atomic<String>,
-        val mac: Atomic<String>,
-        val internetEnabled: Atomic<Boolean>,
-        val portForwardings: MutexVar<MutableList<PortForwarding>>,
-    ) : Device()
+        override val name: String,
+        override val x: Int,
+        override val y: Int,
+        val ipv4: String,
+        val ipv6: String,
+        val mac: String,
+        val internetEnabled: Boolean,
+        val portForwardings: List<PortForwarding>,
+    ) : Device() {
+        companion object
+    }
 
     @Serializable
     data class Switch(
         override val id: String,
-        override val name: Atomic<String>,
-        override val x: Atomic<Int>,
-        override val y: Atomic<Int>,
+        override val name: String,
+        override val x: Int,
+        override val y: Int,
     ) : Device()
 
     override fun equals(other: Any?): Boolean {
@@ -45,6 +48,8 @@ sealed class Device {
     }
 
     override fun hashCode(): Int = id.hashCode()
+
+    companion object
 }
 
 fun String.toDevice(devices: List<Device>) = devices.first { it.id == this@toDevice }
@@ -75,3 +80,9 @@ fun getConnectedDevices(
         if (device1 == device) device2 else if (device2 == device) device1 else null
     }
 }
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Device> Project.getDevice(device: T): T = devices.first { it.id == device.id } as T
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Device> Project.getDeviceOrNull(device: T): T? = devices.firstOrNull { it.id == device.id } as? T

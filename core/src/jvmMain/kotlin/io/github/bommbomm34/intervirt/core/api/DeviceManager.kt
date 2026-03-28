@@ -42,14 +42,14 @@ class DeviceManager(
         val device = Device.Computer(
             id = id,
             image = image,
-            name = (name ?: id).toAtomic(),
-            x = x.toAtomic(),
-            y = y.toAtomic(),
-            ipv4 = project.generateIpv4().toAtomic(),
-            ipv6 = project.generateIpv6().toAtomic(),
-            mac = project.generateMac().toAtomic(),
-            internetEnabled = false.toAtomic(),
-            portForwardings = mutableListOf<PortForwarding>().toMutexVar(),
+            name = name ?: id,
+            x = x,
+            y = y,
+            ipv4 = project.generateIpv4(),
+            ipv6 = project.generateIpv6(),
+            mac = project.generateMac(),
+            internetEnabled = false,
+            portForwardings = listOf(),
         )
         return addComputer(device)
     }
@@ -60,9 +60,9 @@ class DeviceManager(
         project = Project.devices.modify(project) { it + device }
         guestManager.addContainer(
             id = device.id,
-            ipv4 = device.ipv4.get(),
-            ipv6 = device.ipv6.get(),
-            mac = device.mac.get(),
+            ipv4 = device.ipv4,
+            ipv6 = device.ipv6,
+            mac = device.mac,
             internet = false,
             image = device.image,
         ).getOrThrow()
@@ -74,9 +74,9 @@ class DeviceManager(
         val id = generateID("switch")
         val device = Device.Switch(
             id = id,
-            name = (name ?: id).toAtomic(),
-            x = x.toAtomic(),
-            y = y.toAtomic(),
+            name = name ?: id,
+            x = x,
+            y = y,
         )
         logger.debug { "Adding device $device" }
         project = Project.devices.modify(project) { it + device }
@@ -134,7 +134,8 @@ class DeviceManager(
     suspend fun setIpv4(device: Device.Computer, ipv4: String): Result<Unit> {
         device.requireExists()
         logger.debug { "Setting $ipv4 of $device" }
-        device.ipv4.set(ipv4)
+
+        project = project.modifyDevice(device) { device.copy(ipv4 = ipv4) }
         return guestManager.setIpv4(device.id, ipv4).map {
             logger.info { "Set $ipv4 of $device" }
         }
@@ -143,22 +144,22 @@ class DeviceManager(
     suspend fun setIpv6(device: Device.Computer, ipv6: String): Result<Unit> {
         device.requireExists()
         logger.debug { "Setting $ipv6 of $device" }
-        device.ipv6.set(ipv6)
+        project = project.modifyDevice(device) { device.copy(ipv6 = ipv6) }
         return guestManager.setIpv6(device.id, ipv6).map {
             logger.info { "Set $ipv6 of $device" }
         }
     }
 
-    suspend fun setName(device: Device, name: String) {
+    fun setName(device: Device, name: String) {
         device.requireExists()
-        device.name.set(name)
+        project = project.modifyDevice(device) { Device.name.set(device, name) }
         logger.debug { "Set name of ${device.name} to $name" }
     }
 
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean): Result<Unit> {
         device.requireExists()
         logger.debug { "Setting internet enabled of ${device.id} to $enabled" }
-        device.internetEnabled.set(enabled)
+        project = project.modifyDevice(device) { device.copy(internetEnabled = enabled) }
         return guestManager.setInternetAccess(device.id, enabled).map {
             logger.info { "Set internet enabled of ${device.id} to $enabled" }
         }
@@ -187,7 +188,9 @@ class DeviceManager(
         device.requireExists()
         portForwarding.requireValid()
         logger.debug { "Add port forwarding $portForwarding for ${device.id}" }
-        device.portForwardings.add(portForwarding)
+        project = project.modifyDevice(device) { _ ->
+            Device.Computer.portForwardings.modify(device) { it + portForwarding }
+        }
         if (!virtualContainerIO) qemuClient.addPortForwarding(
             protocol = portForwarding.protocol,
             externalPort = portForwarding.externalPort,
@@ -211,10 +214,14 @@ class DeviceManager(
         require(protocol.isValidProtocol()) { "Protocol $protocol is not valid!" }
         logger.debug { "Remove port forwarding of $externalPort" }
         val device = project.devices.firstOrNull { device ->
-            if (device is Device.Computer)
-                device.portForwardings.withLock {
-                    removeIf { it.externalPort == externalPort && it.protocol == protocol }
-                } else false
+            if (device is Device.Computer) {
+                Device.Computer.portForwardings.modify(device) { portForwardings ->
+                    portForwardings.filterNot {
+                        it.externalPort == externalPort && it.protocol == protocol
+                    }
+                }
+                true
+            } else false
         }
         requireNotNull(device) { "There was no device binding external port $externalPort on protocol $protocol" }
         if (!virtualContainerIO) qemuClient.removePortForwarding(
@@ -256,7 +263,7 @@ class DeviceManager(
         }
     }
 
-    suspend fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
+    fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
         computer.requireExists()
         logger.debug { "Initializing virtual container IO client for ${computer.id}" }
         val client = VirtualContainerIOClient(computer.id, wipeVirtualOnClose, executor, fileManager)
@@ -319,25 +326,21 @@ class DeviceManager(
         }
     }
 
-    private suspend fun validateComputer(computer: Device.Computer) {
+    private fun validateComputer(computer: Device.Computer) {
         // Validate image
         requireNotNull(computer.image.toReadableImage()) { "Invalid image: ${computer.image}" }
         // Validate IP
-        require(computer.ipv4.get().validateIpv4()) { "IPv4 address is invalid: ${computer.ipv4}" }
-        require(computer.ipv6.get().validateIpv6()) { "IPv6 address is invalid: ${computer.ipv6}" }
+        require(computer.ipv4.validateIpv4()) { "IPv4 address is invalid: ${computer.ipv4}" }
+        require(computer.ipv6.validateIpv6()) { "IPv6 address is invalid: ${computer.ipv6}" }
         // Validate MAC
-        require(computer.mac.get().validateMac()) { "MAC address is invalid: ${computer.mac}" }
+        require(computer.mac.validateMac()) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings
-        computer.portForwardings.withLock {
-            forEach {
-                it.requireValid()
-            }
-        }
+        computer.portForwardings.forEach { it.requireValid() }
     }
 
     private fun Device.exists() = project.devices.any { it.id == id }
 
-    private suspend fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
+    private fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
 
     private fun PortForwarding.requireValid() = require(validate()) { "Port forwarding is invalid: $this" }
 

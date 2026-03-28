@@ -37,14 +37,14 @@ class ContainerIOClientTest : KoinTest {
     val mockComputer = Device.Computer(
         id = "mock-computer",
         image = "debian/13",
-        name = "Mock Computer".toAtomic(),
-        x = 0.toAtomic(),
-        y = 0.toAtomic(),
-        ipv4 = "0.0.0.0".toAtomic(),
-        ipv6 = "::1".toAtomic(),
-        mac = "ff:ff:ff:ff:ff:ff".toAtomic(),
-        internetEnabled = false.toAtomic(),
-        portForwardings = mutableListOf<PortForwarding>().toMutexVar(),
+        name = "Mock Computer",
+        x = 0,
+        y = 0,
+        ipv4 = "0.0.0.0",
+        ipv6 = "::1",
+        mac = "ff:ff:ff:ff:ff:ff",
+        internetEnabled = false,
+        portForwardings = listOf(),
     )
     var path: Path? = null
 

@@ -30,7 +30,7 @@ data class Project(
     companion object
 }
 
-suspend fun Project.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
+fun Project.resolveNetworks(vararg connections: DeviceConnection): Map<String, Network> {
     val networks = mutableMapOf<String, Network>()
     val connections = connections.ifEmpty { this.connections.toTypedArray() }
     // Add switch networks
@@ -94,27 +94,25 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
                 )
                 addContainer(
                     id = device.id,
-                    ipv4 = device.ipv4.get(),
-                    ipv6 = device.ipv6.get(),
-                    mac = device.mac.get(),
-                    internet = device.internetEnabled.get(),
+                    ipv4 = device.ipv4,
+                    ipv6 = device.ipv6,
+                    mac = device.mac,
+                    internet = device.internetEnabled,
                     image = device.image,
                 ).getOrThrow()
-                device.portForwardings.withLock {
-                    forEach { portForwarding ->
-                        emit(
-                            ResultProgress.proceed(
-                                percentage = progress,
-                                message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
-                            ),
-                        )
-                        addPortForwarding(
-                            device.id,
-                            portForwarding.internalPort,
-                            portForwarding.externalPort,
-                            portForwarding.protocol,
-                        ).getOrThrow()
-                    }
+                device.portForwardings.forEach { portForwarding ->
+                    emit(
+                        ResultProgress.proceed(
+                            percentage = progress,
+                            message = "Adding port forwarding for ${device.name}: ${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}",
+                        ),
+                    )
+                    addPortForwarding(
+                        device.id,
+                        portForwarding.internalPort,
+                        portForwarding.externalPort,
+                        portForwarding.protocol,
+                    ).getOrThrow()
                 }
             }
         }
@@ -136,3 +134,10 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
 
 fun networkNameOfComputers(id1: String, id2: String) = "$id1-$id2-network"
 fun networkNameOfSwitch(id: String) = "$id-network"
+
+fun <T : Device> Project.modifyDevice(
+    device: T,
+    action: (T) -> T,
+): Project = Project.devices.modify(this) { devices ->
+    devices.map { if (it.id == device.id) action(device) else it }
+}

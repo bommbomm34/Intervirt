@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt
 
+import arrow.optics.copy
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
@@ -16,6 +17,8 @@ import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.devices
+import io.github.bommbomm34.intervirt.core.data.name
+import io.github.bommbomm34.intervirt.core.data.portForwardings
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
@@ -50,14 +53,14 @@ class DeviceSettingsTest : KoinTest {
     val testComputer = Device.Computer(
         id = "computer-22222",
         image = "debian/13",
-        name = "None".toAtomic(),
-        x = 0.toAtomic(),
-        y = 0.toAtomic(),
-        ipv4 = "0.0.0.0".toAtomic(),
-        ipv6 = "::".toAtomic(),
-        mac = "ff:ff:ff:ff:ff:ff".toAtomic(),
-        internetEnabled = false.toAtomic(),
-        portForwardings = mutableListOf<PortForwarding>().toMutexVar(),
+        name = "None",
+        x = 0,
+        y = 0,
+        ipv4 = "0.0.0.0",
+        ipv6 = "::",
+        mac = "ff:ff:ff:ff:ff:ff",
+        internetEnabled = false,
+        portForwardings = mutableListOf<PortForwarding>(),
     ).toViewDevice() as ViewDevice.Computer
     val testPortForwarding = PortForwarding(
         protocol = "tcp",
@@ -162,8 +165,8 @@ class DeviceSettingsTest : KoinTest {
     @Ignore
     @Test
     fun shouldLintPortForwardingThatIsAlreadyExternallyExposed() = runTest {
-        val secondTestComputer = testComputer.device.copy().apply {
-            portForwardings.add(PortForwarding("tcp", 2222, 22))
+        val secondTestComputer = Device.Computer.portForwardings.modify(testComputer.device) {
+            it + testPortForwarding
         }
         project = Project.devices.modify(project) { it + secondTestComputer }
         assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)

@@ -29,17 +29,17 @@ sealed class ViewDevice {
 
     data class Computer(override val device: Device.Computer) : ViewDevice() {
         override val id = device.id
-        override var name by mutableStateOf(device.name.get())
-        override var x by mutableStateOf(device.x.get())
-        override var y by mutableStateOf(device.y.get())
+        override var name by mutableStateOf(device.name)
+        override var x by mutableStateOf(device.x)
+        override var y by mutableStateOf(device.y)
         val image by mutableStateOf(device.image)
-        var ipv4 by mutableStateOf(device.ipv4.get())
-        var ipv6 by mutableStateOf(device.ipv6.get())
+        var ipv4 by mutableStateOf(device.ipv4)
+        var ipv6 by mutableStateOf(device.ipv6)
         var running by mutableStateOf(false) // Not inherited by Device.Computer
-        val mac = device.mac.get()
-        var internetEnabled by mutableStateOf(device.internetEnabled.get())
+        val mac = device.mac
+        var internetEnabled by mutableStateOf(device.internetEnabled)
         val portForwardings =
-            mutableStateListOf<PortForwarding>().apply { addAll(device.portForwardings.value) }
+            mutableStateListOf<PortForwarding>().apply { addAll(device.portForwardings) }
 
         override fun getVector() = Icons.Default.Computer
         override fun canConnect(project: Project) =
@@ -50,9 +50,9 @@ sealed class ViewDevice {
         override val device: Device.Switch,
     ) : ViewDevice() {
         override val id = device.id
-        override var name by mutableStateOf(device.name.get())
-        override var x by mutableStateOf(device.x.get())
-        override var y by mutableStateOf(device.y.get())
+        override var name by mutableStateOf(device.name)
+        override var x by mutableStateOf(device.x)
+        override var y by mutableStateOf(device.y)
         override fun getVector() = Icons.Default.Hub // Switches aren't hubs!
         override fun canConnect(project: Project) = true
     }
