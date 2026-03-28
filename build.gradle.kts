@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.gobleyUniffi) apply false
     alias(libs.plugins.atomicfu) apply false
     alias(libs.plugins.koin.compiler) apply false
+    alias(libs.plugins.ksp) apply false
     // Apply in every module
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.detekt)

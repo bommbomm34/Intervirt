@@ -7,6 +7,7 @@ plugins {
     kotlin("multiplatform")
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.koin.compiler)
+    alias(libs.plugins.ksp)
 }
 
 group = "io.github.bommbomm34.intervirt"
@@ -25,6 +26,7 @@ kotlin {
             implementation(libs.multiplatform.settings.serialization)
             implementation(libs.multiplatform.settings.test)
             implementation(libs.filekit.core)
+            implementation(libs.arrow.optics)
         }
         commonTest.dependencies {
             implementation(libs.koin.test)
@@ -46,6 +48,10 @@ kotlin {
             api(projects.secret)
         }
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.arrow.optics.ksp)
 }
 
 koinCompiler {

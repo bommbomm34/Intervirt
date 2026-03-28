@@ -25,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
@@ -48,7 +49,7 @@ class DnsResolverViewModelTest : KoinTest {
                     single { getHttpClient() }
                     single { Project.default() }
                     single<AppState>()
-                    single<Executor> { MockExecutor(get()) }
+                    single<MockExecutor>() bind Executor::class
                     single<FileManager>()
                     single<ContainerIOClient> {
                         VirtualContainerIOClient(
@@ -109,7 +110,7 @@ class DnsResolverViewModelTest : KoinTest {
     }
 }
 
-class MockExecutor(appEnv: AppEnv) : Executor(appEnv) {
+class MockExecutor : Executor {
     override fun runCommand(workingFolder: PlatformFile?, commands: List<String>): Flow<CommandStatus> = flow {
         val text = when {
             commands.contains("A") -> LOOKUP_DNS_A
