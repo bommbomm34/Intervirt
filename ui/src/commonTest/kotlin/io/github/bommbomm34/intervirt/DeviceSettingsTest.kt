@@ -5,27 +5,14 @@
 
 package io.github.bommbomm34.intervirt
 
-import arrow.optics.copy
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.api.Executor
-import io.github.bommbomm34.intervirt.core.api.FileManager
-import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.QemuClient
+import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.data.devices
-import io.github.bommbomm34.intervirt.core.data.name
-import io.github.bommbomm34.intervirt.core.data.portForwardings
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.add
-import io.github.bommbomm34.intervirt.core.util.toAtomic
-import io.github.bommbomm34.intervirt.core.util.toMutexVar
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.toViewDevice
@@ -41,13 +28,7 @@ import org.koin.plugin.module.dsl.viewModel
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import java.net.ServerSocket
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Ignore
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.*
 
 class DeviceSettingsTest : KoinTest {
     val testComputer = Device.Computer(
