@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
+import io.github.bommbomm34.intervirt.core.toFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration
@@ -30,10 +31,10 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         mac: String,
         internet: Boolean,
         image: String,
-    ): Result<Unit> {
+    ): Flow<ResultProgress<Unit>> {
         delay()
         containers.add(Container(id, ipv4, ipv6, mac, internet, image))
-        return Result.success(Unit)
+        return Result.success(Unit).toFlow()
     }
 
     override suspend fun removeContainer(id: String): Result<Unit> {

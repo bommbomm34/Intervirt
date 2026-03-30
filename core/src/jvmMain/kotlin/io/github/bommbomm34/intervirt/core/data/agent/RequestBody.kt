@@ -100,11 +100,13 @@ sealed class RequestBody {
     ) : RequestBody()
 
     @SerialName("AddNetwork")
+    @Serializable
     data class AddNetwork(
         val name: String,
     ) : RequestBody()
 
     @SerialName("RemoveNetwork")
+    @Serializable
     data class RemoveNetwork(
         val name: String,
     ) : RequestBody()

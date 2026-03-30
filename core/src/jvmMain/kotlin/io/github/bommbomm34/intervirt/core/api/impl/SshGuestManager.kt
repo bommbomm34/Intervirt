@@ -17,10 +17,12 @@ import io.github.bommbomm34.intervirt.core.data.incus.IncusInstanceInfo
 import io.github.bommbomm34.intervirt.core.data.incus.IncusNetwork
 import io.github.bommbomm34.intervirt.core.data.incus.IncusNetworkForwardInfo
 import io.github.bommbomm34.intervirt.core.defaultJson
+import io.github.bommbomm34.intervirt.core.toFlow
 import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * [GuestManager] using Unix Sockets for communication
@@ -41,12 +43,12 @@ class SshGuestManager(
         mac: String,
         internet: Boolean,
         image: String,
-    ): Result<Unit> = runSuspendingCatching {
+    ): Flow<ResultProgress<Unit>> = runSuspendingCatching {
         // Create container
         incus("launch", image, id).getOrThrow()
         // Create network device
         createNetwork(id, ipv4, ipv6, mac, internet).getOrThrow()
-    }
+    }.toFlow()
 
     override suspend fun removeContainer(id: String): Result<Unit> = incus("delete", id)
 

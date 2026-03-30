@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDo
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.util.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.ext.toReadableImage
 import java.net.ServerSocket
@@ -65,7 +66,7 @@ class DeviceManager(
             mac = device.mac,
             internet = false,
             image = device.image,
-        ).getOrThrow()
+        ).lastResult().getOrThrow() // TODO: Propagate flow
         logger.info { "Added device $device" }
         device
     }

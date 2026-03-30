@@ -10,6 +10,7 @@ import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.vinceglb.filekit.PlatformFile
@@ -17,6 +18,10 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.transformWhile
 import kotlinx.serialization.json.Json
 import org.koin.core.module.KoinDslMarker
 import org.koin.core.module.Module
@@ -42,7 +47,7 @@ fun getHttpClient(): HttpClient = HttpClient(CIO) {
         requestTimeout = 0
     }
     install(WebSockets) {
-        contentConverter = KotlinxWebsocketSerializationConverter(Json)
+        contentConverter = KotlinxWebsocketSerializationConverter(defaultJson)
     }
 }
 
@@ -52,6 +57,7 @@ fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings, LogL
     VIRTUAL_CONTAINER_IO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true
     EXPERIMENTAL_SSH_GUEST_MODE = System.getenv("INTERVIRT_TEST_EXPERIMENTAL_SSH_GUEST_MODE").toBoolean()
     DATA_DIR = PlatformFile(Files.createTempDirectory("intervirt-test").absolutePathString())
+    LOG_LEVEL = LogLevel.DEBUG
 }
 
 val totalDiskSpace: Long
@@ -68,3 +74,10 @@ val unixTimestamp: Long
     get() = Clock.System.now().epochSeconds
 
 fun Module.singleProject() = single { Project().toAtomic() }
+
+fun Result<Unit>.toFlow(): Flow<ResultProgress<Unit>> = flowOf(ResultProgress.result(this))
+
+fun <T> Flow<T>.takeWhileInclusive(predicate: suspend (T) -> Boolean) = transformWhile {
+    emit(it)
+    predicate(it)
+}

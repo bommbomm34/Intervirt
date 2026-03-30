@@ -49,7 +49,7 @@ class GuestManagerTest : KoinTest {
     val guestManager: GuestManager by inject()
 
     @BeforeTest
-    fun startTest() {
+    fun startTest() = runTest {
         val appEnv = getTestAppEnv()
         startKoin {
             modules(
@@ -240,7 +240,7 @@ class GuestManagerTest : KoinTest {
             internet = false,
             image = "my-image",
         )
-        guestManager.addContainer(info).getOrThrow()
+        guestManager.addContainer(info).lastResult().getOrThrow()
         return info
     }
 
@@ -260,8 +260,8 @@ class GuestManagerTest : KoinTest {
 
     @AfterTest
     fun stopTest() = runTest {
-        guestManager.wipe().lastResult().getOrThrow()
+//        guestManager.wipe().lastResult().getOrThrow()
+        guestManager.close().getOrThrow()
         stopKoin()
     }
 }
-

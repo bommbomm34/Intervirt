@@ -8,10 +8,14 @@ package io.github.bommbomm34.intervirt.core.data.agent
 import io.github.bommbomm34.intervirt.core.exceptions.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 sealed class ResponseBody {
     abstract val refID: String
+
+    open val end: Boolean get() = true
+    open val success: Boolean get() = true
 
     @SerialName("General")
     @Serializable
@@ -21,7 +25,11 @@ sealed class ResponseBody {
         val code: Int = 0,
         val progress: Float? = null,
         val output: String? = null,
+        val status: Int = 0,
     ) : ResponseBody() {
+        override val end get() = status >= 0
+        override val success get() = code == 0
+
         fun exception(): Exception? {
             return when (code) {
                 1 -> UndefinedException(error!!)
@@ -35,6 +43,7 @@ sealed class ResponseBody {
                 // Error codes reserved internally for Intervirt Client
                 100 -> AgentTimeoutException(refID)
                 0 -> null
+                -1 -> error("The request isn't final yet: $this")
                 else -> error("Invalid status code $code")
             }
         }

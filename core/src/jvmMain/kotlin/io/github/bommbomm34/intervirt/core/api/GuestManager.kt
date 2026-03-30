@@ -20,7 +20,7 @@ interface GuestManager : AsyncCloseable {
         mac: String,
         internet: Boolean,
         image: String,
-    ): Result<Unit>
+    ): Flow<ResultProgress<Unit>>
 
     suspend fun addContainer(container: ContainerInfo) = addContainer(
         id = container.id,

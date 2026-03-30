@@ -8,18 +8,11 @@ package io.github.bommbomm34.intervirt.core.api.impl
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
-import io.github.bommbomm34.intervirt.core.data.agent.Network
-import io.github.bommbomm34.intervirt.core.data.agent.RequestBody
-import io.github.bommbomm34.intervirt.core.data.agent.ResponseBody
-import io.github.bommbomm34.intervirt.core.data.agent.commandBody
+import io.github.bommbomm34.intervirt.core.data.agent.*
+import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
-import io.github.bommbomm34.intervirt.core.util.ext.catchTimeout
-import io.github.bommbomm34.intervirt.core.util.ext.getLogger
-import io.github.bommbomm34.intervirt.core.util.ext.result
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
-import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
-
+import io.github.bommbomm34.intervirt.core.takeWhileInclusive
+import io.github.bommbomm34.intervirt.core.util.ext.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -29,6 +22,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
+
+private const val LOG_RAW_JSON = false
 
 class AgentGuestManager(
     appEnv: AppEnv,
@@ -48,7 +43,7 @@ class AgentGuestManager(
         mac: String,
         internet: Boolean,
         image: String,
-    ): Result<Unit> = justSend(RequestBody.AddContainer(id, ipv4, ipv6, mac, internet, image))
+    ): Flow<ResultProgress<Unit>> = flowSend(RequestBody.AddContainer(id, ipv4, ipv6, mac, internet, image))
 
     override suspend fun removeContainer(id: String): Result<Unit> = justSend(RequestBody.RemoveContainer(id))
 
@@ -158,9 +153,11 @@ class AgentGuestManager(
                         this@flow.emit(ResultProgress.failure(AgentTimeoutException(body.uuid)))
                     }
                     .collect {
-                        if (it.code != 0) {
+                        if (!it.success) {
                             failed = true
-                            emit(ResultProgress.failure(it.exception()!!))
+                            val exception = it.exception()!!
+                            logger.error(exception) { "Request failed: $body" }
+                            emit(ResultProgress.failure(exception))
                         } else {
                             emit(ResultProgress.proceed(it.progress ?: 0f, it.output))
                         }
@@ -176,21 +173,25 @@ class AgentGuestManager(
     @OptIn(FlowPreview::class)
     @Suppress("UNCHECKED_CAST")
     private suspend fun <T : ResponseBody> send(body: RequestBody): Result<Flow<T>> {
-        logger.debug { "Checking connection with agent" }
+        logger.debug { "Sending request $body" }
         return listen().map {
             requests[body.uuid] = MutableSharedFlow()
             session!!.sendSerialized(body)
             requests[body.uuid]!!
-                .onCompletion {
+                .takeWhileInclusive { !it.end }
+                .onCompletion { throwable ->
+                    throwable?.let {
+                        if (!it.isMuted()) logger.error(it) { "Failed request: ${body.uuid}" }
+                    } ?: logger.debug { "Completed request ${body.uuid}" }
                     requests.remove(body.uuid)
                 }
                 .map { it as T }
-                .timeout(timeout)
+//                .timeout(timeout) // TODO: Fix timeout bug
         }
     }
 
     private suspend fun listen(): Result<Unit> {
-        session?.let { ws ->
+        if (session == null) {
             val result = runSuspendingCatching {
                 session = client.webSocketSession(
                     method = HttpMethod.Get,
@@ -198,21 +199,25 @@ class AgentGuestManager(
                     port = agentPort,
                     path = "containerManagement",
                 )
+                session!!
             }
-            result.onSuccess {
+            result.onSuccess { session ->
                 listenJob = CoroutineScope(Dispatchers.IO).launch {
                     while (true) {
                         try {
-                            val response = ws.receiveDeserialized<ResponseBody>()
-                            requests[response.refID]?.emit(response)
-                                ?: logger.error { "Received response without corresponding request: $response" }
+                            val response = session.receiveLogging()
+
+                            requests[response.refID]?.let {
+                                it.emit(response)
+                                logger.debug { "Received response successfully: $response" }
+                            } ?: logger.error { "Received response without corresponding request: $response" }
                         } catch (e: WebsocketDeserializeException) {
                             if (e.frame is Frame.Close) break else throw e
                         }
                     }
                 }
             }
-            return result
+            return result.map { }
         }
 
         return Result.success(Unit)
@@ -222,5 +227,22 @@ class AgentGuestManager(
         listenJob?.cancel()
         session?.close()
         Unit
+    }
+
+    private fun Throwable.isMuted(): Boolean = setOf(
+        this is TimeoutCancellationException,
+        this::class.qualifiedName == "kotlinx.coroutines.flow.internal.AbortFlowException"
+    ).any { it }
+
+    private suspend fun ClientWebSocketSession.receiveLogging(): ResponseBody {
+        val text = when (val frame = incoming.receive()) {
+            is Frame.Text -> frame.readText()
+            is Frame.Binary -> throw WebsocketDeserializeException("Frame should be Frame.text", frame = frame)
+            is Frame.Close -> throw WebsocketDeserializeException("Session is closed", frame = frame)
+            else -> throw WebsocketDeserializeException("Unexpected frame type: $frame", frame = frame)
+        }
+
+        if (LOG_RAW_JSON) logger.debug { "Received JSON: $text" }
+        return defaultJson.decodeFromString(text)
     }
 }
