@@ -50,6 +50,8 @@ data class AppEnv(
 
     var QEMU_MONITOR_TIMEOUT: Int by delegate(5000)
 
+    var AGENT_HOST: String by delegate("localhost")
+
     var AGENT_PORT: Int by delegate(55436)
 
     var VM_SHUTDOWN_TIMEOUT: Long by delegate(30000)

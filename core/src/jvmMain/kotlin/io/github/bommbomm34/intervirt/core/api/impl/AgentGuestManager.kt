@@ -35,6 +35,7 @@ class AgentGuestManager(
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<ResponseBody>>()
     private val agentPort = appEnv.AGENT_PORT
     private val timeout = appEnv.AGENT_WEBSOCKET_TIMEOUT.milliseconds
+    private val host = appEnv.AGENT_HOST
 
     override suspend fun addContainer(
         id: String,
@@ -197,7 +198,7 @@ class AgentGuestManager(
             val result = runSuspendingCatching {
                 session = client.webSocketSession(
                     method = HttpMethod.Get,
-                    host = "localhost",
+                    host = host,
                     port = agentPort,
                     path = "containerManagement",
                 )
