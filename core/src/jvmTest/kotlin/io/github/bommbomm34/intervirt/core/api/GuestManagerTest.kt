@@ -87,7 +87,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldSetIpv4() = runTest {
         val container = addTestContainer()
-        val newIP = "192.168.144.189"
+        val newIP = "192.168.0.189"
         guestManager.setIpv4(
             id = TEST_CONTAINER_ID,
             newIP = newIP,
@@ -98,7 +98,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldSetIpv6() = runTest {
         val container = addTestContainer()
-        val newIP = "fd09:cc44:0af9:e495:1463:5f83:ad54:260b"
+        val newIP = "fd42:3e1a:3e81:5d6d:216:3eff:fe23:3161"
         guestManager.setIpv6(
             id = TEST_CONTAINER_ID,
             newIP = newIP,
@@ -235,10 +235,10 @@ class GuestManagerTest : KoinTest {
         val info = ContainerInfo(
             id = id,
             ipv4 = randomIpv4(),
-            ipv6 = randomIpv6(),
+            ipv6 = "fd42:3e1a:3e81:5d6d:216:3eff:fe23:3160",
             mac = randomMac(),
             internet = false,
-            image = "my-image",
+            image = "debian/13",
         )
         guestManager.addContainer(info).lastResult().getOrThrow()
         return info
@@ -260,7 +260,7 @@ class GuestManagerTest : KoinTest {
 
     @AfterTest
     fun stopTest() = runTest {
-//        guestManager.wipe().lastResult().getOrThrow()
+        guestManager.wipe().lastResult().getOrThrow()
         guestManager.close().getOrThrow()
         stopKoin()
     }

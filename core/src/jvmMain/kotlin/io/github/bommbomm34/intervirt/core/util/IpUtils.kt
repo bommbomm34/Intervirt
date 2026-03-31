@@ -44,8 +44,8 @@ fun randomMac(): String {
 }
 
 fun randomIpv4(): String {
-    fun rand() = Random.nextInt(256)
-    return "192.168.${rand()}.${rand()}"
+    fun rand() = Random.nextInt(255)
+    return "192.168.0.${rand()}"
 }
 
 fun randomIpv6(): String {

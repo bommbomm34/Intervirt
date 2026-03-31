@@ -5,4 +5,4 @@
 
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class UnknownException : AgentException()
+class UnknownException(uuid: String? = null) : AgentException(uuid = uuid)

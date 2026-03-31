@@ -5,4 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class UndefinedException(error: String) : AgentException(error)
+class UndefinedException(
+    error: String,
+    uuid: String? = null,
+) : AgentException(error, uuid)

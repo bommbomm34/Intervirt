@@ -5,4 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class NotFoundException(error: String) : AgentException(error)
+class NotFoundException(
+    error: String,
+    uuid: String? = null,
+) : AgentException(error, uuid)

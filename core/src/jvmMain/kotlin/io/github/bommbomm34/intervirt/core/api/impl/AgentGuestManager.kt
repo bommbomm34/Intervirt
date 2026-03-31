@@ -178,6 +178,9 @@ class AgentGuestManager(
             requests[body.uuid] = MutableSharedFlow()
             session!!.sendSerialized(body)
             requests[body.uuid]!!
+                .map {
+                    if (it.success) it as T else throw (it as ResponseBody.General).exception()!!
+                }
                 .takeWhileInclusive { !it.end }
                 .onCompletion { throwable ->
                     throwable?.let {
@@ -185,7 +188,6 @@ class AgentGuestManager(
                     } ?: logger.debug { "Completed request ${body.uuid}" }
                     requests.remove(body.uuid)
                 }
-                .map { it as T }
 //                .timeout(timeout) // TODO: Fix timeout bug
         }
     }

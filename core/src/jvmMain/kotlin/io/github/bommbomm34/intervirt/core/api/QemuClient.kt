@@ -10,6 +10,7 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.OSException
+import io.github.bommbomm34.intervirt.core.exceptions.QemuException
 import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.atomic
@@ -75,7 +76,7 @@ class QemuClient(
                 while (!running) {
                     if (!currentProcess.isAlive) {
                         // QEMU start process failed
-                        val error = OSException(tempReader.readText())
+                        val error = QemuException("QEMU start process failed")
                         logger.error(error) { "Process exited unexpectedly" }
                         throw error
                     }

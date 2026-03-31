@@ -5,7 +5,4 @@
 
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class ContainerExecutionException(
-    error: String,
-    uuid: String? = null,
-) : AgentException(error, uuid)
+class DockerContainerExecutionException(override val message: String?) : Exception(message)

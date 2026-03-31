@@ -5,4 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class OperationAlreadyPerformedException : AgentException()
+class OperationAlreadyPerformedException(
+    error: String? = null,
+    uuid: String? = null,
+) : AgentException(error ?: "", uuid)

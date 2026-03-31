@@ -5,4 +5,4 @@
 
 package io.github.bommbomm34.intervirt.core.exceptions
 
-class NotSupportedOperationException : AgentException()
+class NotSupportedOperationException(uuid: String? = null) : AgentException(uuid = uuid)

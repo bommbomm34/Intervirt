@@ -32,13 +32,13 @@ sealed class ResponseBody {
 
         fun exception(): Exception? {
             return when (code) {
-                1 -> UndefinedException(error!!)
-                2 -> UnknownException()
-                3 -> OperationAlreadyPerformedException()
-                4 -> OSException(error!!)
-                5 -> ContainerExecutionException(error!!)
-                6 -> NotFoundException(error!!)
-                7 -> NotSupportedOperationException()
+                1 -> UndefinedException(error!!, refID)
+                2 -> UnknownException(refID)
+                3 -> OperationAlreadyPerformedException(error, refID)
+                4 -> OSException(error!!, refID)
+                5 -> ContainerExecutionException(error!!, refID)
+                6 -> NotFoundException(error!!, refID)
+                7 -> NotSupportedOperationException(refID)
                 8 -> IllegalArgumentException(error!!)
                 // Error codes reserved internally for Intervirt Client
                 100 -> AgentTimeoutException(refID)

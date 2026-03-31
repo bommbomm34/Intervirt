@@ -9,6 +9,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
+import io.github.bommbomm34.intervirt.core.exceptions.DockerContainerExecutionException
 import io.github.bommbomm34.intervirt.core.util.ext.addFirst
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 
@@ -57,7 +58,7 @@ class SystemServiceManager(
         return res.fold(
             onSuccess = {
                 val (output, statusCode) = it.getCommandResult()
-                if (statusCode == 0) Result.success(output) else Result.failure(ContainerExecutionException(output))
+                if (statusCode == 0) Result.success(output) else Result.failure(DockerContainerExecutionException(output))
             },
             onFailure = { Result.failure(it) },
         )
