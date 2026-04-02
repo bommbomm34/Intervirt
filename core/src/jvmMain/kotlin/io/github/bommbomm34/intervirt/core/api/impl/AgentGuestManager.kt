@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.*
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
+import io.github.bommbomm34.intervirt.core.exceptions.IllegalAgentResponseException
 import io.github.bommbomm34.intervirt.core.takeWhileInclusive
 import io.github.bommbomm34.intervirt.core.util.ext.*
 import io.ktor.client.*
@@ -136,7 +137,7 @@ class AgentGuestManager(
         }
     }
 
-    private suspend fun <T : ResponseBody> firstSend(body: RequestBody): Result<T> {
+    private suspend inline fun <reified T : ResponseBody> firstSend(body: RequestBody): Result<T> {
         val response = send<T>(body)
         return response.mapCatching {
             it
@@ -173,14 +174,19 @@ class AgentGuestManager(
 
     @OptIn(FlowPreview::class)
     @Suppress("UNCHECKED_CAST")
-    private suspend fun <T : ResponseBody> send(body: RequestBody): Result<Flow<T>> {
-        logger.debug { "Sending request $body" }
+    private suspend inline fun <reified T : ResponseBody> send(body: RequestBody): Result<Flow<T>> {
+        logger.debug { "Sending request $body with UUID ${body.uuid}" }
         return listen().map {
             requests[body.uuid] = MutableSharedFlow()
             session!!.sendSerialized(body)
             requests[body.uuid]!!
                 .map {
-                    if (it.success) it as T else throw (it as ResponseBody.General).exception()!!
+                    if (it.success) {
+                        it as? T ?: throw IllegalAgentResponseException(
+                            "Expected ${T::class.simpleName} as response, but got ${it::class.simpleName}: $it",
+                            body.uuid,
+                        )
+                    } else throw (it as ResponseBody.General).exception()!!
                 }
                 .takeWhileInclusive { !it.end }
                 .onCompletion { throwable ->
@@ -234,7 +240,7 @@ class AgentGuestManager(
 
     private fun Throwable.isMuted(): Boolean = setOf(
         this is TimeoutCancellationException,
-        this::class.qualifiedName == "kotlinx.coroutines.flow.internal.AbortFlowException"
+        this::class.qualifiedName == "kotlinx.coroutines.flow.internal.AbortFlowException",
     ).any { it }
 
     private suspend fun ClientWebSocketSession.receiveLogging(): ResponseBody {

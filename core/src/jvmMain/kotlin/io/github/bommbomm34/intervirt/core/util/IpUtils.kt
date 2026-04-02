@@ -40,11 +40,14 @@ fun randomMac(): String {
     fun rand() = Random.nextInt(256)
         .toString(16)
         .padZero(2)
-    return "${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
+    fun randFirst(): String = ((Random.nextInt(256) and 0b1111_1100) or 0b0000_0010)
+        .toString(16)
+        .padZero(2)
+    return "${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
 }
 
 fun randomIpv4(): String {
-    fun rand() = Random.nextInt(255)
+    fun rand() = Random.nextInt(2, 255)
     return "192.168.0.${rand()}"
 }
 

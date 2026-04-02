@@ -148,6 +148,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldStartContainer() = runTest {
         val container = addTestContainer()
+        guestManager.stopContainer(TEST_CONTAINER_ID).getOrThrow() // Containers start by default
         guestManager.startContainer(TEST_CONTAINER_ID).getOrThrow()
         assertTrue { container.getContainer().running }
     }
