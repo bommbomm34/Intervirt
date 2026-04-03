@@ -64,6 +64,7 @@ sealed class ResponseBody {
     ) : ResponseBody()
 
     @SerialName("NetworkList")
+    @Serializable
     data class NetworkList(
         override val refID: String,
         val networks: Map<String, List<String>>,

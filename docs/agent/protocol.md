@@ -463,6 +463,7 @@ Message from server:
 
 ```json
 {
+	 "type": "Version"
     "version": "1.2.3" // Version of the Intervirt Agent
 }
 ```
@@ -482,6 +483,7 @@ Message from server:
 
 ```json
 {
+	"type": "ContainerList",
 	"containers": [ // Array of containers
 		{
 			"id": "computer-67676",
@@ -503,6 +505,27 @@ Message from server:
 }
 ```
 
+### Get networks
+Message from client:
+
+```json
+{
+	"type": "Command",
+	"command": "networks"
+}
+```
+
+Message from server:
+
+```json
+{
+	"type": "NetworkList",
+	"networks": {
+		"network-1": ["id1", "id2"], // NETWORK_NAME: Array of connected devices
+		"network-2": ["id3, "id1"]		
+	}
+}
+```
 ### Add network
 
 Message from client:
@@ -579,5 +602,4 @@ Intervirt has its own error codes:
 - If no status code is sent, the client will default to the status code ```0```.
 - The example responses don't include ```refID```. Please include it in production. It should contain the ```uuid``` of
   the request which the response refers to.
-- Always return a ```type``` field in the JSON responses. It should be ```Version``` (if the client requests the
-  version), otherwise ```General```
+- Always return a ```type``` field in the JSON responses. It should be ```General``` unless it is declared otherwise explicitly.
