@@ -32,7 +32,7 @@ zip4j = "2.11.6"
 kotlinx-datetime = "0.7.1-0.6.x-compat"
 detekt = "2.0.0-alpha.2"
 arrow = "2.2.2.1"
-ksp = "2.3.6"
+ksp = "2.3.7"
 
 [libraries]
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
