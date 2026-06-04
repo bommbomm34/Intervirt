@@ -7,25 +7,17 @@ package io.github.bommbomm34.intervirt.core.api
 
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
-import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
-import io.github.bommbomm34.intervirt.core.api.impl.SshGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.mock.MockSshGuestClient
-import io.github.bommbomm34.intervirt.core.util.ext.asSuccess
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
-import io.github.bommbomm34.intervirt.core.util.randomIpv6
 import io.github.bommbomm34.intervirt.core.util.randomMac
 import io.github.bommbomm34.intervirt.core.util.toHex
 import io.ktor.client.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
@@ -60,13 +52,8 @@ class GuestManagerTest : KoinTest {
                         single<GuestManager> { VirtualGuestManager(0.seconds) }
                     } else {
                         single<AppEnv> { appEnv }
-                        if (appEnv.EXPERIMENTAL_SSH_GUEST_MODE) {
-                            single<MockSshGuestClient>() bind SshGuestClient::class
-                            single<SshGuestManager>() bind GuestManager::class
-                        } else {
-                            single<HttpClient> { getHttpClient() }
-                            single<AgentGuestManager>() bind GuestManager::class
-                        }
+                        single<HttpClient> { getHttpClient() }
+                        single<AgentGuestManager>() bind GuestManager::class
                     }
                 },
             )

@@ -55,7 +55,6 @@ fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings, LogL
     DEBUG_ENABLED = true
     VIRTUAL_AGENT_MODE = System.getenv("INTERVIRT_TEST_VIRTUAL_AGENT_MODE")?.toBoolean() ?: true
     VIRTUAL_CONTAINER_IO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true
-    EXPERIMENTAL_SSH_GUEST_MODE = System.getenv("INTERVIRT_TEST_EXPERIMENTAL_SSH_GUEST_MODE").toBoolean()
     DATA_DIR = PlatformFile(Files.createTempDirectory("intervirt-test").absolutePathString())
     LOG_LEVEL = LogLevel.DEBUG
 }
