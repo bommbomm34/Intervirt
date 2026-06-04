@@ -5,7 +5,6 @@
 
 package io.github.bommbomm34.intervirt.core.data.agent
 
-import io.github.bommbomm34.intervirt.core.data.Network
 import io.github.bommbomm34.intervirt.core.exceptions.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -68,6 +67,6 @@ sealed class ResponseBody {
     @Serializable
     data class NetworkList(
         override val refID: String,
-        val networks: List<Network>,
+        val networks: Map<String, List<String>>,
     ) : ResponseBody()
 }
