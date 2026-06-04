@@ -5,6 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl
 
+import arrow.core.raise.context.Raise
+import arrow.core.raise.context.bind
+import arrow.core.recover
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.command.PullImageResultCallback
@@ -16,7 +19,9 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
@@ -41,7 +46,7 @@ class ActualDockerManager(
     private var client: DockerClient? = null
     private val logger = appEnv.getLogger(ActualDockerManager::class)
 
-    override suspend fun init(): Result<Unit> = catch {
+    override suspend fun init(): AppResult<Unit> = catch {
         logger.debug { "Initializing ActualDockerManager with host $host" }
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
             .withDockerHost(host)
@@ -103,26 +108,26 @@ class ActualDockerManager(
                 .withEnv(env.map { "${it.key}=${it.value}" })
 
             emit(ResultProgress.success((if (hostName != null) cmd.withHostName(hostName) else cmd).exec().id))
-        }.onFailure { emit(ResultProgress.failure(it)) }
+        }.onLeft { emit(ResultProgress.failure(it)) }
     }
 
-    override suspend fun removeContainer(id: String): Result<Unit> = catch {
+    override suspend fun removeContainer(id: String): AppResult<Unit> = catch {
         getClient().removeContainerCmd(id).exec()
     }
 
-    override suspend fun startContainer(id: String): Result<Unit> = catch {
+    override suspend fun startContainer(id: String): AppResult<Unit> = catch {
         getClient().startContainerCmd(id).exec()
     }
 
-    override suspend fun stopContainer(id: String): Result<Unit> = catch {
+    override suspend fun stopContainer(id: String): AppResult<Unit> = catch {
         getClient().stopContainerCmd(id).exec()
     }
 
-    override suspend fun restartContainer(id: String): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    override suspend fun restartContainer(id: String): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
         getClient().restartContainerCmd(id).exec()
     }
 
-    override suspend fun getContainer(name: String): Result<String?> = withCatchingContext(Dispatchers.IO) {
+    override suspend fun getContainer(name: String): AppResult<String?> = withCatchingContext(Dispatchers.IO) {
         val containers = getClient()
             .listContainersCmd()
             .withShowAll(true)
@@ -131,18 +136,18 @@ class ActualDockerManager(
         containers.getOrNull(0)?.id
     }
 
-    override suspend fun isContainerRunning(id: String): Result<Boolean> = withCatchingContext(Dispatchers.IO) {
+    override suspend fun isContainerRunning(id: String): AppResult<Boolean> = withCatchingContext(Dispatchers.IO) {
         val res = getClient()
             .inspectContainerCmd(id)
             .exec()
         res.state.running ?: false
     }
 
-    override suspend fun exec(id: String, commands: List<String>): Result<Flow<CommandStatus>> =
+    override suspend fun exec(id: String, commands: List<String>): AppResult<Flow<CommandStatus>> =
         withCatchingContext(Dispatchers.IO) {
             logger.debug { "Executing ${commands.joinToString(" ")} on container $id" }
             // Before performing any operations, check its health
-            checkHealth(id).getOrThrow()
+            checkHealth(id).bind()
             val client = getClient()
             val exec = client
                 .execCreateCmd(id)
@@ -199,7 +204,8 @@ class ActualDockerManager(
 
                 override fun onError(throwable: Throwable) {
                     runBlocking {
-                        emit(ResultProgress.failure(throwable))
+                        // TODO: Improve error
+                        emit(ResultProgress.failure(Failure.Unexpected(throwable)))
                     }
                 }
 
@@ -215,15 +221,15 @@ class ActualDockerManager(
                     .awaitCompletion()
             } catch (_: NotModifiedException) {
             } // Ignore it
-        }.onFailure { emit(ResultProgress.failure(it)) }
+        }.onLeft { emit(ResultProgress.failure(it)) }
     }
 
-    override suspend fun checkHealth(id: String): Result<Unit> = catch {
+    override suspend fun checkHealth(id: String): AppResult<Unit> = catch {
         val res = getClient().inspectContainerCmd(id).exec()
         if (res.state.exitCodeLong != 0L) throw UnhealthyDockerContainerException(res.state.error ?: "Unknown error")
     }
 
-    override suspend fun close(): Result<Unit> = catch {
+    override suspend fun close(): AppResult<Unit> = catch {
         getClient().close()
     }
 
@@ -234,8 +240,8 @@ class ActualDockerManager(
     }
 
     private suspend fun catch(
-        block: suspend CoroutineScope.() -> Unit,
-    ): Result<Unit> = withCatchingContext(Dispatchers.IO, block).recoverCatching {
-        if (it is NotModifiedException) Unit else throw it
+        block: suspend context(Raise<Failure>) CoroutineScope.() -> Unit,
+    ): AppResult<Unit> = withCatchingContext(Dispatchers.IO, block).recover {
+        if (it is Failure.Unexpected && it.exception is NotModifiedException) Unit else raise(it)
     }
 }

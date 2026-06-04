@@ -5,19 +5,24 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.raise.context.bind
+import arrow.core.raise.context.either
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
+import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
+import io.github.bommbomm34.intervirt.core.util.ext.toAppResult
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.bommbomm34.intervirt.secret.SecretService
 
 import jakarta.mail.*
@@ -25,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
+// TODO: Improve error handling
 class MailClientManager(
     osClient: IntervirtOSClient,
     appEnv: AppEnv,
@@ -41,133 +47,125 @@ class MailClientManager(
     suspend fun init(
         mailConnectionDetails: MailConnectionDetails,
         proxy: Address,
-    ): Result<Unit> = withContext(Dispatchers.IO) {
-        runCatching {
-            fun Properties.putDefaultProperties(
-                ref: String,
-                addr: Address,
-                safety: MailConnectionSafety,
-            ) {
-                when (safety) {
-                    MailConnectionSafety.STARTTLS -> {
-                        put("mail.$ref.starttls.enable", true)
-                        put("mail.$ref.starttls.required", true)
-                    }
+    ): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+        fun Properties.putDefaultProperties(
+            ref: String,
+            addr: Address,
+            safety: MailConnectionSafety,
+        ) {
+            when (safety) {
+                MailConnectionSafety.STARTTLS -> {
+                    put("mail.$ref.starttls.enable", true)
+                    put("mail.$ref.starttls.required", true)
+                }
 
-                    MailConnectionSafety.SECURE -> put("mail.$ref.ssl.enable", true)
-                    else -> {}
-                }
-                put("mail.$ref.auth", true)
-                put("mail.$ref.host", addr.host)
-                put("mail.$ref.port", addr.port)
-                put("mail.$ref.socks.host", proxy.host)
-                put("mail.$ref.socks.port", proxy.port)
+                MailConnectionSafety.SECURE -> put("mail.$ref.ssl.enable", true)
+                else -> {}
             }
-            val (smtp, smtpSafety, imap, imapSafety, username, password) = mailConnectionDetails
-            // Init SMTP
-            logger.debug { "Initializing connection via SMTP with $smtp" }
-            val authenticator = getAuthenticator(username, password)
-            val smtpProperties = Properties().apply {
-                val ref = when (smtpSafety) {
-                    MailConnectionSafety.SECURE -> "smtps"
-                    else -> "smtp"
-                }
-                putDefaultProperties(ref, smtp, smtpSafety)
-            }
-            smtpSession = Session.getInstance(smtpProperties, authenticator)
-            logger.debug { "Initializing connection via IMAP with $imap" }
-            val imapRef = when (imapSafety) {
-                MailConnectionSafety.SECURE -> "imaps"
-                else -> "imap"
-            }
-            // Init IMAP
-            val imapProperties = Properties().apply {
-
-                if (imapSafety == MailConnectionSafety.STARTTLS) {
-                    put("mail.$imapRef.starttls.enable", true)
-                    put("mail.$imapRef.starttls.required", true)
-                }
-                putDefaultProperties(imapRef, imap, imapSafety)
-            }
-            val imapSession = Session.getInstance(imapProperties)
-            val store = imapSession.getStore(imapRef)
-            store.connect(username, password)
-            imapStore = store
-            mailUser = username.parseMailAddress()
-            logger.debug { "Successfully initialized both SMTP and IMAP" }
+            put("mail.$ref.auth", true)
+            put("mail.$ref.host", addr.host)
+            put("mail.$ref.port", addr.port)
+            put("mail.$ref.socks.host", proxy.host)
+            put("mail.$ref.socks.port", proxy.port)
         }
+        val (smtp, smtpSafety, imap, imapSafety, username, password) = mailConnectionDetails
+        // Init SMTP
+        logger.debug { "Initializing connection via SMTP with $smtp" }
+        val authenticator = getAuthenticator(username, password)
+        val smtpProperties = Properties().apply {
+            val ref = when (smtpSafety) {
+                MailConnectionSafety.SECURE -> "smtps"
+                else -> "smtp"
+            }
+            putDefaultProperties(ref, smtp, smtpSafety)
+        }
+        smtpSession = Session.getInstance(smtpProperties, authenticator)
+        logger.debug { "Initializing connection via IMAP with $imap" }
+        val imapRef = when (imapSafety) {
+            MailConnectionSafety.SECURE -> "imaps"
+            else -> "imap"
+        }
+        // Init IMAP
+        val imapProperties = Properties().apply {
+
+            if (imapSafety == MailConnectionSafety.STARTTLS) {
+                put("mail.$imapRef.starttls.enable", true)
+                put("mail.$imapRef.starttls.required", true)
+            }
+            putDefaultProperties(imapRef, imap, imapSafety)
+        }
+        val imapSession = Session.getInstance(imapProperties)
+        val store = imapSession.getStore(imapRef)
+        store.connect(username, password)
+        imapStore = store
+        mailUser = username.parseMailAddress()
+        logger.debug { "Successfully initialized both SMTP and IMAP" }
     }
 
-    suspend fun sendMail(mail: Mail): Result<Unit> {
+    suspend fun sendMail(mail: Mail): AppResult<Unit> {
         val session = getSmtpSession()
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                logger.debug { "Sending mail $mail" }
-                Transport.send(mail.getMessage(session))
-            }
+        return withCatchingContext(Dispatchers.IO) {
+            logger.debug { "Sending mail $mail" }
+            Transport.send(mail.getMessage(session))
         }
     }
 
-    suspend fun getReplyMail(mail: Mail): Result<Mail> {
+    suspend fun getReplyMail(mail: Mail): AppResult<Mail> {
         val imapStore = getImapStore()
         require(mail.index != null) { "Mail doesn't include an index" }
-        return runCatching {
+        return withCatchingContext(Dispatchers.IO) {
             logger.debug { "Generating reply mail of $mail" }
             imapStore.useInbox {
                 messages[mail.index].reply(false)
                     .toMail(senderOptional = true)
-                    .getOrThrow()
+                    .bind()
             }
         }
     }
 
-    suspend fun getMails(): Result<List<Mail>> {
+    suspend fun getMails(): AppResult<List<Mail>> {
         val store = getImapStore()
-        return withContext(Dispatchers.IO) {
-            runSuspendingCatching {
-                store.useInbox {
-                    messages.mapIndexedNotNull { i, msg ->
-                        val mail = msg.toMail(i)
-                        mail.fold(
-                            onSuccess = {
-                                logger.debug { "Received mail: $it" }
-                                it
-                            },
-                            onFailure = {
-                                logger.error(it) { "Invalid email: $msg" }
-                                null
-                            },
-                        )
-                    }
+        return withCatchingContext(Dispatchers.IO) {
+            store.useInbox {
+                messages.mapIndexedNotNull { i, msg ->
+                    val mail = msg.toMail(i)
+                    mail.fold(
+                        ifRight = {
+                            logger.debug { "Received mail: $it" }
+                            it
+                        },
+                        ifLeft = {
+                            logger.error(it) { "Invalid email: $msg" }
+                            null
+                        },
+                    )
                 }
             }
         }
     }
 
-    suspend fun deleteMail(mail: Mail): Result<Unit> {
+    suspend fun deleteMail(mail: Mail): AppResult<Unit> {
         val store = imapStore
         check(store != null) { "IMAP session isn't successfully initialized" }
         require(mail.index != null) { "Mail doesn't include an index" }
-        return withContext(Dispatchers.IO) {
-            runSuspendingCatching {
-                logger.debug { "Deleting mail '${mail.subject}'" }
-                store.useInbox(Folder.READ_WRITE) {
-                    messages[mail.index].setFlag(Flags.Flag.DELETED, true)
-                }
+        return withCatchingContext(Dispatchers.IO) {
+            logger.debug { "Deleting mail '${mail.subject}'" }
+            store.useInbox(Folder.READ_WRITE) {
+                messages[mail.index].setFlag(Flags.Flag.DELETED, true)
             }
         }
     }
 
-    suspend fun saveCredentials(details: MailConnectionDetails) = runSuspendingCatching {
-        store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).getOrThrow()
-        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray()).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety).getOrThrow()
-        store.set(IntervirtOSStore.Accessor.IMAP_SAFETY, details.imapSafety).getOrThrow()
+    suspend fun saveCredentials(details: MailConnectionDetails) = either {
+        store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).bind()
+        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray()).toAppResult().bind()
+        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress).bind()
+        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress).bind()
+        store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety).bind()
+        store.set(IntervirtOSStore.Accessor.IMAP_SAFETY, details.imapSafety).bind()
     }
 
-    suspend fun loadCredentials(): Result<MailConnectionDetails> = runSuspendingCatching {
+    suspend fun loadCredentials(): AppResult<MailConnectionDetails> = either {
         MailConnectionDetails(
             smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS],
             imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS],
@@ -178,13 +176,13 @@ class MailClientManager(
         )
     }
 
-    suspend fun clearCredentials(): Result<Unit> = runSuspendingCatching {
-        store.delete(IntervirtOSStore.Accessor.MAIL_USERNAME).getOrThrow()
-        secretService.removeEntry(mailPasswordKey).getOrThrow()
-        store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS).getOrThrow()
-        store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS).getOrThrow()
-        store.delete(IntervirtOSStore.Accessor.SMTP_SAFETY).getOrThrow()
-        store.delete(IntervirtOSStore.Accessor.IMAP_SAFETY).getOrThrow()
+    suspend fun clearCredentials(): AppResult<Unit> = either {
+        store.delete(IntervirtOSStore.Accessor.MAIL_USERNAME).bind()
+        secretService.removeEntry(mailPasswordKey).toAppResult().bind()
+        store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS).bind()
+        store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS).bind()
+        store.delete(IntervirtOSStore.Accessor.SMTP_SAFETY).bind()
+        store.delete(IntervirtOSStore.Accessor.IMAP_SAFETY).bind()
     }
 
     private suspend inline fun <T> Store.useInbox(
@@ -219,13 +217,11 @@ class MailClientManager(
         return store
     }
 
-    override suspend fun close() = withContext(Dispatchers.IO) {
-        runCatching {
-            logger.debug { "Closing SMTP session" }
-            smtpSession?.transport?.close()
-            logger.debug { "Closing IMAP session" }
-            imapStore?.close()
-            Unit
-        }
+    override suspend fun close() = withCatchingContext(Dispatchers.IO) {
+        logger.debug { "Closing SMTP session" }
+        smtpSession?.transport?.close()
+        logger.debug { "Closing IMAP session" }
+        imapStore?.close()
+        Unit
     }
 }

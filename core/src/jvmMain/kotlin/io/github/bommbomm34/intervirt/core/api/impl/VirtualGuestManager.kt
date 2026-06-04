@@ -5,8 +5,12 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import arrow.core.left
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
@@ -34,43 +38,46 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     ): Flow<ResultProgress<Unit>> {
         delay()
         containers.add(Container(id, ipv4, ipv6, mac, internet, image))
-        return Result.success(Unit).toFlow()
+        return Unit.right().toFlow()
     }
 
-    override suspend fun removeContainer(id: String): Result<Unit> {
+    override suspend fun removeContainer(id: String): AppResult<Unit> {
         delay()
         val removed = containers.removeIf { it.id == id }
-        return if (removed) Result.success(Unit) else Result.failure(NotFoundException("Container $id not found."))
+        return if (removed) Unit.right() else Failure.NotFound("Container $id not found.").left()
     }
 
-    override suspend fun setIpv4(id: String, newIP: String): Result<Unit> = runCatching {
+    override suspend fun setIpv4(id: String, newIP: String): AppResult<Unit> {
         delay()
         containers.first { it.id == id }.ipv4 = newIP
+        return Unit.right()
     }
 
-    override suspend fun setIpv6(id: String, newIP: String): Result<Unit> = runCatching {
+    override suspend fun setIpv6(id: String, newIP: String): AppResult<Unit> {
         delay()
         containers.first { it.id == id }.ipv6 = newIP
+        return Unit.right()
     }
 
-    override suspend fun connect(container: String, network: String): Result<Unit> {
+    override suspend fun connect(container: String, network: String): AppResult<Unit> {
         delay()
-        if (!container.exists()) return Result.failure(NotFoundException("Container $container doesn't exist."))
-        networks[network]?.add(container) ?: return Result.failure(NotFoundException("Network $network doesn't exist."))
-        return Result.success(Unit)
+        if (!container.exists()) return Failure.NotFound("Container $container doesn't exist.").left()
+        networks[network]?.add(container) ?: return Failure.NotFound("Network $network doesn't exist.").left()
+        return Unit.right()
     }
 
-    override suspend fun disconnect(container: String, network: String): Result<Unit> {
+    override suspend fun disconnect(container: String, network: String): AppResult<Unit> {
         delay()
-        if (!container.exists()) return Result.failure(NotFoundException("Container $container doesn't exist."))
+        if (!container.exists()) return Failure.NotFound("Container $container doesn't exist.").left()
         networks[network]?.remove(container)
-            ?: return Result.failure(NotFoundException("Network $network doesn't exist."))
-        return Result.success(Unit)
+            ?: return Failure.NotFound("Network $network doesn't exist.").left()
+        return Unit.right()
     }
 
-    override suspend fun setInternetAccess(id: String, enabled: Boolean): Result<Unit> = runCatching {
+    override suspend fun setInternetAccess(id: String, enabled: Boolean): AppResult<Unit> {
         delay()
         getContainerByID(id).internet = enabled
+        return Unit.right()
     }
 
     override suspend fun addPortForwarding(
@@ -78,7 +85,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         internalPort: Int,
         externalPort: Int,
         protocol: String,
-    ): Result<Unit> = runCatching {
+    ): AppResult<Unit> {
         delay()
         getContainerByID(id).portForwardings.add(
             PortForwarding(
@@ -87,27 +94,31 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
                 internalPort = internalPort,
             ),
         )
+        return Unit.right()
     }
 
     override suspend fun removePortForwarding(
         id: String,
         externalPort: Int,
         protocol: String,
-    ): Result<Unit> = runCatching {
+    ): AppResult<Unit> {
         delay()
         containers.forEach { container ->
             container.portForwardings.removeIf { it.externalPort == externalPort && it.protocol == protocol }
         }
+        return Unit.right()
     }
 
-    override suspend fun startContainer(id: String): Result<Unit> = runCatching {
+    override suspend fun startContainer(id: String): AppResult<Unit> {
         delay()
         getContainerByID(id).running = true
+        return Unit.right()
     }
 
-    override suspend fun stopContainer(id: String): Result<Unit> = runCatching {
+    override suspend fun stopContainer(id: String): AppResult<Unit> {
         delay()
         getContainerByID(id).running = false
+        return Unit.right()
     }
 
     override fun wipe(): Flow<ResultProgress<Unit>> = flow {
@@ -125,15 +136,15 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
         emit(ResultProgress.success(Unit))
     }
 
-    override suspend fun shutdown() = Result.success(Unit)
+    override suspend fun shutdown() = Unit.right()
 
-    override suspend fun reboot() = Result.success(Unit)
+    override suspend fun reboot() = Unit.right()
 
-    override suspend fun getVersion() = Result.success(CURRENT_VERSION)
+    override suspend fun getVersion() = CURRENT_VERSION.right()
 
-    override suspend fun getContainers(): Result<List<ContainerInfo>> = runCatching {
+    override suspend fun getContainers(): AppResult<List<ContainerInfo>> {
         delay()
-        containers.map {
+        return containers.map {
             ContainerInfo(
                 id = it.id,
                 ipv4 = it.ipv4,
@@ -144,18 +155,20 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
                 portForwardings = it.portForwardings,
                 running = it.running,
             )
-        }
+        }.right()
     }
 
-    override suspend fun addNetwork(name: String): Result<Unit> = runCatching {
+    override suspend fun addNetwork(name: String): AppResult<Unit> {
         networks[name] = mutableListOf()
+        return Unit.right()
     }
 
-    override suspend fun removeNetwork(name: String): Result<Unit> = runCatching {
+    override suspend fun removeNetwork(name: String): AppResult<Unit> {
         networks.remove(name)
+        return Unit.right()
     }
 
-    override suspend fun getNetworks(): Result<Map<String, Network>> = Result.success(networks)
+    override suspend fun getNetworks(): AppResult<Map<String, Network>> = networks.right()
 
     private fun getContainerByID(id: String) = containers.first { it.id == id }
 
@@ -163,7 +176,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
 
     private suspend fun delay() = kotlinx.coroutines.delay(delay)
 
-    override suspend fun close() = Result.success(Unit) // Nothing to close
+    override suspend fun close() = Unit.right() // Nothing to close
 }
 
 private data class Container(

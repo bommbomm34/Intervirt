@@ -5,11 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.getFreePort
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
@@ -26,9 +28,9 @@ class ProxyManager(
     private val virtual = appEnv.VIRTUAL_CONTAINER_IO
     private var proxyUrl: Address? = null
 
-    suspend fun getProxyUrl() = if (virtual) Result.success(Address("127.0.0.1", 1080)) else {
+    suspend fun getProxyUrl() = if (virtual) Address("127.0.0.1", 1080).right() else {
         val url = proxyUrl
-        if (url != null) Result.success(url) else {
+        if (url != null) url.right() else {
             logger.debug { "Initializing proxy" }
             val port = getFreePort()
             logger.debug { "Chose free port $port" }
@@ -42,16 +44,16 @@ class ProxyManager(
                 ),
             )
                 .map { Address("127.0.0.1", port) }
-                .onSuccess {
+                .onRight {
                     logger.debug { "Successfully initialized proxy: $it" }
                     proxyUrl = it
                 }
         }
     }
 
-    override suspend fun close() = if (virtual) Result.success(Unit) else {
+    override suspend fun close() = if (virtual) Unit.right() else {
         val url = proxyUrl
-        if (url == null) Result.success(Unit) else {
+        if (url == null) Unit.right() else {
             deviceManager.removePortForwarding(
                 externalPort = url.port,
                 protocol = "tcp",

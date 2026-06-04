@@ -5,9 +5,11 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.patch
 import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
@@ -27,13 +29,13 @@ class VirtualContainerIOClient(
     private val _virtualRoot = lazy { fileManager.getFile("virtual/$id").apply { createDirectories() }.toJavaPath() }
     private val virtualRoot by _virtualRoot
 
-    override fun exec(commands: List<String>): Result<Flow<CommandStatus>> =
-        Result.success(executor.runCommand(null, commands.patch("sudo", "pkexec")))
+    override fun exec(commands: List<String>): AppResult<Flow<CommandStatus>> =
+        executor.runCommand(null, commands.patch("sudo", "pkexec")).right()
 
     override fun getPath(path: String): Path = virtualRoot.resolve(path.normalize())
 
     @OptIn(ExperimentalPathApi::class)
-    override suspend fun close(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    override suspend fun close(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
         if (wipeOnClose && _virtualRoot.isInitialized()) virtualRoot
     }
 

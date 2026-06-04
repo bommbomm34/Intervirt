@@ -5,6 +5,8 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
+import io.github.bommbomm34.intervirt.core.data.AppResult
+
 interface AsyncCloseable {
-    suspend fun close(): Result<Unit>
+    suspend fun close(): AppResult<Unit>
 }

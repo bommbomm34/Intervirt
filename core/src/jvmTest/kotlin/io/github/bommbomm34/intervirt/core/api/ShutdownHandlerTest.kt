@@ -5,9 +5,11 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
@@ -95,8 +97,8 @@ class ShutdownHandlerTest : KoinTest {
 private class MockGuestManager : GuestManager by VirtualGuestManager() {
     var closed = 0
 
-    override suspend fun close(): Result<Unit> {
+    override suspend fun close(): AppResult<Unit> {
         closed++
-        return Result.success(Unit)
+        return Unit.right()
     }
 }

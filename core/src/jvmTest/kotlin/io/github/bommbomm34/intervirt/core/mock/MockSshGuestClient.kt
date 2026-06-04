@@ -5,15 +5,18 @@
 
 package io.github.bommbomm34.intervirt.core.mock
 
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
-import io.github.bommbomm34.intervirt.core.util.ext.asSuccess
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -24,17 +27,17 @@ class MockSshGuestClient(appEnv: AppEnv) : SshGuestClient {
     private val executor = MockExecutor(appEnv)
     override val isInitialized = true
 
-    override suspend fun init(): Result<Unit> = runSuspendingCatching {
-        check(exec("incus", "--help").isSuccess) { "Incus is not installed!" }
+    override suspend fun init(): AppResult<Unit> = either {
+        ensure(exec("incus", "--help").isRight()) { Failure.IllegalState("Incus is not installed!") }
     }
 
-    override fun runCommand(vararg commands: String): Result<Flow<CommandStatus>> = flow {
+    override fun runCommand(vararg commands: String): AppResult<Flow<CommandStatus>> = flow {
         emitAll(executor.runCommand(null, commands.toList()))
-    }.asSuccess()
+    }.right()
 
-    override suspend fun close(): Result<Unit> = Result.success(Unit)
+    override suspend fun close(): AppResult<Unit> = Unit.right()
 
-    private suspend fun exec(vararg commands: String): Result<String> = executor.runCommand(null, commands.toList())
+    private suspend fun exec(vararg commands: String): AppResult<String> = executor.runCommand(null, commands.toList())
         .getCommandResult()
         .asResult()
 }

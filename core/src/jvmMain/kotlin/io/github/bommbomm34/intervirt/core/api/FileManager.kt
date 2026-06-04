@@ -5,7 +5,11 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.left
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.getOS
@@ -57,13 +61,7 @@ class FileManager(
                 if (response.status != HttpStatusCode.OK) {
                     logger.error { "Failed to download file '$url': ${response.status.description}" }
                     emit(
-                        ResultProgress.result(
-                            Result.failure(
-                                Exception(
-                                    "Download failed ${response.status.description}",
-                                ),
-                            ),
-                        ),
+                        ResultProgress.failure(Failure.Download(response.status.description)),
                     )
                 } else {
                     val channel: ByteReadChannel = response.body()
@@ -80,7 +78,7 @@ class FileManager(
                         }
                     }
                     logger.info { "Successfully downloaded $name" }
-                    emit(ResultProgress.result(Result.success(file)))
+                    emit(ResultProgress.success(file))
                 }
             }
         }.flowOn(Dispatchers.IO)
@@ -100,10 +98,10 @@ class FileManager(
             val zip = ZipFile(file.file)
             zip.extractAll(destination.absolutePath())
             logger.info { "Extracted zip ${file.name}" }
-            Result.success(Unit)
+            Unit.right()
         } catch (e: ZipException) {
             logger.error { "Error occurred while extracting ${file.name}: ${e.message}" }
-            Result.failure(ZipExtractionException(file.name, e.localizedMessage))
+            Failure.ZipExtraction(file.name, e.message).left()
         }
     }
 }

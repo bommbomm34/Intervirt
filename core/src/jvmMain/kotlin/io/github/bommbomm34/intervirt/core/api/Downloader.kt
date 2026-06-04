@@ -5,11 +5,17 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.left
+import arrow.core.raise.context.bind
+import arrow.core.raise.either
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.list
 
@@ -29,13 +35,13 @@ class Downloader(
 ) {
     private val logger = appEnv.getLogger(Downloader::class)
 
-    suspend fun checkUpdates(): Result<List<Component>> = runSuspendingCatching {
+    suspend fun checkUpdates(): AppResult<List<Component>> = either {
         buildList {
             if (appEnv.QEMU_ZIP_HASH_URL.fetch()
-                    .getOrThrow() != appEnv.CURRENT_QEMU_HASH
+                    .bind() != appEnv.CURRENT_QEMU_HASH
             ) add(Component.QEMU)
             if (appEnv.VM_DISK_HASH_URL.fetch()
-                    .getOrThrow() != appEnv.CURRENT_DISK_HASH
+                    .bind() != appEnv.CURRENT_DISK_HASH
             ) add(Component.VM_DISK)
         }
     }
@@ -68,17 +74,17 @@ class Downloader(
             val hashRes = appEnv.VM_DISK_HASH_URL.fetch()
             val file = fileManager.downloadFile(appEnv.VM_DISK_URL, "alpine-linux.qcow2", fileManager.getFile("disk"))
             hashRes.fold(
-                onSuccess = { hash ->
+                ifRight = { hash ->
                     file.collect { resultProgress ->
                         if (resultProgress is ResultProgress.Result) {
                             logger.debug { "Disk download succeeded" }
                             resultProgress.result.fold(
-                                onSuccess = {
+                                ifRight = {
                                     emit(ResultProgress.success("Download succeeded"))
                                     appEnv.DISK_INSTALLED = true
                                     appEnv.CURRENT_DISK_HASH = hash
                                 },
-                                onFailure = {
+                                ifLeft = {
                                     emit(ResultProgress.failure(it))
                                 },
                             )
@@ -92,7 +98,7 @@ class Downloader(
                         }
                     }
                 },
-                onFailure = { emit(ResultProgress.failure(it)) },
+                ifLeft = { emit(ResultProgress.failure(it)) },
             )
         } else {
             logger.debug { "Already installed disk" }
@@ -112,22 +118,22 @@ class Downloader(
                 val hashRes = appEnv.QEMU_ZIP_HASH_URL.fetch()
                 val file = fileManager.downloadFile(appEnv.QEMU_ZIP_URL, "qemu-portable.zip")
                 hashRes.fold(
-                    onSuccess = { hash ->
+                    ifRight = { hash ->
                         file.collect { resultProgress ->
                             if (resultProgress is ResultProgress.Result) {
                                 logger.debug { "Successfully downloaded QEMU" }
                                 resultProgress.result.fold(
-                                    onSuccess = { zipFile ->
+                                    ifRight = { zipFile ->
                                         fileManager.extractZip(zipFile, fileManager.getFile("qemu"))
-                                            .onFailure { emit(ResultProgress.failure(it)) }
+                                            .onLeft { emit(ResultProgress.failure(it)) }
                                         appEnv.QEMU_INSTALLED = true
                                         appEnv.CURRENT_QEMU_HASH = hash
                                         emit(
                                             ResultProgress.success("Successfully downloaded QEMU"),
                                         )
                                     },
-                                    onFailure = {
-                                        emit(ResultProgress.failure(DownloadException(it.localizedMessage)))
+                                    ifLeft = {
+                                        emit(ResultProgress.failure(Failure.Download(it.message)))
                                     },
                                 )
                             } else {
@@ -140,7 +146,7 @@ class Downloader(
                             }
                         }
                     },
-                    onFailure = { emit(ResultProgress.failure(it)) },
+                    ifLeft = { emit(ResultProgress.failure(it)) },
                 )
             }
         } else {
@@ -149,17 +155,17 @@ class Downloader(
         }
     }
 
-    private suspend fun String.fetch(): Result<String> {
+    private suspend fun String.fetch(): AppResult<String> {
         logger.debug { "Fetching has from url $this" }
         val res = client.get(this)
         return if (res.status == HttpStatusCode.OK) {
             val hash = res.bodyAsText()
             logger.debug { "Successfully fetched hash: $hash" }
-            Result.success(hash)
+            hash.right()
         } else {
-            val exception = IllegalStateException(res.status.description)
-            logger.error(exception) { "Failed acquiring hash from url $this" }
-            Result.failure(exception)
+            val failure = Failure.Download(res.status.description)
+            logger.error(failure) { "Failed acquiring hash from url $this" }
+            failure.left()
         }
     }
 

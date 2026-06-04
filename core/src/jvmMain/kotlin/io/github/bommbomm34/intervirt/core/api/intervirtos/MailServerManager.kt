@@ -5,16 +5,18 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.raise.context.bind
+import arrow.core.raise.either
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 
 
 class MailServerManager(
@@ -45,12 +47,12 @@ class MailServerManager(
     val docker = client.docker
     private val logger = appEnv.getLogger(MailServerManager::class)
 
-    suspend fun listMailUsers(): Result<List<MailUser>> = runSuspendingCatching {
+    suspend fun listMailUsers(): AppResult<List<MailUser>> = either {
         logger.debug { "Listing mail users" }
-        val flow = docker.exec(id, listOf("setup", "email", "list")).getOrThrow()
+        val flow = docker.exec(id, listOf("setup", "email", "list")).bind()
         val output = flow.getCommandResult()
             .asResult()
-            .getOrThrow()
+            .bind()
         // Parse output
         output
             .lines()
@@ -65,17 +67,17 @@ class MailServerManager(
             }
     }
 
-    suspend fun removeMailUser(user: MailUser): Result<Unit> = runSuspendingCatching {
+    suspend fun removeMailUser(user: MailUser): AppResult<Unit> = either {
         logger.debug { "Remove mail user $user" }
         docker
             .exec(id, listOf("setup", "email", "del", user.address))
-            .getOrThrow()
+            .bind()
             .getCommandResult()
             .asResult()
-            .getOrThrow()
+            .bind()
     }
 
-    suspend fun addMailUser(user: MailUser, password: String): Result<Unit> = runSuspendingCatching {
+    suspend fun addMailUser(user: MailUser, password: String): AppResult<Unit> = either {
         logger.debug { "Add mail user ${user.username} with email ${user.address}" }
         // TODO: Check if this method is secure
         val command = listOf(
@@ -87,9 +89,9 @@ class MailServerManager(
         )
         docker
             .exec(id, command)
-            .getOrThrow()
+            .bind()
             .getCommandResult()
             .asResult()
-            .getOrThrow()
+            .bind()
     }
 }

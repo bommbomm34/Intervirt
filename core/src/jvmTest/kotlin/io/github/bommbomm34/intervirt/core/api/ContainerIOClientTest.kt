@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.getOrElse
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -12,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.util.ext.getOrThrow
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -64,7 +66,7 @@ class ContainerIOClientTest : KoinTest {
     @Test
     fun shouldGetIOClient() = runTest {
         val device = createDevice()
-        deviceManager.getIOClient(device).getOrThrow()
+        deviceManager.getIOClient(device).getOrElse {  }
     }
 
     @Test

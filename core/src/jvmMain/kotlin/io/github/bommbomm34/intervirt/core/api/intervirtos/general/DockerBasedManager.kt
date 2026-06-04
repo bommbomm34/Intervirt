@@ -5,7 +5,10 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
+import arrow.core.raise.context.bind
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
@@ -45,9 +48,9 @@ abstract class DockerBasedManager(
     fun init(): Flow<ResultProgress<String>> = flow {
         withCatchingContext(Dispatchers.IO) {
             logger.debug { "Initializing manager of $containerName" }
-            val potentialId = client.docker.getContainer(containerName).getOrThrow()
+            val potentialId = client.docker.getContainer(containerName).bind()
             potentialId?.let {
-                client.docker.startContainer(it).getOrThrow()
+                client.docker.startContainer(it).bind()
                 internalId = it
                 return@withCatchingContext it
             }
@@ -62,12 +65,12 @@ abstract class DockerBasedManager(
                 volumes = volumes.mapKeys { it.key.replace("./", hostPath) },
                 env = env,
                 hostName = hostName,
-            ).lastResult().getOrThrow()
-            client.docker.startContainer(newId).getOrThrow()
+            ).lastResult().bind()
+            client.docker.startContainer(newId).bind()
             internalId = newId
             newId
-        }.onFailure { emit(ResultProgress.failure(it)) }
+        }.onLeft { emit(ResultProgress.failure(it)) }
     }
 
-    override suspend fun close(): Result<Unit> = Result.success(Unit)
+    override suspend fun close(): AppResult<Unit> = Unit.right()
 }

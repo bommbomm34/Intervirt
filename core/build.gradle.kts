@@ -26,6 +26,7 @@ kotlin {
             implementation(libs.multiplatform.settings.serialization)
             implementation(libs.multiplatform.settings.test)
             implementation(libs.filekit.core)
+            implementation(libs.arrow.core)
             implementation(libs.arrow.optics)
         }
         commonTest.dependencies {
@@ -46,6 +47,9 @@ kotlin {
             implementation(libs.sshd.sftp)
             api(projects.logging)
             api(projects.secret)
+        }
+        all {
+            languageSettings.enableLanguageFeature("ContextParameters")
         }
     }
 }

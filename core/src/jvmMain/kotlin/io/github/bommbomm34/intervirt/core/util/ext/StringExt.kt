@@ -13,8 +13,6 @@ import kotlin.reflect.KClass
 fun String.parseMailAddress() =
     MailUser(substringBefore("@"), this)
 
-fun String.result() = Result.success(this)
-
 fun String.parseAddress() = Address(
     substringBefore(":"),
     substringAfter(":").toInt(),

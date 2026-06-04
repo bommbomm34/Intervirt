@@ -5,6 +5,14 @@
 
 package io.github.bommbomm34.intervirt.core.util.ext
 
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.raise.Raise
+import arrow.core.raise.either
+import arrow.core.recover
+import arrow.core.right
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
 import io.ktor.utils.io.CancellationException
@@ -18,40 +26,28 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-suspend inline fun <T> runSuspendingCatching(block: suspend () -> T): Result<T> {
-    return try {
-        Result.success(block())
-    } catch (e: CancellationException) {
-        throw e
-    } catch (e: Throwable) {
-        e.printStackTrace()
-        Result.failure(e)
-    }
-}
-
-fun <T> Exception.result() = Result.failure<T>(this)
-
 suspend fun <T> withCatchingContext(
     context: CoroutineContext,
-    block: suspend CoroutineScope.() -> T,
-): Result<T> = withContext(context) {
-    runSuspendingCatching {
+    block: suspend context(Raise<Failure>) CoroutineScope.() -> T,
+): AppResult<T> = withContext(context) {
+    either {
         block()
     }
 }
 
-fun Result<Unit>.recoverAlreadyPerformed(): Result<Unit> = recoverCatching {
-    if (it is OperationAlreadyPerformedException) Unit else throw it
-}
-
-fun <T> flowCatching(block: suspend FlowCollector<ResultProgress<T>>.() -> Unit) = flow(block).catch {
-    if (it is CancellationException) throw it else emit(ResultProgress.failure(it))
+fun AppResult<Unit>.recoverAlreadyPerformed(): AppResult<Unit> = recover {
+    if (it is Failure.OperationAlreadyPerformed) Unit else raise(it)
 }
 
 fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catch {
     if (it is TimeoutCancellationException) action() else throw it
 }
 
-fun <T> T.asSuccess(): Result<T> = Result.success(this)
-
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
+
+fun <T> Result<T>.toAppResult(): AppResult<T> = fold(
+    onSuccess = { it.right() },
+    onFailure = { Failure.Unexpected(it).left() }
+)
+
+fun <T> AppResult<T>.getOrThrow(): T = getOrElse { throw IllegalStateException("Failed: ${it.message}") }

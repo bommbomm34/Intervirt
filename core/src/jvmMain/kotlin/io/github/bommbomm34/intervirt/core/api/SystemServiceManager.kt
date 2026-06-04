@@ -5,7 +5,11 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.left
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
@@ -21,21 +25,21 @@ class SystemServiceManager(
 ) {
     private val logger = appEnv.getLogger(SystemServiceManager::class, ioClient.id)
 
-    suspend fun start(name: String): Result<Unit> {
+    suspend fun start(name: String): AppResult<Unit> {
         logger.debug { "Starting system service $name" }
         return exec("systemctl", "start", name).map {
             logger.debug { "Started system service $name" }
         }
     }
 
-    suspend fun stop(name: String): Result<Unit> {
+    suspend fun stop(name: String): AppResult<Unit> {
         logger.debug { "Stopping system service $name" }
         return exec("systemctl", "stop", name).map {
             logger.debug { "Stopped system service $name" }
         }
     }
 
-    suspend fun restart(name: String): Result<Unit> {
+    suspend fun restart(name: String): AppResult<Unit> {
         logger.debug { "Restarting system service $name" }
         return exec("systemctl", "restart", name).map {
             logger.debug { "Restarted system service $name" }
@@ -53,14 +57,14 @@ class SystemServiceManager(
         status
     }
 
-    private suspend fun exec(vararg commands: String): Result<String> {
+    private suspend fun exec(vararg commands: String): AppResult<String> {
         val res = ioClient.exec(commands.toList().addFirst("sudo"))
         return res.fold(
-            onSuccess = {
+            ifRight = {
                 val (output, statusCode) = it.getCommandResult()
-                if (statusCode == 0) Result.success(output) else Result.failure(DockerContainerExecutionException(output))
+                if (statusCode == 0) output.right() else Failure.ContainerExecution(output).left()
             },
-            onFailure = { Result.failure(it) },
+            ifLeft = { it.left() },
         )
     }
 }

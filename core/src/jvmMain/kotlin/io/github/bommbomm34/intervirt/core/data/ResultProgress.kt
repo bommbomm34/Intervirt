@@ -5,34 +5,33 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
+import arrow.core.left
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
 
-sealed class ResultProgress<T> {
+sealed class ResultProgress<out T> {
     abstract val percentage: Float
 
-    data class Result<T>(
+    data class Result<out T>(
         override val percentage: Float,
-        val result: kotlin.Result<T>,
+        val result: AppResult<T>,
     ) : ResultProgress<T>() {
-        fun getResultStatusMessage() =
-            if (result.isFailure) "Failed: ${result.exceptionOrNull()!!.message}" else "Success"
-
         override fun log() = result.fold(
-            onSuccess = { "Success" },
-            onFailure = { "Failure: ${it.localizedMessage}" },
+            ifRight = { "Success" },
+            ifLeft = { "Failure: ${it.message}" },
         )
 
-        override fun message() = result.exceptionOrNull()?.localizedMessage
+        override fun message() = result.leftOrNull()?.message
         override fun clone(percentage: Float) = Result(percentage, result)
     }
 
-    data class Proceed<T>(override val percentage: Float) : ResultProgress<T>() {
+    data class Proceed<out T>(override val percentage: Float) : ResultProgress<T>() {
         override fun log() = percentage.readablePercentage()
         override fun message() = null
         override fun clone(percentage: Float) = Proceed<T>(percentage)
     }
 
-    data class Message<T>(
+    data class Message<out T>(
         override val percentage: Float,
         val message: String,
     ) : ResultProgress<T>() {
@@ -45,9 +44,9 @@ sealed class ResultProgress<T> {
         fun <T> proceed(percentage: Float, message: String? = null) =
             if (message != null) Message<T>(percentage, message) else Proceed(percentage)
 
-        fun <T> failure(exception: Throwable) = result(kotlin.Result.failure<T>(exception))
-        fun <T> success(value: T) = result(kotlin.Result.success(value))
-        fun <T> result(result: kotlin.Result<T>) = Result(1f, result)
+        fun <T> failure(failure: Failure): Result<T> = result(failure.left())
+        fun <T> success(value: T) = result(value.right())
+        fun <T> result(result: AppResult<T>) = Result(1f, result)
     }
 
     abstract fun log(): String

@@ -5,7 +5,8 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
-import io.github.bommbomm34.intervirt.core.exceptions.CommandExecutionException
+import arrow.core.left
+import arrow.core.right
 import kotlinx.coroutines.flow.Flow
 
 sealed class CommandStatus {
@@ -17,7 +18,7 @@ data class CommandResult(
     val output: String,
     val statusCode: Int,
 ) {
-    fun asResult() = if (statusCode != 0) Result.failure(CommandExecutionException(statusCode, output)) else Result.success(output)
+    fun asResult() = if (statusCode != 0) Failure.CommandExecution(statusCode, output).left() else output.right()
 }
 
 /**

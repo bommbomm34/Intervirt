@@ -5,8 +5,12 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.flatMap
+import arrow.core.left
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
@@ -25,24 +29,24 @@ class DnsResolverManager(
         type: String,
         nameserver: String,
         reverse: Boolean,
-    ): Result<List<DnsRecord>> {
+    ): AppResult<List<DnsRecord>> {
         val baseCommandList = listOf("/usr/bin/doggo", name, "--type", type, "--nameserver", nameserver, "--json")
         val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
         logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
         return ioClient.exec(
             commands = commandList,
-        ).mapCatching { flow ->
+        ).flatMap exec@ { flow ->
             flow.getCommandResult()
                 .asResult()
-                .mapCatching { output ->
+                .map { output ->
                     val resolverOutput = defaultJson.decodeFromString<DnsResolverOutput>(output)
                     resolverOutput.responses
                         .getOrNull(0)
                         ?.answers
                         ?.map { it.toDnsRecord() }
-                        ?: throw IllegalStateException("DNS Resolver responded with invalid JSON schema: $output")
+                        ?: return@exec Failure.IllegalState("DNS Resolver responded with invalid JSON schema: $output").left()
                 }
-                .getOrThrow()
+                .onLeft { return@exec it.left() }
         }
     }
 }

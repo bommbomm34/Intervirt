@@ -5,6 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
+import arrow.core.left
+import arrow.core.raise.either
+import arrow.core.right
 import io.github.bommbomm34.intervirt.core.exceptions.InvalidMailException
 import jakarta.mail.Address
 import jakarta.mail.Message
@@ -29,21 +32,19 @@ data class Mail(
     }
 }
 
-fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): Result<Mail> = runCatching {
+fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): AppResult<Mail> = either {
     val sender = from?.get(0)?.toMailUser()
     val receiver = allRecipients?.get(0)?.toMailUser()
-    if (sender == null && !senderOptional) return Result.failure(InvalidMailException("No sender is specified"))
-    if (receiver == null) return Result.failure(InvalidMailException("No receiver is specified"))
-    return Result.success(
-        Mail(
-            sender = sender ?: MailUser.UNDEFINED,
-            receiver = receiver,
-            subject = subject,
-            content = content.getString(),
-            index = index,
-            message = this,
-        ),
-    )
+    if (sender == null && !senderOptional) return Failure.InvalidMail("No sender is specified").left()
+    if (receiver == null) return Failure.InvalidMail("No receiver is specified").left()
+    return Mail(
+        sender = sender ?: MailUser.UNDEFINED,
+        receiver = receiver,
+        subject = subject,
+        content = content.getString(),
+        index = index,
+        message = this@toMail,
+    ).right()
 }
 
 private fun Any.getString(): String {

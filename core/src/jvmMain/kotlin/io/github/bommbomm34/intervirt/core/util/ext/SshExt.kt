@@ -5,6 +5,8 @@
 
 package io.github.bommbomm34.intervirt.core.util.ext
 
+import arrow.core.raise.either
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.apache.sshd.client.session.ClientSession
 
-fun ClientSession.exec(command: String): Result<Flow<CommandStatus>> = runCatching {
+fun ClientSession.exec(command: String): AppResult<Flow<CommandStatus>> = either {
     val channel = createExecChannel(command)
     channel.open().verify()
     flow {

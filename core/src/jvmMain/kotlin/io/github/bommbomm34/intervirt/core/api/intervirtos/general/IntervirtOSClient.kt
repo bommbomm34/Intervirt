@@ -5,12 +5,14 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
+import arrow.core.raise.context.bind
+import arrow.core.raise.either
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
-import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 
 class IntervirtOSClient(private val client: Client) : AsyncCloseable {
     private val managers = mutableListOf<AsyncCloseable>()
@@ -24,9 +26,9 @@ class IntervirtOSClient(private val client: Client) : AsyncCloseable {
         val serviceManager: SystemServiceManager = SystemServiceManager(appEnv, ioClient),
     )
 
-    suspend fun init(): Result<Unit> = runSuspendingCatching {
-        client.store.init().getOrThrow()
-        client.docker.init().getOrThrow()
+    suspend fun init(): AppResult<Unit> = either {
+        client.store.init().bind()
+        client.docker.init().bind()
     }
 
     fun getClient(
@@ -36,9 +38,9 @@ class IntervirtOSClient(private val client: Client) : AsyncCloseable {
         return client
     }
 
-    override suspend fun close(): Result<Unit> = runSuspendingCatching {
-        managers.forEach { it.close().getOrThrow() }
+    override suspend fun close(): AppResult<Unit> = either {
+        managers.forEach { it.close().bind() }
         // Don't close ioClient because it's externally managed
-        client.docker.close().getOrThrow()
+        client.docker.close().bind()
     }
 }

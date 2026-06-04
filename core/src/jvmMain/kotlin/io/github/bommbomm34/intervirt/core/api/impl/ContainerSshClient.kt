@@ -5,10 +5,12 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.exec
@@ -48,7 +50,7 @@ class ContainerSshClient(
     private lateinit var session: ClientSession
     private val logger = appEnv.getLogger(ContainerSshClient::class, id)
 
-    suspend fun init(): Result<Unit> = withCatchingContext(Dispatchers.IO) {
+    suspend fun init(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing ContainerSshClient" }
         sshClient.start()
         session = sshClient.connect(USERNAME, HOST, port).verify().session
@@ -126,11 +128,11 @@ class ContainerSshClient(
         deviceManager.removePortForwarding(
             externalPort = port,
             protocol = "tcp",
-        ).getOrThrow()
+        ).bind()
         logger.debug { "Closed ContainerSshClient" }
     }
 
-    override fun exec(commands: List<String>): Result<Flow<CommandStatus>> {
+    override fun exec(commands: List<String>): AppResult<Flow<CommandStatus>> {
         val command = commands.joinToString(" ")
         logger.info { "Running '$command' on container" }
         return session.exec(command)

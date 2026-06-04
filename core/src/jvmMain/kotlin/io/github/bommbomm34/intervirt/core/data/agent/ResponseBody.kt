@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.data.agent
 
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.exceptions.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,6 +30,7 @@ sealed class ResponseBody {
         override val end get() = status >= 0
         override val success get() = code == 0
 
+        @Deprecated("Use failure instead", ReplaceWith("this.failure()"), level = DeprecationLevel.ERROR)
         fun exception(): Exception? {
             return when (code) {
                 1 -> UndefinedException(error!!, refID)
@@ -41,6 +43,24 @@ sealed class ResponseBody {
                 8 -> IllegalArgumentException(error!!)
                 // Error codes reserved internally for Intervirt Client
                 100 -> AgentTimeoutException(refID)
+                0 -> null
+                -1 -> error("The request isn't final yet: $this")
+                else -> error("Invalid status code $code")
+            }
+        }
+
+        fun failure(): Failure? {
+            return when (code) {
+                1 -> Failure.Undefined(error!!, refID)
+                2 -> Failure.Unknown(refID)
+                3 -> Failure.OperationAlreadyPerformed(error, refID)
+                4 -> Failure.OS(error!!, refID)
+                5 -> Failure.ContainerExecution(error!!, refID)
+                6 -> Failure.NotFound(error!!, refID)
+                7 -> Failure.NotSupportedOperation(refID)
+                8 -> Failure.IllegalArgument(error!!)
+                // Error codes reserved internally for Intervirt Client
+                100 -> Failure.AgentTimeout(refID)
                 0 -> null
                 -1 -> error("The request isn't final yet: $this")
                 else -> error("Invalid status code $code")

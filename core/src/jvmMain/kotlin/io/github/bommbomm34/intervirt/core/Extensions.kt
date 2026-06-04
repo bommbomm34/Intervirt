@@ -9,9 +9,12 @@ import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.util.toAtomic
+import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.vinceglb.filekit.PlatformFile
 import io.ktor.client.*
@@ -74,9 +77,13 @@ val unixTimestamp: Long
 
 fun Module.singleProject() = single { Project().toAtomic() }
 
-fun Result<Unit>.toFlow(): Flow<ResultProgress<Unit>> = flowOf(ResultProgress.result(this))
+fun AppResult<Unit>.toFlow(): Flow<ResultProgress<Unit>> = flowOf(ResultProgress.result(this))
 
 fun <T> Flow<T>.takeWhileInclusive(predicate: suspend (T) -> Boolean) = transformWhile {
     emit(it)
     predicate(it)
+}
+
+fun KLogger.error(failure: Failure, output: () -> Any) {
+    error { "$failure: ${output()}" }
 }
