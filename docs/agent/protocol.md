@@ -448,8 +448,9 @@ Failed message from server:
 
 This should shutdown all containers and reboot the guest.
 
-### Get version
+### Info
 
+Retrieves version and subnet info
 Message from client:
 
 ```json
@@ -463,8 +464,10 @@ Message from server:
 
 ```json
 {
-	 "type": "Version"
-    "version": "1.2.3" // Version of the Intervirt Agent
+	 "type": "Info",
+     "version": "1.2.3", // Version of the Intervirt Agent
+     "ipv4_subnet": "192.168.0.1/24",
+     "ipv6_subnet": "fd42:3e1a:3e81:5d6d::1/64",
 }
 ```
 

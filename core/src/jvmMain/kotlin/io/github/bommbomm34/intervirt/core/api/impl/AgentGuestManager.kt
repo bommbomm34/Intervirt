@@ -105,7 +105,7 @@ class AgentGuestManager(
 
     override suspend fun getVersion(): Result<String> {
         logger.debug { "Retrieving version of guest" }
-        return firstSend<ResponseBody.Version>("version".commandBody()).map { it.version }
+        return firstSend<ResponseBody.Info>("version".commandBody()).map { it.version }
     }
 
     override suspend fun getContainers(): Result<List<ContainerInfo>> {

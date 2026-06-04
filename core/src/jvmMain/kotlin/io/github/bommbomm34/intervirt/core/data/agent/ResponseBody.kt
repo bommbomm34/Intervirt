@@ -8,7 +8,6 @@ package io.github.bommbomm34.intervirt.core.data.agent
 import io.github.bommbomm34.intervirt.core.exceptions.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 sealed class ResponseBody {
@@ -49,11 +48,15 @@ sealed class ResponseBody {
         }
     }
 
-    @SerialName("Version")
+    @SerialName("Info")
     @Serializable
-    data class Version(
+    data class Info(
         override val refID: String,
         val version: String,
+        @SerialName("ipv4_subnet")
+        val ipv4Subnet: String,
+        @SerialName("ipv6_subnet")
+        val ipv6Subnet: String,
     ) : ResponseBody()
 
     @SerialName("ContainerList")
