@@ -174,5 +174,5 @@ private data class Container(
     var internet: Boolean,
     val image: String,
     val portForwardings: MutableList<PortForwarding> = mutableListOf(),
-    var running: Boolean = false,
+    var running: Boolean = true,
 )
