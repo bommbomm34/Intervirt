@@ -17,7 +17,7 @@ data class ContainerInfo(
     val internet: Boolean,
     val image: String,
     val portForwardings: List<PortForwarding> = listOf(),
-    val running: Boolean = false,
+    val running: Boolean = true,
 )
 
 typealias Network = List<String>

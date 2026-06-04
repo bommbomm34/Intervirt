@@ -53,11 +53,11 @@ fun randomIpv4(): String {
 
 fun randomIpv6(): String {
     fun rand() = Random.nextInt(65536)
-        .toString(16)
+        .toHex()
         .padZero(4)
 
     fun randFirst() = Random.nextInt(256)
-        .toString(16)
+        .toHex()
         .padZero(2)
     return "fd${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
 }
@@ -178,3 +178,5 @@ fun String.validateIpv6(): Boolean {
 fun String.validateMac(): Boolean = MAC_REGEX.matches(this)
 
 fun String.padZero(len: Int) = padStart(len, '0')
+
+fun Int.toHex(): String = toString(16)

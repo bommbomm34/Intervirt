@@ -9,9 +9,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.totalDiskSpace
 import io.github.bommbomm34.intervirt.core.unixTimestamp
 import io.github.bommbomm34.intervirt.core.usableDiskSpace
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ListOutputStream
-import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.logging.getDefaultStream
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.PlatformFile
@@ -20,11 +18,14 @@ import io.github.vinceglb.filekit.writeString
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.VisibleForTesting
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.system.exitProcess
 
+@OptIn(ExperimentalAtomicApi::class)
 class ShutdownHandler(
     private val appEnv: AppEnv,
     private val deviceManager: DeviceManager,
@@ -33,8 +34,8 @@ class ShutdownHandler(
     private val httpClient: HttpClient,
     private val secretService: SecretService,
 ){
-    @VisibleForTesting
-    internal var closed: Atomic<Boolean> = Atomic(false)
+    private var _closed = AtomicBoolean(false)
+    val closed get() = _closed.load()
 
     /**
      * Every exception thrown in [block] will be reported gracefully to the user via [crash].
@@ -58,8 +59,7 @@ class ShutdownHandler(
      * @see gracefulShutdown
      */
     suspend fun gracefulShutdown() {
-        if (!closed.get()){
-            closed.set(true)
+        if (_closed.compareAndSet(expectedValue = false, newValue = true)){
             deviceManager.close()
             guestManager.close()
             qemuClient.close()

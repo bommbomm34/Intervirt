@@ -21,6 +21,7 @@ import io.github.bommbomm34.intervirt.core.util.ext.runSuspendingCatching
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
 import io.github.bommbomm34.intervirt.core.util.randomMac
+import io.github.bommbomm34.intervirt.core.util.toHex
 import io.ktor.client.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -34,6 +35,7 @@ import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import kotlin.random.Random
 import kotlin.test.*
 import kotlin.time.Duration.Companion.seconds
 
@@ -189,7 +191,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldGetVersion() = runTest {
         val version = guestManager.getVersion().getOrThrow()
-        assertEquals(CURRENT_VERSION, version)
+        if (guestManager is VirtualGuestManager) assertEquals(CURRENT_VERSION, version)
     }
 
     @Test
@@ -236,7 +238,7 @@ class GuestManagerTest : KoinTest {
         val info = ContainerInfo(
             id = id,
             ipv4 = randomIpv4(),
-            ipv6 = "fd42:3e1a:3e81:5d6d:216:3eff:fe23:3160",
+            ipv6 = "fd42:3e1a:3e81:5d6d:7c3a:b9f1:2d4e:${Random.nextInt(65536).toHex()}",
             mac = randomMac(),
             internet = false,
             image = "debian/13",

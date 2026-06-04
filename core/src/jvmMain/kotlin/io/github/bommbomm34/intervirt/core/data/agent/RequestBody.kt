@@ -28,14 +28,14 @@ sealed class RequestBody {
     @Serializable
     data class IDWithNewIpv4(
         val id: String,
-        val newIpv4: String,
+        val newIP: String,
     ) : RequestBody()
 
     @SerialName("IDWithNewIpv6")
     @Serializable
     data class IDWithNewIpv6(
         val id: String,
-        val newIpv6: String,
+        val newIP: String,
     ) : RequestBody()
 
     @SerialName("Connect")

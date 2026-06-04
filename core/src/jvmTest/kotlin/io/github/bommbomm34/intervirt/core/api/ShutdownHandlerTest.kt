@@ -8,7 +8,6 @@ package io.github.bommbomm34.intervirt.core.api
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
@@ -59,7 +58,7 @@ class ShutdownHandlerTest : KoinTest {
     @Test
     fun shouldGracefulShutdown() = runTest {
         shutdownHandler.gracefulShutdown()
-        assertEquals(true, shutdownHandler.closed.get())
+        assertEquals(true, shutdownHandler.closed)
     }
 
     @Test

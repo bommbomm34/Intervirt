@@ -13,20 +13,26 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializer
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.fetchAndUpdate
 import kotlin.concurrent.atomics.update
+import kotlin.concurrent.atomics.updateAndFetch
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 @Serializable(with = AtomicSerializer::class)
 @OptIn(ExperimentalAtomicApi::class)
 class Atomic<T>(initial: T) {
-    private val ref = AtomicReference(initial)
+    @PublishedApi
+    internal val ref = AtomicReference(initial)
 
     fun set(value: T) = ref.store(value)
 
     fun get() = ref.load()
 
-    fun update(block: (T) -> T) = ref.update(block)
+    inline fun update(block: (T) -> T) = ref.update(block)
+
+    inline fun updateAndGet(block: (T) -> T): T = ref.updateAndFetch(block)
+    inline fun getAndUpdate(block: (T) -> T): T = ref.fetchAndUpdate(block)
 
     override fun toString(): String = get().toString()
 

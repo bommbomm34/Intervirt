@@ -50,20 +50,22 @@ class DeviceSettingsViewModel(
     private val deviceManager: DeviceManager,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
-    val computer: ViewDevice.Computer
-        get() {
-            check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
-            return device
-        }
-    var showPortForwardings by mutableStateOf(false)
+    val computer: ViewDevice.Computer by lazy {
+        check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
+        device
+    }
+    var showPortForwardings: Boolean by mutableStateOf(false)
     private var containerFilePath: Path? by mutableStateOf(null)
     var ioClient: ContainerIOClient? by mutableStateOf(null)
     private val logger = appEnv.getLogger(DeviceSettingsViewModel::class)
+    private val isComputer get() = device is ViewDevice.Computer
     var project by project
 
     init {
-        viewModelScope.launchDialogCatching(appState) {
-            ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
+        if (isComputer) {
+            viewModelScope.launchDialogCatching(appState) {
+                ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
+            }
         }
     }
 
