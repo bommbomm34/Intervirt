@@ -520,10 +520,15 @@ Message from server:
 ```json
 {
 	"type": "NetworkList",
-	"networks": {
-		"network-1": ["id1", "id2"], // NETWORK_NAME: Array of connected devices
-		"network-2": ["id3, "id1"]		
-	}
+	"networks": [
+        {
+            "name": "network-1", // Name of the network
+            "devices": ["id1", "id2"], // Connected device IDs
+            "ipv4": "192.168.0.1/24", // IPv4 subnet in CIDR notation
+            "ipv6": "fd42:3e1a:3e81:5d6d::1/64" // IPv6 subnet in CIDR notation
+        },
+        // ...
+    ]
 }
 ```
 ### Add network

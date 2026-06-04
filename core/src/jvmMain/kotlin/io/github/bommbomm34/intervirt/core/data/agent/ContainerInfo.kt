@@ -19,5 +19,3 @@ data class ContainerInfo(
     val portForwardings: List<PortForwarding> = listOf(),
     val running: Boolean = true,
 )
-
-typealias Network = List<String>
