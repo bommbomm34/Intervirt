@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.mock.MockSshGuestClient
 import io.github.bommbomm34.intervirt.core.util.ext.getOrThrow
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
+import io.github.bommbomm34.intervirt.core.util.randomIpv6
 import io.github.bommbomm34.intervirt.core.util.randomMac
 import io.github.bommbomm34.intervirt.core.util.toHex
 import io.ktor.client.*
@@ -177,9 +178,9 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldGetVersion() = runTest {
-        val version = guestManager.getVersion().getOrThrow()
-        if (guestManager is VirtualGuestManager) assertEquals(CURRENT_VERSION, version)
+    fun shouldGetInfo() = runTest {
+        val info = getInfo()
+        if (guestManager is VirtualGuestManager) assertEquals(CURRENT_VERSION, info.version)
     }
 
     @Test
@@ -225,8 +226,8 @@ class GuestManagerTest : KoinTest {
     private suspend fun addTestContainer(id: String = TEST_CONTAINER_ID): ContainerInfo {
         val info = ContainerInfo(
             id = id,
-            ipv4 = randomIpv4(),
-            ipv6 = "fd42:3e1a:3e81:5d6d:7c3a:b9f1:2d4e:${Random.nextInt(65536).toHex()}",
+            ipv4 = randomIpv4(getInfo().ipv4Subnet),
+            ipv6 = randomIpv6(getInfo().ipv6Subnet),
             mac = randomMac(),
             internet = false,
             image = "debian/13",
@@ -248,6 +249,8 @@ class GuestManagerTest : KoinTest {
     private suspend fun addTestNetwork(name: String = TEST_NETWORK_NAME) = guestManager.addNetwork(name).getOrThrow()
 
     private suspend fun ContainerInfo.getContainer() = getContainers().first { it.id == id }
+
+    private suspend fun getInfo(): AgentInfo = guestManager.getInfo().getOrThrow()
 
     @AfterTest
     fun stopTest() = runTest {

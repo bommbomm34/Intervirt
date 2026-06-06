@@ -65,7 +65,7 @@ suspend fun GuestManager.addNetworks(networks: Map<String, Network>): AppResult<
 
 fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flow {
     either {
-        val version = getVersion().bind()
+        val version = getInfo().bind().version
         if (version != CURRENT_VERSION) {
             emit(ResultProgress.failure(Failure.VersionMismatch(version)))
         } else {

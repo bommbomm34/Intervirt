@@ -5,12 +5,17 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import arrow.atomic.Atomic
 import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
+import inet.ipaddr.AddressStringException
+import inet.ipaddr.IPAddress
+import inet.ipaddr.IPAddressString
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -21,6 +26,7 @@ import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.exceptions.IllegalAgentResponseException
 import io.github.bommbomm34.intervirt.core.takeWhileInclusive
+import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.core.util.ext.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -46,6 +52,7 @@ class AgentGuestManager(
     private val agentPort = appEnv.AGENT_PORT
     private val timeout = appEnv.AGENT_WEBSOCKET_TIMEOUT.milliseconds
     private val host = appEnv.AGENT_HOST
+    private var agentInfo: Atomic<AgentInfo?> = Atomic(null)
 
     override suspend fun addContainer(
         id: String,
@@ -112,9 +119,20 @@ class AgentGuestManager(
         return justSend("reboot".commandBody())
     }
 
-    override suspend fun getVersion(): AppResult<String> {
+    override suspend fun getInfo(): AppResult<AgentInfo> {
         logger.debug { "Retrieving version of guest" }
-        return firstSend<ResponseBody.Info>("version".commandBody()).map { it.version }
+        agentInfo.get()?.let { return it.right() }
+        return firstSend<ResponseBody.Info>("version".commandBody()).flatMap {
+            try {
+                AgentInfo(
+                    version = it.version,
+                    ipv4Subnet = IPAddressString(it.ipv4Subnet).getAddress(),
+                    ipv6Subnet = IPAddressString(it.ipv6Subnet).getAddress(),
+                ).also { info -> agentInfo.compareAndSet(null, info) }.right()
+            } catch (e: AddressStringException) {
+                Failure.IllegalAgentResponse("Invalid Info response (${e.message}): $it").left()
+            }
+        }
     }
 
     override suspend fun getContainers(): AppResult<List<ContainerInfo>> {

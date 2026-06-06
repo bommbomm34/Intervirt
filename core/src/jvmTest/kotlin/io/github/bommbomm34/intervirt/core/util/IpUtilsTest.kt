@@ -5,7 +5,12 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
+import inet.ipaddr.ipv4.IPv4Address
+import inet.ipaddr.ipv6.IPv6Address
+import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
+import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -55,35 +60,35 @@ class IpUtilsTest {
     @Test
     fun shouldValidateRandomValidIpv4Addresses() {
         repeat(testCount) {
-            assertTrue { randomIpv4().validateIpv4() }
+            assertTrue { randomIpv4(VirtualGuestManager.IPV4_SUBNET).validateIpv4() }
         }
     }
 
     @Test
     fun shouldValidateRandomValidIpv6Addresses() {
         repeat(testCount) {
-            assertTrue { randomIpv6().validateIpv6() }
+            assertTrue { randomIpv6(VirtualGuestManager.IPV6_SUBNET).validateIpv6() }
         }
     }
 
     @Test
-    fun shouldValidateValidMacAddress(){
+    fun shouldValidateValidMacAddress() {
         assertTrue { "ff:ff:ff:ff:ff:89".validateMac() }
     }
 
     @Test
-    fun shouldValidateMacAddressWithTooManyParts(){
+    fun shouldValidateMacAddressWithTooManyParts() {
         assertFalse { "ff:ff:ff:ff:ff:ff:ff".validateMac() }
     }
 
     @Test
-    fun shouldValidateMacAddressWithNonHexadecimalNumbers(){
+    fun shouldValidateMacAddressWithNonHexadecimalNumbers() {
         assertFalse { "kk:kk:22:22:22:22".validateMac() }
     }
 
     @Test
-    fun shouldValidateRandomValidMacAddresses(){
-        repeat(testCount){
+    fun shouldValidateRandomValidMacAddresses() {
+        repeat(testCount) {
             assertTrue { randomMac().validateMac() }
         }
     }

@@ -7,8 +7,11 @@ package io.github.bommbomm34.intervirt.core.api.impl
 
 import arrow.core.left
 import arrow.core.right
+import inet.ipaddr.IPAddress
+import inet.ipaddr.IPAddressString
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
@@ -19,6 +22,7 @@ import io.github.bommbomm34.intervirt.core.exceptions.NotFoundException
 import io.github.bommbomm34.intervirt.core.toFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -43,7 +47,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
 
     override suspend fun removeContainer(id: String): AppResult<Unit> {
         delay()
-        val removed = containers.removeIf { it.id == id }
+        val removed = containers.removeAll { it.id == id }
         return if (removed) Unit.right() else Failure.NotFound("Container $id not found.").left()
     }
 
@@ -140,7 +144,11 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
 
     override suspend fun reboot() = Unit.right()
 
-    override suspend fun getVersion() = CURRENT_VERSION.right()
+    override suspend fun getInfo() = AgentInfo(
+        version = CURRENT_VERSION,
+        ipv4Subnet = IPV4_SUBNET,
+        ipv6Subnet = IPV6_SUBNET,
+    ).right()
 
     override suspend fun getContainers(): AppResult<List<ContainerInfo>> {
         delay()
@@ -177,6 +185,14 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     private suspend fun delay() = kotlinx.coroutines.delay(delay)
 
     override suspend fun close() = Unit.right() // Nothing to close
+
+    companion object {
+        @VisibleForTesting
+        internal val IPV4_SUBNET: IPAddress = IPAddressString("192.168.73.0/24").getAddress()
+
+        @VisibleForTesting
+        internal val IPV6_SUBNET: IPAddress = IPAddressString("fd42:7c9a:15e3::/48").getAddress()
+    }
 }
 
 private data class Container(

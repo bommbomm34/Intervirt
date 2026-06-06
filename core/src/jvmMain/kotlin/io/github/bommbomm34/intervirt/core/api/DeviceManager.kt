@@ -7,6 +7,7 @@ package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.flatMap
 import arrow.core.left
+import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
@@ -41,7 +42,7 @@ class DeviceManager(
     private val intervirtOSClients = ConcurrentHashMap<String, IntervirtOSClient>()
     private var project by project
 
-    suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): AppResult<Device.Computer> {
+    suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): AppResult<Device.Computer> = either {
         val id = generateID("computer")
         val device = Device.Computer(
             id = id,
@@ -49,13 +50,13 @@ class DeviceManager(
             name = name ?: id,
             x = x,
             y = y,
-            ipv4 = project.generateIpv4(),
-            ipv6 = project.generateIpv6(),
+            ipv4 = project.generateIpv4(guestManager.getInfo().bind().ipv4Subnet),
+            ipv6 = project.generateIpv6(guestManager.getInfo().bind().ipv6Subnet),
             mac = project.generateMac(),
             internetEnabled = false,
             portForwardings = listOf(),
         )
-        return addComputer(device)
+        addComputer(device).bind()
     }
 
     suspend fun addComputer(device: Device.Computer): AppResult<Device.Computer> = either {

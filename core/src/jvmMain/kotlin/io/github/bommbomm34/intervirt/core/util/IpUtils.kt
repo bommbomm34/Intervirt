@@ -5,10 +5,19 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
+import arrow.optics.copy
+import inet.ipaddr.IPAddress
+import inet.ipaddr.ipv4.IPv4Address
+import inet.ipaddr.ipv6.IPv6Address
+import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
+import org.jetbrains.annotations.VisibleForTesting
+import java.math.BigInteger
+import java.nio.ByteBuffer
 import java.util.*
 import kotlin.random.Random
+import kotlin.random.nextULong
 
 private val IPV4_REGEX = Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")
 private val DIGITS_PATTERN = Regex("\\d{1,3}")
@@ -22,16 +31,16 @@ fun Project.generateMac(): String {
     }
 }
 
-fun Project.generateIpv4(): String {
+fun Project.generateIpv4(subnet: IPAddress): String {
     while (true) {
-        val ipv4 = randomIpv4()
+        val ipv4 = randomIpv4(subnet)
         if (devices.all { if (it is Device.Computer) it.ipv4 != ipv4 else true }) return ipv4
     }
 }
 
-fun Project.generateIpv6(): String {
+fun Project.generateIpv6(subnet: IPAddress): String {
     while (true) {
-        val ipv6 = randomIpv6()
+        val ipv6 = randomIpv6(subnet)
         if (devices.all { if (it is Device.Computer) it.ipv6 != ipv6 else true }) return ipv6
     }
 }
@@ -46,20 +55,53 @@ fun randomMac(): String {
     return "${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
 }
 
-fun randomIpv4(): String {
-    fun rand() = Random.nextInt(2, 255)
-    return "192.168.0.${rand()}"
+fun randomIpv4(subnet: IPAddress): String {
+    val prefixLen = subnet.networkPrefixLength
+
+    val result = subnet.bytes.copyOf()
+
+    var bitIndex = prefixLen
+
+    while (bitIndex < 32) {
+        val byteIndex = bitIndex / 8
+        val bitInByte = 7 - (bitIndex % 8)
+
+        val randomBit = (Random.nextInt(2) shl bitInByte)
+        result[byteIndex] = (result[byteIndex].toInt() or randomBit).toByte()
+
+        bitIndex++
+    }
+
+    return IPv4Address(result).toCompressedString()
 }
 
-fun randomIpv6(): String {
-    fun rand() = Random.nextInt(65536)
-        .toHex()
-        .padZero(4)
+fun randomIpv6(subnet: IPAddress): String {
+    val prefixLen = subnet.networkPrefixLength
+    val hostBits = 128 - prefixLen
 
-    fun randFirst() = Random.nextInt(256)
-        .toHex()
-        .padZero(2)
-    return "fd${randFirst()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}:${rand()}"
+    val base = subnet.bytes.copyOf()
+
+    val randomBytes = Random.nextBytesByBitCount(hostBits)
+
+    val hostStartByte = prefixLen / 8
+    val hostStartBitOffset = prefixLen % 8
+
+    if (hostStartBitOffset == 0) {
+        for (i in randomBytes.indices) {
+            base[hostStartByte + i] = randomBytes[i]
+        }
+    } else {
+        var bitIndex = prefixLen
+        while (bitIndex < 128) {
+            val byteIndex = bitIndex / 8
+            val bitInByte = 7 - (bitIndex % 8)
+            val bit = (randomBytes[(bitIndex - prefixLen) / 8].toInt() ushr (7 - ((bitIndex - prefixLen) % 8))) and 1
+            base[byteIndex] = (base[byteIndex].toInt() and (1 shl bitInByte).inv() or (bit shl bitInByte)).toByte()
+            bitIndex++
+        }
+    }
+
+    return IPv6Address(base).toCompressedString()
 }
 
 // Based on InetAddressValidator.isValidInet4Address() of Apache Commons
@@ -73,12 +115,7 @@ fun String.validateIpv4(): Boolean {
         if (ipSegment.isEmpty() || ipSegment.trim { it <= ' ' }.isEmpty()) {
             return false
         }
-        var iIpSegment: Int
-        try {
-            iIpSegment = ipSegment.toInt()
-        } catch (_: NumberFormatException) {
-            return false
-        }
+        val iIpSegment: Int = ipSegment.toIntOrNull() ?: return false
         if (iIpSegment > 255 || ipSegment.length > 1 && ipSegment.startsWith("0")) {
             return false
         }
@@ -180,3 +217,12 @@ fun String.validateMac(): Boolean = MAC_REGEX.matches(this)
 fun String.padZero(len: Int) = padStart(len, '0')
 
 fun Int.toHex(): String = toString(16)
+
+@VisibleForTesting
+internal fun Random.nextBytesByBitCount(bitCount: Int): ByteArray {
+    val bytes = nextBytes(bitCount / 8)
+    val diff = bitCount % 8
+    if (diff == 0) return bytes
+    val additionalByte = nextBits(diff).toByte()
+    return bytes + additionalByte
+}

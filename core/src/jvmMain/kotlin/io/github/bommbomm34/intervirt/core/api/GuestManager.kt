@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
@@ -60,7 +61,7 @@ interface GuestManager : AsyncCloseable {
 
     suspend fun reboot(): AppResult<Unit>
 
-    suspend fun getVersion(): AppResult<String>
+    suspend fun getInfo(): AppResult<AgentInfo>
 
     suspend fun getContainers(): AppResult<List<ContainerInfo>>
 
