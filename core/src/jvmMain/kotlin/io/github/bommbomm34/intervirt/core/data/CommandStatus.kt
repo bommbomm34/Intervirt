@@ -6,6 +6,8 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import arrow.core.left
+import arrow.core.raise.Raise
+import arrow.core.raise.context.raise
 import arrow.core.right
 import kotlinx.coroutines.flow.Flow
 
@@ -17,9 +19,10 @@ sealed class CommandStatus {
 data class CommandResult(
     val output: String,
     val statusCode: Int,
-) {
-    fun asResult() = if (statusCode != 0) Failure.CommandExecution(statusCode, output).left() else output.right()
-}
+)
+
+context(_: Raise<Failure>)
+fun CommandResult.bind() = if (statusCode != 0) raise(Failure.CommandExecution(statusCode, output)) else output
 
 /**
  * Collects the flow and returns a `CommandResult`.

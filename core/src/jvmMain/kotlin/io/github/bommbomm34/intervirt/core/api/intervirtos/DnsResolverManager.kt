@@ -5,12 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
-import arrow.core.flatMap
-import arrow.core.left
+import arrow.core.raise.context.Raise
+import arrow.core.raise.context.bind
+import arrow.core.raise.context.raise
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
+import io.github.bommbomm34.intervirt.core.data.bind
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
@@ -24,29 +25,28 @@ class DnsResolverManager(
 ) {
     private val logger = appEnv.getLogger(DnsResolverManager::class)
 
+    context(_: Raise<Failure>)
     suspend fun lookupDns(
         name: String,
         type: String,
         nameserver: String,
         reverse: Boolean,
-    ): AppResult<List<DnsRecord>> {
+    ): List<DnsRecord> {
         val baseCommandList = listOf("/usr/bin/doggo", name, "--type", type, "--nameserver", nameserver, "--json")
         val commandList = if (reverse) baseCommandList + "-x" else baseCommandList
         logger.debug { "Execute command \"${commandList.joinToString(" ")}\" for DNS lookup" }
         return ioClient.exec(
             commands = commandList,
-        ).flatMap exec@ { flow ->
-            flow.getCommandResult()
-                .asResult()
-                .map { output ->
-                    val resolverOutput = defaultJson.decodeFromString<DnsResolverOutput>(output)
-                    resolverOutput.responses
-                        .getOrNull(0)
-                        ?.answers
-                        ?.map { it.toDnsRecord() }
-                        ?: return@exec Failure.IllegalState("DNS Resolver responded with invalid JSON schema: $output").left()
-                }
-                .onLeft { return@exec it.left() }
-        }
+        )
+            .getCommandResult()
+            .bind()
+            .let { output ->
+                val resolverOutput = defaultJson.decodeFromString<DnsResolverOutput>(output)
+                resolverOutput.responses
+                    .getOrNull(0)
+                    ?.answers
+                    ?.map { it.toDnsRecord() }
+                    ?: raise(Failure.IllegalState("DNS Resolver responded with invalid JSON schema: $output"))
+            }
     }
 }

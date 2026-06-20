@@ -6,15 +6,18 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.getOrElse
+import arrow.core.raise.Raise
+import arrow.core.raise.RaiseDSL
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
-import io.github.bommbomm34.intervirt.core.util.ext.getOrThrow
-import kotlinx.coroutines.test.runTest
+import io.github.bommbomm34.intervirt.core.util.ignoreFailure
+import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -64,44 +67,45 @@ class ContainerIOClientTest : KoinTest {
     }
 
     @Test
-    fun shouldGetIOClient() = runTest {
+    fun shouldGetIOClient() = runIntervirtTest {
         val device = createDevice()
-        deviceManager.getIOClient(device).getOrElse {  }
+        ignoreFailure { deviceManager.getIOClient(device) }
     }
 
     @Test
-    fun shouldExec() = runTest {
+    fun shouldExec() = runIntervirtTest {
         val device = createDevice()
-        val ioClient = deviceManager.getIOClient(device).getOrThrow()
-        val res = ioClient.exec(listOf("echo", "Hello World")).getOrThrow().getCommandResult()
+        val ioClient = deviceManager.getIOClient(device)
+        val res = ioClient.exec(listOf("echo", "Hello World")).getCommandResult()
         assertEquals(0, res.statusCode)
         assertContains(res.output, "Hello World")
     }
 
     @Test
-    fun shouldWriteFile() = runTest {
+    fun shouldWriteFile() = runIntervirtTest {
         val device = createDevice()
-        val ioClient = deviceManager.getIOClient(device).getOrThrow()
+        val ioClient = deviceManager.getIOClient(device)
         ioClient.getTestPath().writeText("Hello Test!")
     }
 
     @Test
-    fun shouldReadFile() = runTest {
+    fun shouldReadFile() = runIntervirtTest {
         val device = createDevice()
-        val ioClient = deviceManager.getIOClient(device).getOrThrow()
+        val ioClient = deviceManager.getIOClient(device)
         val path = ioClient.getTestPath()
         path.writeText("Hello")
         assertEquals("Hello", path.readText())
     }
 
     @Test
-    fun shouldCloseClient() = runTest {
+    fun shouldCloseClient() = runIntervirtTest {
         val device = createDevice()
-        val ioClient = deviceManager.getIOClient(device).getOrThrow()
-        ioClient.close().getOrThrow()
+        val ioClient = deviceManager.getIOClient(device)
+        ioClient.close()
     }
 
-    private suspend fun createDevice(): Device.Computer = deviceManager.addComputer(mockComputer).getOrThrow()
+    context(_: Raise<Failure>)
+    private suspend fun createDevice(): Device.Computer = deviceManager.addComputer(mockComputer)
 
     private fun ContainerIOClient.getTestPath(): Path {
         path = getPath("/tmp/test.txt")

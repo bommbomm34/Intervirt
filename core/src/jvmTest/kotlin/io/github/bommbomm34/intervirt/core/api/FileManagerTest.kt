@@ -5,17 +5,17 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.Either
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
-import io.github.bommbomm34.intervirt.core.util.ext.getOrThrow
+import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readString
-import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -45,7 +45,7 @@ class FileManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldInitSuccessfully() = runTest {
+    fun shouldInitSuccessfully() = runIntervirtTest {
         fileManager.init()
         val files = appEnv.DATA_DIR.list().map { it.name }
         assertContains(files, "qemu")
@@ -54,13 +54,15 @@ class FileManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDownloadFile() = runTest {
+    fun shouldDownloadFile() = runIntervirtTest {
         fileManager.init()
         var finishedSuccessfully = false
         fileManager.downloadFile(DOWNLOAD_URL, "license").collect {
             when (it) {
                 is ResultProgress.Result<PlatformFile> -> {
-                    val file = it.result.getOrThrow()
+                    val res = it.result
+                    assertIs<Either.Right<PlatformFile>>(res)
+                    val file = res.value
                     assertTrue(file.exists())
                     assertContains(file.readString(), "GNU")
                     finishedSuccessfully = true
@@ -73,7 +75,7 @@ class FileManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldExtractZip() = runTest {
+    fun shouldExtractZip() = runIntervirtTest {
         val tempFolder = fileManager.getFile("cache/temp-folder")
         val file = PlatformFile(File(javaClass.getResource("/hello.zip")!!.file))
         fileManager.extractZip(file, tempFolder)

@@ -6,6 +6,8 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import arrow.core.left
+import arrow.core.raise.Raise
+import arrow.core.raise.context.raise
 import arrow.core.raise.either
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.exceptions.InvalidMailException
@@ -32,11 +34,12 @@ data class Mail(
     }
 }
 
-fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): AppResult<Mail> = either {
+context(_: Raise<Failure>)
+fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): Mail {
     val sender = from?.get(0)?.toMailUser()
     val receiver = allRecipients?.get(0)?.toMailUser()
-    if (sender == null && !senderOptional) return Failure.InvalidMail("No sender is specified").left()
-    if (receiver == null) return Failure.InvalidMail("No receiver is specified").left()
+    if (sender == null && !senderOptional) raise(Failure.InvalidMail("No sender is specified"))
+    if (receiver == null) raise(Failure.InvalidMail("No receiver is specified"))
     return Mail(
         sender = sender ?: MailUser.UNDEFINED,
         receiver = receiver,
@@ -44,7 +47,7 @@ fun Message.toMail(index: Int? = null, senderOptional: Boolean = false): AppResu
         content = content.getString(),
         index = index,
         message = this@toMail,
-    ).right()
+    )
 }
 
 private fun Any.getString(): String {

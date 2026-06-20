@@ -5,8 +5,11 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 
 interface AsyncCloseable {
-    suspend fun close(): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun close()
 }

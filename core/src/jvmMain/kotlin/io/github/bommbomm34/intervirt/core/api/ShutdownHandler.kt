@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.totalDiskSpace
 import io.github.bommbomm34.intervirt.core.unixTimestamp
@@ -60,9 +61,16 @@ class ShutdownHandler(
      */
     suspend fun gracefulShutdown() {
         if (_closed.compareAndSet(expectedValue = false, newValue = true)){
-            deviceManager.close()
-            guestManager.close()
-            qemuClient.close()
+            recover(
+                block = {
+                    deviceManager.close()
+                    guestManager.close()
+                    qemuClient.close()
+                },
+                recover = {
+                    getDefaultStream().printlnErr("Error occurred during closing Intervirt services: $it")
+                }
+            )
             httpClient.close()
             secretService.close()
         }

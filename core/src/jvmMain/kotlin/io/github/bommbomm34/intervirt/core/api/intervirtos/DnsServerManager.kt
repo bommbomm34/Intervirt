@@ -5,11 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
@@ -35,12 +37,14 @@ class DnsServerManager(
     private val ioClient = client.ioClient
     val docker = client.docker
 
-    suspend fun addRecord(record: DnsRecord): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun addRecord(record: DnsRecord) = withCatchingContext(Dispatchers.IO) {
         getMainFile().appendLines(listOf(record.toString()))
-        restart().bind()
+        restart()
     }
 
-    suspend fun removeRecord(record: DnsRecord): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun removeRecord(record: DnsRecord) = withCatchingContext(Dispatchers.IO) {
         val main = getMainFile()
         val content = main.readText()
         val new = content
@@ -48,17 +52,19 @@ class DnsServerManager(
             .filterNot { it.trim().equals(record.toString(), true) }
             .joinToString("\n")
         main.writeText(new)
-        restart().bind()
+        restart()
     }
 
-    suspend fun listRecords(): AppResult<List<DnsRecord>> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun listRecords(): List<DnsRecord> = withCatchingContext(Dispatchers.IO) {
         getMainFile()
             .readText()
             .lines()
-            .map { DnsRecord.parse(it) }
+            .map(DnsRecord::parse)
     }
 
-    suspend fun restart(): AppResult<Unit> = docker.restartContainer(id)
+    context(_: arrow.core.raise.Raise<Failure>)
+    suspend fun restart() = docker.restartContainer(id)
 
     private fun getMainFile() = ioClient.getPath("/opt/intervirt/coredns/main.local")
 }

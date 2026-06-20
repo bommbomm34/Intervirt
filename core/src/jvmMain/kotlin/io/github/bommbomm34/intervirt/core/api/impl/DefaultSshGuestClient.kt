@@ -5,16 +5,14 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
-import arrow.core.raise.context.bind
-import arrow.core.raise.context.either
+import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
 import io.github.bommbomm34.intervirt.core.api.getFreePort
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.exec
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
@@ -35,9 +33,10 @@ class DefaultSshGuestClient(
 
     override val isInitialized: Boolean get() = _isInitialized
 
-    override suspend fun init(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    override suspend fun init() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing SshGuestClient" }
-        initPortForwarding().bind()
+        initPortForwarding()
         sshClient.start()
         session = sshClient.connect("intervirt", "127.0.0.1", fwd.externalPort)
             .verify()
@@ -47,25 +46,28 @@ class DefaultSshGuestClient(
         _isInitialized = true
     }
 
-    override fun runCommand(vararg commands: String): AppResult<Flow<CommandStatus>> {
+    context(_: Raise<Failure>)
+    override fun runCommand(vararg commands: String): Flow<CommandStatus> {
         val command = commands.joinToString(" ")
         logger.info { "Executing '$command' on guest" }
         return session.exec(command)
     }
 
-    private suspend fun initPortForwarding(): AppResult<Unit> = either {
+    context(_: Raise<Failure>)
+    private suspend fun initPortForwarding() {
         val freePort = getFreePort()
         fwd = PortForwarding(
             protocol = "tcp",
             internalPort = 22,
             externalPort = freePort,
         )
-        qemuClient.addPortForwarding(fwd).bind()
+        qemuClient.addPortForwarding(fwd)
     }
 
-    override suspend fun close(): AppResult<Unit> = either {
+    context(_: Raise<Failure>)
+    override suspend fun close() {
         session.close()
         sshClient.close()
-        qemuClient.removePortForwarding(fwd).bind()
+        qemuClient.removePortForwarding(fwd)
     }
 }

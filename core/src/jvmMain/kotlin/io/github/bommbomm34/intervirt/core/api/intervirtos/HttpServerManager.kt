@@ -5,11 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
@@ -34,19 +36,20 @@ class HttpServerManager(
     private val ioClient = client.ioClient
     private val logger = appEnv.getLogger(HttpServerManager::class)
 
-    suspend fun loadHttpConf(conf: String): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun loadHttpConf(conf: String) = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Loading Apache2 configuration" }
         logger.debug { "Uploading Apache2 configuration" }
         ioClient.getPath("/opt/intervirt/apache2/sites-available/intervirt.conf").writeText(conf)
         logger.debug { "Enabling Apache2 configuration" }
-        val flow = docker.exec(id, listOf("/usr/bin/a2ensite", "intervirt.conf")).bind()
+        val flow = docker.exec(id, listOf("/usr/bin/a2ensite", "intervirt.conf"))
         val (output, statusCode) = flow.getCommandResult()
         if (statusCode != 0) {
             logger.error { "Failed to enable Apache2 configuration: $output" }
             throw ContainerExecutionException(output)
         } else {
             logger.debug { "Reloading Apache2 configuration" }
-            docker.restartContainer(id).bind()
+            docker.restartContainer(id)
         }
     }
 }

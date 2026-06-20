@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
+import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
@@ -14,7 +15,7 @@ sealed class ResultProgress<out T> {
 
     data class Result<out T>(
         override val percentage: Float,
-        val result: AppResult<T>,
+        val result: Either<Failure, T>,
     ) : ResultProgress<T>() {
         override fun log() = result.fold(
             ifRight = { "Success" },
@@ -46,7 +47,7 @@ sealed class ResultProgress<out T> {
 
         fun <T> failure(failure: Failure): Result<T> = result(failure.left())
         fun <T> success(value: T) = result(value.right())
-        fun <T> result(result: AppResult<T>) = Result(1f, result)
+        fun <T> result(result: Either<Failure, T>) = Result(1f, result)
     }
 
     abstract fun log(): String

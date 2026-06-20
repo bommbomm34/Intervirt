@@ -5,16 +5,19 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.raise.Raise
+import arrow.core.raise.context.raise
+import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
-import io.github.bommbomm34.intervirt.core.util.ext.recoverAlreadyPerformed
 import kotlinx.coroutines.flow.Flow
 
 interface GuestManager : AsyncCloseable {
+    context(_: Raise<Failure>)
     suspend fun addContainer(
         id: String,
         ipv4: String,
@@ -24,6 +27,7 @@ interface GuestManager : AsyncCloseable {
         image: String,
     ): Flow<ResultProgress<Unit>>
 
+    context(_: Raise<Failure>)
     suspend fun addContainer(container: ContainerInfo) = addContainer(
         id = container.id,
         ipv4 = container.ipv4,
@@ -33,43 +37,70 @@ interface GuestManager : AsyncCloseable {
         image = container.image,
     )
 
-    suspend fun removeContainer(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun removeContainer(id: String)
 
-    suspend fun setIpv4(id: String, newIP: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun setIpv4(id: String, newIP: String)
 
-    suspend fun setIpv6(id: String, newIP: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun setIpv6(id: String, newIP: String)
 
-    suspend fun connect(container: String, network: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun connect(container: String, network: String)
 
-    suspend fun disconnect(container: String, network: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun disconnect(container: String, network: String)
 
-    suspend fun setInternetAccess(id: String, enabled: Boolean): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun setInternetAccess(id: String, enabled: Boolean)
 
-    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int, protocol: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int, protocol: String)
 
-    suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String)
 
-    suspend fun startContainer(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun startContainer(id: String)
 
-    suspend fun stopContainer(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun stopContainer(id: String)
 
+    context(_: Raise<Failure>)
     fun wipe(): Flow<ResultProgress<Unit>>
 
+    context(_: Raise<Failure>)
     fun update(): Flow<ResultProgress<Unit>>
 
-    suspend fun shutdown(): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun shutdown()
 
-    suspend fun reboot(): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun reboot()
 
-    suspend fun getInfo(): AppResult<AgentInfo>
+    context(_: Raise<Failure>)
+    suspend fun getInfo(): AgentInfo
 
-    suspend fun getContainers(): AppResult<List<ContainerInfo>>
+    context(_: Raise<Failure>)
+    suspend fun getContainers(): List<ContainerInfo>
 
-    suspend fun addNetwork(name: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun addNetwork(name: String)
 
-    suspend fun removeNetwork(name: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun removeNetwork(name: String)
 
-    suspend fun getNetworks(): AppResult<Map<String, Network>>
+    context(_: Raise<Failure>)
+    suspend fun getNetworks(): Map<String, Network>
 }
 
-suspend fun GuestManager.addNetworkIfNotExists(name: String): AppResult<Unit> = addNetwork(name).recoverAlreadyPerformed()
+context(_: Raise<Failure>)
+suspend fun GuestManager.addNetworkIfNotExists(name: String) {
+    recover(
+        block = { addNetwork(name) },
+        recover = { failure ->
+            if (failure is Failure.OperationAlreadyPerformed) Unit else raise(failure)
+        }
+    )
+}

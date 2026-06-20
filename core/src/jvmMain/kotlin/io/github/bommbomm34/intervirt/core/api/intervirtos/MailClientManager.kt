@@ -5,13 +5,16 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.context.either
+import arrow.core.raise.context.raise
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
@@ -21,7 +24,6 @@ import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
-import io.github.bommbomm34.intervirt.core.util.ext.toAppResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.bommbomm34.intervirt.secret.SecretService
 
@@ -44,10 +46,11 @@ class MailClientManager(
     private var imapStore: Store? = null
     var mailUser: MailUser? = null
 
+    context(_: Raise<Failure>)
     suspend fun init(
         mailConnectionDetails: MailConnectionDetails,
         proxy: Address,
-    ): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    ) = withCatchingContext(Dispatchers.IO) {
         fun Properties.putDefaultProperties(
             ref: String,
             addr: Address,
@@ -102,7 +105,8 @@ class MailClientManager(
         logger.debug { "Successfully initialized both SMTP and IMAP" }
     }
 
-    suspend fun sendMail(mail: Mail): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    suspend fun sendMail(mail: Mail) {
         val session = getSmtpSession()
         return withCatchingContext(Dispatchers.IO) {
             logger.debug { "Sending mail $mail" }
@@ -110,7 +114,8 @@ class MailClientManager(
         }
     }
 
-    suspend fun getReplyMail(mail: Mail): AppResult<Mail> {
+    context(_: Raise<Failure>)
+    suspend fun getReplyMail(mail: Mail): Mail {
         val imapStore = getImapStore()
         require(mail.index != null) { "Mail doesn't include an index" }
         return withCatchingContext(Dispatchers.IO) {
@@ -118,33 +123,25 @@ class MailClientManager(
             imapStore.useInbox {
                 messages[mail.index].reply(false)
                     .toMail(senderOptional = true)
-                    .bind()
             }
         }
     }
 
-    suspend fun getMails(): AppResult<List<Mail>> {
+    context(_: Raise<Failure>)
+    suspend fun getMails(): List<Mail> {
         val store = getImapStore()
         return withCatchingContext(Dispatchers.IO) {
             store.useInbox {
                 messages.mapIndexedNotNull { i, msg ->
                     val mail = msg.toMail(i)
-                    mail.fold(
-                        ifRight = {
-                            logger.debug { "Received mail: $it" }
-                            it
-                        },
-                        ifLeft = {
-                            logger.error(it) { "Invalid email: $msg" }
-                            null
-                        },
-                    )
+                    mail
                 }
             }
         }
     }
 
-    suspend fun deleteMail(mail: Mail): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    suspend fun deleteMail(mail: Mail) {
         val store = imapStore
         check(store != null) { "IMAP session isn't successfully initialized" }
         require(mail.index != null) { "Mail doesn't include an index" }
@@ -156,17 +153,18 @@ class MailClientManager(
         }
     }
 
-    suspend fun saveCredentials(details: MailConnectionDetails) = either {
-        store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username).bind()
-        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray()).toAppResult().bind()
-        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress).bind()
-        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress).bind()
-        store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety).bind()
-        store.set(IntervirtOSStore.Accessor.IMAP_SAFETY, details.imapSafety).bind()
+    context(_: Raise<Failure>)
+    suspend fun saveCredentials(details: MailConnectionDetails) {
+        store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username)
+        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray()).onFailure { raise(Failure.Unexpected(it)) }
+        store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress)
+        store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress)
+        store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety)
+        store.set(IntervirtOSStore.Accessor.IMAP_SAFETY, details.imapSafety)
     }
 
-    suspend fun loadCredentials(): AppResult<MailConnectionDetails> = either {
-        MailConnectionDetails(
+    suspend fun loadCredentials(): MailConnectionDetails {
+        return MailConnectionDetails(
             smtpAddress = store[IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS],
             imapAddress = store[IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS],
             username = store[IntervirtOSStore.Accessor.MAIL_USERNAME],
@@ -176,13 +174,14 @@ class MailClientManager(
         )
     }
 
-    suspend fun clearCredentials(): AppResult<Unit> = either {
-        store.delete(IntervirtOSStore.Accessor.MAIL_USERNAME).bind()
-        secretService.removeEntry(mailPasswordKey).toAppResult().bind()
-        store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS).bind()
-        store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS).bind()
-        store.delete(IntervirtOSStore.Accessor.SMTP_SAFETY).bind()
-        store.delete(IntervirtOSStore.Accessor.IMAP_SAFETY).bind()
+    context(_: Raise<Failure>)
+    suspend fun clearCredentials() {
+        store.delete(IntervirtOSStore.Accessor.MAIL_USERNAME)
+        secretService.removeEntry(mailPasswordKey).onFailure { raise(Failure.Unexpected(it)) }
+        store.delete(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS)
+        store.delete(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS)
+        store.delete(IntervirtOSStore.Accessor.SMTP_SAFETY)
+        store.delete(IntervirtOSStore.Accessor.IMAP_SAFETY)
     }
 
     private suspend inline fun <T> Store.useInbox(
@@ -217,6 +216,7 @@ class MailClientManager(
         return store
     }
 
+    context(_: Raise<Failure>)
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Closing SMTP session" }
         smtpSession?.transport?.close()

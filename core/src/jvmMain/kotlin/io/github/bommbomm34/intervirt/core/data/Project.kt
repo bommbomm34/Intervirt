@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
+import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.optics.optics
@@ -54,18 +55,19 @@ fun Project.resolveNetworks(vararg connections: DeviceConnection): Map<String, N
     return networks
 }
 
-suspend fun GuestManager.addNetworks(networks: Map<String, Network>): AppResult<Unit> = either {
+context(_: Raise<Failure>)
+suspend fun GuestManager.addNetworks(networks: Map<String, Network>) {
     networks.forEach { (name, network) ->
-        addNetworkIfNotExists(name).bind()
+        addNetworkIfNotExists(name)
         network.forEach {
-            connect(it, name).bind()
+            connect(it, name)
         }
     }
 }
 
 fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flow {
     either {
-        val version = getInfo().bind().version
+        val version = getInfo().version
         if (version != CURRENT_VERSION) {
             emit(ResultProgress.failure(Failure.VersionMismatch(version)))
         } else {
@@ -104,7 +106,7 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
                         mac = device.mac,
                         internet = device.internetEnabled,
                         image = device.image,
-                    ).lastResult().bind() // TODO: Propagate progress
+                    ).lastResult() // TODO: Propagate progress
                     device.portForwardings.forEach { portForwarding ->
                         emit(
                             ResultProgress.proceed(
@@ -117,7 +119,7 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
                             portForwarding.internalPort,
                             portForwarding.externalPort,
                             portForwarding.protocol,
-                        ).bind()
+                        )
                     }
                 }
             }
@@ -127,7 +129,7 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
                     message = "Connecting devices...",
                 ),
             )
-            addNetworks(project.resolveNetworks()).bind()
+            addNetworks(project.resolveNetworks())
             emit(
                 ResultProgress.proceed(
                     percentage = 1f,

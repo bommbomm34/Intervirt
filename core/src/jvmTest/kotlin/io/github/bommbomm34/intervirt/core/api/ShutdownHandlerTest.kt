@@ -5,17 +5,18 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.raise.Raise
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.bommbomm34.intervirt.secret.SecretService
-import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -58,13 +59,13 @@ class ShutdownHandlerTest : KoinTest {
     }
 
     @Test
-    fun shouldGracefulShutdown() = runTest {
+    fun shouldGracefulShutdown() = runIntervirtTest {
         shutdownHandler.gracefulShutdown()
         assertEquals(true, shutdownHandler.closed)
     }
 
     @Test
-    fun shouldNotDoubleClose() = runTest {
+    fun shouldNotDoubleClose() = runIntervirtTest {
         shutdownHandler.gracefulShutdown()
         assertEquals(1, guestManager.closed)
         shutdownHandler.gracefulShutdown() // Close a second time
@@ -72,7 +73,7 @@ class ShutdownHandlerTest : KoinTest {
     }
 
     @Test
-    fun shouldGenerateReport() = runTest {
+    fun shouldGenerateReport() = runIntervirtTest {
         val thread = Thread.currentThread()
         val throwable = IllegalStateException("Just some random exception by tests")
         val (report, log) = shutdownHandler.generateCrashReport(
@@ -97,8 +98,8 @@ class ShutdownHandlerTest : KoinTest {
 private class MockGuestManager : GuestManager by VirtualGuestManager() {
     var closed = 0
 
-    override suspend fun close(): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun close() {
         closed++
-        return Unit.right()
     }
 }

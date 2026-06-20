@@ -8,7 +8,6 @@ package io.github.bommbomm34.intervirt.core.api
 import arrow.core.left
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress

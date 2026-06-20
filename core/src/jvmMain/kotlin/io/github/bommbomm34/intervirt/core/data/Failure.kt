@@ -85,5 +85,3 @@ sealed class Failure(val message: String) {
 
     class VersionMismatch(other: String) : Failure("Version $other doesn't match current version $CURRENT_VERSION")
 }
-
-typealias AppResult<T> = Either<Failure, T>

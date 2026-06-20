@@ -5,18 +5,21 @@
 
 package io.github.bommbomm34.intervirt.core.mock
 
+import arrow.core.raise.Raise
+import arrow.core.raise.context.ensure
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.Failure
+import io.github.bommbomm34.intervirt.core.data.bind
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.fails
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -27,19 +30,23 @@ class MockSshGuestClient(appEnv: AppEnv) : SshGuestClient {
     private val executor = MockExecutor(appEnv)
     override val isInitialized = true
 
-    override suspend fun init(): AppResult<Unit> = either {
-        ensure(exec("incus", "--help").isRight()) { Failure.IllegalState("Incus is not installed!") }
+    context(_: Raise<Failure>)
+    override suspend fun init() {
+        ensure(!fails { exec("incus", "--help") }) { Failure.IllegalState("Incus is not installed!") }
     }
 
-    override fun runCommand(vararg commands: String): AppResult<Flow<CommandStatus>> = flow {
+    context(_: Raise<Failure>)
+    override fun runCommand(vararg commands: String): Flow<CommandStatus> = flow {
         emitAll(executor.runCommand(null, commands.toList()))
-    }.right()
+    }
 
-    override suspend fun close(): AppResult<Unit> = Unit.right()
+    context(_: Raise<Failure>)
+    override suspend fun close() {}
 
-    private suspend fun exec(vararg commands: String): AppResult<String> = executor.runCommand(null, commands.toList())
+    context(_: Raise<Failure>)
+    private suspend fun exec(vararg commands: String): String = executor.runCommand(null, commands.toList())
         .getCommandResult()
-        .asResult()
+        .bind()
 }
 
 private class MockExecutor(appEnv: AppEnv) : Executor {

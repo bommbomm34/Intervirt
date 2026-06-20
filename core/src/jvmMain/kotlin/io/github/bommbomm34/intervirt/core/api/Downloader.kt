@@ -5,20 +5,19 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.Either
 import arrow.core.left
+import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.error
-import io.github.bommbomm34.intervirt.core.exceptions.DownloadException
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.list
-
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -35,13 +34,14 @@ class Downloader(
 ) {
     private val logger = appEnv.getLogger(Downloader::class)
 
-    suspend fun checkUpdates(): AppResult<List<Component>> = either {
-        buildList {
-            if (appEnv.QEMU_ZIP_HASH_URL.fetch()
-                    .bind() != appEnv.CURRENT_QEMU_HASH
+    context(_: Raise<Failure>)
+    suspend fun checkUpdates(): List<Component> {
+        return buildList {
+            if (appEnv.QEMU_ZIP_HASH_URL.fetch().bind()
+                     != appEnv.CURRENT_QEMU_HASH
             ) add(Component.QEMU)
-            if (appEnv.VM_DISK_HASH_URL.fetch()
-                    .bind() != appEnv.CURRENT_DISK_HASH
+            if (appEnv.VM_DISK_HASH_URL.fetch().bind()
+                     != appEnv.CURRENT_DISK_HASH
             ) add(Component.VM_DISK)
         }
     }
@@ -155,7 +155,7 @@ class Downloader(
         }
     }
 
-    private suspend fun String.fetch(): AppResult<String> {
+    private suspend fun String.fetch(): Either<Failure, String> {
         logger.debug { "Fetching has from url $this" }
         val res = client.get(this)
         return if (res.status == HttpStatusCode.OK) {

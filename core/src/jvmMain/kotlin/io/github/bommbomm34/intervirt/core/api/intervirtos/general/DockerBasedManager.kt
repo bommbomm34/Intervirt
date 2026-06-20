@@ -5,20 +5,25 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
+import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
+import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
+import jdk.jfr.internal.OldObjectSample.emit
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.collections.mapKeys
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 
@@ -45,14 +50,13 @@ abstract class DockerBasedManager(
         }
     private val logger = appEnv.getLogger(DockerBasedManager::class)
 
-    fun init(): Flow<ResultProgress<String>> = flow {
-        withCatchingContext(Dispatchers.IO) {
+    fun init(): Flow<ResultProgress<String>> = flowCatching {
             logger.debug { "Initializing manager of $containerName" }
-            val potentialId = client.docker.getContainer(containerName).bind()
+            val potentialId = client.docker.getContainer(containerName)
             potentialId?.let {
-                client.docker.startContainer(it).bind()
+                client.docker.startContainer(it)
                 internalId = it
-                return@withCatchingContext it
+                emit(ResultProgress.success(it))
             }
             // Create new container
             val hostPath = client.ioClient.getPath("/opt/intervirt/$containerName/")
@@ -66,11 +70,11 @@ abstract class DockerBasedManager(
                 env = env,
                 hostName = hostName,
             ).lastResult().bind()
-            client.docker.startContainer(newId).bind()
+            client.docker.startContainer(newId)
             internalId = newId
-            newId
-        }.onLeft { emit(ResultProgress.failure(it)) }
+            emit(ResultProgress.success(newId))
     }
 
-    override suspend fun close(): AppResult<Unit> = Unit.right()
+    context(_: Raise<Failure>)
+    override suspend fun close() {}
 }

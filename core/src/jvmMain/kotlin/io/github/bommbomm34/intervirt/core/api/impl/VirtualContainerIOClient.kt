@@ -5,12 +5,14 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import arrow.core.raise.Raise
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
-import io.github.bommbomm34.intervirt.core.data.AppResult
+
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.ext.patch
 import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
@@ -29,13 +31,15 @@ class VirtualContainerIOClient(
     private val _virtualRoot = lazy { fileManager.getFile("virtual/$id").apply { createDirectories() }.toJavaPath() }
     private val virtualRoot by _virtualRoot
 
-    override fun exec(commands: List<String>): AppResult<Flow<CommandStatus>> =
-        executor.runCommand(null, commands.patch("sudo", "pkexec")).right()
+    context(_: Raise<Failure>)
+    override fun exec(commands: List<String>): Flow<CommandStatus> =
+        executor.runCommand(null, commands.patch("sudo", "pkexec"))
 
     override fun getPath(path: String): Path = virtualRoot.resolve(path.normalize())
 
     @OptIn(ExperimentalPathApi::class)
-    override suspend fun close(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         if (wipeOnClose && _virtualRoot.isInitialized()) virtualRoot
     }
 

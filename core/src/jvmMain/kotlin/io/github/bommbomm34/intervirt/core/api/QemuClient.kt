@@ -5,32 +5,25 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.raise.context.bind
+import arrow.core.raise.context.Raise
 import arrow.core.raise.context.either
 import arrow.core.raise.context.raise
-import arrow.core.right
+import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.error
-import io.github.bommbomm34.intervirt.core.exceptions.OSException
 import io.github.bommbomm34.intervirt.core.exceptions.QemuException
-import io.github.bommbomm34.intervirt.core.exceptions.QmpException
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.vinceglb.filekit.absolutePath
-
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -68,7 +61,8 @@ class QemuClient(
         )
     }
 
-    suspend fun bootAlpine(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun bootAlpine() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Booting Alpine Linux" }
         val builder = ProcessBuilder(*startAlpineVMCommands.toTypedArray())
         builder.directory(fileManager.getFile("qemu").file)
@@ -80,7 +74,7 @@ class QemuClient(
             if (currentProcess.isAlive) {
                 logger.debug { "Waiting for availability" }
                 delay(2000.milliseconds) // Wait for QEMU to start QMP
-                qemuMonitorSession = initMonitorSocket().bind()
+                qemuMonitorSession = initMonitorSocket()
                 isRunningLoop() // Runs in background
                 while (!running) {
                     if (!currentProcess.isAlive) {
@@ -106,8 +100,9 @@ class QemuClient(
                 logger.debug { "Alpine VM is already initialized" }
                 return@either
             }
-            guestManager.shutdown()
-                .onLeft {
+            recover(
+                block = { guestManager.shutdown() },
+                recover = {
                     withContext(Dispatchers.IO) {
                         logger.error(it) { "Shutdown attempt through agent failed" }
                         currentProcess.destroy()
@@ -120,6 +115,7 @@ class QemuClient(
                         }
                     }
                 }
+            )
         }
         isRunningLoopJob?.cancel()
         isRunningLoopJob = null
@@ -127,56 +123,62 @@ class QemuClient(
         logger.debug { "Alpine VM is now offline" }
     }
 
-    suspend fun addPortForwarding(protocol: String, externalPort: Int, internalPort: Int): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    suspend fun addPortForwarding(protocol: String, externalPort: Int, internalPort: Int) {
         val fwd = PortForwarding(protocol, externalPort, internalPort)
         require(fwd.validate()) { "Port forwarding is invalid: $fwd" }
         logger.debug { "Adding port forwarding $protocol:$externalPort:$internalPort" }
-        return qmpSend(
+        qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
                 putJsonObject("arguments") {
                     put("command-line", "hostfwd_add net0 $protocol:127.0.0.1:$externalPort-:$internalPort")
                 }
             },
-        ).map {
+        ).also {
             logger.debug { "Added port forwarding $protocol:$externalPort:$internalPort" }
         }
     }
 
-    suspend fun addPortForwarding(portForwarding: PortForwarding): AppResult<Unit> = addPortForwarding(
+    context(_: Raise<Failure>)
+    suspend fun addPortForwarding(portForwarding: PortForwarding) = addPortForwarding(
         protocol = portForwarding.protocol,
         externalPort = portForwarding.externalPort,
         internalPort = portForwarding.internalPort,
     )
 
-    suspend fun removePortForwarding(protocol: String, externalPort: Int): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    suspend fun removePortForwarding(protocol: String, externalPort: Int) {
         require(protocol.isValidProtocol()) { "Invalid protocol $protocol" }
         require(externalPort.isValidPort()) { "Invalid external port $externalPort" }
         logger.debug { "Removing port forwarding $protocol:$externalPort" }
-        return qmpSend(
+        qmpSend(
             buildJsonObject {
                 put("execute", "human-monitor-command")
                 putJsonObject("arguments") {
                     put("command-line", "hostfwd_remove net0 $protocol:127.0.0.1:$externalPort")
                 }
             },
-        ).map {
+        ).also {
             logger.debug { "Removed port forwarding $protocol:$externalPort" }
         }
     }
 
-    suspend fun removePortForwarding(portForwarding: PortForwarding): AppResult<Unit> = removePortForwarding(
+    context(_: Raise<Failure>)
+    suspend fun removePortForwarding(portForwarding: PortForwarding) = removePortForwarding(
         protocol = portForwarding.protocol,
         externalPort = portForwarding.externalPort,
     )
 
+    context(_: Raise<Failure>)
     suspend fun qmpSend(command: String, session: QemuMonitorSession? = qemuMonitorSession) = qmpSend(
         json = buildJsonObject { put("execute", command) },
         session = session,
     )
 
     @Suppress("UNCHECKED_CAST")
-    suspend fun qmpSend(json: JsonElement, session: QemuMonitorSession? = qemuMonitorSession): AppResult<JsonElement> {
+    context(_: Raise<Failure>)
+    suspend fun qmpSend(json: JsonElement, session: QemuMonitorSession? = qemuMonitorSession): JsonElement {
         val payload = defaultJson.encodeToString(json)
         session?.withLock {
             logger.debug { "Send to QMP: $payload" }
@@ -190,18 +192,17 @@ class QemuClient(
                         val returnObj = obj["return"]
                         val errorObj = obj["error"]
                         return@withTimeoutOrNull when {
-                            returnObj != null -> returnObj.right()
-                            errorObj != null -> Failure.Qmp(defaultJson.decodeFromJsonElement(errorObj.jsonObject)).left()
-                            else -> Failure.Serialization("Received JSON is not QMP-conform: $line").left()
+                            returnObj != null -> returnObj
+                            errorObj != null -> raise(Failure.Qmp(defaultJson.decodeFromJsonElement(errorObj.jsonObject)))
+                            else -> raise(Failure.Serialization("Received JSON is not QMP-conform: $line"))
                         }
                     }
                 }
             }?.let { anyValue ->
-                return if (anyValue is Either<*, *>) anyValue as AppResult<JsonObject> else
-                    Failure.IllegalState("Expected answer from QMP, but nothing received.").left()
+                return anyValue as? JsonObject ?: raise(Failure.IllegalState("Expected answer from QMP, but nothing received."))
             }
         }
-        return Failure.IllegalState("No QEMU Monitor session is available.").left()
+        raise(Failure.IllegalState("No QEMU Monitor session is available."))
     }
 
     fun onRunningChange(block: (Boolean) -> Unit) = onRunningChangeListeners.add(block)
@@ -211,11 +212,13 @@ class QemuClient(
             isRunningLoopJob = CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
                     running = qemuMonitorSession?.let { _ ->
-                        val result = qmpSend("query-status")
-                        logger.debug { "Result of query-status: $result" }
-                        result.fold(
-                            ifRight = { it.jsonObject["running"]!!.jsonPrimitive.boolean },
-                            ifLeft = { false },
+                        recover<Failure, Boolean>(
+                            block = {
+                                val result = qmpSend("query-status")
+                                logger.debug { "Result of query-status: $result" }
+                                result.jsonObject["running"]!!.jsonPrimitive.boolean
+                            },
+                            recover = { false }
                         )
                     } ?: false
                     delay(2500.milliseconds)
@@ -224,23 +227,25 @@ class QemuClient(
         }
     }
 
-    private suspend fun initMonitorSocket(): AppResult<QemuMonitorSession> = either {
+    context(_: Raise<Failure>)
+    private suspend fun initMonitorSocket(): QemuMonitorSession {
         logger.debug { "Initializing monitor socket connection" }
         val selector = ActorSelectorManager(Dispatchers.IO)
-        withTimeout(5000.milliseconds) {
+        return withTimeout(5000.milliseconds) {
             val socket = aSocket(selector).tcp().connect("127.0.0.1", appEnv.QEMU_MONITOR_PORT)
             val session = QemuMonitorSession(selector, socket)
             logger.debug { "Initialized session" }
             session.withLock { session.readLine() } // First message is just greeting
             logger.debug { "Negotiating capabilities with QMP" }
             // Negotiate capabilities
-            qmpSend("qmp_capabilities", session).bind()
+            qmpSend("qmp_capabilities", session)
             qemuMonitorSession = session
             logger.info { "Initialized monitor socket connection" }
-            return@withTimeout session
+            session
         }
     }
 
+    context(_: Raise<Failure>)
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Closing QemuClient" }
         isRunningLoopJob?.cancel()

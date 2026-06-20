@@ -5,8 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
@@ -14,7 +15,8 @@ import java.nio.file.Path
 interface ContainerIOClient : AsyncCloseable {
     val id: String
 
-    fun exec(commands: List<String>): AppResult<Flow<CommandStatus>>
+    context(_: Raise<Failure>)
+    fun exec(commands: List<String>): Flow<CommandStatus>
 
     fun getPath(path: String): Path
 }

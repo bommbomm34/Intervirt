@@ -9,7 +9,6 @@ import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
@@ -76,8 +75,6 @@ val unixTimestamp: Long
     get() = Clock.System.now().epochSeconds
 
 fun Module.singleProject() = single { Project().toAtomic() }
-
-fun AppResult<Unit>.toFlow(): Flow<ResultProgress<Unit>> = flowOf(ResultProgress.result(this))
 
 fun <T> Flow<T>.takeWhileInclusive(predicate: suspend (T) -> Boolean) = transformWhile {
     emit(it)

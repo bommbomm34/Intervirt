@@ -5,23 +5,19 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
-import arrow.core.raise.context.bind
+import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.data.toCommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.ext.exec
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
@@ -50,7 +46,8 @@ class ContainerSshClient(
     private lateinit var session: ClientSession
     private val logger = appEnv.getLogger(ContainerSshClient::class, id)
 
-    suspend fun init(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun init() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing ContainerSshClient" }
         sshClient.start()
         session = sshClient.connect(USERNAME, HOST, port).verify().session
@@ -58,6 +55,7 @@ class ContainerSshClient(
         logger.debug { "Initialized ContainerSshClient" }
     }
 
+    context(_: Raise<Failure>)
     suspend fun pty(
         command: String,
         arguments: List<String>,
@@ -120,6 +118,7 @@ class ContainerSshClient(
         channel
     }
 
+    context(_: Raise<Failure>)
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Closing ContainerSshClient" }
         session.close()
@@ -128,11 +127,12 @@ class ContainerSshClient(
         deviceManager.removePortForwarding(
             externalPort = port,
             protocol = "tcp",
-        ).bind()
+        )
         logger.debug { "Closed ContainerSshClient" }
     }
 
-    override fun exec(commands: List<String>): AppResult<Flow<CommandStatus>> {
+    context(_: Raise<Failure>)
+    override fun exec(commands: List<String>): Flow<CommandStatus> {
         val command = commands.joinToString(" ")
         logger.info { "Running '$command' on container" }
         return session.exec(command)

@@ -12,8 +12,7 @@ import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.ext.getOrThrow
-import kotlinx.coroutines.test.runTest
+import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -80,20 +79,20 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldAddComputer() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
+    fun shouldAddComputer() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
         assertContains(project.devices, computer)
     }
 
     @Test
-    fun shouldRemoveDevice() = runTest {
+    fun shouldRemoveDevice() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
-        deviceManager.removeDevice(mockComputer).getOrThrow()
+        deviceManager.removeDevice(mockComputer)
         assertFalse { project.devices.contains(mockComputer) }
     }
 
     @Test
-    fun shouldAddSwitch() = runTest {
+    fun shouldAddSwitch() = runIntervirtTest {
         val switch = deviceManager.addSwitch(
             x = 20,
             y = 20,
@@ -102,10 +101,10 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldConnectComputer() = runTest {
-        deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.addComputer(mockComputer2).getOrThrow()
-        deviceManager.connectDevice(mockComputer, mockComputer2).getOrThrow()
+    fun shouldConnectComputer() = runIntervirtTest {
+        deviceManager.addComputer(mockComputer)
+        deviceManager.addComputer(mockComputer2)
+        deviceManager.connectDevice(mockComputer, mockComputer2)
         assertContains(
             iterable = project.connections,
             element = mockComputer connect mockComputer2,
@@ -113,21 +112,21 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDisconnectComputer() = runTest {
-        deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.addComputer(mockComputer2).getOrThrow()
-        deviceManager.connectDevice(mockComputer, mockComputer2).getOrThrow()
-        deviceManager.disconnectDevice(mockComputer, mockComputer2).getOrThrow()
+    fun shouldDisconnectComputer() = runIntervirtTest {
+        deviceManager.addComputer(mockComputer)
+        deviceManager.addComputer(mockComputer2)
+        deviceManager.connectDevice(mockComputer, mockComputer2)
+        deviceManager.disconnectDevice(mockComputer, mockComputer2)
         assertFalse {
             project.connections.contains(mockComputer connect mockComputer2)
         }
     }
 
     @Test
-    fun shouldConnectComputerSwitch() = runTest {
-        deviceManager.addComputer(mockComputer).getOrThrow()
+    fun shouldConnectComputerSwitch() = runIntervirtTest {
+        deviceManager.addComputer(mockComputer)
         val switch = deviceManager.addSwitch(x = 20, y = 20)
-        deviceManager.connectDevice(mockComputer, switch).getOrThrow()
+        deviceManager.connectDevice(mockComputer, switch)
         assertContains(
             iterable = project.connections,
             element = mockComputer connect switch,
@@ -135,80 +134,80 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDisconnectComputerSwitch() = runTest {
-        deviceManager.addComputer(mockComputer).getOrThrow()
+    fun shouldDisconnectComputerSwitch() = runIntervirtTest {
+        deviceManager.addComputer(mockComputer)
         val switch = deviceManager.addSwitch(x = 20, y = 20)
-        deviceManager.connectDevice(mockComputer, switch).getOrThrow()
-        deviceManager.disconnectDevice(mockComputer, switch).getOrThrow()
+        deviceManager.connectDevice(mockComputer, switch)
+        deviceManager.disconnectDevice(mockComputer, switch)
         assertFalse {
             project.connections.contains(mockComputer connect switch)
         }
     }
 
     @Test
-    fun shouldSetIpv4() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.setIpv4(mockComputer, "192.168.0.200").getOrThrow()
+    fun shouldSetIpv4() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.setIpv4(mockComputer, "192.168.0.200")
         assertEquals(project.getDevice(computer).ipv4, "192.168.0.200")
     }
 
     @Test
-    fun shouldSetIpv6() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.setIpv6(mockComputer, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").getOrThrow()
+    fun shouldSetIpv6() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.setIpv6(mockComputer, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
         assertEquals(project.getDevice(computer).ipv6, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
     }
 
     @Test
-    fun shouldSetName() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
+    fun shouldSetName() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
         deviceManager.setName(computer, "COMPUTER")
         assertEquals(project.getDevice(computer).name, "COMPUTER")
     }
 
     @Test
-    fun shouldSetInternetEnabled() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.setInternetEnabled(computer, true).getOrThrow()
+    fun shouldSetInternetEnabled() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.setInternetEnabled(computer, true)
         assertEquals(project.getDevice(computer).internetEnabled, true)
     }
 
     @Test
-    fun shouldStartComputer() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.start(computer).getOrThrow()
+    fun shouldStartComputer() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.start(computer)
     }
 
     @Test
-    fun shouldStopComputer() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.stop(computer).getOrThrow()
+    fun shouldStopComputer() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.stop(computer)
     }
 
     @Test
-    fun shouldAddPortForwarding() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.addPortForwarding(computer, mockPortForwarding).getOrThrow()
+    fun shouldAddPortForwarding() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.addPortForwarding(computer, mockPortForwarding)
         assertContains(project.getDevice(computer).portForwardings, mockPortForwarding)
     }
 
     @Test
-    fun shouldRemovePortForwarding() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.addPortForwarding(computer, mockPortForwarding).getOrThrow()
-        deviceManager.removePortForwarding(mockPortForwarding.externalPort, mockPortForwarding.protocol).getOrThrow()
+    fun shouldRemovePortForwarding() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.addPortForwarding(computer, mockPortForwarding)
+        deviceManager.removePortForwarding(mockPortForwarding.externalPort, mockPortForwarding.protocol)
         assertFalse { computer.portForwardings.contains(mockPortForwarding) }
     }
 
     @Test
-    fun shouldGetIOClient() = runTest {
-        val computer = deviceManager.addComputer(mockComputer).getOrThrow()
-        deviceManager.getIOClient(computer).getOrThrow()
+    fun shouldGetIOClient() = runIntervirtTest {
+        val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.getIOClient(computer)
     }
 
     @Test
-    fun shouldCloseDeviceManager() = runTest {
-        deviceManager.close().getOrThrow()
+    fun shouldCloseDeviceManager() = runIntervirtTest {
+        deviceManager.close()
     }
 
     @AfterTest

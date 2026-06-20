@@ -25,4 +25,4 @@ fun AppEnv.getLogger(name: String) = KLogger(
     streams = getDefaultStreams()
 )
 
-fun getDefaultStreams() = arrayOf(ListOutputStream.Companion.DEFAULT, getDefaultStream())
+fun getDefaultStreams() = arrayOf(ListOutputStream.DEFAULT, getDefaultStream())

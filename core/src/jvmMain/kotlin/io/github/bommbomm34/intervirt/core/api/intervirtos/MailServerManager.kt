@@ -5,15 +5,18 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
+import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.data.bind
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
@@ -47,14 +50,14 @@ class MailServerManager(
     val docker = client.docker
     private val logger = appEnv.getLogger(MailServerManager::class)
 
-    suspend fun listMailUsers(): AppResult<List<MailUser>> = either {
+    context(_: Raise<Failure>)
+    suspend fun listMailUsers(): List<MailUser> {
         logger.debug { "Listing mail users" }
-        val flow = docker.exec(id, listOf("setup", "email", "list")).bind()
-        val output = flow.getCommandResult()
-            .asResult()
-            .bind()
+        val flow = docker.exec(id, listOf("setup", "email", "list"))
+        val output = flow.getCommandResult().bind()
+            
         // Parse output
-        output
+        return output
             .lines()
             .filter { it.startsWith("*") }
             .map {
@@ -67,17 +70,18 @@ class MailServerManager(
             }
     }
 
-    suspend fun removeMailUser(user: MailUser): AppResult<Unit> = either {
+    context(_: Raise<Failure>)
+    suspend fun removeMailUser(user: MailUser) {
         logger.debug { "Remove mail user $user" }
         docker
             .exec(id, listOf("setup", "email", "del", user.address))
-            .bind()
+            
             .getCommandResult()
-            .asResult()
             .bind()
     }
 
-    suspend fun addMailUser(user: MailUser, password: String): AppResult<Unit> = either {
+    context(_: Raise<Failure>)
+    suspend fun addMailUser(user: MailUser, password: String) {
         logger.debug { "Add mail user ${user.username} with email ${user.address}" }
         // TODO: Check if this method is secure
         val command = listOf(
@@ -89,9 +93,8 @@ class MailServerManager(
         )
         docker
             .exec(id, command)
-            .bind()
+            
             .getCommandResult()
-            .asResult()
             .bind()
     }
 }

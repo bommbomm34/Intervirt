@@ -9,24 +9,23 @@ import arrow.atomic.Atomic
 import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
-import arrow.core.raise.either
+import arrow.core.raise.Raise
+import arrow.core.raise.context.bind
+import arrow.core.raise.context.raise
+import arrow.core.raise.recover
 import arrow.core.right
 import inet.ipaddr.AddressStringException
-import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.*
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
-import io.github.bommbomm34.intervirt.core.exceptions.IllegalAgentResponseException
 import io.github.bommbomm34.intervirt.core.takeWhileInclusive
-import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.core.util.ext.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -36,7 +35,6 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val LOG_RAW_JSON = false
@@ -48,12 +46,13 @@ class AgentGuestManager(
     private val logger = appEnv.getLogger(AgentGuestManager::class)
     private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null
-    private val requests = ConcurrentHashMap<String, MutableSharedFlow<AppResult<ResponseBody>>>()
+    private val requests = ConcurrentHashMap<String, MutableSharedFlow<Either<Failure, ResponseBody>>>()
     private val agentPort = appEnv.AGENT_PORT
     private val timeout = appEnv.AGENT_WEBSOCKET_TIMEOUT.milliseconds
     private val host = appEnv.AGENT_HOST
     private var agentInfo: Atomic<AgentInfo?> = Atomic(null)
 
+    context(_: Raise<Failure>)
     override suspend fun addContainer(
         id: String,
         ipv4: String,
@@ -63,124 +62,145 @@ class AgentGuestManager(
         image: String,
     ): Flow<ResultProgress<Unit>> = flowSend(RequestBody.AddContainer(id, ipv4, ipv6, mac, internet, image))
 
-    override suspend fun removeContainer(id: String): AppResult<Unit> = justSend(RequestBody.RemoveContainer(id))
+    context(_: Raise<Failure>)
+    override suspend fun removeContainer(id: String) = justSend(RequestBody.RemoveContainer(id))
 
-    override suspend fun setIpv4(id: String, newIP: String): AppResult<Unit> =
+    context(_: Raise<Failure>)
+    override suspend fun setIpv4(id: String, newIP: String) =
         justSend(RequestBody.IDWithNewIpv4(id, newIP))
 
-    override suspend fun setIpv6(id: String, newIP: String): AppResult<Unit> =
+    context(_: Raise<Failure>)
+    override suspend fun setIpv6(id: String, newIP: String) =
         justSend(RequestBody.IDWithNewIpv6(id, newIP))
 
-    override suspend fun connect(container: String, network: String): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun connect(container: String, network: String) {
         logger.debug { "Connecting $container to $network" }
         return justSend(RequestBody.Connect(container, network))
     }
 
-    override suspend fun disconnect(container: String, network: String): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun disconnect(container: String, network: String) {
         logger.debug { "Disconnecting $container from $network" }
         return justSend(RequestBody.Disconnect(container, network))
     }
 
-    override suspend fun setInternetAccess(id: String, enabled: Boolean): AppResult<Unit> =
+    context(_: Raise<Failure>)
+    override suspend fun setInternetAccess(id: String, enabled: Boolean) =
         justSend(RequestBody.SetInternetAccess(id, enabled))
 
+    context(_: Raise<Failure>)
     override suspend fun addPortForwarding(
         id: String,
         internalPort: Int,
         externalPort: Int,
         protocol: String,
-    ): AppResult<Unit> =
+    ) =
         justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort, protocol))
 
-    override suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String): AppResult<Unit> =
+    context(_: Raise<Failure>)
+    override suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String) =
         justSend(RequestBody.RemovePortForwarding(externalPort, protocol))
 
-    override suspend fun startContainer(id: String): AppResult<Unit> = justSend(RequestBody.StartContainer(id))
+    context(_: Raise<Failure>)
+    override suspend fun startContainer(id: String) = justSend(RequestBody.StartContainer(id))
 
-    override suspend fun stopContainer(id: String): AppResult<Unit> = justSend(RequestBody.StopContainer(id))
+    context(_: Raise<Failure>)
+    override suspend fun stopContainer(id: String) = justSend(RequestBody.StopContainer(id))
 
+    context(_: Raise<Failure>)
     override fun wipe(): Flow<ResultProgress<Unit>> {
         logger.debug { "Wiping guest" }
         return flowSend("wipe".commandBody())
     }
 
+    context(_: Raise<Failure>)
     override fun update(): Flow<ResultProgress<Unit>> {
         logger.debug { "Updating guest" }
         return flowSend("update".commandBody())
     }
 
-    override suspend fun shutdown(): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun shutdown() {
         logger.debug { "Shutting down guest" }
         return justSend("shutdown".commandBody())
     }
 
-    override suspend fun reboot(): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun reboot() {
         logger.debug { "Rebooting guest" }
         return justSend("reboot".commandBody())
     }
 
-    override suspend fun getInfo(): AppResult<AgentInfo> {
+    context(_: Raise<Failure>)
+    override suspend fun getInfo(): AgentInfo {
         logger.debug { "Retrieving version of guest" }
-        agentInfo.get()?.let { return it.right() }
-        return firstSend<ResponseBody.Info>("version".commandBody()).flatMap {
+        agentInfo.get()?.let { return it }
+        return firstSend<ResponseBody.Info>("version".commandBody()).let {
             try {
                 AgentInfo(
                     version = it.version,
                     ipv4Subnet = IPAddressString(it.ipv4Subnet).getAddress(),
                     ipv6Subnet = IPAddressString(it.ipv6Subnet).getAddress(),
-                ).also { info -> agentInfo.compareAndSet(null, info) }.right()
+                ).also { info -> agentInfo.compareAndSet(null, info) }
             } catch (e: AddressStringException) {
-                Failure.IllegalAgentResponse("Invalid Info response (${e.message}): $it").left()
+                raise(Failure.IllegalAgentResponse("Invalid Info response (${e.message}): $it"))
             }
         }
     }
 
-    override suspend fun getContainers(): AppResult<List<ContainerInfo>> {
+    context(_: Raise<Failure>)
+    override suspend fun getContainers(): List<ContainerInfo> {
         logger.debug { "Retrieving containers of guest" }
-        return firstSend<ResponseBody.ContainerList>("containers".commandBody()).map { it.containers }
+        return firstSend<ResponseBody.ContainerList>("containers".commandBody()).containers
     }
 
-    override suspend fun addNetwork(name: String): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun addNetwork(name: String) {
         logger.debug { "Adding network $name" }
         return justSend(RequestBody.AddNetwork(name))
     }
 
-    override suspend fun removeNetwork(name: String): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    override suspend fun removeNetwork(name: String) {
         logger.debug { "Removing network $name" }
         return justSend(RequestBody.RemoveNetwork(name))
     }
 
-    override suspend fun getNetworks(): AppResult<Map<String, Network>> {
+    context(_: Raise<Failure>)
+    override suspend fun getNetworks(): Map<String, Network> {
         logger.debug { "Retrieving networks" }
-        return firstSend<ResponseBody.NetworkList>("networks".commandBody()).map { it.networks }
+        return firstSend<ResponseBody.NetworkList>("networks".commandBody()).networks
     }
 
-    private suspend fun justSend(body: RequestBody): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    private suspend fun justSend(body: RequestBody) {
         val response = send<ResponseBody.General>(body)
-        return response.map {
-            it
-                .catchTimeout { throw AgentTimeoutException(body.uuid) }
-                .firstOrNull()?.failure()?.left() ?: Unit.right()
-        }
+        response
+            .catchTimeout { throw AgentTimeoutException(body.uuid) }
+            .firstOrNull()
+            ?.failure()
+            ?.let { raise(it) }
     }
 
-    private suspend inline fun <reified T : ResponseBody> firstSend(body: RequestBody): AppResult<T> {
+    context(_: Raise<Failure>)
+    private suspend inline fun <reified T : ResponseBody> firstSend(body: RequestBody): T {
         val response = send<T>(body)
-        return response.flatMap {
-            var timeoutExceeded = false
-            val result = it
-                .catchTimeout { timeoutExceeded = true }
-                .firstOrNull()
+        var timeoutExceeded = false
+        val result = response
+            .catchTimeout { timeoutExceeded = true }
+            .firstOrNull()
 
-            // TODO: Check
-            if (timeoutExceeded) Failure.AgentTimeout(body.uuid).left() else result!!
-        }
+        // TODO: Check
+        return if (timeoutExceeded) raise(Failure.AgentTimeout(body.uuid)) else result!!.bind()
     }
 
+    context(_: Raise<Failure>)
     private fun flowSend(body: RequestBody): Flow<ResultProgress<Unit>> = flow {
         var failed = false
-        send<ResponseBody.General>(body)
-            .onRight { flow ->
+        recover(
+            block = {
+                val flow = send<ResponseBody.General>(body)
                 flow
                     .catchTimeout {
                         this@flow.emit(ResultProgress.failure(Failure.AgentTimeout(body.uuid)))
@@ -190,7 +210,7 @@ class AgentGuestManager(
                             ifLeft = { it },
                             ifRight = {
                                 if (!it.success) it.failure()!! else null
-                            }
+                            },
                         )
                         if (failure != null) {
                             failed = true
@@ -201,19 +221,21 @@ class AgentGuestManager(
                             emit(ResultProgress.proceed(responseBody.progress ?: 0f, responseBody.output))
                         }
                     }
-            }
-            .onLeft {
+            },
+            recover = {
                 failed = true
                 emit(ResultProgress.failure(it))
-            }
+            },
+        )
         if (!failed) emit(ResultProgress.success(Unit))
     }
 
     @OptIn(FlowPreview::class)
     @Suppress("UNCHECKED_CAST")
-    private suspend inline fun <reified T : ResponseBody> send(body: RequestBody): AppResult<Flow<AppResult<T>>> {
+    context(_: Raise<Failure>)
+    private suspend inline fun <reified T : ResponseBody> send(body: RequestBody): Flow<Either<Failure, T>> {
         logger.debug { "Sending request $body with UUID ${body.uuid}" }
-        return listen().map {
+        return listen().let {
             requests[body.uuid] = MutableSharedFlow()
             session!!.sendSerialized(body)
             requests[body.uuid]!!
@@ -227,7 +249,7 @@ class AgentGuestManager(
                                     body.uuid,
                                 ).left()
                             } else (it as ResponseBody.General).failure()!!.left()
-                        }
+                        },
                     )
                 }
                 .takeWhileInclusive { !((it as? Either.Right<T>)?.value?.end ?: true) }
@@ -241,7 +263,8 @@ class AgentGuestManager(
         }
     }
 
-    private suspend fun listen(): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    private suspend fun listen() {
         if (session == null) {
             val result = Failure.catch {
                 session = client.webSocketSession(
@@ -268,12 +291,10 @@ class AgentGuestManager(
                     }
                 }
             }
-            return result.map { }
         }
-
-        return Unit.right()
     }
 
+    context(_: Raise<Failure>)
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         listenJob?.cancel()
         session?.close()
@@ -297,8 +318,8 @@ class AgentGuestManager(
         return defaultJson.decodeFromString(text)
     }
 
-    private fun AppResult<ResponseBody.General>.failure(): Failure? = fold(
+    private fun Either<Failure, ResponseBody.General>.failure(): Failure? = fold(
         ifLeft = { it },
-        ifRight = { it.failure() }
+        ifRight = { it.failure() },
     )
 }

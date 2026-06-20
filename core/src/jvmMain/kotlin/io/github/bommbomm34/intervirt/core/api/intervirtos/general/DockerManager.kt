@@ -5,8 +5,10 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
-import io.github.bommbomm34.intervirt.core.data.AppResult
+
+import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface DockerManager : AsyncCloseable {
 
-    suspend fun init(): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun init()
 
     fun addContainer(
         name: String,
@@ -25,21 +28,31 @@ interface DockerManager : AsyncCloseable {
         hostName: String? = null,
     ): Flow<ResultProgress<String>>
 
-    suspend fun removeContainer(id: String): AppResult<Unit>
 
-    suspend fun startContainer(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun removeContainer(id: String)
 
-    suspend fun stopContainer(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun startContainer(id: String)
 
-    suspend fun restartContainer(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun stopContainer(id: String)
 
-    suspend fun getContainer(name: String): AppResult<String?>
+    context(_: Raise<Failure>)
+    suspend fun restartContainer(id: String)
 
-    suspend fun isContainerRunning(id: String): AppResult<Boolean>
+    context(_: Raise<Failure>)
+    suspend fun getContainer(name: String): String?
 
-    suspend fun exec(id: String, commands: List<String>): AppResult<Flow<CommandStatus>>
+    context(_: Raise<Failure>)
+    suspend fun isContainerRunning(id: String): Boolean
 
+    context(_: Raise<Failure>)
+    suspend fun exec(id: String, commands: List<String>): Flow<CommandStatus>
+
+    context(_: Raise<Failure>)
     fun pullImage(image: String): Flow<ResultProgress<Unit>>
 
-    suspend fun checkHealth(id: String): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun checkHealth(id: String)
 }

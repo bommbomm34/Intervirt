@@ -5,38 +5,40 @@
 
 package io.github.bommbomm34.intervirt.core.util.ext
 
-import arrow.core.getOrElse
-import arrow.core.left
 import arrow.core.raise.Raise
-import arrow.core.raise.either
-import arrow.core.recover
-import arrow.core.right
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import arrow.core.raise.context.bind
+import arrow.core.raise.context.raise
+import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.core.exceptions.OperationAlreadyPerformedException
-import io.ktor.utils.io.CancellationException
+import jdk.jfr.internal.OldObjectSample.emit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-suspend fun <T> withCatchingContext(
-    context: CoroutineContext,
-    block: suspend context(Raise<Failure>) CoroutineScope.() -> T,
-): AppResult<T> = withContext(context) {
-    either {
-        block()
+context(_: Raise<Failure>)
+suspend fun <R> withCatchingContext(context: CoroutineContext, block: suspend CoroutineScope.() -> R): R {
+    return withContext(context) {
+        Failure.catch {
+            block()
+        }.bind()
     }
 }
 
-fun AppResult<Unit>.recoverAlreadyPerformed(): AppResult<Unit> = recover {
-    if (it is Failure.OperationAlreadyPerformed) Unit else raise(it)
+fun <T> flowCatching(
+    block: suspend context(Raise<Failure>) FlowCollector<ResultProgress<T>>.() -> Unit,
+): Flow<ResultProgress<T>> {
+    return flow {
+        @Suppress("RemoveExplicitTypeArguments") // Otherwise, type inference fails
+        recover<Failure, Unit>(
+            block = { block() },
+            recover = {
+                emit(ResultProgress.failure(it))
+            },
+        )
+    }
 }
 
 fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catch {
@@ -45,9 +47,8 @@ fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catc
 
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
 
-fun <T> Result<T>.toAppResult(): AppResult<T> = fold(
-    onSuccess = { it.right() },
-    onFailure = { Failure.Unexpected(it).left() }
+context(_: Raise<Failure>)
+fun <T> Result<T>.bind(): T = fold(
+    onSuccess = { it },
+    onFailure = { raise(Failure.Unexpected(it)) },
 )
-
-fun <T> AppResult<T>.getOrThrow(): T = getOrElse { throw IllegalStateException("Failed: ${it.message}") }

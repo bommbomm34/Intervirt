@@ -10,8 +10,8 @@ import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.vinceglb.filekit.PlatformFile
-import kotlinx.coroutines.test.runTest
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -22,7 +22,7 @@ class ExecutorTest {
     val executor = DefaultExecutor(getTestAppEnv())
 
     @Test
-    fun shouldRunSuccessfulCommandOnHost() = runTest {
+    fun shouldRunSuccessfulCommandOnHost() = runIntervirtTest {
         val (output, status) = executor
             .runCommand(null, listOf(*getEchoPath(), "Hello World"))
             .getCommandResult()
@@ -31,7 +31,7 @@ class ExecutorTest {
     }
 
     @Test
-    fun shouldRunSuccessfulCommandOnHostWithWorkingFolder() = runTest {
+    fun shouldRunSuccessfulCommandOnHostWithWorkingFolder() = runIntervirtTest {
         val testFolder = when (getOS()) {
             OS.WINDOWS -> PlatformFile("C:\\Windows\\System32\\drivers\\etc\\")
             OS.LINUX -> PlatformFile("/etc/")
@@ -44,7 +44,7 @@ class ExecutorTest {
     }
 
     @Test
-    fun shouldRunNotExistingCommandOnHost() = runTest {
+    fun shouldRunNotExistingCommandOnHost() = runIntervirtTest {
         val (_, status) = executor
             .runCommand(null, listOf("invalid_command_intervirt_${UUID.randomUUID().hashCode()}"))
             .getCommandResult()

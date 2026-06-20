@@ -5,11 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
+import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.AppResult
+import io.github.bommbomm34.intervirt.core.data.Failure
+
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
@@ -30,19 +32,21 @@ class IntervirtOSStore(
     private val dataPath = ioClient.getPath("/opt/intervirt/data.json")
     private val data = mutableMapOf<String, String>()
 
-    suspend fun init(): AppResult<Unit> = withCatchingContext(Dispatchers.IO) {
+    context(_: Raise<Failure>)
+    suspend fun init() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing" }
         data.clear()
         if (dataPath.exists()) data.putAll(defaultJson.decodeFromString(dataPath.readText()))
         else {
             dataPath.createParentDirectories() // If missing
             dataPath.createFile()
-            flush().bind()
+            flush()
         }
         logger.debug { "Initialized" }
     }
 
-    suspend fun <T> set(accessor: Accessor<T>, value: T): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    suspend fun <T> set(accessor: Accessor<T>, value: T) {
         logger.debug { "Setting ${accessor.name} to $value" }
         data[accessor.name] = value.toString()
         return flush()
@@ -50,12 +54,14 @@ class IntervirtOSStore(
 
     operator fun <T> get(accessor: Accessor<T>): T = accessor.get(data[accessor.name])
 
-    suspend fun <T> delete(accessor: Accessor<T>): AppResult<Unit> {
+    context(_: Raise<Failure>)
+    suspend fun <T> delete(accessor: Accessor<T>) {
         logger.debug { "Deleting ${accessor.name}" }
         data.remove(accessor.name)
         return flush()
     }
 
+    context(_: Raise<Failure>)
     private suspend fun flush() = withCatchingContext(Dispatchers.IO) {
         dataPath.writeText(defaultJson.encodeToString(data))
     }

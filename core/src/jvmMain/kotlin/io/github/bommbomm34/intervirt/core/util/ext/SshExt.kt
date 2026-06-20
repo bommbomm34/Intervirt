@@ -5,9 +5,11 @@
 
 package io.github.bommbomm34.intervirt.core.util.ext
 
+import arrow.core.raise.Raise
 import arrow.core.raise.either
-import io.github.bommbomm34.intervirt.core.data.AppResult
+
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -15,10 +17,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.apache.sshd.client.session.ClientSession
 
-fun ClientSession.exec(command: String): AppResult<Flow<CommandStatus>> = either {
+context(_: Raise<Failure>)
+fun ClientSession.exec(command: String): Flow<CommandStatus> {
     val channel = createExecChannel(command)
     channel.open().verify()
-    flow {
+    return flow {
         val reader = channel.`in`.bufferedReader()
         while (!channel.isClosed) {
             val line = reader.readLine() ?: continue

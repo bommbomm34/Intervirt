@@ -5,15 +5,19 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import io.github.bommbomm34.intervirt.core.data.AppResult
+
+import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 
 interface SshGuestClient : AsyncCloseable {
     val isInitialized: Boolean
 
-    suspend fun init(): AppResult<Unit>
+    context(_: Raise<Failure>)
+    suspend fun init()
 
-    fun runCommand(vararg commands: String): AppResult<Flow<CommandStatus>>
+    context(_: Raise<Failure>)
+    fun runCommand(vararg commands: String): Flow<CommandStatus>
 }
