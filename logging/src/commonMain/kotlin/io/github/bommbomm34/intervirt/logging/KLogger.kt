@@ -41,38 +41,39 @@ class KLogger(
         vararg streams: OutputStream,
     ) : this(name.simpleName ?: "", level, *streams)
 
-    fun trace(block: Output) {
+    inline fun trace(block: Output) {
         if (level.priority == LogLevel.TRACE.priority) {
             block().log("TRACE")
         }
     }
 
-    fun debug(block: Output) {
+    inline fun debug(block: Output) {
         if (level.priority <= LogLevel.DEBUG.priority) {
             block().log("DEBUG", LogColor.GREEN)
         }
     }
 
-    fun info(block: Output) {
+    inline fun info(block: Output) {
         if (level.priority <= LogLevel.INFO.priority) {
             block().log("INFO", LogColor.BLUE)
         }
     }
 
-    fun warn(block: Output) {
+    inline fun warn(block: Output) {
         if (level.priority <= LogLevel.WARN.priority) {
             block().log("WARN", LogColor.YELLOW)
         }
     }
 
-    fun error(throwable: Throwable? = null, block: Output? = null) {
+    inline fun error(throwable: Throwable? = null, block: Output = { "" }) {
         if (level.priority <= LogLevel.ERROR.priority) {
-            block?.invoke()?.log("ERROR", LogColor.RED, true)
+            block().log("ERROR", LogColor.RED, err = true)
             throwable?.printStackTrace()
         }
     }
 
-    private fun Any?.log(
+    @PublishedApi
+    internal fun Any?.log(
         prefix: String,
         color: String = LogColor.DEFAULT,
         err: Boolean = false,

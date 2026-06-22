@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.logging
 
+@PublishedApi
 internal object LogColor {
     const val RED = "\u001B[31m"
     const val GREEN = "\u001B[32m"
