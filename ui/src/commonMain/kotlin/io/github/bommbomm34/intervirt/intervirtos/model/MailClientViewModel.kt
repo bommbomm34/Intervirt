@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.raise.Raise
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.sure_to_delete_mail
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
@@ -19,13 +20,17 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.openDialog
+import io.github.bommbomm34.intervirt.data.runDialogCatching
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
 import io.github.bommbomm34.intervirt.secret.SecretService
+import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
@@ -47,7 +52,7 @@ class MailClientViewModel(
 
     init {
         viewModelScope.launchDialogCatching(appState) {
-            proxyUrl = proxyClient.getProxyUrl().getOrThrow()
+            proxyUrl = proxyClient.getProxyUrl()
         }
     }
 
@@ -68,7 +73,7 @@ class MailClientViewModel(
                         close()
                         scope.launch {
                             appState.runDialogCatching {
-                                client.deleteMail(mail).getOrThrow()
+                                client.deleteMail(mail)
                                 mails.remove(mail)
                             }
                         }
@@ -78,7 +83,7 @@ class MailClientViewModel(
                     close()
                     scope.launch {
                         appState.runDialogCatching {
-                            val mail = client.getReplyMail(mail).getOrThrow()
+                            val mail = client.getReplyMail(mail)
                             openMailEditor(mail)
                         }
                     }
@@ -97,10 +102,10 @@ class MailClientViewModel(
             client.init(
                 mailConnectionDetails = details,
                 proxy = proxy,
-            ).getOrThrow()
+            )
             initialized = true
             loadMails()
-            if (saveCredentials) client.saveCredentials(details).getOrThrow() else
+            if (saveCredentials) client.saveCredentials(details) else
                 client.clearCredentials()
         }
     }
@@ -116,9 +121,10 @@ class MailClientViewModel(
         }
     }
 
+    context(_: Raise<Failure>)
     private suspend fun loadMailsInternal() {
         mails.clear()
-        mails.addAll(client.getMails().getOrThrow())
+        mails.addAll(client.getMails())
     }
 
     fun openMailEditor(mail: Mail? = null) {
@@ -132,7 +138,7 @@ class MailClientViewModel(
                 close()
                 scope.launch {
                     appState.runDialogCatching {
-                        client.sendMail(it).getOrThrow()
+                        client.sendMail(it)
                     }
                 }
             }

@@ -28,7 +28,7 @@ fun <T> FlowProgressView(
         onJobChange(coroutineContext.job)
         flow.collect { resultProgress ->
             messageColor =
-                if (resultProgress is ResultProgress.Result) if (resultProgress.result.isSuccess) Color.Green else Color.Red else defaultMessageColor
+                if (resultProgress is ResultProgress.Result) if (resultProgress.result.isRight()) Color.Green else Color.Red else defaultMessageColor
             message = resultProgress.message() ?: ""
             progress = resultProgress.percentage
             onMessage?.invoke(resultProgress)

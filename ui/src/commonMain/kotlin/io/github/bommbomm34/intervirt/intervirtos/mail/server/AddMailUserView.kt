@@ -20,17 +20,21 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.textfields.PasswordTextField
 import io.github.bommbomm34.intervirt.core.api.intervirtos.MailServerManager
 import io.github.bommbomm34.intervirt.core.data.MailUser
+import io.github.bommbomm34.intervirt.data.AppState
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun AddMailUserView(
     mailServer: MailServerManager,
     onClose: () -> Unit,
 ) {
+    val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
     var emailAddress by remember { mutableStateOf("") }
@@ -55,8 +59,8 @@ fun AddMailUserView(
         GeneralSpacer()
         Button(
             onClick = {
-                scope.launch {
-                    mailServer.addMailUser(MailUser(username, emailAddress), password.text.toString()).getOrThrow()
+                scope.launchDialogCatching(appState) {
+                    mailServer.addMailUser(MailUser(username, emailAddress), password.text.toString())
                     username = ""
                     emailAddress = ""
                     password.clearText()

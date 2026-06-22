@@ -22,8 +22,10 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.data.toViewDevice
 import io.github.bommbomm34.intervirt.imagepicker.ImagePicker
+import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -61,7 +63,7 @@ fun AddDeviceButton() {
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName,
-                                    ).getOrThrow().toViewDevice()
+                                    ).toViewDevice()
                                     appState.statefulProject.devices.add(viewDevice)
                                 }
                             },

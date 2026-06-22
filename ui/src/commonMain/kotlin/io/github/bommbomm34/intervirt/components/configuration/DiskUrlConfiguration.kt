@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.data.state
 import io.ktor.client.*
 import io.ktor.client.request.*

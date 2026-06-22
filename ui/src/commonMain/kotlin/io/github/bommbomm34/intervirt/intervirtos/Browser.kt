@@ -41,7 +41,7 @@ fun Browser(
     var proxyUrl: Address? by remember { mutableStateOf(null) }
     val navigator = rememberWebViewNavigator()
     CatchingLaunchedEffect(browser) {
-        proxyUrl = browser.getProxyUrl().getOrThrow()
+        proxyUrl = browser.getProxyUrl()
     }
     CenterColumn {
         CenterRow {

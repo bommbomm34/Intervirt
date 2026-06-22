@@ -7,9 +7,6 @@ package io.github.bommbomm34.intervirt.core.mock
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.ensure
-import arrow.core.raise.either
-import arrow.core.raise.ensure
-import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
 import io.github.bommbomm34.intervirt.core.data.AppEnv
@@ -19,7 +16,7 @@ import io.github.bommbomm34.intervirt.core.data.bind
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
-import io.github.bommbomm34.intervirt.core.util.fails
+import io.github.bommbomm34.intervirt.test.fails
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector

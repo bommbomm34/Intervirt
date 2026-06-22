@@ -61,6 +61,10 @@ kotlin {
             implementation(projects.core)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
 }
 
 

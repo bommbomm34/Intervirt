@@ -28,12 +28,14 @@ import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.util.ext.canPortBind
 
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.name
+import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.InjectedParam
@@ -64,7 +66,7 @@ class DeviceSettingsViewModel(
     init {
         if (isComputer) {
             viewModelScope.launchDialogCatching(appState) {
-                ioClient = deviceManager.getIOClient(computer.device).getOrThrow()
+                ioClient = deviceManager.getIOClient(computer.device)
             }
         }
     }
@@ -127,28 +129,28 @@ class DeviceSettingsViewModel(
     }
 
     fun start() = viewModelScope.launchDialogCatching(appState) {
-        deviceManager.start(computer.device).getOrThrow()
+        deviceManager.start(computer.device)
         computer.running = true
     }
 
     fun stop() = viewModelScope.launchDialogCatching(appState) {
-        deviceManager.stop(computer.device).getOrThrow()
+        deviceManager.stop(computer.device)
         computer.running = false
     }
 
     fun changeIpv4(ipv4: String) = viewModelScope.launchDialogCatching(appState) {
         computer.ipv4 = ipv4
-        deviceManager.setIpv4(computer.device, ipv4).getOrThrow()
+        deviceManager.setIpv4(computer.device, ipv4)
     }
 
     fun changeIpv6(ipv6: String) = viewModelScope.launchDialogCatching(appState) {
         computer.ipv6 = ipv6
-        deviceManager.setIpv6(computer.device, ipv6).getOrThrow()
+        deviceManager.setIpv6(computer.device, ipv6)
     }
 
     fun enableInternetAccess(enabled: Boolean) = viewModelScope.launchDialogCatching(appState) {
         computer.internetEnabled = enabled
-        deviceManager.setInternetEnabled(computer.device, enabled).getOrThrow()
+        deviceManager.setInternetEnabled(computer.device, enabled)
     }
 
     fun openAddPortForwarding() {
@@ -163,13 +165,13 @@ class DeviceSettingsViewModel(
 
     fun addPortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
         computer.portForwardings.add(portForwarding)
-        deviceManager.addPortForwarding(computer.device, portForwarding).getOrThrow()
+        deviceManager.addPortForwarding(computer.device, portForwarding)
     }
 
     fun removePortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
         computer.portForwardings.remove(portForwarding)
         deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
-            .getOrThrow()
+            
     }
 
     suspend fun lintPortForwarding(portForwarding: PortForwarding): Result<Unit> {

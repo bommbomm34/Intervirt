@@ -14,6 +14,7 @@ import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.impl.ContainerPlatformServices
 import org.koin.compose.koinInject
 

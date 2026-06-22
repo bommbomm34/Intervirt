@@ -7,14 +7,17 @@ package io.github.bommbomm34.intervirt.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.runDialogCatching
 import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 
 @Composable
 fun CatchingLaunchedEffect(
     vararg keys: Any?,
-    block: suspend CoroutineScope.() -> Unit,
+    block: suspend context(Raise<Failure>) CoroutineScope.() -> Unit,
 ) {
     val appState = koinInject<AppState>()
     LaunchedEffect(*keys) {

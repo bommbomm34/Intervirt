@@ -44,7 +44,7 @@ class DnsResolverViewModel(
                     type = dnsRecordType,
                     nameserver = dnsServer,
                     reverse = reverseLookup,
-                ).getOrThrow(),
+                ),
             )
         }
     }

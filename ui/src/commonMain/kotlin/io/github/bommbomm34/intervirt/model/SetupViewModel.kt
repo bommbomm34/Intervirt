@@ -71,12 +71,12 @@ class SetupViewModel(
                 // Downloading QEMU
                 downloader.downloadQemu().collect {
                     emit(it.clone(percentage = it.percentage * 0.4f + 0.1f))
-                    if (it is ResultProgress.Result && it.result.isFailure) job!!.cancel()
+                    if (it is ResultProgress.Result && it.result.isLeft()) job!!.cancel()
                 }
                 // Downloading disk
                 downloader.downloadAlpineDisk().collect {
                     emit(it.clone(percentage = it.percentage * 0.5f + 0.5f))
-                    if (it is ResultProgress.Result && it.result.isFailure) job!!.cancel()
+                    if (it is ResultProgress.Result && it.result.isLeft()) job!!.cancel()
                 }
                 appEnv.INSTALLED = true
                 appState.currentScreenIndex = 1

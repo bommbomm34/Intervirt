@@ -20,6 +20,8 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.openDialog
+import io.github.bommbomm34.intervirt.data.showFailureDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -37,10 +39,10 @@ fun CoroutineScope.initDocker(
                 onMessage = { progress ->
                     if (progress is ResultProgress.Result) {
                         progress.result.fold(
-                            onSuccess = { onInitialize() },
-                            onFailure = {
+                            ifRight = { onInitialize() },
+                            ifLeft = {
                                 launch {
-                                    appState.showExceptionDialog(it)
+                                    appState.showFailureDialog(it)
                                 }
                             },
                         )
@@ -71,10 +73,10 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
                 onMessage = { progress ->
                     if (progress is ResultProgress.Result) {
                         progress.result.fold(
-                            onSuccess = { initialized.value = true },
-                            onFailure = {
+                            ifRight = { initialized.value = true },
+                            ifLeft = {
                                 scope.launch {
-                                    appState.showExceptionDialog(it)
+                                    appState.showFailureDialog(it)
                                 }
                             },
                         )

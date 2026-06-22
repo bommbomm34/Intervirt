@@ -64,7 +64,7 @@ fun MailClient(
             var credentials: MailConnectionDetails? by remember { mutableStateOf(null) }
 
             CatchingLaunchedEffect(viewModel.client) {
-                credentials = viewModel.client.loadCredentials().getOrThrow()
+                credentials = viewModel.client.loadCredentials()
             }
 
             credentials?.let { creds ->

@@ -21,7 +21,7 @@ fun SystemServiceView(
     val viewModel = koinViewModel<SystemServiceViewModel> { parametersOf(serviceName, serviceManager) }
     var running by remember { mutableStateOf(false) }
     CatchingLaunchedEffect(serviceManager, serviceName) {
-        running = serviceManager.status(serviceName).getOrThrow().active
+        running = serviceManager.status(serviceName).active
     }
     PlayButton(
         playing = running,

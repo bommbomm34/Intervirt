@@ -17,11 +17,13 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsServerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.intervirtos.components.DockerContainerView
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.dns.server.AddDnsRecordView
 import io.github.bommbomm34.intervirt.util.ext.initialize
 import io.github.bommbomm34.intervirt.util.ext.rememberManager
+import jdk.internal.net.http.common.Utils.close
 import org.koin.compose.koinInject
 
 @Composable
@@ -37,7 +39,7 @@ fun DnsServer(
     if (initialized) {
         CatchingLaunchedEffect(dnsServer) {
             records.clear()
-            records.addAll(dnsServer.listRecords().getOrThrow())
+            records.addAll(dnsServer.listRecords())
         }
         // Start/Stop
         AlignedBox(Alignment.TopStart) {
@@ -52,7 +54,7 @@ fun DnsServer(
                 appState.openDialog {
                     AddDnsRecordView(::close) {
                         scope.launchDialogCatching(appState) {
-                            dnsServer.addRecord(it).getOrThrow()
+                            dnsServer.addRecord(it)
                             records.add(it)
                         }
                     }
@@ -67,7 +69,7 @@ fun DnsServer(
                     { record ->
                         RemoveButton {
                             scope.launchDialogCatching(appState) {
-                                dnsServer.removeRecord(record).getOrThrow()
+                                dnsServer.removeRecord(record)
                                 records.remove(record)
                             }
                         }

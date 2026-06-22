@@ -9,6 +9,7 @@ import ai.rever.bossterm.compose.PlatformServices
 import ai.rever.bossterm.compose.getPlatformServices
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
+import io.github.bommbomm34.intervirt.core.getOrNull
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -28,12 +29,14 @@ class ContainerPlatformServices(
         override suspend fun spawnProcess(config: PlatformServices.ProcessService.ProcessConfig) = withContext(
             Dispatchers.IO,
         ) {
-            val pty = ioClient.pty(
-                command = config.command,
-                arguments = config.arguments,
-                environment = config.environment,
-                workingDirectory = config.workingDirectory,
-            ).getOrNull()
+            val pty = getOrNull {
+                ioClient.pty(
+                    command = config.command,
+                    arguments = config.arguments,
+                    environment = config.environment,
+                    workingDirectory = config.workingDirectory,
+                )
+            }
 
             // TODO: Verify it!!!!
             pty?.let { shell ->

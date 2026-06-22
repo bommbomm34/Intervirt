@@ -83,5 +83,5 @@ sealed class Failure(val message: String) {
 
     class InvalidMail(message: String) : Failure("Invalid mail: $message")
 
-    class VersionMismatch(other: String) : Failure("Version $other doesn't match current version $CURRENT_VERSION")
+    class VersionMismatch(val other: String) : Failure("Version $other doesn't match current version $CURRENT_VERSION")
 }

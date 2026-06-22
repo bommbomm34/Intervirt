@@ -21,8 +21,10 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.intervirtos.mail.server.AddMailUserView
 import io.github.bommbomm34.intervirt.util.ext.initDocker
+import jdk.internal.net.http.common.Utils.close
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 
@@ -45,7 +47,7 @@ class MailServerViewModel(
 
     fun retrieveUsers() {
         viewModelScope.launchDialogCatching(appState) {
-            val newUsers = mailServer.listMailUsers().getOrThrow()
+            val newUsers = mailServer.listMailUsers()
             users.clear()
             users.addAll(newUsers)
         }
@@ -55,7 +57,7 @@ class MailServerViewModel(
         appState.openAcceptDialog(Res.string.sure_to_delete_user) {
             close()
             viewModelScope.launchDialogCatching(appState) {
-                mailServer.removeMailUser(user).getOrThrow()
+                mailServer.removeMailUser(user)
                 users.remove(user)
             }
         }

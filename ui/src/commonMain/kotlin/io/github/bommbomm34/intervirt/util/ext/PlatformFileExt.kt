@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.data.syncProject
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.data.toViewProject
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readString

@@ -59,7 +59,7 @@ class DeviceSettingsTest : KoinTest {
         set(value) = _project.set(value)
 
     @BeforeTest
-    fun init() = runTest {
+    fun init() = runIntervirtTest {
         startKoin {
             modules(
                 module {
@@ -76,7 +76,7 @@ class DeviceSettingsTest : KoinTest {
                 },
             )
         }
-        deviceManager.addComputer(testComputer.device).getOrThrow()
+        deviceManager.addComputer(testComputer.device)
     }
 
     @Test

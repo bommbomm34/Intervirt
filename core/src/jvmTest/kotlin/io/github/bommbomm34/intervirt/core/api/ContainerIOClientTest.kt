@@ -5,9 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import arrow.core.getOrElse
 import arrow.core.raise.Raise
-import arrow.core.raise.RaiseDSL
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device

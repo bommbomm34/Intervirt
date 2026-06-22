@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
-import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv

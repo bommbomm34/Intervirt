@@ -20,6 +20,7 @@ import intervirt.ui.generated.resources.yes
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.DialogState
+import io.github.bommbomm34.intervirt.data.openDialog
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

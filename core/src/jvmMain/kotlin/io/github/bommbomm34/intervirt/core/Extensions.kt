@@ -5,6 +5,8 @@
 
 package io.github.bommbomm34.intervirt.core
 
+import arrow.core.raise.Raise
+import arrow.core.raise.recover
 import arrow.optics.Lens
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
@@ -27,6 +29,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.serialization.json.Json
+import org.bouncycastle.util.test.SimpleTest.runTest
+import org.jetbrains.annotations.VisibleForTesting
 import org.koin.core.module.KoinDslMarker
 import org.koin.core.module.Module
 import java.nio.file.FileSystems
@@ -91,4 +95,11 @@ fun <S, A> Lens<S, A>.modify(atomic: Atomic<S>, transform: (A) -> A): S {
     return atomic.updateAndGet { src ->
         modify(src) { transform(it) }
     }
+}
+
+inline fun <R, E> getOrNull(block: context(Raise<E>) () -> R): R? {
+    return recover(
+        block = block,
+        recover = { null },
+    )
 }

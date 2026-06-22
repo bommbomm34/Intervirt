@@ -14,6 +14,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.*
+import arrow.core.raise.Raise
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
@@ -24,6 +25,7 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.ShutdownHandler
 import io.github.bommbomm34.intervirt.core.coreModule
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
@@ -84,7 +86,7 @@ fun main() = application {
         }
         CatchingLaunchedEffect {
             appState.images.clear()
-            appState.images.addAll(httpClient.getImages(appEnv.IMAGES_URL).getOrThrow())
+            appState.images.addAll(httpClient.getImages(appEnv.IMAGES_URL))
         }
         density = LocalDensity.current
         key(appState.appEnvChangeKey) {

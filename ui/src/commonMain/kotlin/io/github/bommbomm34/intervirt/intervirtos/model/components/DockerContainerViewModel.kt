@@ -29,19 +29,19 @@ class DockerContainerViewModel(
         viewModelScope.launchDialogCatching(appState) {
             val newId = dockerManager
                 .getContainer(name)
-                .getOrThrow()
+                
             require(newId != null) { "Container $name doesn't exist" }
             id = newId
             running = dockerManager
                 .isContainerRunning(newId)
-                .getOrThrow()
+                
         }
     }
 
     fun enable(enabled: Boolean) {
         viewModelScope.launchDialogCatching(appState) {
-            if (enabled) dockerManager.startContainer(id!!).getOrThrow()
-            else dockerManager.stopContainer(id!!).getOrThrow()
+            if (enabled) dockerManager.startContainer(id!!)
+            else dockerManager.stopContainer(id!!)
             running = enabled
         }
     }

@@ -45,7 +45,7 @@ fun GeneralDeviceSettings(
         value = device.name,
         onValueChange = { newName ->
             device.name = newName
-            scope.launch {
+            scope.launchDialogCatching(appState) {
                 deviceManager.setName(device.device, newName)
             }
         },
@@ -60,7 +60,7 @@ fun GeneralDeviceSettings(
                     onClose()
                     appState.statefulProject.devices.remove(device)
                     appState.statefulProject.connections.removeIf { it.containsDevice(device) }
-                    deviceManager.removeDevice(device.device).getOrThrow()
+                    deviceManager.removeDevice(device.device)
                 }
             }
         },

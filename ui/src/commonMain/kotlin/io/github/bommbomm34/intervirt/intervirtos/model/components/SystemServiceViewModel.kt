@@ -26,8 +26,8 @@ class SystemServiceViewModel(
 
     fun enable(enabled: Boolean) {
         viewModelScope.launchDialogCatching(appState) {
-            if (enabled) serviceManager.start(serviceName).getOrThrow()
-            else serviceManager.stop(serviceName).getOrThrow()
+            if (enabled) serviceManager.start(serviceName)
+            else serviceManager.stop(serviceName)
             running = enabled
         }
     }

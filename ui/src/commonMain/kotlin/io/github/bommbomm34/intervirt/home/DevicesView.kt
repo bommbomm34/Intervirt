@@ -40,6 +40,7 @@ import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
@@ -87,7 +88,7 @@ fun DevicesView() {
                                     deviceManager.disconnectDevice(
                                         it.device1.device,
                                         it.device2.device,
-                                    ).getOrThrow()
+                                    )
                                 }
                             }
                         }
@@ -128,7 +129,7 @@ fun DevicesView() {
                             scope.launchDialogCatching(appState) {
                                 if (copy.canConnect(project) && it.canConnect(project)) {
                                     statefulProject.connections.add(copy connect it)
-                                    deviceManager.connectDevice(copy.device, it.device).getOrThrow()
+                                    deviceManager.connectDevice(copy.device, it.device)
                                 } else appState.openDialog(
                                     severity = Severity.WARNING,
                                     message = getString(Res.string.too_many_devices_connected),

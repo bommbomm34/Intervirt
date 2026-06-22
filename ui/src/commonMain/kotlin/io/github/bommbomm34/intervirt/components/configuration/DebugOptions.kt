@@ -10,12 +10,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.defaultJson
+import io.github.bommbomm34.intervirt.core.error
+import io.github.bommbomm34.intervirt.core.getOrNull
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -48,9 +53,9 @@ fun DebugOptions() {
         )
         Button(
             onClick = {
-                scope.launch {
-                    if (!qemuClient.running) qemuClient.bootAlpine().getOrThrow()
-                    val res = qemuClient.qmpSend(command).getOrNull()?.let { defaultJson.encodeToString(it) }
+                scope.launchDialogCatching(appState) {
+                    if (!qemuClient.running) qemuClient.bootAlpine()
+                    val res = getOrNull { qemuClient.qmpSend(command) }?.let { defaultJson.encodeToString(it) }
                     logger.debug { "Command result of $command: $res" }
                 }
 
@@ -62,12 +67,12 @@ fun DebugOptions() {
     GeneralSpacer()
     Button(
         onClick = {
-            scope.launch {
+            scope.launchDialogCatching(appState) {
                 qemuClient.addPortForwarding(
                     protocol = "tcp",
                     externalPort = 8999,
                     internalPort = 22,
-                ).onFailure { logger.error(it) { "Example port forwarding creation failed" } }
+                )
             }
         },
     ) {
@@ -75,11 +80,11 @@ fun DebugOptions() {
     }
     Button(
         onClick = {
-            scope.launch {
+            scope.launchDialogCatching(appState) {
                 qemuClient.removePortForwarding(
                     protocol = "tcp",
                     externalPort = 8999,
-                ).onFailure { logger.error(it) { "Example port forwarding creation failed" } }
+                )
             }
         },
     ) {

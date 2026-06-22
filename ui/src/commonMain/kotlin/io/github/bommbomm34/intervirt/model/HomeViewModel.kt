@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.UpdaterState
+import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.home.Updater
 import io.github.bommbomm34.intervirt.util.ext.loadConf
 import io.github.bommbomm34.intervirt.util.ext.writeConf
@@ -31,6 +32,7 @@ import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
+import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
 import java.awt.Desktop
@@ -137,7 +139,7 @@ class HomeViewModel(
             if (vmRunning) {
                 qemuClient.shutdownAlpine()
             } else {
-                qemuClient.bootAlpine().getOrThrow()
+                qemuClient.bootAlpine()
             }
         }
     }
@@ -145,7 +147,7 @@ class HomeViewModel(
     fun reboot() {
         viewModelScope.launchDialogCatching(appState) {
             qemuClient.shutdownAlpine()
-            qemuClient.bootAlpine().getOrThrow()
+            qemuClient.bootAlpine()
         }
     }
 

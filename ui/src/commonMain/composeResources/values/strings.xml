@@ -171,4 +171,23 @@
     <string name="failure_loading_image">Failed to load image: %1$s</string>
     <string name="source_of_description">Source of description:</string>
     <string name="source_of_icon">Source of icon:</string>
+    <string name="operation_already_performed">Operation already performed: %1$s</string>
+    <string name="undefined_failure">Undefined failure: %1$s</string>
+    <string name="unknown_failure">Unknown failure</string>
+    <string name="os_failure">OS failure: %1$s</string>
+    <string name="container_execution_failure">Container execution failure: %1$s</string>
+    <string name="not_found_failure">Not found: %1$s</string>
+    <string name="not_supported_operation">Not supported operation: %1$s</string>
+    <string name="agent_timeout">Agent exceeded timeout</string>
+    <string name="illegal_agent_response">Illegal agent response: %1$s</string>
+    <string name="unexpected_failure">Unexpected failure (please report it): %1$s</string>
+    <string name="qmp_failure">Failure during communication with QMP (QEMU Machine Protocol): %1$s</string>
+    <string name="serialization_failure">Serialization failure: %1$s</string>
+    <string name="illegal_state">Illegal state (try again later): %1$s</string>
+    <string name="illegal_argument">Illegal argument (check your input): %1$s</string>
+    <string name="download_failure">Download failure: %1$s</string>
+    <string name="zip_extraction_failure">ZIP extraction failure: %1$s</string>
+    <string name="command_execution_failure">Command execution failure: %1$s</string>
+    <string name="invalid_mail">Invalid mail: %1$s</string>
+    <string name="version_mismatch">Version mismatch between current version %1$s and other version %2$s (perform updates if necessary)</string>
 </resources>

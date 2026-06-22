@@ -25,6 +25,7 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.pick_color
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.openDialog
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
