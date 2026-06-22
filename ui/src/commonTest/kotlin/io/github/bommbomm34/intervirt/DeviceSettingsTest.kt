@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.modify
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
@@ -149,7 +150,7 @@ class DeviceSettingsTest : KoinTest {
         val secondTestComputer = Device.Computer.portForwardings.modify(testComputer.device) {
             it + testPortForwarding
         }
-        project = Project.devices.modify(project) { it + secondTestComputer }
+        Project.devices.modify(_project) { it + secondTestComputer }
         assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
     }
 

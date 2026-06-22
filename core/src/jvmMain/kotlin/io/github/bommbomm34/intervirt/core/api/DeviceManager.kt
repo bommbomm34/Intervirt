@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
+import io.github.bommbomm34.intervirt.core.modify
 import io.github.bommbomm34.intervirt.core.util.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
@@ -41,7 +42,8 @@ class DeviceManager(
     private val containerIOClients = ConcurrentHashMap<String, ContainerIOClient>()
     private val dockerManagers = ConcurrentHashMap<String, DockerManager>()
     private val intervirtOSClients = ConcurrentHashMap<String, IntervirtOSClient>()
-    private var project by project
+    private val _project = project
+    private val project by _project
 
     context(_: Raise<Failure>)
     suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Device.Computer {
@@ -65,7 +67,7 @@ class DeviceManager(
     suspend fun addComputer(device: Device.Computer): Device.Computer {
         validateComputer(device)
         logger.debug { "Adding device $device" }
-        project = Project.devices.modify(project) { it + device }
+        Project.devices.modify(_project) { it + device }
         guestManager.addContainer(
             id = device.id,
             ipv4 = device.ipv4,
@@ -87,7 +89,7 @@ class DeviceManager(
             y = y,
         )
         logger.debug { "Adding device $device" }
-        project = Project.devices.modify(project) { it + device }
+        Project.devices.modify(_project) { it + device }
         logger.info { "Added device $device" }
         return device
     }
@@ -96,10 +98,10 @@ class DeviceManager(
     suspend fun removeDevice(device: Device) {
         device.requireExists()
         logger.debug { "Removing device $device" }
-        project = Project.connections.modify(project) { project ->
+        Project.connections.modify(_project) { project ->
             project.filterNot { it.containsDevice(device) }
         }
-        project = Project.devices.modify(project) { it - device }
+        Project.devices.modify(_project) { it - device }
         // Close services
         intervirtOSClients[device.id]?.close()
         intervirtOSClients.remove(device.id)
@@ -119,7 +121,7 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Connecting device $device1 to $device2" }
         val conn = device1 connect device2
-        project = Project.connections.modify(project) { it + conn }
+        Project.connections.modify(_project) { it + conn }
         val networks = project.resolveNetworks(conn)
         guestManager.addNetworks(networks)
         logger.info { "Connected device $device1 to $device2" }
@@ -131,7 +133,7 @@ class DeviceManager(
         device2.requireExists()
         logger.debug { "Disconnecting device $device1 to $device2" }
         val conn = device1 connect device2
-        project = Project.connections.modify(project) { it - conn }
+        Project.connections.modify(_project) { it - conn }
         val networks = project.resolveNetworks(conn)
         networks.forEach { (name, network) ->
             network.forEach {
@@ -147,7 +149,7 @@ class DeviceManager(
         device.requireExists()
         logger.debug { "Setting $ipv4 of $device" }
 
-        project = project.modifyDevice(device) { device.copy(ipv4 = ipv4) }
+        _project.modifyDevice(device) { device.copy(ipv4 = ipv4) }
         return guestManager.setIpv4(device.id, ipv4).also {
             logger.info { "Set $ipv4 of $device" }
         }
@@ -157,7 +159,7 @@ class DeviceManager(
     suspend fun setIpv6(device: Device.Computer, ipv6: String) {
         device.requireExists()
         logger.debug { "Setting $ipv6 of $device" }
-        project = project.modifyDevice(device) { device.copy(ipv6 = ipv6) }
+        _project.modifyDevice(device) { device.copy(ipv6 = ipv6) }
         return guestManager.setIpv6(device.id, ipv6).also {
             logger.info { "Set $ipv6 of $device" }
         }
@@ -166,7 +168,7 @@ class DeviceManager(
     context(_: Raise<Failure>)
     fun setName(device: Device, name: String) {
         device.requireExists()
-        project = project.modifyDevice(device) { Device.name.set(device, name) }
+        _project.modifyDevice(device) { Device.name.set(device, name) }
         logger.debug { "Set name of ${device.name} to $name" }
     }
 
@@ -174,7 +176,7 @@ class DeviceManager(
     suspend fun setInternetEnabled(device: Device.Computer, enabled: Boolean) {
         device.requireExists()
         logger.debug { "Setting internet enabled of ${device.id} to $enabled" }
-        project = project.modifyDevice(device) { device.copy(internetEnabled = enabled) }
+        _project.modifyDevice(device) { device.copy(internetEnabled = enabled) }
         return guestManager.setInternetAccess(device.id, enabled).also {
             logger.info { "Set internet enabled of ${device.id} to $enabled" }
         }
@@ -206,7 +208,7 @@ class DeviceManager(
         device.requireExists()
         portForwarding.requireValid()
         logger.debug { "Add port forwarding $portForwarding for ${device.id}" }
-        project = project.modifyDevice(device) { _ ->
+        _project.modifyDevice(device) { _ ->
             Device.Computer.portForwardings.modify(device) { it + portForwarding }
         }
         if (!virtualContainerIO) qemuClient.addPortForwarding(

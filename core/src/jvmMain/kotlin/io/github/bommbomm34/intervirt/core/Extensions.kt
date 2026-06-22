@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core
 
+import arrow.optics.Lens
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
@@ -12,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
@@ -83,4 +85,10 @@ fun <T> Flow<T>.takeWhileInclusive(predicate: suspend (T) -> Boolean) = transfor
 
 fun KLogger.error(failure: Failure, output: () -> Any) {
     error { "$failure: ${output()}" }
+}
+
+fun <S, A> Lens<S, A>.modify(atomic: Atomic<S>, transform: (A) -> A): S {
+    return atomic.updateAndGet { src ->
+        modify(src) { transform(it) }
+    }
 }

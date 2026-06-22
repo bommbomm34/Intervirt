@@ -14,6 +14,8 @@ import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.addNetworkIfNotExists
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.exceptions.DeprecatedException
+import io.github.bommbomm34.intervirt.core.modify
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import jdk.jfr.internal.OldObjectSample.emit
@@ -143,7 +145,7 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
 fun networkNameOfComputers(id1: String, id2: String) = "$id1-$id2-network"
 fun networkNameOfSwitch(id: String) = "$id-network"
 
-fun <T : Device> Project.modifyDevice(
+fun <T : Device> Atomic<Project>.modifyDevice(
     device: T,
     action: (T) -> T,
 ): Project = Project.devices.modify(this) { devices ->
