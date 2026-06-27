@@ -92,7 +92,7 @@ fun DebugOptions() {
     }
     Button(
         onClick = {
-            throw IllegalStateException("Someone has thrown a exception!")
+            throw IllegalStateException("Someone has thrown an exception!")
         }
     ){
         Text("Throw exception")

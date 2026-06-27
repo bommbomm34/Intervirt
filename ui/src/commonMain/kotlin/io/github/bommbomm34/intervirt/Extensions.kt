@@ -52,7 +52,7 @@ import java.net.ServerSocket
 
 @OptIn(ExperimentalFoundationApi::class)
 val PointerMatcher.Companion.Secondary: PointerMatcher
-    get() = PointerMatcher.mouse(PointerButton.Secondary)
+    get() = mouse(PointerButton.Secondary)
 
 @Composable
 fun AppEnv.isDarkMode() = state { ::DARK_MODE }.value ?: isSystemInDarkTheme()

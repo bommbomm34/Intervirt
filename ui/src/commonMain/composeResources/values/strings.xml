@@ -169,8 +169,8 @@
     <string name="internal_error_occurred">An internal error occurred (a restart might fix it): %1$s</string>
     <string name="undefined_error_occurred">An undefined error occurred: %1$s</string>
     <string name="failure_loading_image">Failed to load image: %1$s</string>
-    <string name="source_of_description">Source of description:</string>
-    <string name="source_of_icon">Source of icon:</string>
+    <string name="source_of_description">Source of description: </string>
+    <string name="source_of_icon">Source of icon: </string>
     <string name="operation_already_performed">Operation already performed: %1$s</string>
     <string name="undefined_failure">Undefined failure: %1$s</string>
     <string name="unknown_failure">Unknown failure</string>
@@ -190,4 +190,5 @@
     <string name="command_execution_failure">Command execution failure: %1$s</string>
     <string name="invalid_mail">Invalid mail: %1$s</string>
     <string name="version_mismatch">Version mismatch between current version %1$s and other version %2$s (perform updates if necessary)</string>
+    <string name="port_out_of_range">Port out of range (1-65535): %1$s</string>
 </resources>

@@ -26,9 +26,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import arrow.optics.copy
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.data.getDevice
+import io.github.bommbomm34.intervirt.core.data.modifyDevice
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.minus
 import io.github.bommbomm34.intervirt.core.util.plus
 import io.github.bommbomm34.intervirt.data.AppState
@@ -45,6 +51,7 @@ fun DeviceView(
 ) {
     val appState = koinInject<AppState>()
     val appEnv = koinInject<AppEnv>()
+    val project = koinInject<Atomic<Project>>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
     val deviceSizePx = dpToPx(appEnv.DEVICE_SIZE.dp)
@@ -70,28 +77,36 @@ fun DeviceView(
                     offset = newOffset
                     device.x += it.x.toInt()
                     device.y += it.y.toInt()
-                    device.device.x.plus(it.x.toInt())
-                    device.device.y.minus(it.x.toInt())
+                    project.modifyDevice(device.device) { old ->
+                        when (old) {
+                            is Device.Computer -> old.copy(x = device.x, y = device.y)
+                            is Device.Switch -> old.copy(x = device.x, y = device.y)
+                        }
+                    }
+                    val realDevice = project.get().getDevice(device.device)
                 }
             }
             .onClick(
                 matcher = PointerMatcher.Secondary,
                 onClick = { onSecondaryClick(device) },
             )
-            .clip(RoundedCornerShape(16f))
-            .padding(8.dp)
-            .background(MaterialTheme.colorScheme.background),
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
     ) {
-        Icon(
-            imageVector = device.getVector(),
-            contentDescription = device.name,
-            modifier = Modifier.size(appEnv.DEVICE_SIZE.dp, appEnv.DEVICE_SIZE.dp),
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
-        )
-        GeneralSpacer(2.dp)
-        Text(device.name)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = device.getVector(),
+                contentDescription = device.name,
+                modifier = Modifier.size(appEnv.DEVICE_SIZE.dp, appEnv.DEVICE_SIZE.dp),
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
+            )
+            GeneralSpacer(2.dp)
+            Text(device.name)
+        }
     }
-
 }
 
 fun Offset.isOn(dpSize: DpSize, imageSize: Offset, minimumPadding: Float): Boolean {

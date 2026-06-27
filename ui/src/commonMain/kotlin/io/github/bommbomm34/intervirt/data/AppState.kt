@@ -50,7 +50,7 @@ class AppState(project: Atomic<Project>) {
     var devicesViewZoom by mutableStateOf(1f)
     var isCtrlPressed by mutableStateOf(false)
     var mousePosition by mutableStateOf(Offset.Zero)
-    val currentFile: PlatformFile? by mutableStateOf(null)
+    var currentFile: PlatformFile? by mutableStateOf(null)
     var currentScreenIndex by mutableStateOf(1)
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
@@ -83,7 +83,7 @@ fun AppState.openDialog(
     customContent: @Composable DialogState.() -> Unit,
 ): DialogState {
     val state = DialogState(title, DpSize(width, height), customContent) { dialogStates.remove(it) }
-    dialogStates.add(state)
+    dialogStates += state
     return state
 }
 
@@ -123,5 +123,6 @@ private suspend fun Failure.getLocalizedMessage(): String {
         is Failure.Unexpected -> getString(Res.string.unexpected_failure, message)
         is Failure.VersionMismatch -> getString(Res.string.version_mismatch, CURRENT_VERSION, other)
         is Failure.ZipExtraction -> getString(Res.string.zip_extraction_failure, message)
+        is Failure.PortForwardingValidationFailure -> throw IllegalStateException("This failure shouldn't be exposed: $this")
     }
 }

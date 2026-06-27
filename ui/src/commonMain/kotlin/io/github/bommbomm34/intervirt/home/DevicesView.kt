@@ -166,7 +166,7 @@ fun DevicesView() {
     }
 }
 
-fun DrawScope.drawConnection(
+private fun DrawScope.drawConnection(
     offset1: Offset,
     offset2: Offset,
     color: Long,
@@ -180,7 +180,7 @@ fun DrawScope.drawConnection(
     )
 }
 
-fun isPointOnLine(
+private fun isPointOnLine(
     point: Offset,
     start: Offset,
     end: Offset,
@@ -206,8 +206,8 @@ fun isPointOnLine(
     return distance <= strokeWidth / 2f
 }
 
-fun ViewDevice.fittingOffset(devicesViewZoom: Float): Offset {
+private fun ViewDevice.fittingOffset(devicesViewZoom: Float): Offset {
     val width = (getVector().defaultWidth * devicesViewZoom).toPx()
     val height = (getVector().defaultHeight * devicesViewZoom).toPx()
-    return offset + Offset(width * 2f, height * 2f)
+    return offset + Offset(width * 3f, height * 3f)
 }

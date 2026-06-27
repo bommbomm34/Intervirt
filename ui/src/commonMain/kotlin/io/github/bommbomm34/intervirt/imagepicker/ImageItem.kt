@@ -11,6 +11,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.data.Image
@@ -24,7 +25,10 @@ fun ImageItem(image: Image, onShowImage: () -> Unit) {
             Column(Modifier.padding(16.dp)) {
                 ImageIcon(image)
                 GeneralSpacer(2.dp)
-                Text(image.toReadableName())
+                Text(
+                    text = image.toReadableName(),
+                    textAlign = TextAlign.Center,
+                )
             }
         }
     }

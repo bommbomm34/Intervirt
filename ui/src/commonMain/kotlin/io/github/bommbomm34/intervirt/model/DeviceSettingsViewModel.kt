@@ -12,30 +12,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.external_port_already_bound
 import intervirt.ui.generated.resources.internal_port_already_exposed
+import intervirt.ui.generated.resources.port_out_of_range
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.data.PortForwarding
+import io.github.bommbomm34.intervirt.core.api.isValidPort
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.util.ext.canPortBind
-
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.name
-import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.InjectedParam
@@ -52,10 +52,11 @@ class DeviceSettingsViewModel(
     private val deviceManager: DeviceManager,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
-    val computer: ViewDevice.Computer by lazy {
-        check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
-        device
-    }
+    val computer: ViewDevice.Computer
+        get() {
+            check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
+            return device
+        }
     var showPortForwardings: Boolean by mutableStateOf(false)
     private var containerFilePath: Path? by mutableStateOf(null)
     var ioClient: ContainerIOClient? by mutableStateOf(null)
@@ -171,30 +172,47 @@ class DeviceSettingsViewModel(
     fun removePortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
         computer.portForwardings.remove(portForwarding)
         deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
-            
+
     }
 
-    suspend fun lintPortForwarding(portForwarding: PortForwarding): Result<Unit> {
+    suspend fun lintPortForwarding(portForwarding: PortForwarding): Either<Failure.PortForwardingValidationFailure, Unit> {
         val bindResult = portForwarding.externalPort.canPortBind()
         return when {
-            computer.portForwardings.any { it.internalPort == portForwarding.internalPort } -> Result.failure(
-                IllegalArgumentException(
+            !portForwarding.internalPort.isValidPort() ->
+                Failure.PortForwardingValidationFailure(
+                    portForwarding,
+                    getString(Res.string.port_out_of_range, portForwarding.internalPort.toString()),
+                ).left()
+
+            !portForwarding.externalPort.isValidPort() ->
+                Failure.PortForwardingValidationFailure(
+                    portForwarding,
+                    getString(Res.string.port_out_of_range, portForwarding.externalPort.toString())
+                ).left()
+
+            computer.portForwardings.any { it.internalPort == portForwarding.internalPort } ->
+                Failure.PortForwardingValidationFailure(
+                    portForwarding,
                     getString(
                         Res.string.internal_port_already_exposed,
                     ),
-                ),
-            )
+                ).left()
 
             project.devices.any { device ->
                 if (device is Device.Computer) device.portForwardings.any {
                     it.externalPort == portForwarding.externalPort && it.protocol == portForwarding.protocol
                 } else false
-            } -> Result.failure(
-                IllegalArgumentException(getString(Res.string.external_port_already_bound)),
-            )
+            } -> Failure.PortForwardingValidationFailure(
+                portForwarding,
+                getString(Res.string.external_port_already_bound),
+            ).left()
 
-            bindResult.isFailure -> Result.failure(bindResult.exceptionOrNull()!!)
-            else -> Result.success(Unit)
+            bindResult.isFailure -> Failure.PortForwardingValidationFailure(
+                portForwarding,
+                bindResult.exceptionOrNull()!!.message ?: "Unknown",
+            ).left()
+
+            else -> Unit.right()
         }
     }
 }

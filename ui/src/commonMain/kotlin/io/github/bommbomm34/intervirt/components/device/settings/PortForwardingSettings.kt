@@ -40,7 +40,7 @@ fun PortForwardingSettings(
             modifier = fabMod,
             onClick = onAdd,
         )
-        GeneralSpacer()
+        if (portForwardings.isNotEmpty()) GeneralSpacer()
         LazyColumn {
             items(portForwardings) { portForwarding ->
                 Row(verticalAlignment = Alignment.CenterVertically) {

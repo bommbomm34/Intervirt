@@ -68,30 +68,36 @@ class HomeViewModel(
             val file = FileKit.openFilePicker(
                 type = FileKitType.File(extensions = listOf("ivrt")),
             )
-            file?.loadConf(_project, appState, guestManager) {
-                onConfChange()
+            file?.let {
+                it.loadConf(_project, appState, guestManager) {
+                    onConfChange()
+                }
+                appState.currentFile = it
             }
         }
         onDismiss()
     }
 
     fun save() {
+        val file = appState.currentFile
+        if (file != null) {
+            viewModelScope.launch { file.writeConf(project) }
+            onDismiss()
+        } else saveAs()
+    }
+
+    fun saveAs() {
         viewModelScope.launch {
             val file = FileKit.openFileSaver(
                 suggestedName = appEnv.SUGGESTED_FILENAME,
                 extension = "ivrt",
             )
-            file?.writeConf(project)
+            file?.let {
+                it.writeConf(project)
+                appState.currentFile = it
+            }
         }
         onDismiss()
-    }
-
-    fun saveAs() {
-        val file = appState.currentFile
-        if (file != null) {
-            viewModelScope.launch { file.writeConf(project) }
-            onDismiss()
-        } else save()
     }
 
     fun update() {

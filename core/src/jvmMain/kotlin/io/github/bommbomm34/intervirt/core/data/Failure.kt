@@ -84,4 +84,9 @@ sealed class Failure(val message: String) {
     class InvalidMail(message: String) : Failure("Invalid mail: $message")
 
     class VersionMismatch(val other: String) : Failure("Version $other doesn't match current version $CURRENT_VERSION")
+
+    class PortForwardingValidationFailure(
+        val portForwarding: PortForwarding,
+        message: String,
+    ) : Failure("Port forwarding $portForwarding is invalid: $message")
 }

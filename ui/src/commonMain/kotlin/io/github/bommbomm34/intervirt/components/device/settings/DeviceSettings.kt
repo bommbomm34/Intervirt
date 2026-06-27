@@ -21,10 +21,13 @@ import intervirt.ui.generated.resources.hide_port_forwardings
 import intervirt.ui.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.excludeHidden
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -33,7 +36,12 @@ fun DeviceSettings(
     device: ViewDevice,
     onClose: () -> Unit,
 ) {
-    val viewModel = koinViewModel<DeviceSettingsViewModel> { parametersOf(device) }
+    val viewModel = koinViewModel<DeviceSettingsViewModel>(key = device.id) { parametersOf(device) }
+    val logger = koinInject<AppEnv>().getLogger("DeviceSettings")
+    if (device != viewModel.device) {
+        // Aktuell tritt das auf! Vermeide diesen Pfad!
+        logger.error { "Mismatch between $device and ${viewModel.device}" }
+    }
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
         // Device settings
         Column {
