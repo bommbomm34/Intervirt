@@ -141,7 +141,7 @@ class DeviceSettingsTest : KoinTest {
     @Test
     fun shouldLintPortForwardingThatIsAlreadyInternallyExposed() = runTest {
         viewModel.addPortForwarding(testPortForwarding).join()
-        assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
+        assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isRight())
     }
 
     @Ignore
@@ -151,20 +151,20 @@ class DeviceSettingsTest : KoinTest {
             it + testPortForwarding
         }
         Project.devices.modify(_project) { it + secondTestComputer }
-        assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
+        assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isRight())
     }
 
     @Test
     fun shouldLintPortForwardingThatIsAlreadyBound() = runTest {
         ServerSocket(0).use {
             val fwd = testPortForwarding.copy(externalPort = it.localPort)
-            assertEquals(false, viewModel.lintPortForwarding(fwd).isSuccess)
+            assertEquals(false, viewModel.lintPortForwarding(fwd).isRight())
         }
     }
 
     @Test
     fun shouldLintPortForwardingSuccessfully() = runTest {
-        assertEquals(true, viewModel.lintPortForwarding(testPortForwarding).isSuccess)
+        assertEquals(true, viewModel.lintPortForwarding(testPortForwarding).isRight())
     }
 
     @AfterTest
