@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.model
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -47,7 +48,7 @@ class HomeViewModel(
     private val qemuClient: QemuClient,
     private val _project: Atomic<Project>,
 ) : ViewModel() {
-    var devicesViewRenderKey by mutableStateOf(0)
+    var devicesViewRenderKey by mutableIntStateOf(0)
     var showOptions by mutableStateOf(false)
     val updaterState = UpdaterState()
     var vmRunning by mutableStateOf(false)

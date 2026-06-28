@@ -8,6 +8,7 @@ package io.github.bommbomm34.intervirt.model
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -43,7 +44,7 @@ class SetupViewModel(
     var allowInstallation by mutableStateOf(false)
     var flow: Flow<ResultProgress<String>>? by mutableStateOf(null)
     var job: Job? by mutableStateOf(null)
-    var currentSetupScreenIndex by mutableStateOf(0)
+    var currentSetupScreenIndex by mutableIntStateOf(0)
 
     fun onInstall() {
         if (job != null) {

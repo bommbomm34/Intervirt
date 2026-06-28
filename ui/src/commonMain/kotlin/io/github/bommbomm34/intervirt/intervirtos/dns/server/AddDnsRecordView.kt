@@ -55,7 +55,7 @@ fun AddDnsRecordView(
     onAdd: (DnsRecord) -> Unit,
 ) {
     var name by remember { mutableStateOf("example.com.") }
-    var ttl by remember { mutableStateOf(3600) }
+    var ttl by remember { mutableIntStateOf(3600) }
     var dnsClass by remember { mutableStateOf("A") }
     var data by remember { mutableStateOf("104.18.27.120") }
     AlignedBox(Alignment.TopStart) {

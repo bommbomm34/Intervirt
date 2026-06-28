@@ -21,7 +21,7 @@ fun <T> FlowProgressView(
 ) {
     val defaultMessageColor = MaterialTheme.colorScheme.onBackground
     var message by remember { mutableStateOf("") }
-    var progress by remember { mutableStateOf(0f) }
+    var progress by remember { mutableFloatStateOf(0f) }
     var messageColor by remember { mutableStateOf(defaultMessageColor) }
 
     LaunchedEffect(flow) {

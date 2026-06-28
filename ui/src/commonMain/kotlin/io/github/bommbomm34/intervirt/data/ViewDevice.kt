@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,8 +31,8 @@ sealed class ViewDevice {
     data class Computer(override val device: Device.Computer) : ViewDevice() {
         override val id = device.id
         override var name by mutableStateOf(device.name)
-        override var x by mutableStateOf(device.x)
-        override var y by mutableStateOf(device.y)
+        override var x by mutableIntStateOf(device.x)
+        override var y by mutableIntStateOf(device.y)
         val image by mutableStateOf(device.image)
         var ipv4 by mutableStateOf(device.ipv4)
         var ipv6 by mutableStateOf(device.ipv6)
@@ -51,8 +52,8 @@ sealed class ViewDevice {
     ) : ViewDevice() {
         override val id = device.id
         override var name by mutableStateOf(device.name)
-        override var x by mutableStateOf(device.x)
-        override var y by mutableStateOf(device.y)
+        override var x by mutableIntStateOf(device.x)
+        override var y by mutableIntStateOf(device.y)
         override fun getVector() = Icons.Default.Hub // Switches aren't hubs!
         override fun canConnect(project: Project) = true
     }
