@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.core.data.syncProject
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.data.UpdaterState
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.home.Updater
@@ -112,12 +113,12 @@ class HomeViewModel(
     }
 
     fun openSettings() {
-        appState.currentScreenIndex = 2
+        appState.currentScreen = Screen.SETTINGS
         onDismiss()
     }
 
     fun openAbout() {
-        appState.currentScreenIndex = 3
+        appState.currentScreen = Screen.ABOUT
         onDismiss()
     }
 

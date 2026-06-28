@@ -15,6 +15,7 @@ import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -66,13 +67,13 @@ class HomeTest : KoinTest {
     @Test
     fun shouldOpenSettings() {
         viewModel.openSettings()
-        assertEquals(2, appState.currentScreenIndex)
+        assertEquals(Screen.SETTINGS, appState.currentScreen)
     }
 
     @Test
     fun shouldOpenAbout() {
         viewModel.openAbout()
-        assertEquals(3, appState.currentScreenIndex)
+        assertEquals(Screen.ABOUT, appState.currentScreen)
     }
 
     @Test

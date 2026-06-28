@@ -22,6 +22,7 @@ import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.setup.Installation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -80,7 +81,7 @@ class SetupViewModel(
                     if (it is ResultProgress.Result && it.result.isLeft()) job!!.cancel()
                 }
                 appEnv.INSTALLED = true
-                appState.currentScreenIndex = 1
+                appState.currentScreen = Screen.HOME
             }
         }
     }

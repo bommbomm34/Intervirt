@@ -14,7 +14,7 @@ import org.koin.compose.koinInject
 fun App() {
     val appState = koinInject<AppState>()
     MultipleAnimatedVisibility(
-        visible = appState.currentScreenIndex,
+        visible = appState.currentScreen.ordinal,
         screens = listOf(
             { Setup() },
             { Home() },

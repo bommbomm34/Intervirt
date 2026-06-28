@@ -14,6 +14,7 @@ import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Screen
 import org.koin.compose.koinInject
 
 @Composable
@@ -24,7 +25,7 @@ fun About() {
     }
     Column {
         BackButton {
-            appState.currentScreenIndex = 1
+            appState.currentScreen = Screen.HOME
         }
         GeneralSpacer()
         LibrariesContainer(libraries)

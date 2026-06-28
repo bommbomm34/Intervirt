@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.components.configuration.DebugOptions
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -37,7 +38,7 @@ fun Settings() {
     val windowSize = appState.windowState.size
     AlignedBox(Alignment.TopStart) {
         BackButton {
-            appState.currentScreenIndex = 1
+            appState.currentScreen = Screen.HOME
         }
     }
     AlignedBox(Alignment.Center) {

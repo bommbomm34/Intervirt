@@ -29,6 +29,7 @@ import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
+import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
@@ -59,7 +60,7 @@ fun main() = application {
         val fileManager = koinInject<FileManager>()
         val project = koinInject<Atomic<Project>>()
         val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
-        if (!appEnv.INSTALLED) appState.currentScreenIndex = 0
+        if (!appEnv.INSTALLED) appState.currentScreen = Screen.HOME
         LaunchedEffect(Unit) {
             // Set exception handler
             Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->

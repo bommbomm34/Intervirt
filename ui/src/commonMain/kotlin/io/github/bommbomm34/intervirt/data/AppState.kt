@@ -51,7 +51,7 @@ class AppState(project: Atomic<Project>) {
     var isCtrlPressed by mutableStateOf(false)
     var mousePosition by mutableStateOf(Offset.Zero)
     var currentFile: PlatformFile? by mutableStateOf(null)
-    var currentScreenIndex by mutableIntStateOf(1)
+    var currentScreen by mutableStateOf(Screen.HOME)
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
     val statefulProject = project.get().toViewProject()
