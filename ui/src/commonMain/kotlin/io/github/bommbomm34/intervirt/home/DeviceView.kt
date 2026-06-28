@@ -32,6 +32,7 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.data.copy
 import io.github.bommbomm34.intervirt.core.data.getDevice
 import io.github.bommbomm34.intervirt.core.data.modifyDevice
 import io.github.bommbomm34.intervirt.core.util.Atomic
@@ -40,6 +41,7 @@ import io.github.bommbomm34.intervirt.core.util.plus
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.util.ext.dpToPx
+import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -55,6 +57,7 @@ fun DeviceView(
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
     val deviceSizePx = dpToPx(appEnv.DEVICE_SIZE.dp)
+    Float.NaN
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -71,19 +74,15 @@ fun DeviceView(
                 if (newOffset.isOn(
                         dpSize = appState.windowState.size,
                         imageSize = Offset(deviceSizePx, deviceSizePx),
-                        minimumPadding = 140f,
+                        minimumPadding = 125f,
                     )
                 ) {
                     offset = newOffset
                     device.x += it.x.toInt()
                     device.y += it.y.toInt()
                     project.modifyDevice(device.device) { old ->
-                        when (old) {
-                            is Device.Computer -> old.copy(x = device.x, y = device.y)
-                            is Device.Switch -> old.copy(x = device.x, y = device.y)
-                        }
+                        old.copy(x = device.x, y = device.y)
                     }
-                    val realDevice = project.get().getDevice(device.device)
                 }
             }
             .onClick(
@@ -109,8 +108,9 @@ fun DeviceView(
     }
 }
 
-fun Offset.isOn(dpSize: DpSize, imageSize: Offset, minimumPadding: Float): Boolean {
-    val offsetSize = Offset(dpSize.width.value, dpSize.height.value)
-    return x <= offsetSize.x - imageSize.x - minimumPadding && y < offsetSize.y - imageSize.y - minimumPadding &&
+private fun Offset.isOn(dpSize: DpSize, imageSize: Offset, minimumPadding: Float): Boolean {
+    val offsetSize = Offset(dpSize.width.toPx(), dpSize.height.toPx())
+    println("Offset size: $offsetSize")
+    return x <= offsetSize.x - imageSize.x - minimumPadding && y < offsetSize.y - imageSize.y * 2f - minimumPadding &&
             x >= minimumPadding && y >= minimumPadding
 }

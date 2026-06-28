@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import arrow.optics.optics
-import io.github.bommbomm34.intervirt.core.data.Device.Computer
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -59,12 +58,12 @@ fun getConnectedComputers(
     devices: List<Device>,
     connections: List<DeviceConnection>,
     exceptDevices: Set<Device> = emptySet(),
-): List<Computer> {
+): List<Device.Computer> {
     val connected = getConnectedDevices(device, devices, connections)
-    val connectedComputers = mutableSetOf<Computer>() // Usage of a set is important because duplicates can occur
+    val connectedComputers = mutableSetOf<Device.Computer>() // Usage of a set is important because duplicates can occur
     connected.filter { device -> exceptDevices.all { device.id != it.id } }
         .forEach {
-            if (it is Computer) connectedComputers.add(it) else
+            if (it is Device.Computer) connectedComputers.add(it) else
                 connectedComputers.addAll(getConnectedComputers(it, devices, connections, exceptDevices + device))
         }
     return connectedComputers.toList()
@@ -86,3 +85,13 @@ fun <T : Device> Project.getDevice(device: T): T = devices.first { it.id == devi
 
 @Suppress("UNCHECKED_CAST")
 fun <T : Device> Project.getDeviceOrNull(device: T): T? = devices.firstOrNull { it.id == device.id } as? T
+
+fun Device.copy(
+    id: String = this.id,
+    name: String = this.name,
+    x: Int = this.x,
+    y: Int = this.y,
+): Device = when (this) {
+    is Device.Computer -> copy(id = id, name = name, x = x, y = y)
+    is Device.Switch -> copy(id = id, name = name, x = x, y = y)
+}

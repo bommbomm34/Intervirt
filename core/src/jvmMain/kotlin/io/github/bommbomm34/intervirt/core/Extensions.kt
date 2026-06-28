@@ -39,16 +39,15 @@ import java.util.prefs.Preferences
 import kotlin.io.path.absolutePathString
 import kotlin.time.Clock
 
-fun getAppEnv(
+inline fun getAppEnv(
     settings: Settings = PreferencesSettings(Preferences.userRoot()),
     logLevel: LogLevel? = null,
-    custom: AppEnv.() -> Unit = {},
+    block: AppEnv.() -> Unit = {},
 ) = AppEnv(
     settings = settings,
     override = { System.getenv("INTERVIRT_$it") },
-    custom = custom,
     logLevel = logLevel,
-)
+).apply(block)
 
 fun getHttpClient(): HttpClient = HttpClient(CIO) {
     engine {

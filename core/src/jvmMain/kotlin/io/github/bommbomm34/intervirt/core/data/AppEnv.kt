@@ -34,7 +34,6 @@ data class AppEnv(
     private val autoFlush: Boolean = true,
     private val onChange: () -> Unit = {},
     private val logLevel: LogLevel? = null,
-    private val custom: AppEnv.() -> Unit = {},
 ) {
     private val logger = KLogger(AppEnv::class, logLevel ?: getLogLevel(), *getDefaultStreams())
     private val defaultQemuZipUrl = when (getOS()) {
@@ -140,11 +139,6 @@ data class AppEnv(
         serializer = { it.toString() },
         deserializer = { LogLevel.valueOf(it) },
     )
-    var EXPERIMENTAL_SSH_GUEST_MODE: Boolean by delegate(false)
-
-    init {
-        custom()
-    }
 
     fun flush() = properties.forEach { it.flush() }
 
