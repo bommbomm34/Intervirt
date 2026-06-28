@@ -110,7 +110,6 @@ fun DeviceView(
 
 private fun Offset.isOn(dpSize: DpSize, imageSize: Offset, minimumPadding: Float): Boolean {
     val offsetSize = Offset(dpSize.width.toPx(), dpSize.height.toPx())
-    println("Offset size: $offsetSize")
     return x <= offsetSize.x - imageSize.x - minimumPadding && y < offsetSize.y - imageSize.y * 2f - minimumPadding &&
             x >= minimumPadding && y >= minimumPadding
 }

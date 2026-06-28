@@ -108,14 +108,17 @@ class HomeViewModel(
                 onUpdate = ::onUpdate,
             )
         }
+        onDismiss()
     }
 
     fun openSettings() {
         appState.currentScreenIndex = 2
+        onDismiss()
     }
 
     fun openAbout() {
         appState.currentScreenIndex = 3
+        onDismiss()
     }
 
     fun openHelp() {
