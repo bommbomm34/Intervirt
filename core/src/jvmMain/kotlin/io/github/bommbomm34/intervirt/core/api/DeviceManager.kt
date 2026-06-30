@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDockerManager
+import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.VirtualDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.modify
 import io.github.bommbomm34.intervirt.core.util.*
@@ -324,11 +325,13 @@ class DeviceManager(
         logger.debug { "Initializing DockerManager for ${computer.id}" }
         dockerManagers[computer.id]?.let { return it }
         val sshClient = ioClient as? ContainerSshClient
-        val dockerManager =
-            ActualDockerManager(
+        val dockerManager = when (appEnv.VIRTUAL_DOCKER_MANAGER) {
+            true -> VirtualDockerManager()
+            false -> ActualDockerManager(
                 appEnv,
                 dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}",
             )
+        }
         dockerManagers[computer.id] = dockerManager
         logger.debug { "Initialized DockerManager for ${computer.id}" }
         return dockerManager

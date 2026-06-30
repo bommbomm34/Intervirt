@@ -104,6 +104,7 @@ data class AppEnv(
     var VIRTUAL_AGENT_MODE: Boolean by delegate(false)
 
     var VIRTUAL_CONTAINER_IO: Boolean by delegate(false)
+    var VIRTUAL_DOCKER_MANAGER: Boolean by delegate(false)
 
     var VIRTUAL_CONTAINER_IO_PORT: Int by delegate(22)
     var WIPE_VIRTUAL_ON_CLOSE: Boolean by delegate(false)

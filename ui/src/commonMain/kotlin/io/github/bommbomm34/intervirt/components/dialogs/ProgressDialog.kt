@@ -24,22 +24,25 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun <T> ProgressDialog(
     flow: Flow<ResultProgress<T>>,
-    showMessages: Boolean = false,
+    onShowMessage: (ResultProgress<T>) -> String? = ResultProgress<*>::message,
     onMessage: ((ResultProgress<T>) -> Unit)? = null,
     onClose: () -> Unit,
 ) {
     var job: Job? by remember { mutableStateOf(null) }
-    var lastMessage: String by remember { mutableStateOf("") }
+    var lastMessage: ResultProgress<T>? by remember { mutableStateOf(null) }
     CenterColumn {
-        if (showMessages) {
-            Text(lastMessage)
-            GeneralSpacer()
+        lastMessage?.let { message ->
+            onShowMessage(message)?.let {
+                Text(it)
+                GeneralSpacer()
+            }
         }
+
         FlowProgressView(
             flow = flow,
             onJobChange = { job = it },
             onMessage = {
-                lastMessage = it.toString()
+                lastMessage = it
                 onMessage?.invoke(it)
             },
         )
