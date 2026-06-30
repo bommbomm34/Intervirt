@@ -10,6 +10,12 @@ interface OutputStream {
 
     fun println(line: String): Unit = kotlin.io.println(line)
     fun printlnErr(line: String)
+
+    companion object : OutputStream by getDefaultStream()
 }
+
+fun OutputStream.println(line: Any) = println(line.toString())
+
+fun OutputStream.printlnErr(line: Any) = println(line.toString())
 
 expect fun getDefaultStream(): OutputStream

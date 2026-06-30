@@ -5,7 +5,6 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
-import arrow.atomic.Atomic
 import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
@@ -26,6 +25,7 @@ import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.takeWhileInclusive
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*

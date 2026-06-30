@@ -29,6 +29,8 @@ class Atomic<T>(initial: T) {
 
     fun get() = ref.load()
 
+    fun compareAndSet(expected: T, new: T): Boolean = ref.compareAndSet(expected, new)
+
     inline fun update(block: (T) -> T) = ref.update(block)
 
     inline fun updateAndGet(block: (T) -> T): T = ref.updateAndFetch(block)

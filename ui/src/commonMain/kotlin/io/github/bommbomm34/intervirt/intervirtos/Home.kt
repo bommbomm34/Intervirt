@@ -27,6 +27,7 @@ fun Home(
 ) {
     val appEnv = koinInject<AppEnv>()
     CenterColumn {
+        GeneralSpacer(16.dp)
         Text(
             text = "IntervirtOS",
             fontSize = appEnv.TITLE_FONT_SIZE.sp,

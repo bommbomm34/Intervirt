@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
+import jakarta.mail.Transport.send
 import jdk.jfr.internal.OldObjectSample.emit
 
 import kotlinx.coroutines.Dispatchers

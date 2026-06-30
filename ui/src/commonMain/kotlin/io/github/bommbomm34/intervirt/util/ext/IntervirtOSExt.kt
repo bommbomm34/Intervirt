@@ -35,6 +35,7 @@ fun CoroutineScope.initDocker(
         appState.openDialog {
             ProgressDialog(
                 flow = manager.init(),
+                showMessages = true,
                 onClose = ::close,
                 onMessage = { progress ->
                     if (progress is ResultProgress.Result) {
@@ -69,6 +70,7 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
         appState.openDialog {
             ProgressDialog(
                 flow = init(),
+                showMessages = true,
                 onClose = ::close,
                 onMessage = { progress ->
                     if (progress is ResultProgress.Result) {

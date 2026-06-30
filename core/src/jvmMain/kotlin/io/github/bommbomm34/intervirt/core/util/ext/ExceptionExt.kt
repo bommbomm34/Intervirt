@@ -11,9 +11,14 @@ import arrow.core.raise.context.raise
 import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.logging.OutputStream
+import io.github.bommbomm34.intervirt.logging.getDefaultStream
+import io.github.bommbomm34.intervirt.logging.printlnErr
+import jakarta.mail.Transport.send
 import jdk.jfr.internal.OldObjectSample.emit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -31,13 +36,25 @@ fun <T> flowCatching(
     block: suspend context(Raise<Failure>) FlowCollector<ResultProgress<T>>.() -> Unit,
 ): Flow<ResultProgress<T>> {
     return flow {
-        @Suppress("RemoveExplicitTypeArguments") // Otherwise, type inference fails
-        recover<Failure, Unit>(
+        var failure: Failure? = null
+        recover(
             block = { block() },
-            recover = {
-                emit(ResultProgress.failure(it))
-            },
+            recover = { failure = it },
         )
+        failure?.let { emit(ResultProgress.failure(it)) }
+    }
+}
+
+fun <T> channelFlowCatching(
+    block: suspend context(Raise<Failure>) ProducerScope<ResultProgress<T>>.() -> Unit,
+): Flow<ResultProgress<T>> {
+    return channelFlow {
+        var failure: Failure? = null
+        recover(
+            block = { block() },
+            recover = { failure = it },
+        )
+        failure?.let { send(ResultProgress.failure(it)) }
     }
 }
 

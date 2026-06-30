@@ -20,10 +20,12 @@ import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
+import io.github.bommbomm34.intervirt.core.util.ext.channelFlowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
+import jdk.jfr.internal.OldObjectSample.emit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -185,42 +187,23 @@ class ActualDockerManager(
         }
 
     context(_: Raise<Failure>)
-    override fun pullImage(image: String): Flow<ResultProgress<Unit>> = flowCatching {
+    override fun pullImage(image: String): Flow<ResultProgress<Unit>> = channelFlowCatching {
         val client = getClient()
-        val callback = object : PullImageResultCallback() {
-            override fun onStart(stream: Closeable) {
-                runBlocking {
-                    emit(ResultProgress.proceed(0f, "Starting $image image pull"))
-                }
-            }
-
-            override fun onNext(item: PullResponseItem) {
-                val progress = item.progressDetail?.let { detail -> detail.total?.let { detail.current?.div(it) } }
-                val percentage = progress?.toFloat() ?: 0f
-                runBlocking {
-                    emit(ResultProgress.proceed(percentage, "Pulling $image ${percentage.readablePercentage()}"))
-                }
-            }
-
-            override fun onError(throwable: Throwable) {
-                runBlocking {
-                    // TODO: Improve error
-                    emit(ResultProgress.failure(Failure.Unexpected(throwable)))
-                }
-            }
-
-            override fun onComplete() {
-                runBlocking {
-                    emit(ResultProgress.success(Unit))
-                }
-            }
-        }
+        var failure: Failure? = null
+        val callback = DefaultCallback(
+            image = image,
+            emit = { send(it) },
+            onFailure = { failure = it },
+        )
         try {
             client.pullImageCmd(image)
                 .exec(callback)
                 .awaitCompletion()
         } catch (_: NotModifiedException) {
-        } // Ignore it
+            // no-op
+        } finally {
+            failure?.let { send(ResultProgress.failure(it)) }
+        }
     }
 
     context(_: Raise<Failure>)
@@ -251,4 +234,42 @@ class ActualDockerManager(
             if (it is Failure.Unexpected && it.exception is NotModifiedException) Unit else raise(it)
         },
     )
+
+    private inner class DefaultCallback(
+        private val image: String,
+        private val emit: suspend (ResultProgress<Unit>) -> Unit,
+        private val onFailure: (Failure) -> Unit,
+    ) : PullImageResultCallback()
+    {
+        override fun onStart(stream: Closeable) {
+            runBlocking {
+                logger.info { "Starting $image image pull" }
+                emit(ResultProgress.proceed(0f, "Starting $image image pull"))
+            }
+        }
+
+        override fun onNext(item: PullResponseItem) {
+            val progress = item.progressDetail?.let { detail -> detail.total?.let { detail.current?.div(it) } }
+            val percentage = progress?.toFloat() ?: 0f
+            runBlocking {
+                logger.debug { "Pulling $image $percentage" }
+                emit(ResultProgress.proceed(percentage, "Pulling $image ${percentage.readablePercentage()}"))
+            }
+        }
+
+        override fun onError(throwable: Throwable) {
+            runBlocking {
+                logger.error { "Error occurred: $throwable" }
+                // TODO: Improve error
+                onFailure(Failure.Unexpected(throwable))
+            }
+        }
+
+        override fun onComplete() {
+            runBlocking {
+                logger.debug { "Completed $image image pull" }
+                emit(ResultProgress.success(Unit))
+            }
+        }
+    }
 }
