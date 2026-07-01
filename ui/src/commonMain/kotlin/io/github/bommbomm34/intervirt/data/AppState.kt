@@ -59,7 +59,6 @@ class AppState(project: Atomic<Project>) {
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
     var appEnvChangeKey by mutableIntStateOf(0)
-    val images = mutableStateListOf<Image>()
 }
 
 fun AppState.openDialog(

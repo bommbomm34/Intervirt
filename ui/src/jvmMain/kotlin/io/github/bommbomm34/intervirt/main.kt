@@ -30,7 +30,6 @@ import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
-import io.github.bommbomm34.intervirt.data.getImages
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.intervirtos.Main
 import io.github.bommbomm34.intervirt.util.ext.loadConf
@@ -55,7 +54,6 @@ fun main() = application {
         val shutdownHandler = koinInject<ShutdownHandler>()
         val appEnv = koinInject<AppEnv>()
         val guestManager = koinInject<GuestManager>()
-        val httpClient = koinInject<HttpClient>()
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
         val project = koinInject<Atomic<Project>>()
@@ -84,10 +82,6 @@ fun main() = application {
                 appState,
                 guestManager,
             )
-        }
-        CatchingLaunchedEffect {
-            appState.images.clear()
-            appState.images.addAll(httpClient.getImages(appEnv.IMAGES_URL))
         }
         density = LocalDensity.current
         key(appState.appEnvChangeKey) {

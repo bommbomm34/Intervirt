@@ -17,35 +17,22 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.DrawableResource
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.readText
 
-@Serializable
 data class Image(
     val name: String,
     val tag: String,
     val description: String,
-    val icon: String,
     val iconSource: String,
     val descriptionSource: String,
+    val icon: DrawableResource,
 ) {
     val fullName = "$name/$tag"
 
     fun toReadableName() = fullName.toReadableImage() ?: name
-}
-
-context(_: Raise<Failure>)
-suspend fun HttpClient.getImages(url: String): List<Image> = withContext(Dispatchers.IO) {
-    val text = catch(
-        block = {
-            if (url.startsWith("file:///")) {
-                Path.of(url.substringAfter("file:///")).readText()
-            } else get(url).bodyAsText()
-        },
-        catch = { raise(Failure.Unexpected(it)) },
-    )
-    defaultJson.decodeFromString(text)
 }
 
 fun ViewDevice.Computer.hasIntervirtOS() = image.substringBefore("/") == "intervirtos"

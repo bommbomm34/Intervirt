@@ -132,7 +132,6 @@ data class AppEnv(
     internal var CURRENT_QEMU_HASH: String by delegate("")
 
     var INSTALLED: Boolean by delegate(false)
-    var IMAGES_URL: String by delegate("https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/metadata/images.json")
     var ACCENT_COLOR: ULong by delegate(0xFF648042.toULong())
     var SMALL_FAB_SIZE: Int by delegate(32)
     var LOG_LEVEL: LogLevel by delegate(

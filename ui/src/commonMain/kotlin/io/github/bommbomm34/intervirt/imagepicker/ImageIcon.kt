@@ -6,11 +6,13 @@
 package io.github.bommbomm34.intervirt.imagepicker
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.Image as ComposeImage
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import intervirt.ui.generated.resources.Res
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -19,21 +21,16 @@ import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.data.showFailureDialog
 import io.github.bommbomm34.intervirt.rememberLogger
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.koinInject
 
 @Composable
 fun ImageIcon(image: Image) {
-    val appState = koinInject<AppState>()
     val appEnv = koinInject<AppEnv>()
-    val scope = rememberCoroutineScope()
-    AsyncImage(
-        model = image.icon,
-        onError = {
-            scope.launch {
-                System.err.println("An error occurred during image loading of $image")
-                appState.showFailureDialog(Failure.Unexpected(it.result.throwable))
-            }
-        },
+
+    ComposeImage(
+        painter = painterResource(image.icon),
         contentDescription = image.toReadableName(),
         modifier = Modifier.size(appEnv.OS_ICON_SIZE.dp),
     )
