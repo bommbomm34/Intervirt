@@ -56,6 +56,7 @@ fun ImageInfo(
             Text(
                 text = image.toReadableName(),
                 fontSize = 24.sp,
+                color = Color.White,
             )
         }
         AlignedBox(Alignment.TopEnd) {
