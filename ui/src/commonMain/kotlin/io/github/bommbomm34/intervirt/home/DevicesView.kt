@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -56,13 +55,15 @@ fun DevicesView() {
     val appState = koinInject<AppState>()
     val project by koinInject<Atomic<Project>>()
     val statefulProject = appState.statefulProject
-    Box(Modifier.scale(appState.devicesViewZoom)) {
+    var zoom by appState::devicesViewZoom
+    val connectionStrokeWidth by appEnv::CONNECTION_STROKE_WIDTH
+    Box {
         Canvas(
             Modifier
                 .fillMaxSize()
                 .onPointerEvent(PointerEventType.Scroll) {
                     val delta = it.changes.first().scrollDelta.y * -appEnv.ZOOM_SPEED
-                    if (appState.isCtrlPressed && appState.devicesViewZoom + delta > 0.1f) appState.devicesViewZoom += delta
+                    if (appState.isCtrlPressed && zoom + delta > 0.1f) zoom += delta
                 }
                 .onClick(matcher = PointerMatcher.Primary) { appState.drawingConnectionSource = null }
                 .onClick(matcher = PointerMatcher.Secondary) { appState.drawingConnectionSource = null }
@@ -72,9 +73,9 @@ fun DevicesView() {
                         statefulProject.connections.firstOrNull { (device1, device2) ->
                             isPointOnLine(
                                 point = position,
-                                start = device1.fittingOffset(appState.devicesViewZoom),
-                                end = device2.fittingOffset(appState.devicesViewZoom),
-                                strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
+                                start = device1.fittingOffset(appEnv.DEVICE_SCALE),
+                                end = device2.fittingOffset(appEnv.DEVICE_SCALE),
+                                strokeWidth = connectionStrokeWidth,
                             )
                         }?.let {
                             appState.openAcceptDialog(
@@ -97,18 +98,18 @@ fun DevicesView() {
         ) {
             appState.drawingConnectionSource?.let {
                 drawConnection(
-                    offset1 = it.fittingOffset(appState.devicesViewZoom),
+                    offset1 = it.fittingOffset(appEnv.DEVICE_SCALE),
                     offset2 = appState.mousePosition,
                     color = appEnv.DEVICE_CONNECTION_COLOR,
-                    strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
+                    strokeWidth = connectionStrokeWidth,
                 )
             }
             statefulProject.connections.forEach {
                 drawConnection(
-                    offset1 = it.device1.fittingOffset(appState.devicesViewZoom),
-                    offset2 = it.device2.fittingOffset(appState.devicesViewZoom),
+                    offset1 = it.device1.fittingOffset(appEnv.DEVICE_SCALE),
+                    offset2 = it.device2.fittingOffset(appEnv.DEVICE_SCALE),
                     color = appEnv.DEVICE_CONNECTION_COLOR,
-                    strokeWidth = appEnv.CONNECTION_STROKE_WIDTH,
+                    strokeWidth = connectionStrokeWidth,
                 )
             }
         }
@@ -206,8 +207,11 @@ private fun isPointOnLine(
     return distance <= strokeWidth / 2f
 }
 
-private fun ViewDevice.fittingOffset(devicesViewZoom: Float): Offset {
-    val width = (getVector().defaultWidth * devicesViewZoom).toPx()
-    val height = (getVector().defaultHeight * devicesViewZoom).toPx()
-    return offset + Offset(width * 3f, height * 3f)
+private fun ViewDevice.fittingOffset(scale: Float): Offset {
+    // TODO: Design more reliable algorithm
+    val paddingPx = DEVICE_PADDING.toPx()
+    val width = (vector.defaultWidth.toPx() * scale) + paddingPx
+    val height = (vector.defaultHeight.toPx() * scale) + paddingPx * 2f
+
+    return offset + Offset(width, height / 2f)
 }

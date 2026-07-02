@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
@@ -44,6 +45,8 @@ import io.github.bommbomm34.intervirt.util.ext.dpToPx
 import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.koin.compose.koinInject
 
+val DEVICE_PADDING = 16.dp
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DeviceView(
@@ -56,8 +59,8 @@ fun DeviceView(
     val project = koinInject<Atomic<Project>>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceSizePx = dpToPx(appEnv.DEVICE_SIZE.dp)
-    Float.NaN
+    val deviceWidth = dpToPx(device.vector.defaultWidth) * appEnv.DEVICE_SCALE
+    val deviceHeight = dpToPx(device.vector.defaultHeight) * appEnv.DEVICE_SCALE
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -73,7 +76,7 @@ fun DeviceView(
                 val newOffset = offset + it
                 if (newOffset.isOn(
                         dpSize = appState.windowState.size,
-                        imageSize = Offset(deviceSizePx, deviceSizePx),
+                        imageSize = Offset(deviceWidth, deviceHeight),
                         minimumPadding = 125f,
                     )
                 ) {
@@ -93,13 +96,16 @@ fun DeviceView(
             .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(DEVICE_PADDING),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val deviceWidthDp = remember(device) { device.vector.defaultWidth * appEnv.DEVICE_SCALE }
+            val deviceHeightDp = remember(device) { device.vector.defaultHeight * appEnv.DEVICE_SCALE }
+
             Icon(
-                imageVector = device.getVector(),
+                imageVector = device.vector,
                 contentDescription = device.name,
-                modifier = Modifier.size(appEnv.DEVICE_SIZE.dp, appEnv.DEVICE_SIZE.dp),
+                modifier = Modifier.size(deviceWidthDp, deviceHeightDp),
                 tint = MaterialTheme.colorScheme.onBackground.copy(alpha = if (overlay) 0.5f else 1f),
             )
             GeneralSpacer(2.dp)

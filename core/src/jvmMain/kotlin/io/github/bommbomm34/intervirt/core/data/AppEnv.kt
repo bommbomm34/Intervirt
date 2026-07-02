@@ -81,7 +81,7 @@ data class AppEnv(
 
     var ZOOM_SPEED: Float by delegate(0.1f)
 
-    var DEVICE_SIZE: Int by delegate(100)
+    var DEVICE_SCALE: Float by delegate(3f)
 
     var OS_ICON_SIZE: Int by delegate(128)
 
@@ -89,8 +89,8 @@ data class AppEnv(
 
     var LANGUAGE: Locale by delegate(
         default = "en",
-        serializer = { it.toLanguageTag() },
-        deserializer = { Locale.forLanguageTag(it) },
+        serializer = Locale::toLanguageTag,
+        deserializer = Locale::forLanguageTag,
     )
 
     var QEMU_MONITOR_PORT: Int by delegate(55437)

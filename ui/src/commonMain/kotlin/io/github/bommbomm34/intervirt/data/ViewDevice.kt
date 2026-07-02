@@ -19,17 +19,17 @@ import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 
-sealed class ViewDevice {
+sealed class ViewDevice(val vector: ImageVector) {
     abstract val device: Device
-    abstract val id: String
     abstract var name: String
     abstract var x: Int
     abstract var y: Int
     val offset
         get() = Offset(x.toFloat(), y.toFloat())
+    val id
+        get() = device.id
 
-    data class Computer(override val device: Device.Computer) : ViewDevice() {
-        override val id = device.id
+    data class Computer(override val device: Device.Computer) : ViewDevice(Icons.Default.Computer) {
         override var name by mutableStateOf(device.name)
         override var x by mutableIntStateOf(device.x)
         override var y by mutableIntStateOf(device.y)
@@ -42,24 +42,21 @@ sealed class ViewDevice {
         val portForwardings =
             mutableStateListOf<PortForwarding>().apply { addAll(device.portForwardings) }
 
-        override fun getVector() = Icons.Default.Computer
         override fun canConnect(project: Project) =
             project.connections.count { it.containsDevice(device) } == 0
     }
 
     data class Switch(
         override val device: Device.Switch,
-    ) : ViewDevice() {
-        override val id = device.id
+    ) : ViewDevice(Icons.Default.Hub /* Switches aren't hubs! */)  {
         override var name by mutableStateOf(device.name)
         override var x by mutableIntStateOf(device.x)
         override var y by mutableIntStateOf(device.y)
-        override fun getVector() = Icons.Default.Hub // Switches aren't hubs!
+
         override fun canConnect(project: Project) = true
     }
 
     infix fun connect(other: ViewDevice) = ViewConnection(this, other)
-    abstract fun getVector(): ImageVector
     abstract fun canConnect(project: Project): Boolean
 }
 
