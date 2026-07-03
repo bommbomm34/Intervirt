@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val LOG_RAW_JSON = true
+private const val LOG_RAW_JSON = false
 
 class AgentGuestManager(
     appEnv: AppEnv,
@@ -166,6 +166,7 @@ class AgentGuestManager(
     context(_: Raise<Failure>)
     override suspend fun removeNetwork(name: String) {
         logger.debug { "Removing network $name" }
+        require(name !in SPECIAL_NETWORKS) { "Removing special network '$name' is not supported" }
         return justSend(RequestBody.RemoveNetwork(name))
     }
 
@@ -324,4 +325,8 @@ class AgentGuestManager(
         ifLeft = { it },
         ifRight = { it.failure() },
     )
+
+    companion object {
+        val SPECIAL_NETWORKS = listOf("incusbr0", "lo")
+    }
 }

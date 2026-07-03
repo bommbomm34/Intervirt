@@ -11,6 +11,7 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.right
+import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
@@ -344,7 +345,7 @@ class DeviceManager(
         guestManager.getNetworks().let { networks ->
             logger.debug { "Clearing unused networks" }
             networks
-                .filter { it.value.isEmpty() }
+                .filter { it.value.isEmpty() && it.key !in AgentGuestManager.SPECIAL_NETWORKS }
                 .forEach {
                     guestManager.removeNetwork(it.key)
                 }
@@ -367,8 +368,8 @@ class DeviceManager(
         // Validate IP
         require(computer.ipv4.validateIpv4()) { "IPv4 address is invalid: ${computer.ipv4}" }
         require(computer.ipv6.validateIpv6()) { "IPv6 address is invalid: ${computer.ipv6}" }
-        require(computer.ipv4 isIPWithinSubnet info.ipv4Subnet) { "IPv4 address '${computer.ipv4}' is not within subnet '${info.ipv4Subnet}'" }
-        require(computer.ipv6 isIPWithinSubnet info.ipv6Subnet) { "IPv6 address '${computer.ipv6}' is not within subnet '${info.ipv6Subnet}'" }
+//        require(computer.ipv4 isIPWithinSubnet info.ipv4Subnet) { "IPv4 address '${computer.ipv4}' is not within subnet '${info.ipv4Subnet}'" }
+//        require(computer.ipv6 isIPWithinSubnet info.ipv6Subnet) { "IPv6 address '${computer.ipv6}' is not within subnet '${info.ipv6Subnet}'" }
         // Validate MAC
         require(computer.mac.validateMac()) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings

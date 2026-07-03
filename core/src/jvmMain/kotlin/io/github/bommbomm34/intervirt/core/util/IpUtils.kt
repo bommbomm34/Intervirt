@@ -57,6 +57,7 @@ fun randomMac(): String {
 }
 
 fun randomIpv4(subnet: IPAddress): String {
+    require(subnet.isIPv4) { "Expected IPv4 subnet, but got $subnet" }
     val prefixLen = subnet.networkPrefixLength
 
     val result = subnet.bytes.copyOf()
@@ -77,6 +78,7 @@ fun randomIpv4(subnet: IPAddress): String {
 }
 
 fun randomIpv6(subnet: IPAddress): String {
+    require(subnet.isIPv6) { "Expected IPv6 subnet, but got $subnet" }
     val prefixLen = subnet.networkPrefixLength
     val hostBits = 128 - prefixLen
 

@@ -5,6 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import arrow.core.raise.Raise
+import arrow.core.raise.context.bind
+import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
@@ -12,6 +15,10 @@ import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.Atomic
+import io.github.bommbomm34.intervirt.core.util.ext.lastResult
+import io.github.bommbomm34.intervirt.core.util.randomIpv4
+import io.github.bommbomm34.intervirt.core.util.randomIpv6
+import io.github.bommbomm34.intervirt.core.util.randomMac
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -19,13 +26,19 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
+import org.koin.test.get
 import org.koin.test.inject
 import kotlin.test.*
 
 class DeviceManagerTest : KoinTest {
     val testModule = module {
+        val appEnv = getTestAppEnv()
         single<DeviceManager>()
-        single<GuestManager> { VirtualGuestManager() }
+        if (appEnv.VIRTUAL_AGENT_MODE) {
+            single<GuestManager> { VirtualGuestManager() }
+        } else {
+            single<AgentGuestManager>() bind GuestManager::class
+        }
         single<QemuClient>()
         single<DefaultExecutor>() bind Executor::class
         single<FileManager>()
@@ -33,31 +46,8 @@ class DeviceManagerTest : KoinTest {
         singleProject()
         single { getHttpClient() }
     }
-    val mockComputer = Device.Computer(
-        id = "rand-id",
-        image = "debian/13",
-        name = "hello",
-        x = 10,
-        y = 10,
-        ipv4 = "0.0.0.0",
-        ipv6 = "::1",
-        mac = "ff:ff:ff:ff:ff:ff",
-        internetEnabled = false,
-        portForwardings = listOf(),
-    )
-
-    val mockComputer2 = Device.Computer(
-        id = "rand-id2",
-        image = "debian/13",
-        name = "hello",
-        x = 10,
-        y = 10,
-        ipv4 = "0.1.0.0",
-        ipv6 = "::2",
-        mac = "ff:ff:2f:ff:ff:ff",
-        internetEnabled = false,
-        portForwardings = listOf(),
-    )
+    lateinit var mockComputer: Device.Computer
+    lateinit var mockComputer2: Device.Computer
 
     val mockPortForwarding = PortForwarding(
         protocol = "tcp",
@@ -66,16 +56,41 @@ class DeviceManagerTest : KoinTest {
     )
 
     private val deviceManager: DeviceManager by inject()
+    private val guestManager: GuestManager by inject()
     private val _project: Atomic<Project> by inject()
     private var project: Project
         get() = _project.get()
         set(value) = _project.set(value)
 
     @BeforeTest
-    fun setup() {
+    fun setup() = runIntervirtTest {
         startKoin {
             modules(testModule)
         }
+        mockComputer = Device.Computer(
+            id = "rand-id",
+            image = "debian/13",
+            name = "hello",
+            x = 10,
+            y = 10,
+            ipv4 = randomIpv4(),
+            ipv6 = randomIpv6(),
+            mac = randomMac(),
+            internetEnabled = false,
+            portForwardings = emptyList(),
+        )
+        mockComputer2 = Device.Computer(
+            id = "rand-id2",
+            image = "debian/13",
+            name = "hello",
+            x = 10,
+            y = 10,
+            ipv4 = randomIpv4(),
+            ipv6 = randomIpv6(),
+            mac = randomMac(),
+            internetEnabled = false,
+            portForwardings = emptyList(),
+        )
     }
 
     @Test
@@ -147,15 +162,17 @@ class DeviceManagerTest : KoinTest {
     @Test
     fun shouldSetIpv4() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer)
-        deviceManager.setIpv4(mockComputer, "192.168.0.200")
-        assertEquals(project.getDevice(computer).ipv4, "192.168.0.200")
+        val ipv4 = randomIpv4(getInfo().ipv4Subnet)
+        deviceManager.setIpv4(mockComputer, ipv4)
+        assertEquals(project.getDevice(computer).ipv4, ipv4)
     }
 
     @Test
     fun shouldSetIpv6() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer)
-        deviceManager.setIpv6(mockComputer, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
-        assertEquals(project.getDevice(computer).ipv6, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
+        val ipv6 = randomIpv6(getInfo().ipv6Subnet)
+        deviceManager.setIpv6(mockComputer, ipv6)
+        assertEquals(project.getDevice(computer).ipv6, ipv6)
     }
 
     @Test
@@ -175,6 +192,7 @@ class DeviceManagerTest : KoinTest {
     @Test
     fun shouldStartComputer() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer)
+        deviceManager.stop(computer) // Computers are running by default
         deviceManager.start(computer)
     }
 
@@ -211,5 +229,18 @@ class DeviceManagerTest : KoinTest {
     }
 
     @AfterTest
-    fun tearDown() = stopKoin()
+    fun tearDown() = runIntervirtTest {
+        guestManager.wipe().lastResult().bind()
+        deviceManager.close()
+        stopKoin()
+    }
+
+    context(_: Raise<Failure>)
+    private suspend fun getInfo(): AgentInfo = guestManager.getInfo()
+
+    context(_: Raise<Failure>)
+    private suspend fun randomIpv4(): String = randomIpv4(getInfo().ipv4Subnet)
+
+    context(_: Raise<Failure>)
+    private suspend fun randomIpv6(): String = randomIpv6(getInfo().ipv6Subnet)
 }

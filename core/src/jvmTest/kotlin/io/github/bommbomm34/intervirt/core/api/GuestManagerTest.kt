@@ -41,6 +41,7 @@ class GuestManagerTest : KoinTest {
         externalPort = 2222,
     )
     val guestManager: GuestManager by inject()
+    var isVirtual: Boolean = true
 
     @BeforeTest
     fun startTest() = runIntervirtTest {
@@ -51,6 +52,7 @@ class GuestManagerTest : KoinTest {
                     if (appEnv.VIRTUAL_AGENT_MODE) {
                         single<GuestManager> { VirtualGuestManager(0.seconds) }
                     } else {
+                        isVirtual = false
                         single<AppEnv> { appEnv }
                         single<HttpClient> { getHttpClient() }
                         single<AgentGuestManager>() bind GuestManager::class
@@ -167,12 +169,12 @@ class GuestManagerTest : KoinTest {
 
     @Test
     fun shouldShutdown() = runIntervirtTest {
-        guestManager.shutdown()
+        if (isVirtual) guestManager.shutdown()
     }
 
     @Test
     fun shouldReboot() = runIntervirtTest {
-        guestManager.reboot()
+        if (isVirtual) guestManager.reboot()
     }
 
     @Test
@@ -260,7 +262,7 @@ class GuestManagerTest : KoinTest {
 
     @AfterTest
     fun stopTest() = runIntervirtTest {
-        guestManager.wipe().lastResult()
+        guestManager.wipe().lastResult().bind()
         guestManager.close()
         stopKoin()
     }
