@@ -55,8 +55,8 @@ class DeviceManager(
             name = name ?: id,
             x = x,
             y = y,
-            ipv4 = project.generateIpv4(guestManager.getInfo().ipv4Subnet),
-            ipv6 = project.generateIpv6(guestManager.getInfo().ipv6Subnet),
+            ipv4 = project.generateIpv4(getInfo().ipv4Subnet),
+            ipv6 = project.generateIpv6(getInfo().ipv6Subnet),
             mac = project.generateMac(),
             internetEnabled = false,
             portForwardings = listOf(),
@@ -237,9 +237,11 @@ class DeviceManager(
         logger.debug { "Remove port forwarding of $externalPort" }
         val device = project.devices.firstOrNull { device ->
             if (device is Device.Computer) {
-                Device.Computer.portForwardings.modify(device) { portForwardings ->
-                    portForwardings.filterNot {
-                        it.externalPort == externalPort && it.protocol == protocol
+                _project.modifyDevice(device) { _ ->
+                    Device.Computer.portForwardings.modify(device) { portForwardings ->
+                        portForwardings.filterNot {
+                            it.externalPort == externalPort && it.protocol == protocol
+                        }
                     }
                 }
                 true
@@ -357,12 +359,16 @@ class DeviceManager(
         }
     }
 
-    private fun validateComputer(computer: Device.Computer) {
+    context(_: Raise<Failure>)
+    private suspend fun validateComputer(computer: Device.Computer) {
+        val info = getInfo()
         // Validate image
         requireNotNull(computer.image.toReadableImage()) { "Invalid image: ${computer.image}" }
         // Validate IP
         require(computer.ipv4.validateIpv4()) { "IPv4 address is invalid: ${computer.ipv4}" }
         require(computer.ipv6.validateIpv6()) { "IPv6 address is invalid: ${computer.ipv6}" }
+        require(computer.ipv4 isIPWithinSubnet info.ipv4Subnet) { "IPv4 address '${computer.ipv4}' is not within subnet '${info.ipv4Subnet}'" }
+        require(computer.ipv6 isIPWithinSubnet info.ipv6Subnet) { "IPv6 address '${computer.ipv6}' is not within subnet '${info.ipv6Subnet}'" }
         // Validate MAC
         require(computer.mac.validateMac()) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings
@@ -374,6 +380,9 @@ class DeviceManager(
     private fun Device.requireExists() = require(exists()) { "Device $id does not exist!" }
 
     private fun PortForwarding.requireValid() = require(validate()) { "Port forwarding is invalid: $this" }
+
+    context(_: Raise<Failure>)
+    private suspend fun getInfo() = guestManager.getInfo()
 
     context(_: Raise<Failure>)
     override suspend fun close() {

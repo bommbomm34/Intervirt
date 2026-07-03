@@ -45,7 +45,7 @@ kotlin {
             implementation(libs.kommand)
             implementation(libs.sshd.core)
             implementation(libs.sshd.sftp)
-            implementation(libs.ipaddress)
+            api(libs.ipaddress)
             api(projects.logging)
             api(projects.secret)
         }

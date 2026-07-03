@@ -97,7 +97,7 @@ fun DeviceView(
     ) {
         Column(
             modifier = Modifier.padding(DEVICE_PADDING),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val deviceWidthDp = remember(device) { device.vector.defaultWidth * appEnv.DEVICE_SCALE }
             val deviceHeightDp = remember(device) { device.vector.defaultHeight * appEnv.DEVICE_SCALE }

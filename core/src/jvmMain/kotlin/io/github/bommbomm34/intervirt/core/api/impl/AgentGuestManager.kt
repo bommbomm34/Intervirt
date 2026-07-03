@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val LOG_RAW_JSON = false
+private const val LOG_RAW_JSON = true
 
 class AgentGuestManager(
     appEnv: AppEnv,
@@ -134,9 +134,9 @@ class AgentGuestManager(
 
     context(_: Raise<Failure>)
     override suspend fun getInfo(): AgentInfo {
-        logger.debug { "Retrieving version of guest" }
+        logger.debug { "Retrieving info of guest" }
         agentInfo.get()?.let { return it }
-        return firstSend<ResponseBody.Info>("version".commandBody()).let {
+        return firstSend<ResponseBody.Info>("info".commandBody()).let {
             try {
                 AgentInfo(
                     version = it.version,
@@ -152,6 +152,8 @@ class AgentGuestManager(
     context(_: Raise<Failure>)
     override suspend fun getContainers(): List<ContainerInfo> {
         logger.debug { "Retrieving containers of guest" }
+        // feXX Link-Local address
+        // fdXX ULA address
         return firstSend<ResponseBody.ContainerList>("containers".commandBody()).containers
     }
 

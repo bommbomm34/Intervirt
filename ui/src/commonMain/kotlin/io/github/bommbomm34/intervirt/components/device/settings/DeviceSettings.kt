@@ -37,11 +37,7 @@ fun DeviceSettings(
     onClose: () -> Unit,
 ) {
     val viewModel = koinViewModel<DeviceSettingsViewModel>(key = device.id) { parametersOf(device) }
-    val logger = koinInject<AppEnv>().getLogger("DeviceSettings")
-    if (device != viewModel.device) {
-        // Aktuell tritt das auf! Vermeide diesen Pfad!
-        logger.error { "Mismatch between $device and ${viewModel.device}" }
-    }
+
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
         // Device settings
         Column {
@@ -50,47 +46,49 @@ fun DeviceSettings(
             GeneralDeviceSettings(device, onClose)
             GeneralSpacer()
             if (device is ViewDevice.Computer) {
-                // All other device settings except port forwardings
-                // Device settings specific for computers
-                AnimatedVisibility(!viewModel.showPortForwardings) {
-                    Column {
-                        OSField(device)
-                        GeneralSpacer()
-                        // IOOptions and start/stop button
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IOOptions(
-                                onDownload = viewModel::download,
-                                onUpload = viewModel::upload,
-                                onOpenShell = viewModel::openShell,
-                            )
+                viewModel.info?.let { info ->
+                    // All other device settings except port forwardings
+                    // Device settings specific for computers
+                    AnimatedVisibility(!viewModel.showPortForwardings) {
+                        Column {
+                            OSField(device)
                             GeneralSpacer()
-                            ComputerStartButton(device, viewModel::start, viewModel::stop)
+                            // IOOptions and start/stop button
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IOOptions(
+                                    onDownload = viewModel::download,
+                                    onUpload = viewModel::upload,
+                                    onOpenShell = viewModel::openShell,
+                                )
+                                GeneralSpacer()
+                                ComputerStartButton(device, viewModel::start, viewModel::stop)
+                            }
+                            GeneralSpacer()
+                            Ipv4TextField(info, device.ipv4, viewModel::changeIpv4)
+                            GeneralSpacer()
+                            Ipv6TextField(info, device.ipv6, viewModel::changeIpv6)
+                            GeneralSpacer()
+                            MacTextField(device)
+                            GeneralSpacer()
+                            InternetEnabledOption(device.internetEnabled, viewModel::enableInternetAccess)
+                            GeneralSpacer()
                         }
-                        GeneralSpacer()
-                        Ipv4TextField(device.ipv4, viewModel::changeIpv4)
-                        GeneralSpacer()
-                        Ipv6TextField(device.ipv6, viewModel::changeIpv6)
-                        GeneralSpacer()
-                        MacTextField(device)
-                        GeneralSpacer()
-                        InternetEnabledOption(device.internetEnabled, viewModel::enableInternetAccess)
-                        GeneralSpacer()
                     }
-                }
-                AnimatedVisibility(viewModel.showPortForwardings) {
-                    val portForwardings = device.portForwardings.excludeHidden()
-                    PortForwardingSettings(
-                        portForwardings = portForwardings,
-                        onAdd = viewModel::openAddPortForwarding,
-                        onRemove = viewModel::removePortForwarding,
-                    )
-                }
-                GeneralSpacer()
-                // Show/Hide port forwardings
-                Button(
-                    onClick = viewModel::togglePortForwardings,
-                ) {
-                    Text(stringResource(if (viewModel.showPortForwardings) Res.string.hide_port_forwardings else Res.string.show_port_forwardings))
+                    AnimatedVisibility(viewModel.showPortForwardings) {
+                        val portForwardings = device.portForwardings.excludeHidden()
+                        PortForwardingSettings(
+                            portForwardings = portForwardings,
+                            onAdd = viewModel::openAddPortForwarding,
+                            onRemove = viewModel::removePortForwarding,
+                        )
+                    }
+                    GeneralSpacer()
+                    // Show/Hide port forwardings
+                    Button(
+                        onClick = viewModel::togglePortForwardings,
+                    ) {
+                        Text(stringResource(if (viewModel.showPortForwardings) Res.string.hide_port_forwardings else Res.string.show_port_forwardings))
+                    }
                 }
             }
         }

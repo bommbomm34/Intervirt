@@ -24,6 +24,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.isValidPort
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.util.Atomic
@@ -50,6 +51,7 @@ class DeviceSettingsViewModel(
     project: Atomic<Project>,
     private val appState: AppState,
     private val deviceManager: DeviceManager,
+    private val guestManager: GuestManager,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
     val computer: ViewDevice.Computer
@@ -60,6 +62,7 @@ class DeviceSettingsViewModel(
     var showPortForwardings: Boolean by mutableStateOf(false)
     private var containerFilePath: Path? by mutableStateOf(null)
     var ioClient: ContainerIOClient? by mutableStateOf(null)
+    var info: AgentInfo? by mutableStateOf(null)
     private val logger = appEnv.getLogger(DeviceSettingsViewModel::class)
     private val isComputer get() = device is ViewDevice.Computer
     var project by project
@@ -68,6 +71,7 @@ class DeviceSettingsViewModel(
         if (isComputer) {
             viewModelScope.launchDialogCatching(appState) {
                 ioClient = deviceManager.getIOClient(computer.device)
+                info = guestManager.getInfo()
             }
         }
     }
@@ -172,7 +176,6 @@ class DeviceSettingsViewModel(
     fun removePortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
         computer.portForwardings.remove(portForwarding)
         deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
-
     }
 
     suspend fun lintPortForwarding(portForwarding: PortForwarding): Either<Failure.PortForwardingValidationFailure, Unit> {

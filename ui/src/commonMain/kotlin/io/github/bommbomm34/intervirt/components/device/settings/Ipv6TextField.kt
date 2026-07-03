@@ -12,11 +12,14 @@ import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.invalid_ipv6_address
 import intervirt.ui.generated.resources.ipv6_address
+import io.github.bommbomm34.intervirt.core.data.AgentInfo
+import io.github.bommbomm34.intervirt.core.util.isIPWithinSubnet
 import io.github.bommbomm34.intervirt.core.util.validateIpv6
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Ipv6TextField(
+    info: AgentInfo,
     ipv6: String,
     onIpv6Change: (String) -> Unit,
 ) {
@@ -24,7 +27,7 @@ fun Ipv6TextField(
     OutlinedTextField(
         value = ipv6,
         onValueChange = {
-            validIpv6 = it.validateIpv6()
+            validIpv6 = it.validateIpv6() && it isIPWithinSubnet info.ipv6Subnet
             if (validIpv6) onIpv6Change(it)
         },
         label = {

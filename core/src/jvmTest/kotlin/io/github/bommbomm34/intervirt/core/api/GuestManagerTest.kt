@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
+import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
@@ -75,7 +76,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldSetIpv4() = runIntervirtTest {
         val container = addTestContainer()
-        val newIP = "192.168.0.189"
+        val newIP = randomIpv4(getInfo().ipv4Subnet)
         guestManager.setIpv4(
             id = TEST_CONTAINER_ID,
             newIP = newIP,
@@ -86,7 +87,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldSetIpv6() = runIntervirtTest {
         val container = addTestContainer()
-        val newIP = "fd42:3e1a:3e81:5d6d:216:3eff:fe23:3161"
+        val newIP = randomIpv6(getInfo().ipv6Subnet)
         guestManager.setIpv6(
             id = TEST_CONTAINER_ID,
             newIP = newIP,
@@ -230,7 +231,7 @@ class GuestManagerTest : KoinTest {
             internet = false,
             image = "debian/13",
         )
-        guestManager.addContainer(info).lastResult()
+        guestManager.addContainer(info).lastResult().bind()
         return info
     }
 

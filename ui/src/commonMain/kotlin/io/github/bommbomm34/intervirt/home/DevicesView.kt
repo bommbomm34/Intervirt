@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.are_you_sure_to_remove_connection
 import intervirt.ui.generated.resources.too_many_devices_connected
@@ -209,9 +210,16 @@ private fun isPointOnLine(
 
 private fun ViewDevice.fittingOffset(scale: Float): Offset {
     // TODO: Design more reliable algorithm
-    val paddingPx = DEVICE_PADDING.toPx()
-    val width = (vector.defaultWidth.toPx() * scale) + paddingPx
-    val height = (vector.defaultHeight.toPx() * scale) + paddingPx * 2f
+    val padding = DEVICE_PADDING.toPx()
+    val deviceWidth = vector.defaultWidth.toPx() * scale
+    val deviceHeight = vector.defaultHeight.toPx() * scale
+    val width = deviceWidth + padding * 2f
+    val height = deviceHeight + padding * 2f + 4.dp.toPx()
 
-    return offset + Offset(width, height / 2f)
+    return offset + Offset(width / 2f, height / 2f)
 }
+
+// Input: Get IPv6 addresses
+// Expected output: ULA addresses
+// Actual output: Link-local addresses
+// Solution: Only output the IPv6 address which is a ULA (beginning with fdXX) //*

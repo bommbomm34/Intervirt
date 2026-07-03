@@ -1,6 +1,8 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import arrow.core.Either
+import arrow.core.raise.either
+import com.sun.beans.TypeResolver.erase
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.data.qemu.QmpErrorBody
 import io.github.bommbomm34.intervirt.core.exceptions.CommandExecutionException
@@ -89,4 +91,8 @@ sealed class Failure(val message: String) {
         val portForwarding: PortForwarding,
         message: String,
     ) : Failure("Port forwarding $portForwarding is invalid: $message")
+
+    override fun toString(): String {
+        return "Failure(\"$message\")"
+    }
 }

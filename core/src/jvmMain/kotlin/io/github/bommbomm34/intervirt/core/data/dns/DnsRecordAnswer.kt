@@ -21,9 +21,21 @@ data class DnsRecordAnswer(
 ) {
     fun toDnsRecord(): DnsRecord = DnsRecord(
         name = name,
-        ttl = ttl.substringBefore("s").toInt(),
+        ttl = parseTtl(ttl),
         dnsClass = dnsClass,
         type = type,
         data = address,
     )
+
+    private fun parseTtl(str: String): Int {
+        val lastLetter = str.last()
+        val int = str.dropLast(1).toInt()
+
+        return when (lastLetter) {
+            's' -> int
+            'm' -> int * 60
+            'h' -> int * 3600
+            else -> error("Invalid TTL: $str")
+        }
+    }
 }

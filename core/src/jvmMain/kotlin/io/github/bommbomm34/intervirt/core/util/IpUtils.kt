@@ -7,6 +7,7 @@ package io.github.bommbomm34.intervirt.core.util
 
 import arrow.optics.copy
 import inet.ipaddr.IPAddress
+import inet.ipaddr.IPAddressString
 import inet.ipaddr.ipv4.IPv4Address
 import inet.ipaddr.ipv6.IPv6Address
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
@@ -213,6 +214,12 @@ fun String.validateIpv6(): Boolean {
 }
 
 fun String.validateMac(): Boolean = MAC_REGEX.matches(this)
+
+infix fun String.isIPWithinSubnet(subnet: IPAddress): Boolean {
+    val address = IPAddressString(this).getAddress() ?: throw IllegalArgumentException("Invalid IP address: $this")
+
+    return address in subnet
+}
 
 fun String.padZero(len: Int) = padStart(len, '0')
 

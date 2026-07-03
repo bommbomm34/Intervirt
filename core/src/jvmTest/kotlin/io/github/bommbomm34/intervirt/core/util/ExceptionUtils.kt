@@ -19,3 +19,4 @@ fun runIntervirtTest(block: suspend context(Raise<Failure>) () -> Unit) = runTes
 inline fun ignoreFailure(block: context(Raise<Failure>) () -> Unit) {
     recover(block = block, recover = {})
 }
+

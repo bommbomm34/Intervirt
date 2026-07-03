@@ -12,11 +12,14 @@ import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.invalid_ipv4_address
 import intervirt.ui.generated.resources.ipv4_address
+import io.github.bommbomm34.intervirt.core.data.AgentInfo
+import io.github.bommbomm34.intervirt.core.util.isIPWithinSubnet
 import io.github.bommbomm34.intervirt.core.util.validateIpv4
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Ipv4TextField(
+    info: AgentInfo,
     ipv4: String,
     onIpv4Change: (String) -> Unit,
 ) {
@@ -24,7 +27,7 @@ fun Ipv4TextField(
     OutlinedTextField(
         value = ipv4,
         onValueChange = {
-            validIpv4 = it.validateIpv4()
+            validIpv4 = it.validateIpv4() && it isIPWithinSubnet info.ipv4Subnet
             if (validIpv4) onIpv4Change(it)
         },
         label = {
