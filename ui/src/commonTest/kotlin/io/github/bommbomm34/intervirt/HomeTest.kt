@@ -46,7 +46,7 @@ class HomeTest : KoinTest {
                     single<GuestManager> { VirtualGuestManager() }
                     singleProject()
                     singleTestSettings()
-                    singleAppEnvUpdater()
+                    singleAppEnvHolder()
                     single<FileManager>()
                     single<QemuClient>()
                     single<Downloader>()

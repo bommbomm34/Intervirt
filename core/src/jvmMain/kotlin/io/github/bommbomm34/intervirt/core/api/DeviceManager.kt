@@ -29,9 +29,10 @@ class DeviceManager(
     private val qemuClient: QemuClient,
     private val executor: Executor,
     private val fileManager: FileManager,
-    private val appEnv: AppEnv,
+    private val envHolder: AppEnvHolder,
     project: Atomic<Project>,
 ) : AsyncCloseable {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(DeviceManager::class)
     private val virtualContainerIO = appEnv.virtualContainerIO
     private val virtualContainerIOPort = appEnv.virtualContainerIOPort
@@ -278,7 +279,7 @@ class DeviceManager(
                 hidden = true,
             ),
         ).let {
-            val sshClient = ContainerSshClient(appEnv, port, this, computer.id)
+            val sshClient = ContainerSshClient(envHolder, port, this, computer.id)
             sshClient.init()
             containerIOClients[computer.id] = sshClient
             logger.info { "Initialized SSH client for ${computer.id}" }
@@ -303,7 +304,7 @@ class DeviceManager(
         val ioClient = getIOClient(computer)
         val osClient = IntervirtOSClient(
             IntervirtOSClient.Client(
-                appEnv = appEnv,
+                envHolder = envHolder,
                 computer = computer,
                 ioClient = ioClient,
                 docker = getDockerManager(computer, ioClient),
@@ -327,7 +328,7 @@ class DeviceManager(
         val dockerManager = when (appEnv.virtualDockerManager) {
             true -> VirtualDockerManager()
             false -> ActualDockerManager(
-                appEnv,
+                envHolder,
                 dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}",
             )
         }

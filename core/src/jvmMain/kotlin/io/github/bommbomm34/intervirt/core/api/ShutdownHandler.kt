@@ -27,13 +27,14 @@ import kotlin.system.exitProcess
 
 @OptIn(ExperimentalAtomicApi::class)
 class ShutdownHandler(
-    private val appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val deviceManager: DeviceManager,
     private val guestManager: GuestManager,
     private val qemuClient: QemuClient,
     private val httpClient: HttpClient,
     private val secretService: SecretService,
 ){
+    val appEnv by envHolder
     private var _closed = AtomicBoolean(false)
     val closed get() = _closed.load()
 

@@ -6,9 +6,11 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
 import io.github.bommbomm34.intervirt.core.api.getFreePort
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -23,8 +25,9 @@ import org.apache.sshd.client.session.ClientSession
 
 class DefaultSshGuestClient(
     private val qemuClient: QemuClient,
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
 ) : SshGuestClient {
+    val appEnv by envHolder
     private val sshClient = SshClient.setUpDefaultClient()
     private lateinit var session: ClientSession
     private lateinit var fwd: PortForwarding

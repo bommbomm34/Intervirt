@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.currentAppEnv
+import io.github.bommbomm34.intervirt.currentAppEnvHolder
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -41,10 +42,10 @@ val DNS_RECORD_TYPES = listOf(
 fun DnsResolver(
     osClient: IntervirtOSClient,
 ) {
-    val appEnv = currentAppEnv
-    val dnsResolver = remember(currentAppEnv) {
+    val envHolder = currentAppEnvHolder
+    val dnsResolver = remember {
         val client = osClient.getClient()
-        DnsResolverManager(appEnv, client.ioClient)
+        DnsResolverManager(envHolder, client.ioClient)
     }
     val viewModel = koinViewModel<DnsResolverViewModel> { parametersOf(dnsResolver) }
     AlignedBox(Alignment.Center) {

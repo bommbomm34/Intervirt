@@ -6,7 +6,9 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.Address
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -23,9 +25,10 @@ import kotlin.io.path.*
  * Saves data of IntervirtOS
  */
 class IntervirtOSStore(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     ioClient: ContainerIOClient,
 ) {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(IntervirtOSStore::class, ioClient.id)
     private val dataPath = ioClient.getPath("/opt/intervirt/data.json")
     private val data = mutableMapOf<String, String>()

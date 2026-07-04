@@ -17,6 +17,8 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -36,9 +38,10 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 
 class ActualDockerManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val host: String,
 ) : DockerManager {
+    val appEnv by envHolder
     private var client: DockerClient? = null
     private val logger = appEnv.getLogger(ActualDockerManager::class)
 

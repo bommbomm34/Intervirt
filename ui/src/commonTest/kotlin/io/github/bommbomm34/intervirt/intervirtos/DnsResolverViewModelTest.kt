@@ -19,6 +19,7 @@ import io.github.bommbomm34.intervirt.core.singleSettings
 import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
+import io.github.bommbomm34.intervirt.singleAppEnvHolder
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -50,6 +51,7 @@ class DnsResolverViewModelTest : KoinTest {
                     single { getHttpClient() }
                     singleProject()
                     singleTestSettings()
+                    singleAppEnvHolder()
                     single<AppState>()
                     single<MockExecutor>() bind Executor::class
                     single<FileManager>()

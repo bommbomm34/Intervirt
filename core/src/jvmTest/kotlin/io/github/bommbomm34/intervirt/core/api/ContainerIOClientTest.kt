@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.ignoreFailure
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
@@ -56,7 +57,7 @@ class ContainerIOClientTest : KoinTest {
                     single<QemuClient>()
                     single<DefaultExecutor>() bind Executor::class
                     single<FileManager>()
-                    single { getTestAppEnv() }
+                    singleAppEnvHolder()
                     singleProject()
                     single { getHttpClient() }
                 },

@@ -30,9 +30,10 @@ import net.lingala.zip4j.ZipFile
 import java.util.zip.ZipException
 
 class FileManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val client: HttpClient,
 ) {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(FileManager::class)
     private val dataDir = appEnv.actualDataDir
 

@@ -6,6 +6,8 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.context.Raise
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -21,10 +23,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlin.io.path.writeText
 
 class HttpServerManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     osClient: IntervirtOSClient,
 ) : DockerBasedManager(
-    appEnv = appEnv,
+    envHolder = envHolder,
     osClient = osClient,
     containerName = "apache2",
     containerImage = "ubuntu/apache2",

@@ -10,6 +10,8 @@ import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.injectAppEnv
+import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.exists
@@ -28,7 +30,7 @@ import kotlin.test.*
 const val DOWNLOAD_URL = "https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/LICENSE"
 
 class FileManagerTest : KoinTest {
-    private val appEnv: AppEnv by inject()
+    private val appEnv: AppEnv by injectAppEnv()
     private val fileManager: FileManager by inject()
 
     @BeforeTest
@@ -36,7 +38,7 @@ class FileManagerTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    single { getTestAppEnv() }
+                    singleAppEnvHolder()
                     single { getHttpClient() }
                     single<FileManager>()
                 },

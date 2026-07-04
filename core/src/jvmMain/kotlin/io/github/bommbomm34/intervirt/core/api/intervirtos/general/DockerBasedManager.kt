@@ -7,6 +7,8 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 
@@ -27,7 +29,7 @@ import kotlin.io.path.createDirectories
  * for the container.
  */
 abstract class DockerBasedManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     osClient: IntervirtOSClient,
     val containerName: String,
     val containerImage: String,
@@ -36,6 +38,7 @@ abstract class DockerBasedManager(
     val env: Map<String, String> = emptyMap(),
     val hostName: String? = null,
 ) : AsyncCloseable {
+    val appEnv by envHolder
     protected val client = osClient.getClient(this)
     private var internalId: String? = null
     protected val id: String

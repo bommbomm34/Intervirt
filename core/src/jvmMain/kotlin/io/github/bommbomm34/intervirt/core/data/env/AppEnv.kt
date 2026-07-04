@@ -30,7 +30,6 @@ private val defaultQemuZipUrl = when (getOS()) {
     OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
 }
 
-// TODO: Make AppEnv changes more reactive
 data class AppEnv(
     @Env("DEBUG_ENABLED")
     val debugEnabled: Boolean = false,

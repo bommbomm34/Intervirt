@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
@@ -42,7 +43,7 @@ class DeviceManagerTest : KoinTest {
         single<QemuClient>()
         single<DefaultExecutor>() bind Executor::class
         single<FileManager>()
-        single { getTestAppEnv() }
+        singleAppEnvHolder()
         singleProject()
         single { getHttpClient() }
     }

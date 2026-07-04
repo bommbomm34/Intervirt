@@ -32,8 +32,9 @@ import kotlin.time.Duration.Companion.milliseconds
 class QemuClient(
     private val fileManager: FileManager,
     private val guestManager: GuestManager,
-    private val appEnv: AppEnv,
+    private val envHolder: AppEnvHolder,
 ) : AsyncCloseable {
+    val appEnv by envHolder
 
     var running by atomic(false) { value ->
         onRunningChangeListeners.forEach { it(value) }

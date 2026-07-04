@@ -6,9 +6,11 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -30,11 +32,12 @@ private const val HOST = "127.0.0.1"
 private const val USERNAME = "root"
 
 class ContainerSshClient(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     val port: Int,
     val deviceManager: DeviceManager,
     override val id: String,
 ) : ContainerIOClient {
+    val appEnv by envHolder
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
             HOST, port,

@@ -14,7 +14,9 @@ import arrow.core.raise.recover
 import arrow.core.right
 import inet.ipaddr.AddressStringException
 import inet.ipaddr.IPAddressString
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -39,9 +41,10 @@ import kotlin.time.Duration.Companion.milliseconds
 private const val LOG_RAW_JSON = false
 
 class AgentGuestManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val client: HttpClient,
 ) : GuestManager {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(AgentGuestManager::class)
     private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null

@@ -17,8 +17,10 @@ import intervirt.ui.generated.resources.applying_configuration
 import intervirt.ui.generated.resources.creating_intervirt_folder
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
@@ -33,10 +35,11 @@ import org.koin.core.annotation.KoinViewModel
 @KoinViewModel
 class SetupViewModel(
     private val downloader: Downloader,
-    private val appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val fileManager: FileManager,
     private val appState: AppState,
 ) : ViewModel() {
+    val appEnv by envHolder
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
         { VMConfiguration(appEnv) { appState.env = it } },
         { AppConfiguration(appEnv) { appState.env = it } },

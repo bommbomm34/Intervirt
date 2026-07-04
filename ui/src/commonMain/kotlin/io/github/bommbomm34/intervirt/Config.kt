@@ -6,9 +6,7 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.ui.unit.Density
-import io.github.bommbomm34.intervirt.core.api.AppEnvUpdater
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.impl.AppEnvUpdaterImpl
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContainerViewModel
@@ -17,8 +15,6 @@ import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
@@ -34,8 +30,7 @@ val AVAILABLE_LANGUAGES = listOf(
 
 val uiModule = module {
     single<AppState>()
-    singleAppEnv()
-    singleAppEnvUpdater()
+    singleAppEnvHolder()
 
     viewModel<SettingsViewModel>()
     viewModel<DeviceSettingsViewModel>()

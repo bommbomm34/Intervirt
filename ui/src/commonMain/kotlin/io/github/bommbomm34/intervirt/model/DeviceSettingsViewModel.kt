@@ -22,9 +22,11 @@ import intervirt.ui.generated.resources.port_out_of_range
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.api.isValidPort
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -48,13 +50,14 @@ import kotlin.io.path.name
 
 @KoinViewModel
 class DeviceSettingsViewModel(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     project: Atomic<Project>,
     private val appState: AppState,
     private val deviceManager: DeviceManager,
     private val guestManager: GuestManager,
     @InjectedParam val device: ViewDevice,
 ) : ViewModel() {
+    val appEnv by envHolder
     val computer: ViewDevice.Computer
         get() {
             check(device is ViewDevice.Computer) { "Expected computer, actual $device" }

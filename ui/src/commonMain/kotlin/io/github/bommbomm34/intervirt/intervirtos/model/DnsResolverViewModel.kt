@@ -12,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
@@ -25,9 +27,10 @@ import org.koin.core.annotation.KoinViewModel
 @KoinViewModel
 class DnsResolverViewModel(
     @InjectedParam val dnsResolver: DnsResolverManager,
-    private val appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val appState: AppState,
 ) : ViewModel() {
+    val appEnv by envHolder
     var domain by mutableStateOf("perhof.org")
     var expanded by mutableStateOf(false)
     var dnsRecordType by mutableStateOf(DNS_RECORD_TYPES[0])

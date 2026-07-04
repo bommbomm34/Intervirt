@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
@@ -20,6 +21,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.currentAppEnv
+import io.github.bommbomm34.intervirt.currentAppEnvHolder
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.data.showFailureDialog
@@ -56,10 +58,10 @@ fun CoroutineScope.initDocker(
 
 @Composable
 fun rememberProxyManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     deviceManager: DeviceManager,
     osClient: IntervirtOSClient,
-) = remember(osClient) { ProxyManager(appEnv, deviceManager, osClient) }
+) = remember(osClient) { ProxyManager(envHolder, deviceManager, osClient) }
 
 @Composable
 fun DockerBasedManager.initialize(): MutableState<Boolean> {
@@ -90,7 +92,7 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
 }
 
 @Composable
-fun <T> IntervirtOSClient.rememberManager(func: (AppEnv, IntervirtOSClient) -> T): T {
-    val appEnv = currentAppEnv
-    return remember(currentAppEnv) { func(appEnv, this) }
+fun <T> IntervirtOSClient.rememberManager(func: (AppEnvHolder, IntervirtOSClient) -> T): T {
+    val envHolder = currentAppEnvHolder
+    return remember { func(envHolder, this) }
 }

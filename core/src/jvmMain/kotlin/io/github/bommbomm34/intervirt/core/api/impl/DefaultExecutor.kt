@@ -5,7 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.Executor
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
@@ -19,7 +21,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class DefaultExecutor(appEnv: AppEnv) : Executor {
+class DefaultExecutor(envHolder: AppEnvHolder) : Executor {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(Executor::class)
 
     override fun runCommand(workingFolder: PlatformFile?, commands: List<String>): Flow<CommandStatus> =

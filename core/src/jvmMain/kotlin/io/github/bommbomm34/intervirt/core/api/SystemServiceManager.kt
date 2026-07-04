@@ -18,9 +18,10 @@ import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 
 // Simple wrapper for systemd
 class SystemServiceManager(
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val ioClient: ContainerIOClient,
 ) {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(SystemServiceManager::class, ioClient.id)
 
     context(_: Raise<Failure>)

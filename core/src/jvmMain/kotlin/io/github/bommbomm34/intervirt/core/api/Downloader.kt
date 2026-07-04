@@ -14,7 +14,6 @@ import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.error
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.list
@@ -30,9 +29,10 @@ import kotlinx.coroutines.withContext
 class Downloader(
     private val fileManager: FileManager,
     private val client: HttpClient,
-    private val appEnv: AppEnv,
-    private val envUpdater: AppEnvUpdater,
+    envHolder: AppEnvHolder,
+    private val envUpdater: AppEnvHolder,
 ) {
+    val appEnv by envHolder
     private val logger = appEnv.getLogger(Downloader::class)
 
     context(_: Raise<Failure>)

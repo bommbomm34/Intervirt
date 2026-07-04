@@ -15,6 +15,7 @@ import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
@@ -54,7 +55,7 @@ class GuestManagerTest : KoinTest {
                         single<GuestManager> { VirtualGuestManager(0.seconds) }
                     } else {
                         isVirtual = false
-                        single<AppEnv> { appEnv }
+                        singleAppEnvHolder()
                         single<HttpClient> { getHttpClient() }
                         single<AgentGuestManager>() bind GuestManager::class
                     }

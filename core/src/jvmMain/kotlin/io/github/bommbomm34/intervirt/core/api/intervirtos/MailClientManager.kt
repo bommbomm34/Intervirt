@@ -7,6 +7,8 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
+import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
@@ -32,9 +34,10 @@ import java.util.*
 // TODO: Improve error handling
 class MailClientManager(
     osClient: IntervirtOSClient,
-    appEnv: AppEnv,
+    envHolder: AppEnvHolder,
     private val secretService: SecretService,
 ) : AsyncCloseable {
+    val appEnv by envHolder
     private val client = osClient.getClient(this)
     private val store = client.store
     private val mailPasswordKey = "MAIL_PASSWORD_${client.computer.id}"

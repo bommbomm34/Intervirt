@@ -71,6 +71,7 @@ class DeviceSettingsTest : KoinTest {
                     single<GuestManager> { VirtualGuestManager() }
                     singleProject()
                     singleTestSettings()
+                    singleAppEnvHolder()
                     single<FileManager>()
                     single<QemuClient>()
                     single<DefaultExecutor>() bind Executor::class

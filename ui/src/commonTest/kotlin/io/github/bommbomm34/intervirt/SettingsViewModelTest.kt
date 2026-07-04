@@ -37,8 +37,7 @@ class SettingsViewModelTest : KoinTest {
                 module {
                     singleProject()
                     singleTestSettings()
-                    singleAppEnvUpdater()
-                    singleAppEnv()
+                    singleAppEnvHolder()
                     single<AppState>()
 
                     viewModel<SettingsViewModel>()

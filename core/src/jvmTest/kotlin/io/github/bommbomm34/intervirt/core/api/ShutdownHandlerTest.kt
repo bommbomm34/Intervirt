@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
@@ -46,10 +47,10 @@ class ShutdownHandlerTest : KoinTest {
                     single {
                         SecretService(
                             serviceName = "io.github.bommbomm34.intervirt",
-                            logger = get<AppEnv>().getLogger(SecretService::class)
+                            logger = get<AppEnvHolder>().get().getLogger(SecretService::class)
                         )
                     }
-                    single { getTestAppEnv() }
+                    singleAppEnvHolder()
                     single { getHttpClient() }
                     singleProject()
                 }
