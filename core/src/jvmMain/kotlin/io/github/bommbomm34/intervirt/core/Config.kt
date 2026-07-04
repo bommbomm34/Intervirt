@@ -32,7 +32,7 @@ val coreModule = module {
     single<DefaultExecutor>() bind Executor::class
     single<Downloader>()
     single<GuestManager> {
-        if (get<AppEnv>().virtualAgentMode) {
+        if (get<AppEnvHolder>().get().virtualAgentMode) {
             VirtualGuestManager()
         } else {
             AgentGuestManager(get(), get())
@@ -45,7 +45,7 @@ val coreModule = module {
     single {
         SecretService(
             serviceName = "io.github.bommbomm34.intervirt",
-            logger = get<AppEnv>().getLogger(SecretService::class)
+            logger = get<AppEnvHolder>().get().getLogger(SecretService::class)
         )
     }
     single { getHttpClient() }

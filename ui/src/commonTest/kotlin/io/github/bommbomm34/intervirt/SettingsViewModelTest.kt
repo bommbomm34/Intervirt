@@ -56,19 +56,9 @@ class SettingsViewModelTest : KoinTest {
     }
 
     @Test
-    fun shouldChangeAppEnvChangeKeyIfSaved() {
-        performChanges()
-        val previousAppEnvChangeKey = appState.appEnvChangeKey
-        viewModel.saveChanges()
-        assertNotEquals(previousAppEnvChangeKey, appState.appEnvChangeKey)
-    }
-
-    @Test
     fun shouldSaveChanges() {
         performChanges()
-        val previousAppEnvChangeKey = appState.appEnvChangeKey
         viewModel.saveChanges()
-        assertNotEquals(previousAppEnvChangeKey, appState.appEnvChangeKey)
         assertEquals("MOCK", appEnv.overrideDockerHost)
         assertEquals(6767, appEnv.virtualContainerIOPort)
     }

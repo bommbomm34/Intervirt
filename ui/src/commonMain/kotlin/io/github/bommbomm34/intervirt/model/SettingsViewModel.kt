@@ -26,6 +26,5 @@ class SettingsViewModel(
     fun saveChanges() {
         settings.storeEnv(appEnv)
         appState.env = appEnv
-        appState.appEnvChangeKey++
     }
 }

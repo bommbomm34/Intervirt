@@ -65,7 +65,6 @@ class AppState(
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
-    var appEnvChangeKey by mutableIntStateOf(0)
     var env by mutableStateOf(getAppEnv(settings))
 }
 
