@@ -74,12 +74,6 @@ interface GuestManager : AsyncCloseable {
     fun update(): Flow<ResultProgress<Unit>>
 
     context(_: Raise<Failure>)
-    suspend fun shutdown()
-
-    context(_: Raise<Failure>)
-    suspend fun reboot()
-
-    context(_: Raise<Failure>)
     suspend fun getInfo(): AgentInfo
 
     context(_: Raise<Failure>)

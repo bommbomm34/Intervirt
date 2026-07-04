@@ -142,7 +142,7 @@ fun GuestManager.syncProject(project: Project): Flow<ResultProgress<Unit>> = flo
     }.onLeft { emit(ResultProgress.failure(it)) }
 }
 
-fun networkNameOfComputers(id1: String, id2: String) = "${id1.substringBefore("-")}-${id2.substringBefore("-")}"
+fun networkNameOfComputers(id1: String, id2: String) = "${id1.substringAfter("-")}-${id2.substringAfter("-")}"
 fun networkNameOfSwitch(id: String) = id
 
 fun <T : Device> Atomic<Project>.modifyDevice(

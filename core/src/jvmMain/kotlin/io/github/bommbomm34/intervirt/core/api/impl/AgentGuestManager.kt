@@ -121,18 +121,6 @@ class AgentGuestManager(
     }
 
     context(_: Raise<Failure>)
-    override suspend fun shutdown() {
-        logger.debug { "Shutting down guest" }
-        return justSend("shutdown".commandBody())
-    }
-
-    context(_: Raise<Failure>)
-    override suspend fun reboot() {
-        logger.debug { "Rebooting guest" }
-        return justSend("reboot".commandBody())
-    }
-
-    context(_: Raise<Failure>)
     override suspend fun getInfo(): AgentInfo {
         logger.debug { "Retrieving info of guest" }
         agentInfo.get()?.let { return it }

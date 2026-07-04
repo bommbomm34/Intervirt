@@ -168,16 +168,6 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldShutdown() = runIntervirtTest {
-        if (isVirtual) guestManager.shutdown()
-    }
-
-    @Test
-    fun shouldReboot() = runIntervirtTest {
-        if (isVirtual) guestManager.reboot()
-    }
-
-    @Test
     fun shouldGetInfo() = runIntervirtTest {
         val info = getInfo()
         if (guestManager is VirtualGuestManager) assertEquals(CURRENT_VERSION, info.version)

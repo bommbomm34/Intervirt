@@ -95,27 +95,21 @@ class QemuClient(
         logger.info { "Shutting down Alpine VM" }
         logger.debug { "Closing QEMU monitor session" }
         qemuMonitorSession?.close()
-        either<Failure, Unit> {
+        either {
             if (::currentProcess.isInitialized) {
                 logger.debug { "Alpine VM is already initialized" }
                 return@either
             }
-            recover(
-                block = { guestManager.shutdown() },
-                recover = {
-                    withContext(Dispatchers.IO) {
-                        logger.error(it) { "Shutdown attempt through agent failed" }
-                        currentProcess.destroy()
-                        logger.debug { "Waiting for Alpine VM to shutdown" }
-                        currentProcess.waitFor(appEnv.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
-                        if (currentProcess.isAlive) {
-                            logger.debug { "Timeout exceeded, forcing shutdown..." }
-                            currentProcess.destroyForcibly()
-                            currentProcess.waitFor()
-                        }
-                    }
+            withContext(Dispatchers.IO) {
+                qmpSend("stop")
+                logger.debug { "Waiting for Alpine VM to shutdown" }
+                currentProcess.waitFor(appEnv.VM_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS)
+                if (currentProcess.isAlive) {
+                    logger.debug { "Timeout exceeded, forcing shutdown..." }
+                    currentProcess.destroyForcibly()
+                    currentProcess.waitFor()
                 }
-            )
+            }
         }
         isRunningLoopJob?.cancel()
         isRunningLoopJob = null

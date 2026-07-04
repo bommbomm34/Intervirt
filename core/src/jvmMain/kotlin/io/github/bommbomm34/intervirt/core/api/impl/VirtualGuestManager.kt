@@ -146,12 +146,6 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     }
 
     context(_: Raise<Failure>)
-    override suspend fun shutdown() {}
-
-    context(_: Raise<Failure>)
-    override suspend fun reboot() {}
-
-    context(_: Raise<Failure>)
     override suspend fun getInfo() = AgentInfo(
         version = CURRENT_VERSION,
         ipv4Subnet = IPV4_SUBNET,

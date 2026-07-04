@@ -394,60 +394,6 @@ Failed message from server:
 
 This command should perform a system upgrade on the guest and also update all containers and restart them.
 
-### Shutdown
-
-Message from client:
-
-```json
-{
-    "type": "Command",
-    "command": "shutdown"
-}
-```
-
-Successful message from server:
-
-```json
-{}
-```
-
-Failed message from server:
-
-```json
-{
-    "code": 2
-}
-```
-
-This should shutdown all containers and the guest.
-
-### Reboot
-
-Message from client:
-
-```json
-{
-    "type": "Command",
-    "command": "reboot"
-}
-```
-
-Successful message from server:
-
-```json
-{}
-```
-
-Failed message from server:
-
-```json
-{
-    "code": 2
-}
-```
-
-This should shutdown all containers and reboot the guest.
-
 ### Info
 
 Retrieves version and subnet info
