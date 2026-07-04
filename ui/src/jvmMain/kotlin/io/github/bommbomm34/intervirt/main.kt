@@ -14,19 +14,18 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.*
-import arrow.core.raise.Raise
+import com.russhwolf.settings.Settings
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.terminal_window_title
-import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.components.dialogs.Dialog
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.ShutdownHandler
 import io.github.bommbomm34.intervirt.core.coreModule
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Failure
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.data.env.storeEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
@@ -36,7 +35,6 @@ import io.github.bommbomm34.intervirt.util.ext.loadConf
 import io.github.bommbomm34.intervirt.util.ext.writeConf
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.exists
-import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinApplication
@@ -57,27 +55,29 @@ fun main() = application {
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
         val project = koinInject<Atomic<Project>>()
+        val settings = koinInject<Settings>()
         val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
-        if (!appEnv.INSTALLED) appState.currentScreen = Screen.HOME
+        if (!appEnv.installed) appState.currentScreen = Screen.HOME
         LaunchedEffect(Unit) {
             // Set exception handler
             Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
                 shutdownHandler.crash(thread, throwable)
             }
             // These things should be only called once
-            Locale.setDefault(appEnv.LANGUAGE)
+            Locale.setDefault(Locale.forLanguageTag(appEnv.language))
             FileKit.init("intervirt")
             // Add shutdown hook
             Runtime.getRuntime().addShutdownHook(
                 Thread {
                     runBlocking {
-                        if (appEnv.ENABLE_TEMP_FILE) tempConfFile.writeConf(project.get())
+                        settings.storeEnv(appEnv)
+                        if (appEnv.enableTempFile) tempConfFile.writeConf(project.get())
                         shutdownHandler.gracefulShutdown()
                     }
                 },
             )
             // Load temp file if exists
-            if (tempConfFile.exists() && appEnv.ENABLE_TEMP_FILE) tempConfFile.loadConf(
+            if (tempConfFile.exists() && appEnv.enableTempFile) tempConfFile.loadConf(
                 project,
                 appState,
                 guestManager,

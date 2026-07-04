@@ -6,10 +6,9 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.context.Raise
-import arrow.core.raise.context.bind
 import arrow.core.raise.context.raise
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.bind
 import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord

@@ -21,7 +21,8 @@ import io.github.bommbomm34.intervirt.components.*
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.util.ext.rememberProxyManager
 import io.github.kdroidfilter.webview.setting.ProxyConfig
 import io.github.kdroidfilter.webview.web.WebView
@@ -34,9 +35,8 @@ import org.koin.compose.koinInject
 fun Browser(
     osClient: IntervirtOSClient,
 ) {
-    val appEnv = koinInject<AppEnv>()
     val deviceManager = koinInject<DeviceManager>()
-    val browser = rememberProxyManager(appEnv, deviceManager, osClient)
+    val browser = rememberProxyManager(currentAppEnv, deviceManager, osClient)
     var url by remember { mutableStateOf("") } // URL in the search bar
     var proxyUrl: Address? by remember { mutableStateOf(null) }
     val navigator = rememberWebViewNavigator()

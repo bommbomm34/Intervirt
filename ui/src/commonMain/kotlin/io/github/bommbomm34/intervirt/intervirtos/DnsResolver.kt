@@ -16,7 +16,8 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -40,8 +41,8 @@ val DNS_RECORD_TYPES = listOf(
 fun DnsResolver(
     osClient: IntervirtOSClient,
 ) {
-    val appEnv = koinInject<AppEnv>()
-    val dnsResolver = remember {
+    val appEnv = currentAppEnv
+    val dnsResolver = remember(currentAppEnv) {
         val client = osClient.getClient()
         DnsResolverManager(appEnv, client.ioClient)
     }

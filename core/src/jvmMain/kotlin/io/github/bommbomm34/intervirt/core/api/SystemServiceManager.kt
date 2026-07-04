@@ -5,17 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import arrow.core.left
 import arrow.core.raise.context.Raise
 import arrow.core.raise.context.raise
-import arrow.core.right
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
-import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
-import io.github.bommbomm34.intervirt.core.exceptions.DockerContainerExecutionException
 import io.github.bommbomm34.intervirt.core.util.ext.addFirst
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 

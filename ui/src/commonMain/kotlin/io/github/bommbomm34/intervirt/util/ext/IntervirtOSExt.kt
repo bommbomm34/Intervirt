@@ -17,8 +17,9 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.data.showFailureDialog
@@ -90,6 +91,6 @@ fun DockerBasedManager.initialize(): MutableState<Boolean> {
 
 @Composable
 fun <T> IntervirtOSClient.rememberManager(func: (AppEnv, IntervirtOSClient) -> T): T {
-    val appEnv = koinInject<AppEnv>()
-    return remember { func(appEnv, this) }
+    val appEnv = currentAppEnv
+    return remember(currentAppEnv) { func(appEnv, this) }
 }

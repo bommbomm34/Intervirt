@@ -20,10 +20,9 @@ import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.currentAppEnv
 import org.koin.compose.koinInject
 
 @Composable
@@ -32,8 +31,8 @@ fun PortForwardingSettings(
     onAdd: () -> Unit,
     onRemove: (PortForwarding) -> Unit,
 ) {
-    val appEnv = koinInject<AppEnv>()
-    val fabMod = remember { Modifier.size(appEnv.SMALL_FAB_SIZE.dp) }
+    val appEnv = currentAppEnv
+    val fabMod = remember { Modifier.size(appEnv.smallFabSize.dp) }
     Column {
         AddButton(
             color = MaterialTheme.colorScheme.secondaryContainer,

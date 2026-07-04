@@ -21,13 +21,10 @@ import intervirt.ui.generated.resources.hide_port_forwardings
 import intervirt.ui.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.excludeHidden
-import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

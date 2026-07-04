@@ -31,8 +31,9 @@ import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
+import io.github.bommbomm34.intervirt.currentAppEnv
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -45,7 +46,6 @@ fun MailView(
     onReply: () -> Unit,
     onClose: () -> Unit,
 ) {
-    val appEnv = koinInject<AppEnv>()
     // Subject, From, To and Content
     SelectionContainer {
         Column(
@@ -54,7 +54,7 @@ fun MailView(
         ) {
             Text(
                 text = mail.subject,
-                fontSize = appEnv.MAIL_TITLE_FONT_SIZE.sp,
+                fontSize = currentAppEnv.mailTitleFontSize.sp,
             )
             GeneralSpacer()
             Text(

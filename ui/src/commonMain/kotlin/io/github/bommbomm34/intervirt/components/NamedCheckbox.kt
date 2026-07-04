@@ -14,7 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.currentAppEnv
 import org.koin.compose.koinInject
 
 @Composable
@@ -24,7 +25,6 @@ fun NamedCheckbox(
     name: String,
     tooltip: String? = null,
 ) {
-    val appEnv = koinInject<AppEnv>()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
             checked = checked,
@@ -33,7 +33,7 @@ fun NamedCheckbox(
         GeneralSpacer(2.dp)
         Column {
             Text(name)
-            tooltip?.let { Text(tooltip, fontSize = appEnv.TOOLTIP_FONT_SIZE.sp, color = Color.Gray) }
+            tooltip?.let { Text(tooltip, fontSize = currentAppEnv.tooltipFontSize.sp, color = Color.Gray) }
         }
     }
 }

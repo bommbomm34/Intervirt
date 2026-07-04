@@ -6,12 +6,11 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.context.Raise
-import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.getFreePort
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
@@ -27,7 +26,7 @@ class ProxyManager(
     private val client = osClient.getClient(this)
     private val logger = appEnv.getLogger(ProxyManager::class)
     private val computer = client.computer
-    private val virtual = appEnv.VIRTUAL_CONTAINER_IO
+    private val virtual = appEnv.virtualContainerIO
     private var proxyUrl: Address? = null
 
     context(_: Raise<Failure>)

@@ -10,13 +10,13 @@ import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.singleSettings
+import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.vinceglb.filekit.PlatformFile
@@ -49,6 +49,7 @@ class DnsResolverViewModelTest : KoinTest {
                     single { getTestAppEnv() }
                     single { getHttpClient() }
                     singleProject()
+                    singleTestSettings()
                     single<AppState>()
                     single<MockExecutor>() bind Executor::class
                     single<FileManager>()

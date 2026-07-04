@@ -5,10 +5,11 @@
 
 package io.github.bommbomm34.intervirt
 
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.singleSettings
+import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import org.koin.core.context.startKoin
@@ -26,7 +27,7 @@ import kotlin.test.assertNotEquals
 
 class SettingsViewModelTest : KoinTest {
     private val appState: AppState by inject()
-    private val appEnv: AppEnv by inject()
+    private val appEnv: AppEnv get() = appState.env
     private val viewModel: SettingsViewModel by inject()
 
     @BeforeTest
@@ -35,7 +36,9 @@ class SettingsViewModelTest : KoinTest {
             modules(
                 module {
                     singleProject()
-                    single { getTestAppEnv() }
+                    singleTestSettings()
+                    singleAppEnvUpdater()
+                    singleAppEnv()
                     single<AppState>()
 
                     viewModel<SettingsViewModel>()
@@ -46,9 +49,11 @@ class SettingsViewModelTest : KoinTest {
 
     @Test
     fun shouldDiscardChangesIfNotSaved() {
+        println(appEnv.virtualContainerIOPort)
         performChanges()
-        assertNotEquals("MOCK", appEnv.OVERRIDE_DOCKER_HOST)
-        assertNotEquals(6767, appEnv.VIRTUAL_CONTAINER_IO_PORT)
+        println(appEnv.virtualContainerIOPort)
+        assertNotEquals("MOCK", appEnv.overrideDockerHost)
+        assertNotEquals(6767, appEnv.virtualContainerIOPort)
     }
 
     @Test
@@ -65,13 +70,15 @@ class SettingsViewModelTest : KoinTest {
         val previousAppEnvChangeKey = appState.appEnvChangeKey
         viewModel.saveChanges()
         assertNotEquals(previousAppEnvChangeKey, appState.appEnvChangeKey)
-        assertEquals("MOCK", appEnv.OVERRIDE_DOCKER_HOST)
-        assertEquals(6767, appEnv.VIRTUAL_CONTAINER_IO_PORT)
+        assertEquals("MOCK", appEnv.overrideDockerHost)
+        assertEquals(6767, appEnv.virtualContainerIOPort)
     }
 
     private fun performChanges() {
-        viewModel.appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
-        viewModel.appEnv.VIRTUAL_CONTAINER_IO_PORT = 6767
+        viewModel.appEnv = viewModel.appEnv.copy(
+            overrideDockerHost = "MOCK",
+            virtualContainerIOPort = 6767,
+        )
     }
 
     @AfterTest

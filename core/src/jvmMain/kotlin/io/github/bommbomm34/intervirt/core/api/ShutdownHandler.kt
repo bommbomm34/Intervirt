@@ -6,7 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.recover
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.totalDiskSpace
 import io.github.bommbomm34.intervirt.core.unixTimestamp
 import io.github.bommbomm34.intervirt.core.usableDiskSpace
@@ -18,7 +18,6 @@ import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.writeString
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.annotations.VisibleForTesting
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.contracts.ExperimentalContracts

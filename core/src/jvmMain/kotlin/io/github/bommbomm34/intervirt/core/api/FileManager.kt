@@ -7,12 +7,11 @@ package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.left
 import arrow.core.right
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.getOS
-import io.github.bommbomm34.intervirt.core.exceptions.ZipExtractionException
 import io.github.bommbomm34.intervirt.core.util.ext.createFile
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.vinceglb.filekit.*
@@ -35,7 +34,7 @@ class FileManager(
     private val client: HttpClient,
 ) {
     private val logger = appEnv.getLogger(FileManager::class)
-    private val dataDir = appEnv.DATA_DIR
+    private val dataDir = appEnv.actualDataDir
 
     suspend fun init() {
         logger.debug { "Initializing FileManager" }

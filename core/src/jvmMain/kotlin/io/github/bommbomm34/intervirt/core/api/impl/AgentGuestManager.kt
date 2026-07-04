@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import arrow.core.Either
-import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
@@ -17,7 +16,7 @@ import inet.ipaddr.AddressStringException
 import inet.ipaddr.IPAddressString
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.*
@@ -47,9 +46,9 @@ class AgentGuestManager(
     private var session: DefaultClientWebSocketSession? = null
     private var listenJob: Job? = null
     private val requests = ConcurrentHashMap<String, MutableSharedFlow<Either<Failure, ResponseBody>>>()
-    private val agentPort = appEnv.AGENT_PORT
-    private val timeout = appEnv.AGENT_WEBSOCKET_TIMEOUT.milliseconds
-    private val host = appEnv.AGENT_HOST
+    private val agentPort = appEnv.agentPort
+    private val timeout = appEnv.agentWebsocketTimeout.milliseconds
+    private val host = appEnv.agentHost
     private var agentInfo: Atomic<AgentInfo?> = Atomic(null)
 
     context(_: Raise<Failure>)

@@ -6,13 +6,11 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.Raise
-import arrow.core.raise.context.bind
-import arrow.core.raise.context.either
 import arrow.core.raise.context.raise
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 
 import io.github.bommbomm34.intervirt.core.data.Mail
@@ -20,7 +18,6 @@ import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
 import io.github.bommbomm34.intervirt.core.data.toMail
-import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress

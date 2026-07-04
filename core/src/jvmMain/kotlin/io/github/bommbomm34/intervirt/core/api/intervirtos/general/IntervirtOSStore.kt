@@ -6,10 +6,9 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import arrow.core.raise.Raise
-import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
@@ -18,7 +17,6 @@ import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseAddress
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlin.io.path.*
 
 /**

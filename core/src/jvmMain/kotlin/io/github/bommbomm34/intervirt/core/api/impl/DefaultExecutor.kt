@@ -6,7 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import io.github.bommbomm34.intervirt.core.api.Executor
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger

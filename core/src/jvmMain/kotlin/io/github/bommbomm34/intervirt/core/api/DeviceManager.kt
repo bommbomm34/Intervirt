@@ -5,12 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import arrow.core.flatMap
-import arrow.core.left
 import arrow.core.raise.Raise
-import arrow.core.raise.context.bind
-import arrow.core.raise.either
-import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
@@ -19,6 +14,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.VirtualDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.modify
 import io.github.bommbomm34.intervirt.core.util.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
@@ -37,10 +33,10 @@ class DeviceManager(
     project: Atomic<Project>,
 ) : AsyncCloseable {
     private val logger = appEnv.getLogger(DeviceManager::class)
-    private val virtualContainerIO = appEnv.VIRTUAL_CONTAINER_IO
-    private val virtualContainerIOPort = appEnv.VIRTUAL_CONTAINER_IO_PORT
-    private val wipeVirtualOnClose = appEnv.WIPE_VIRTUAL_ON_CLOSE
-    private val dockerHostOverride = appEnv.OVERRIDE_DOCKER_HOST.ifBlank { null }
+    private val virtualContainerIO = appEnv.virtualContainerIO
+    private val virtualContainerIOPort = appEnv.virtualContainerIOPort
+    private val wipeVirtualOnClose = appEnv.wipeVirtualOnClose
+    private val dockerHostOverride = appEnv.overrideDockerHost.ifBlank { null }
     private val containerIOClients = ConcurrentHashMap<String, ContainerIOClient>()
     private val dockerManagers = ConcurrentHashMap<String, DockerManager>()
     private val intervirtOSClients = ConcurrentHashMap<String, IntervirtOSClient>()
@@ -328,7 +324,7 @@ class DeviceManager(
         logger.debug { "Initializing DockerManager for ${computer.id}" }
         dockerManagers[computer.id]?.let { return it }
         val sshClient = ioClient as? ContainerSshClient
-        val dockerManager = when (appEnv.VIRTUAL_DOCKER_MANAGER) {
+        val dockerManager = when (appEnv.virtualDockerManager) {
             true -> VirtualDockerManager()
             false -> ActualDockerManager(
                 appEnv,

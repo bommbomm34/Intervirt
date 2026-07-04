@@ -19,7 +19,7 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.MailClientManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.ProxyManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
@@ -30,7 +30,6 @@ import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailClientLogin
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailEditor
 import io.github.bommbomm34.intervirt.intervirtos.mail.client.MailView
 import io.github.bommbomm34.intervirt.secret.SecretService
-import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel

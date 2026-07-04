@@ -9,12 +9,12 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
-import arrow.core.raise.either
 import arrow.core.right
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.error
+import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.list
@@ -29,19 +29,20 @@ import kotlinx.coroutines.withContext
 
 class Downloader(
     private val fileManager: FileManager,
-    private val appEnv: AppEnv,
     private val client: HttpClient,
+    private val appEnv: AppEnv,
+    private val envUpdater: AppEnvUpdater,
 ) {
     private val logger = appEnv.getLogger(Downloader::class)
 
     context(_: Raise<Failure>)
     suspend fun checkUpdates(): List<Component> {
         return buildList {
-            if (appEnv.QEMU_ZIP_HASH_URL.fetch().bind()
-                     != appEnv.CURRENT_QEMU_HASH
+            if (appEnv.qemuZipHashUrl.fetch().bind()
+                     != appEnv.currentQemuHash
             ) add(Component.QEMU)
-            if (appEnv.VM_DISK_HASH_URL.fetch().bind()
-                     != appEnv.CURRENT_DISK_HASH
+            if (appEnv.vmDiskHashUrl.fetch().bind()
+                     != appEnv.currentDiskHash
             ) add(Component.VM_DISK)
         }
     }
@@ -68,11 +69,11 @@ class Downloader(
 
     fun downloadAlpineDisk(update: Boolean = false): Flow<ResultProgress<String>> = flow {
         logger.debug { "Downloading disk" }
-        if (!appEnv.DISK_INSTALLED || update) {
+        if (!appEnv.diskInstalled || update) {
             // Invalidate previous installation
-            appEnv.DISK_INSTALLED = false
-            val hashRes = appEnv.VM_DISK_HASH_URL.fetch()
-            val file = fileManager.downloadFile(appEnv.VM_DISK_URL, "alpine-linux.qcow2", fileManager.getFile("disk"))
+            envUpdater set appEnv.copy(diskInstalled = false)
+            val hashRes = appEnv.vmDiskHashUrl.fetch()
+            val file = fileManager.downloadFile(appEnv.vmDiskUrl, "alpine-linux.qcow2", fileManager.getFile("disk"))
             hashRes.fold(
                 ifRight = { hash ->
                     file.collect { resultProgress ->
@@ -81,8 +82,10 @@ class Downloader(
                             resultProgress.result.fold(
                                 ifRight = {
                                     emit(ResultProgress.success("Download succeeded"))
-                                    appEnv.DISK_INSTALLED = true
-                                    appEnv.CURRENT_DISK_HASH = hash
+                                    envUpdater set appEnv.copy(
+                                        diskInstalled = true,
+                                        currentDiskHash = hash,
+                                    )
                                 },
                                 ifLeft = {
                                     emit(ResultProgress.failure(it))
@@ -108,15 +111,15 @@ class Downloader(
 
     private fun downloadQemuZip(update: Boolean = false): Flow<ResultProgress<String>> = flow {
         logger.debug { "Downloading QEMU" }
-        if (!appEnv.QEMU_INSTALLED || update) {
+        if (!appEnv.qemuInstalled || update) {
             withContext(Dispatchers.IO) {
                 // Wipe previous installation if available
                 fileManager.getFile("qemu").list().forEach { it.delete() }
                 // Invalidate previous installation
-                appEnv.QEMU_INSTALLED = false
+                envUpdater set appEnv.copy(qemuInstalled = false)
                 // Install fresh QEMU
-                val hashRes = appEnv.QEMU_ZIP_HASH_URL.fetch()
-                val file = fileManager.downloadFile(appEnv.QEMU_ZIP_URL, "qemu-portable.zip")
+                val hashRes = appEnv.qemuZipHashUrl.fetch()
+                val file = fileManager.downloadFile(appEnv.qemuZipUrl, "qemu-portable.zip")
                 hashRes.fold(
                     ifRight = { hash ->
                         file.collect { resultProgress ->
@@ -126,8 +129,10 @@ class Downloader(
                                     ifRight = { zipFile ->
                                         fileManager.extractZip(zipFile, fileManager.getFile("qemu"))
                                             .onLeft { emit(ResultProgress.failure(it)) }
-                                        appEnv.QEMU_INSTALLED = true
-                                        appEnv.CURRENT_QEMU_HASH = hash
+                                        envUpdater set appEnv.copy(
+                                            qemuInstalled = true,
+                                            currentQemuHash = hash,
+                                        )
                                         emit(
                                             ResultProgress.success("Successfully downloaded QEMU"),
                                         )

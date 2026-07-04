@@ -11,10 +11,11 @@ import arrow.optics.Lens
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.api.AppEnvUpdater
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.env.loadEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.logging.KLogger
@@ -25,29 +26,18 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
-import kotlinx.serialization.json.Json
-import org.bouncycastle.util.test.SimpleTest.runTest
-import org.jetbrains.annotations.VisibleForTesting
-import org.koin.core.module.KoinDslMarker
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.util.prefs.Preferences
 import kotlin.io.path.absolutePathString
 import kotlin.time.Clock
 
-inline fun getAppEnv(
+fun getAppEnv(
     settings: Settings = PreferencesSettings(Preferences.userRoot()),
-    logLevel: LogLevel? = null,
-    block: AppEnv.() -> Unit = {},
-) = AppEnv(
-    settings = settings,
-    override = { System.getenv("INTERVIRT_$it") },
-    logLevel = logLevel,
-).apply(block)
+) = settings.loadEnv { System.getenv("INTERVIRT_$it") }
 
 fun getHttpClient(): HttpClient = HttpClient(CIO) {
     engine {
@@ -58,13 +48,13 @@ fun getHttpClient(): HttpClient = HttpClient(CIO) {
     }
 }
 
-fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings, LogLevel.DEBUG) {
-    DEBUG_ENABLED = true
-    VIRTUAL_AGENT_MODE = System.getenv("INTERVIRT_TEST_VIRTUAL_AGENT_MODE")?.toBoolean() ?: true
-    VIRTUAL_CONTAINER_IO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true
-    DATA_DIR = PlatformFile(Files.createTempDirectory("intervirt-test").absolutePathString())
-    LOG_LEVEL = LogLevel.DEBUG
-}
+fun getTestAppEnv(settings: Settings = MapSettings()) = getAppEnv(settings).copy(
+    debugEnabled = true,
+    virtualAgentMode = System.getenv("INTERVIRT_TEST_VIRTUAL_AGENT_MODE")?.toBoolean() ?: true,
+    virtualContainerIO = System.getenv("INTERVIRT_TEST_VIRTUAL_CONTAINER_IO")?.toBoolean() ?: true,
+    dataDir = Files.createTempDirectory("intervirt-test").absolutePathString(),
+    logLevel = "DEBUG",
+)
 
 val totalDiskSpace: Long
     get() = FileSystems.getDefault()
@@ -80,6 +70,10 @@ val unixTimestamp: Long
     get() = Clock.System.now().epochSeconds
 
 fun Module.singleProject() = single { Project().toAtomic() }
+
+fun Module.singleSettings() = single<Settings> { PreferencesSettings(Preferences.userRoot()) }
+
+fun Module.singleTestSettings() = single<Settings> { MapSettings() }
 
 fun <T> Flow<T>.takeWhileInclusive(predicate: suspend (T) -> Boolean) = transformWhile {
     emit(it)

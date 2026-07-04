@@ -6,12 +6,10 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.context.Raise
-import arrow.core.raise.context.bind
-import arrow.core.raise.either
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 
 import io.github.bommbomm34.intervirt.core.data.MailUser

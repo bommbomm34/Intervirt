@@ -9,7 +9,7 @@ import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.ext.exec
@@ -62,8 +62,8 @@ class ContainerSshClient(
         environment: Map<String, String>,
         workingDirectory: String?,
     ) = withCatchingContext(Dispatchers.IO) {
-        val totalCommand = listOf(command, *(arguments.toTypedArray()))
-        logger.info { "Opening PTY shell '$totalCommand' on container" }
+        val totalCommand = listOf(command, *arguments.toTypedArray())
+        logger.info { "Opening PTY shell '$totalCommand'on container" }
         val sshChannel = session.createShellChannel(null, environment)
         sshChannel.ptyType = "xterm"
         sshChannel.open().verify()

@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
@@ -49,7 +50,7 @@ class GuestManagerTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    if (appEnv.VIRTUAL_AGENT_MODE) {
+                    if (appEnv.virtualAgentMode) {
                         single<GuestManager> { VirtualGuestManager(0.seconds) }
                     } else {
                         isVirtual = false

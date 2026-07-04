@@ -14,6 +14,8 @@ import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.singleSettings
+import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.model.HomeViewModel
@@ -43,6 +45,8 @@ class HomeTest : KoinTest {
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
                     singleProject()
+                    singleTestSettings()
+                    singleAppEnvUpdater()
                     single<FileManager>()
                     single<QemuClient>()
                     single<Downloader>()

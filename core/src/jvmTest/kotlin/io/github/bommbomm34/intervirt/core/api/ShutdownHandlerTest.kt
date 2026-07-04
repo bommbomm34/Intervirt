@@ -8,7 +8,7 @@ package io.github.bommbomm34.intervirt.core.api
 import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv

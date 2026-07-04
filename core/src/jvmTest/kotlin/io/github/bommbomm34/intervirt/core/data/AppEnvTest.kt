@@ -8,8 +8,10 @@ package io.github.bommbomm34.intervirt.core.data
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.serialization.decodeValueOrNull
+import io.github.bommbomm34.intervirt.core.data.env.storeEnv
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
+import io.github.bommbomm34.intervirt.core.util.toAtomic
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -19,31 +21,33 @@ import kotlin.test.assertNotEquals
 class AppEnvTest {
     private val map = mutableMapOf<String, Any>()
     private val settings = MapSettings(map)
-    private val appEnv = getTestAppEnv(settings)
+    private val _appEnv = getTestAppEnv(settings).toAtomic()
+    private val appEnv by _appEnv
 
     @Test
     fun shouldNotSaveReallyPersistent() {
-        appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
+        _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
         val realAppEnv = getAppEnv()
-        assertNotEquals("MOCK", realAppEnv.OVERRIDE_DOCKER_HOST)
+        assertNotEquals("MOCK", realAppEnv.overrideDockerHost)
     }
 
     @Test
     fun shouldSaveTemporarily() {
-        appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
-        assertEquals("MOCK", appEnv.OVERRIDE_DOCKER_HOST)
+        _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
+        assertEquals("MOCK", appEnv.overrideDockerHost)
     }
 
     @Test
     fun shouldSavePersistent() {
-        appEnv.OVERRIDE_DOCKER_HOST = "MOCK"
+        _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
+        settings.storeEnv(appEnv)
         val otherAppEnv = getTestAppEnv(settings)
-        assertEquals("MOCK", otherAppEnv.OVERRIDE_DOCKER_HOST)
-        assertEquals("MOCK", map["OVERRIDE_DOCKER_HOST"])
+        assertEquals("MOCK", otherAppEnv.overrideDockerHost)
+        assertEquals("MOCK", map["overrideDockerHost"])
     }
 
     @Test
     fun shouldGetDefault() {
-        assertEquals(true, appEnv.DEBUG_ENABLED)
+        assertEquals(true, appEnv.debugEnabled)
     }
 }

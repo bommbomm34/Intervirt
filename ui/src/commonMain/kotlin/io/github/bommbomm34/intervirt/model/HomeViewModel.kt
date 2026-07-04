@@ -17,7 +17,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.syncProject
@@ -34,7 +34,6 @@ import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.dialogs.openFileSaver
-import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
 import java.awt.Desktop
@@ -91,7 +90,7 @@ class HomeViewModel(
     fun saveAs() {
         viewModelScope.launch {
             val file = FileKit.openFileSaver(
-                suggestedName = appEnv.SUGGESTED_FILENAME,
+                suggestedName = appEnv.suggestedFilename,
                 extension = "ivrt",
             )
             file?.let {

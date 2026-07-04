@@ -22,7 +22,7 @@ import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.DebugOptions
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
@@ -34,7 +34,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun Settings() {
     val viewModel = koinViewModel<SettingsViewModel>()
     val appState = koinInject<AppState>()
-    val appEnv = koinInject<AppEnv>()
     val windowSize = appState.windowState.size
     AlignedBox(Alignment.TopStart) {
         BackButton {
@@ -47,9 +46,9 @@ fun Settings() {
                 .size(windowSize * 0.8f)
                 .verticalScroll(rememberScrollState()),
         ) {
-            AppConfiguration(viewModel.appEnv)
+            AppConfiguration(viewModel.appEnv) { viewModel.appEnv = it }
             GeneralSpacer()
-            VMConfiguration(viewModel.appEnv)
+            VMConfiguration(viewModel.appEnv) { viewModel.appEnv = it }
             GeneralSpacer()
             Button(
                 onClick = viewModel::saveChanges,
@@ -58,7 +57,7 @@ fun Settings() {
                 Text(stringResource(Res.string.save_changes))
             }
             GeneralSpacer()
-            if (appEnv.DEBUG_ENABLED) DebugOptions()
+            if (currentAppEnv.debugEnabled) DebugOptions()
         }
     }
 }

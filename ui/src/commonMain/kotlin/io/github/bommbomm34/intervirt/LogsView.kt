@@ -15,12 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import org.koin.compose.koinInject
 
 @Composable
 fun LogsView(logs: List<String>) {
-    val appEnv = koinInject<AppEnv>()
+    val appEnv = currentAppEnv
     CenterColumn {
         Text(
             text = "Logs",
@@ -33,12 +33,11 @@ fun LogsView(logs: List<String>) {
                     Text(
                         text = it,
                         color = Color.Gray,
-                        fontSize = appEnv.TOOLTIP_FONT_SIZE.sp,
+                        fontSize = appEnv.tooltipFontSize.sp,
                     )
                     HorizontalDivider()
                 }
             }
         }
     }
-
 }

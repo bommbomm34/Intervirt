@@ -22,23 +22,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import arrow.optics.copy
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.core.data.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.copy
-import io.github.bommbomm34.intervirt.core.data.getDevice
 import io.github.bommbomm34.intervirt.core.data.modifyDevice
 import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.minus
-import io.github.bommbomm34.intervirt.core.util.plus
+import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.util.ext.dpToPx
@@ -55,12 +50,12 @@ fun DeviceView(
     onSecondaryClick: (ViewDevice) -> Unit,
 ) {
     val appState = koinInject<AppState>()
-    val appEnv = koinInject<AppEnv>()
+    val appEnv = currentAppEnv
     val project = koinInject<Atomic<Project>>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceWidth = dpToPx(device.vector.defaultWidth) * appEnv.DEVICE_SCALE
-    val deviceHeight = dpToPx(device.vector.defaultHeight) * appEnv.DEVICE_SCALE
+    val deviceWidth = dpToPx(device.vector.defaultWidth) * appEnv.deviceScale
+    val deviceHeight = dpToPx(device.vector.defaultHeight) * appEnv.deviceScale
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -99,8 +94,8 @@ fun DeviceView(
             modifier = Modifier.padding(DEVICE_PADDING),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val deviceWidthDp = remember(device) { device.vector.defaultWidth * appEnv.DEVICE_SCALE }
-            val deviceHeightDp = remember(device) { device.vector.defaultHeight * appEnv.DEVICE_SCALE }
+            val deviceWidthDp = remember(device) { device.vector.defaultWidth * appEnv.deviceScale }
+            val deviceHeightDp = remember(device) { device.vector.defaultHeight * appEnv.deviceScale }
 
             Icon(
                 imageVector = device.vector,

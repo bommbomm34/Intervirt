@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import arrow.core.raise.Raise
 import arrow.core.raise.recover
+import com.russhwolf.settings.Settings
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.agent_timeout
 import intervirt.ui.generated.resources.allStringResources
@@ -38,12 +39,18 @@ import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.loadEnv
+import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.vinceglb.filekit.PlatformFile
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
-class AppState(project: Atomic<Project>) {
+class AppState(
+    project: Atomic<Project>,
+    settings: Settings,
+) {
     val logs = mutableStateListOf<String>()
     var showLogs by mutableStateOf(false)
     var dialogStates = mutableStateListOf<DialogState>()
@@ -59,6 +66,7 @@ class AppState(project: Atomic<Project>) {
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
     var appEnvChangeKey by mutableIntStateOf(0)
+    var env by mutableStateOf(getAppEnv(settings))
 }
 
 fun AppState.openDialog(

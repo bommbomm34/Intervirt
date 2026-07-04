@@ -6,7 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.Either
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
@@ -47,7 +47,7 @@ class FileManagerTest : KoinTest {
     @Test
     fun shouldInitSuccessfully() = runIntervirtTest {
         fileManager.init()
-        val files = appEnv.DATA_DIR.list().map { it.name }
+        val files = appEnv.actualDataDir.list().map { it.name }
         assertContains(files, "qemu")
         assertContains(files, "disk")
         assertContains(files, "cache")

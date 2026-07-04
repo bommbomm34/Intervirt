@@ -34,7 +34,7 @@ class DeviceManagerTest : KoinTest {
     val testModule = module {
         val appEnv = getTestAppEnv()
         single<DeviceManager>()
-        if (appEnv.VIRTUAL_AGENT_MODE) {
+        if (appEnv.virtualAgentMode) {
             single<GuestManager> { VirtualGuestManager() }
         } else {
             single<AgentGuestManager>() bind GuestManager::class

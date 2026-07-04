@@ -5,7 +5,7 @@
 
 package io.github.bommbomm34.intervirt.core.util.ext
 
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.util.ListOutputStream
 import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.getDefaultStream
@@ -21,7 +21,7 @@ fun AppEnv.getLogger(clazz: KClass<*>, vararg suffix: String): KLogger {
 
 fun AppEnv.getLogger(name: String) = KLogger(
     name = name,
-    level = LOG_LEVEL,
+    level = actualLogLevel,
     streams = getDefaultStreams()
 )
 

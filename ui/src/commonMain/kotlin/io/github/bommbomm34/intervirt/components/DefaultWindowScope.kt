@@ -22,7 +22,8 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import com.materialkolor.rememberDynamicColorScheme
-import io.github.bommbomm34.intervirt.core.data.AppEnv
+import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.isDarkMode
 import org.koin.compose.koinInject
 
@@ -32,10 +33,9 @@ fun DefaultWindowScope(
     onPointerEvent: AwaitPointerEventScope.(PointerEvent) -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val appEnv = koinInject<AppEnv>()
     val colors = rememberDynamicColorScheme(
-        seedColor = Color(appEnv.ACCENT_COLOR),
-        isDark = appEnv.isDarkMode(),
+        seedColor = Color(currentAppEnv.accentColor),
+        isDark = currentAppEnv.isDarkMode(),
     )
     MaterialExpressiveTheme(
         colorScheme = colors,
