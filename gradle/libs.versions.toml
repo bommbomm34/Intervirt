@@ -1,7 +1,7 @@
 [versions]
 aboutLibraries = "14.0.1"
 androidx-lifecycle = "2.10.0"
-bossterm = "1.0.92"
+bossterm = "1.2.103"
 coil = "3.4.0"
 colorpicker = "1.1.3"
 compose-material-icons = "1.7.3"
