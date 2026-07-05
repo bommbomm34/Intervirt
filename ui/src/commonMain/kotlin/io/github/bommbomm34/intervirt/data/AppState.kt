@@ -49,8 +49,11 @@ import org.jetbrains.compose.resources.getString
 
 class AppState(
     project: Atomic<Project>,
-    settings: Settings,
+    appEnv: AppEnv,
 ) {
+
+    constructor(project: Atomic<Project>, settings: Settings) : this(project, getAppEnv(settings))
+
     val logs = mutableStateListOf<String>()
     var showLogs by mutableStateOf(false)
     var dialogStates = mutableStateListOf<DialogState>()
@@ -65,7 +68,7 @@ class AppState(
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
     var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
-    var env by mutableStateOf(getAppEnv(settings))
+    var env by mutableStateOf(appEnv)
 }
 
 fun AppState.openDialog(

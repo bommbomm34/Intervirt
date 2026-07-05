@@ -65,10 +65,10 @@ class DeviceSettingsTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    single<AppState>()
                     single { getTestAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
+                    singleTestAppState()
                     singleProject()
                     singleTestSettings()
                     singleAppEnvHolder()

@@ -13,6 +13,7 @@ import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
+import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleProject
 import io.github.bommbomm34.intervirt.core.singleSettings
 import io.github.bommbomm34.intervirt.core.singleTestSettings
@@ -40,10 +41,9 @@ class HomeTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    single<AppState>()
-                    single { getAppEnv() }
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
+                    singleTestAppState()
                     singleProject()
                     singleTestSettings()
                     singleAppEnvHolder()

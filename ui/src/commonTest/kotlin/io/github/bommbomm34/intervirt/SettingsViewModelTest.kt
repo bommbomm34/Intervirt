@@ -38,7 +38,7 @@ class SettingsViewModelTest : KoinTest {
                     singleProject()
                     singleTestSettings()
                     singleAppEnvHolder()
-                    single<AppState>()
+                    singleTestAppState()
 
                     viewModel<SettingsViewModel>()
                 },

@@ -14,8 +14,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
+import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.impl.AppEnvHolderImpl
@@ -57,3 +59,7 @@ suspend fun Clipboard.copyToClipboard(text: String) {
 }
 
 fun Module.singleAppEnvHolder() = single<AppEnvHolderImpl>() bind AppEnvHolder::class
+
+fun Module.singleAppState() = single { AppState(get(), get<Settings>()) }
+
+fun Module.singleTestAppState() = single { AppState(get(), getTestAppEnv()) }
