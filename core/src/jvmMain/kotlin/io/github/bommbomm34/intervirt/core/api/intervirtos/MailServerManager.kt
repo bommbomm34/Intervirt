@@ -93,7 +93,6 @@ class MailServerManager(
         )
         docker
             .exec(id, command)
-            
             .getCommandResult()
             .bind()
     }

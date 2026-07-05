@@ -17,7 +17,6 @@ import org.koin.compose.koinInject
 @Composable
 fun VirtualHostsManager(httpServer: HttpServerManager) {
     val virtualHosts = remember { mutableStateListOf<VirtualHost>() }
-    val appState = koinInject<AppState>()
     CatchingLaunchedEffect(httpServer, virtualHosts) {
         httpServer.loadHttpConf(VirtualHost.generateConfiguration(virtualHosts))
     }

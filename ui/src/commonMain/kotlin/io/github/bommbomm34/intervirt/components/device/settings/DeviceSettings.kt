@@ -23,6 +23,7 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.data.excludeHidden
 import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -53,6 +54,7 @@ fun DeviceSettings(
                             // IOOptions and start/stop button
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IOOptions(
+                                    isIntervirtOS = device.hasIntervirtOS(),
                                     onDownload = viewModel::download,
                                     onUpload = viewModel::upload,
                                     onOpenShell = viewModel::openShell,

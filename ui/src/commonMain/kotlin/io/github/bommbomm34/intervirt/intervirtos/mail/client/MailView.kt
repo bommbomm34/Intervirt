@@ -29,6 +29,7 @@ import intervirt.ui.generated.resources.to
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -83,11 +84,13 @@ fun MailView(
             CloseButton(onClose)
             GeneralSpacer()
             // Reply
-            FloatingActionButton(onReply) {
-                GeneralIcon(
-                    imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = stringResource(Res.string.reply),
-                )
+            TooltipArea(Res.string.reply) {
+                FloatingActionButton(onReply) {
+                    GeneralIcon(
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = stringResource(Res.string.reply),
+                    )
+                }
             }
             GeneralSpacer()
             // Delete

@@ -6,7 +6,11 @@
 package io.github.bommbomm34.intervirt.intervirtos.components
 
 import androidx.compose.runtime.*
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.start
+import intervirt.ui.generated.resources.stop
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
+import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.buttons.PlayButton
 import io.github.bommbomm34.intervirt.core.api.SystemServiceManager
 import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
@@ -23,8 +27,10 @@ fun SystemServiceView(
     CatchingLaunchedEffect(serviceManager, serviceName) {
         running = serviceManager.status(serviceName).active
     }
-    PlayButton(
-        playing = running,
-        onClick = viewModel::enable,
-    )
+    TooltipArea(if (running) Res.string.stop else Res.string.start) {
+        PlayButton(
+            playing = running,
+            onClick = viewModel::enable,
+        )
+    }
 }

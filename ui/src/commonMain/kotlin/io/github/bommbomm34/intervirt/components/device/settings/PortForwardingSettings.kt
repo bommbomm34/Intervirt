@@ -17,7 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.add_port_forwarding
+import intervirt.ui.generated.resources.remove_port_forwarding
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -34,18 +38,22 @@ fun PortForwardingSettings(
     val appEnv = currentAppEnv
     val fabMod = remember { Modifier.size(appEnv.smallFabSize.dp) }
     Column {
-        AddButton(
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            modifier = fabMod,
-            onClick = onAdd,
-        )
+        TooltipArea(Res.string.add_port_forwarding) {
+            AddButton(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                modifier = fabMod,
+                onClick = onAdd,
+            )
+        }
         if (portForwardings.isNotEmpty()) GeneralSpacer()
         LazyColumn {
             items(portForwardings) { portForwarding ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${portForwarding.protocol}:${portForwarding.internalPort}:${portForwarding.externalPort}")
                     GeneralSpacer(4.dp)
-                    RemoveButton(fabMod) { onRemove(portForwarding) }
+                    TooltipArea(Res.string.remove_port_forwarding) {
+                        RemoveButton(fabMod) { onRemove(portForwarding) }
+                    }
                 }
             }
         }

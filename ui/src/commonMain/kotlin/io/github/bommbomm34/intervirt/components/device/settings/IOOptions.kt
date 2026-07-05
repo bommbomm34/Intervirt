@@ -13,42 +13,51 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.download_file
+import intervirt.ui.generated.resources.os
 import intervirt.ui.generated.resources.terminal
 import intervirt.ui.generated.resources.upload_file
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.TooltipArea
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun IOOptions(
+    isIntervirtOS: Boolean,
     onDownload: () -> Unit,
     onUpload: () -> Unit,
     onOpenShell: () -> Unit,
 ) {
-    IconButton(
-        onClick = onDownload,
-    ) {
-        GeneralIcon(
-            imageVector = Icons.Default.FileDownload,
-            contentDescription = stringResource(Res.string.download_file),
-        )
+    TooltipArea(Res.string.download_file) {
+        IconButton(
+            onClick = onDownload,
+        ) {
+            GeneralIcon(
+                imageVector = Icons.Default.FileDownload,
+                contentDescription = stringResource(Res.string.download_file),
+            )
+        }
     }
     GeneralSpacer()
-    IconButton(
-        onClick = onUpload,
-    ) {
-        GeneralIcon(
-            imageVector = Icons.Default.FileUpload,
-            contentDescription = stringResource(Res.string.upload_file),
-        )
+    TooltipArea(Res.string.upload_file) {
+        IconButton(
+            onClick = onUpload,
+        ) {
+            GeneralIcon(
+                imageVector = Icons.Default.FileUpload,
+                contentDescription = stringResource(Res.string.upload_file),
+            )
+        }
     }
     GeneralSpacer()
-    IconButton(
-        onClick = onOpenShell,
-    ) {
-        GeneralIcon(
-            imageVector = Icons.Default.Terminal,
-            contentDescription = stringResource(Res.string.terminal),
-        )
+    TooltipArea(if (isIntervirtOS) Res.string.os else Res.string.terminal) {
+        IconButton(
+            onClick = onOpenShell,
+        ) {
+            GeneralIcon(
+                imageVector = Icons.Default.Terminal,
+                contentDescription = stringResource(Res.string.terminal),
+            )
+        }
     }
 }

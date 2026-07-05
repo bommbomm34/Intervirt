@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.Density
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
+import io.github.bommbomm34.intervirt.intervirtos.model.MailServerViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.DockerContainerViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.components.SystemServiceViewModel
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
@@ -43,6 +44,7 @@ val intervirtOSViewModelsModule = module {
     viewModel<MailClientViewModel>()
     viewModel<DockerContainerViewModel>()
     viewModel<SystemServiceViewModel>()
+    viewModel<MailServerViewModel>()
 }
 
 lateinit var density: Density

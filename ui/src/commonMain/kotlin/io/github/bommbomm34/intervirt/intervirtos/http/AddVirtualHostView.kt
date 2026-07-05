@@ -9,9 +9,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.add
 import intervirt.ui.generated.resources.destination_folder
 import intervirt.ui.generated.resources.domain
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
+import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.core.data.VirtualHost
 import org.jetbrains.compose.resources.stringResource
@@ -34,10 +36,12 @@ fun AddVirtualHostView(onAdd: (VirtualHost) -> Unit) {
         label = { Text(stringResource(Res.string.destination_folder)) },
     )
     GeneralSpacer()
-    AddButton {
-        onAdd(VirtualHost(serverName, documentRoot))
-        // Clear text fields
-        serverName = ""
-        documentRoot = ""
+    TooltipArea(Res.string.add) {
+        AddButton {
+            onAdd(VirtualHost(serverName, documentRoot))
+            // Clear text fields
+            serverName = ""
+            documentRoot = ""
+        }
     }
 }

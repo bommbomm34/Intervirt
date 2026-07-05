@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.delete
+import io.github.bommbomm34.intervirt.components.TooltipArea
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -21,15 +22,17 @@ fun RemoveButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    FloatingActionButton(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        onClick = onClick,
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = stringResource(Res.string.delete),
-            tint = MaterialTheme.colorScheme.onErrorContainer,
-        )
+    TooltipArea(Res.string.delete) {
+        FloatingActionButton(
+            modifier = modifier,
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            onClick = onClick,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(Res.string.delete),
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.refresh
+import intervirt.ui.generated.resources.send
 import io.github.bommbomm34.intervirt.components.*
 import io.github.bommbomm34.intervirt.components.buttons.SendButton
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
@@ -38,7 +39,9 @@ fun MailClient(
         if (viewModel.initialized) {
             // Send button
             AlignedBox(Alignment.BottomEnd) {
-                SendButton { viewModel.openMailEditor() }
+                TooltipArea(Res.string.send) {
+                    SendButton { viewModel.openMailEditor() }
+                }
             }
             CenterColumn {
                 Column(
@@ -47,14 +50,16 @@ fun MailClient(
                         .fillMaxWidth()
                         .padding(16.dp),
                 ) {
-                    // Refresh button
-                    IconButton(
-                        onClick = viewModel::loadMails,
-                    ) {
-                        GeneralIcon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = stringResource(Res.string.refresh),
-                        )
+                    TooltipArea(Res.string.refresh) {
+                        // Refresh button
+                        IconButton(
+                            onClick = viewModel::loadMails,
+                        ) {
+                            GeneralIcon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = stringResource(Res.string.refresh),
+                            )
+                        }
                     }
                 }
                 GeneralSpacer(2.dp)
@@ -66,6 +71,7 @@ fun MailClient(
             CatchingLaunchedEffect(viewModel.client) {
                 credentials = viewModel.client.loadCredentials()
             }
+
 
             credentials?.let { creds ->
                 if (creds.smtpAddress != Address.EXAMPLE
