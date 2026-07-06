@@ -1,5 +1,5 @@
 [versions]
-aboutLibraries = "14.0.1"
+aboutLibraries = "15.0.3"
 androidx-lifecycle = "2.10.0"
 bossterm = "1.2.103"
 coil = "3.4.0"
