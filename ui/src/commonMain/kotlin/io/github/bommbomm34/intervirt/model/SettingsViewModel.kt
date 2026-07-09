@@ -20,11 +20,11 @@ class SettingsViewModel(
     private val appState: AppState,
     private val settings: Settings,
 ) : ViewModel() {
-    var appEnv by mutableStateOf(appState.env)
+    var appEnv by mutableStateOf(appState.env.value)
     val changed get() = appEnv != appState.env
 
     fun saveChanges() {
         settings.storeEnv(appEnv)
-        appState.env = appEnv
+        appState.env.value = appEnv
     }
 }

@@ -8,6 +8,7 @@ data class AgentInfo(
     val ipv4Subnet: IPAddress,
     val ipv6Subnet: IPAddress,
 ) {
+
     init {
         requireNotNull(ipv4Subnet.networkPrefixLength) { "Expected network prefix on IPv4 subnet: $ipv4Subnet" }
         requireNotNull(ipv6Subnet.networkPrefixLength) { "Expected network prefix on IPv6 subnet: $ipv6Subnet" }

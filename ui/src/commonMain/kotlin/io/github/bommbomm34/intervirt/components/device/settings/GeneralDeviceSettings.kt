@@ -20,15 +20,14 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewDevice
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
 fun GeneralDeviceSettings(
-    device: ViewDevice,
+    device: Device,
     onClose: () -> Unit,
 ) {
     val deviceManager = koinInject<DeviceManager>()
@@ -44,9 +43,8 @@ fun GeneralDeviceSettings(
     OutlinedTextField(
         value = device.name,
         onValueChange = { newName ->
-            device.name = newName
             scope.launchDialogCatching(appState) {
-                deviceManager.setName(device.device, newName)
+                deviceManager.setName(device, newName)
             }
         },
         label = { Text(stringResource(Res.string.name)) },
@@ -58,9 +56,7 @@ fun GeneralDeviceSettings(
                 scope.launchDialogCatching(appState) {
                     close()
                     onClose()
-                    appState.statefulProject.devices.remove(device)
-                    appState.statefulProject.connections.removeIf { it.containsDevice(device) }
-                    deviceManager.removeDevice(device.device)
+                    deviceManager.removeDevice(device)
                 }
             }
         },

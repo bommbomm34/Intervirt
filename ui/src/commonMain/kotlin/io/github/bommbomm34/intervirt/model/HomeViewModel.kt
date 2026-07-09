@@ -14,16 +14,16 @@ import androidx.lifecycle.viewModelScope
 import io.github.bommbomm34.intervirt.HELP_URL
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
-import io.github.bommbomm34.intervirt.core.api.getValue
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.syncProject
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.roundBy
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
@@ -48,14 +48,14 @@ class HomeViewModel(
     private val guestManager: GuestManager,
     private val downloader: Downloader,
     private val qemuClient: QemuClient,
-    private val _project: Atomic<Project>,
+    private val _project: ProjectHolder,
 ) : ViewModel() {
     val appEnv by envHolder
     var devicesViewRenderKey by mutableIntStateOf(0)
     var showOptions by mutableStateOf(false)
     val updaterState = UpdaterState()
     var vmRunning by mutableStateOf(false)
-    var project by _project
+    val project by _project
 
     init {
         qemuClient.onRunningChange { vmRunning = it }

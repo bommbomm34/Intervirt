@@ -11,11 +11,8 @@ import arrow.optics.Lens
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
-import io.github.bommbomm34.intervirt.core.api.impl.AtomicAppEnvHolder
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.env.loadEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.toAtomic
@@ -27,7 +24,6 @@ import io.ktor.serialization.kotlinx.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transformWhile
 import org.koin.core.module.Module
-import org.koin.dsl.bind
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.util.prefs.Preferences
@@ -67,8 +63,6 @@ val usableDiskSpace: Long
 
 val unixTimestamp: Long
     get() = Clock.System.now().epochSeconds
-
-fun Module.singleProject() = single { Project().toAtomic() }
 
 fun Module.singleSettings() = single<Settings> { PreferencesSettings(Preferences.userRoot()) }
 

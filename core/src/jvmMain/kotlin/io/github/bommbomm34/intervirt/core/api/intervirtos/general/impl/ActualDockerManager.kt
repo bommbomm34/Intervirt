@@ -17,11 +17,10 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.mwiede.dockerjava.jsch.JschDockerHttpClient
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
-import io.github.bommbomm34.intervirt.core.api.getValue
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.*
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
 import io.github.bommbomm34.intervirt.core.util.ext.channelFlowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.flowCatching

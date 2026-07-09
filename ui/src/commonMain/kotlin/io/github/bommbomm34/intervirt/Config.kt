@@ -32,6 +32,7 @@ val AVAILABLE_LANGUAGES = listOf(
 val uiModule = module {
     singleAppState()
     singleAppEnvHolder()
+    singleProjectHolder()
 
     viewModel<SettingsViewModel>()
     viewModel<DeviceSettingsViewModel>()

@@ -9,7 +9,8 @@ import arrow.core.raise.context.Raise
 import arrow.core.raise.context.either
 import arrow.core.raise.context.raise
 import arrow.core.raise.recover
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
@@ -31,8 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class QemuClient(
     private val fileManager: FileManager,
-    private val guestManager: GuestManager,
-    private val envHolder: AppEnvHolder,
+    envHolder: AppEnvHolder,
 ) : AsyncCloseable {
     val appEnv by envHolder
 

@@ -28,30 +28,27 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.bommbomm34.intervirt.Secondary
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.data.copy
-import io.github.bommbomm34.intervirt.core.data.modifyDevice
-import io.github.bommbomm34.intervirt.core.util.Atomic
+import io.github.bommbomm34.intervirt.core.api.DeviceManager
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.util.ext.dpToPx
 import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.koin.compose.koinInject
 
 val DEVICE_PADDING = 16.dp
+private const val MINIMUM_PADDING = 125f
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DeviceView(
-    device: ViewDevice,
-    onClickDevice: (ViewDevice) -> Unit,
-    onSecondaryClick: (ViewDevice) -> Unit,
+    device: Device,
+    onClickDevice: (Device) -> Unit,
+    onSecondaryClick: (Device) -> Unit,
 ) {
     val appState = koinInject<AppState>()
+    val deviceManager = koinInject<DeviceManager>()
     val appEnv = currentAppEnv
-    val project = koinInject<Atomic<Project>>()
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
     val deviceWidth = dpToPx(device.vector.defaultWidth) * appEnv.deviceScale
@@ -72,15 +69,16 @@ fun DeviceView(
                 if (newOffset.isOn(
                         dpSize = appState.windowState.size,
                         imageSize = Offset(deviceWidth, deviceHeight),
-                        minimumPadding = 125f,
+                        minimumPadding = MINIMUM_PADDING,
                     )
                 ) {
                     offset = newOffset
-                    device.x += it.x.toInt()
-                    device.y += it.y.toInt()
-                    project.modifyDevice(device.device) { old ->
-                        old.copy(x = device.x, y = device.y)
-                    }
+
+                    deviceManager.move(
+                        device = device,
+                        x = newOffset.x.toInt(),
+                        y = newOffset.y.toInt(),
+                    )
                 }
             }
             .onClick(

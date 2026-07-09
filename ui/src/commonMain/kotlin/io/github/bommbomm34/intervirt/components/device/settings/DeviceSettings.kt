@@ -21,8 +21,8 @@ import intervirt.ui.generated.resources.hide_port_forwardings
 import intervirt.ui.generated.resources.show_port_forwardings
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.excludeHidden
-import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.hasIntervirtOS
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -31,10 +31,10 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DeviceSettings(
-    device: ViewDevice,
+    device: Device,
     onClose: () -> Unit,
 ) {
-    val viewModel = koinViewModel<DeviceSettingsViewModel>(key = device.id) { parametersOf(device) }
+    val viewModel = koinViewModel<DeviceSettingsViewModel>(key = device.id) { parametersOf(device.id) }
 
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
         // Device settings
@@ -43,7 +43,7 @@ fun DeviceSettings(
             GeneralSpacer()
             GeneralDeviceSettings(device, onClose)
             GeneralSpacer()
-            if (device is ViewDevice.Computer) {
+            if (device is Device.Computer) {
                 viewModel.info?.let { info ->
                     // All other device settings except port forwardings
                     // Device settings specific for computers

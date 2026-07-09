@@ -7,6 +7,7 @@ package io.github.bommbomm34.intervirt.core.data
 
 import arrow.optics.optics
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 @optics
@@ -30,6 +31,7 @@ sealed class Device {
         val mac: String,
         val internetEnabled: Boolean,
         val portForwardings: List<PortForwarding>,
+        @Transient val running: Boolean = false,
     ) : Device() {
         companion object
     }
@@ -85,6 +87,8 @@ fun <T : Device> Project.getDevice(device: T): T = devices.first { it.id == devi
 
 @Suppress("UNCHECKED_CAST")
 fun <T : Device> Project.getDeviceOrNull(device: T): T? = devices.firstOrNull { it.id == device.id } as? T
+
+fun Project.getDeviceById(id: String): Device? = devices.firstOrNull { it.id == id }
 
 fun Device.copy(
     id: String = this.id,

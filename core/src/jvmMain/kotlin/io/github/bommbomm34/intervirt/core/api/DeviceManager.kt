@@ -6,6 +6,12 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
+import io.github.bommbomm34.intervirt.core.api.atomic.modify
+import io.github.bommbomm34.intervirt.core.api.atomic.modifyDevice
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.ContainerSshClient
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
@@ -14,8 +20,6 @@ import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSCl
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.ActualDockerManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl.VirtualDockerManager
 import io.github.bommbomm34.intervirt.core.data.*
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.core.modify
 import io.github.bommbomm34.intervirt.core.util.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
@@ -30,7 +34,7 @@ class DeviceManager(
     private val executor: Executor,
     private val fileManager: FileManager,
     private val envHolder: AppEnvHolder,
-    project: Atomic<Project>,
+    project: ProjectHolder,
 ) : AsyncCloseable {
     val appEnv by envHolder
     private val logger = appEnv.getLogger(DeviceManager::class)
@@ -91,6 +95,10 @@ class DeviceManager(
         Project.devices.modify(_project) { it + device }
         logger.info { "Added device $device" }
         return device
+    }
+
+    fun move(device: Device, x: Int, y: Int) {
+        _project.modifyDevice(device) { it.copy(x = x, y = y) }
     }
 
     context(_: Raise<Failure>)
@@ -185,6 +193,7 @@ class DeviceManager(
     suspend fun start(computer: Device.Computer) {
         computer.requireExists()
         logger.debug { "Starting ${computer.id}" }
+        _project.modifyDevice(computer) { it.copy(running = true) }
         return guestManager.startContainer(computer.id).also {
             logger.info { "Started ${computer.id}" }
         }
@@ -194,6 +203,7 @@ class DeviceManager(
     suspend fun stop(computer: Device.Computer) {
         computer.requireExists()
         logger.debug { "Stopping ${computer.id}" }
+        _project.modifyDevice(computer) { it.copy(running = false) }
         return guestManager.stopContainer(computer.id).also {
             logger.info { "Stopped ${computer.id}" }
         }

@@ -17,11 +17,10 @@ import intervirt.ui.generated.resources.applying_configuration
 import intervirt.ui.generated.resources.creating_intervirt_folder
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
-import io.github.bommbomm34.intervirt.core.api.getValue
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
@@ -41,8 +40,8 @@ class SetupViewModel(
 ) : ViewModel() {
     val appEnv by envHolder
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
-        { VMConfiguration(appEnv) { appState.env = it } },
-        { AppConfiguration(appEnv) { appState.env = it } },
+        { VMConfiguration(appEnv) { appState.env.value = it } },
+        { AppConfiguration(appEnv) { appState.env.value = it } },
         { Installation(this@SetupViewModel) },
     )
     var allowInstallation by mutableStateOf(false)
@@ -83,7 +82,7 @@ class SetupViewModel(
                     emit(it.clone(percentage = it.percentage * 0.5f + 0.5f))
                     if (it is ResultProgress.Result && it.result.isLeft()) job!!.cancel()
                 }
-                appState.env = appEnv.copy(installed = true)
+                appState.env.value = appEnv.copy(installed = true)
                 appState.currentScreen = Screen.HOME
             }
         }

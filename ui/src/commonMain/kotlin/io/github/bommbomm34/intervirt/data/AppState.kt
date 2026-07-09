@@ -37,6 +37,7 @@ import intervirt.ui.generated.resources.version_mismatch
 import intervirt.ui.generated.resources.zip_extraction_failure
 import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -44,31 +45,31 @@ import io.github.bommbomm34.intervirt.core.data.env.loadEnv
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.vinceglb.filekit.PlatformFile
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
-class AppState(
-    project: Atomic<Project>,
-    appEnv: AppEnv,
-) {
+class AppState(appEnv: AppEnv) {
 
-    constructor(project: Atomic<Project>, settings: Settings) : this(project, getAppEnv(settings))
+    constructor(settings: Settings) : this(getAppEnv(settings))
 
     val logs = mutableStateListOf<String>()
+    val dialogStates = mutableStateListOf<DialogState>()
     var showLogs by mutableStateOf(false)
-    var dialogStates = mutableStateListOf<DialogState>()
     var devicesViewZoom by mutableFloatStateOf(1f)
     var isCtrlPressed by mutableStateOf(false)
     var mousePosition by mutableStateOf(Offset.Zero)
     var currentFile: PlatformFile? by mutableStateOf(null)
     var currentScreen by mutableStateOf(Screen.HOME)
     var osWindowTitle: String? by mutableStateOf(null)
-    var openComputerShell: ViewDevice.Computer? by mutableStateOf(null)
-    val statefulProject = project.get().toViewProject()
+    var openComputerShell: Device.Computer? by mutableStateOf(null)
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
-    var drawingConnectionSource: ViewDevice? by mutableStateOf(null)
+    var drawingConnectionSource: String? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
-    var env by mutableStateOf(appEnv)
+
+    val env = MutableStateFlow(appEnv)
+    val project = MutableStateFlow(Project())
 }
 
 fun AppState.openDialog(

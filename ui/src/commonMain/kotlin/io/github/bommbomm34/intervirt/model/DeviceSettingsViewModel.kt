@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.model
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,18 +23,17 @@ import intervirt.ui.generated.resources.port_out_of_range
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.getValue
+import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.api.isValidPort
 import io.github.bommbomm34.intervirt.core.data.*
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.util.ext.canPortBind
 import io.github.vinceglb.filekit.FileKit
@@ -51,16 +51,18 @@ import kotlin.io.path.name
 @KoinViewModel
 class DeviceSettingsViewModel(
     envHolder: AppEnvHolder,
-    project: Atomic<Project>,
     private val appState: AppState,
     private val deviceManager: DeviceManager,
     private val guestManager: GuestManager,
-    @InjectedParam val device: ViewDevice,
+    @InjectedParam val deviceId: String,
 ) : ViewModel() {
+    var project by mutableStateOf(appState.project.value)
+    val device get() = project.devices.first { it.id == deviceId }
     val appEnv by envHolder
-    val computer: ViewDevice.Computer
+    val computer: Device.Computer
         get() {
-            check(device is ViewDevice.Computer) { "Expected computer, actual $device" }
+            val device = device
+            check(device is Device.Computer) { "Expected computer, actual $device" }
             return device
         }
     var showPortForwardings: Boolean by mutableStateOf(false)
@@ -68,15 +70,18 @@ class DeviceSettingsViewModel(
     var ioClient: ContainerIOClient? by mutableStateOf(null)
     var info: AgentInfo? by mutableStateOf(null)
     private val logger = appEnv.getLogger(DeviceSettingsViewModel::class)
-    private val isComputer get() = device is ViewDevice.Computer
-    var project by project
+    private val isComputer get() = device is Device.Computer
 
     init {
         if (isComputer) {
             viewModelScope.launchDialogCatching(appState) {
-                ioClient = deviceManager.getIOClient(computer.device)
+                ioClient = deviceManager.getIOClient(computer)
                 info = guestManager.getInfo()
             }
+        }
+
+        viewModelScope.launchDialogCatching(appState) {
+            appState.project.collect { project = it }
         }
     }
 
@@ -138,28 +143,23 @@ class DeviceSettingsViewModel(
     }
 
     fun start() = viewModelScope.launchDialogCatching(appState) {
-        deviceManager.start(computer.device)
-        computer.running = true
+        deviceManager.start(computer)
     }
 
     fun stop() = viewModelScope.launchDialogCatching(appState) {
-        deviceManager.stop(computer.device)
-        computer.running = false
+        deviceManager.stop(computer)
     }
 
     fun changeIpv4(ipv4: String) = viewModelScope.launchDialogCatching(appState) {
-        computer.ipv4 = ipv4
-        deviceManager.setIpv4(computer.device, ipv4)
+        deviceManager.setIpv4(computer, ipv4)
     }
 
     fun changeIpv6(ipv6: String) = viewModelScope.launchDialogCatching(appState) {
-        computer.ipv6 = ipv6
-        deviceManager.setIpv6(computer.device, ipv6)
+        deviceManager.setIpv6(computer, ipv6)
     }
 
     fun enableInternetAccess(enabled: Boolean) = viewModelScope.launchDialogCatching(appState) {
-        computer.internetEnabled = enabled
-        deviceManager.setInternetEnabled(computer.device, enabled)
+        deviceManager.setInternetEnabled(computer, enabled)
     }
 
     fun openAddPortForwarding() {
@@ -173,12 +173,10 @@ class DeviceSettingsViewModel(
     }
 
     fun addPortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
-        computer.portForwardings.add(portForwarding)
-        deviceManager.addPortForwarding(computer.device, portForwarding)
+        deviceManager.addPortForwarding(computer, portForwarding)
     }
 
     fun removePortForwarding(portForwarding: PortForwarding) = viewModelScope.launchDialogCatching(appState) {
-        computer.portForwardings.remove(portForwarding)
         deviceManager.removePortForwarding(portForwarding.externalPort, portForwarding.protocol)
     }
 

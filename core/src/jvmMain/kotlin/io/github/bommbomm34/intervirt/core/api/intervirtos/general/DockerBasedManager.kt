@@ -7,9 +7,8 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general
 
 import arrow.core.raise.context.Raise
 import arrow.core.raise.context.bind
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
-import io.github.bommbomm34.intervirt.core.api.getValue
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.Failure
 
 import io.github.bommbomm34.intervirt.core.data.PortForwarding

@@ -6,12 +6,11 @@
 package io.github.bommbomm34.intervirt.core.api.impl
 
 import arrow.core.raise.Raise
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
 import io.github.bommbomm34.intervirt.core.api.getFreePort
-import io.github.bommbomm34.intervirt.core.api.getValue
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding

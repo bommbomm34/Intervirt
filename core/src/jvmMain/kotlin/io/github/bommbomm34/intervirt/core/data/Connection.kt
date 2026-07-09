@@ -81,6 +81,10 @@ sealed class DeviceConnection {
 
     open fun getDevices(devices: List<Device>): Pair<Device, Device> =
         Pair(id1.toDevice(devices), id2.toDevice(devices))
+
+    abstract operator fun component1(): String
+
+    abstract operator fun component2(): String
 }
 
 infix fun Device.connect(other: Device) = when (this) {

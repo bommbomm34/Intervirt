@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.Key
@@ -19,12 +18,12 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.terminal_window_title
 import io.github.bommbomm34.intervirt.components.DefaultWindowScope
 import io.github.bommbomm34.intervirt.components.dialogs.Dialog
-import io.github.bommbomm34.intervirt.core.api.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.ShutdownHandler
+import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
 import io.github.bommbomm34.intervirt.core.coreModule
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.env.storeEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
@@ -55,11 +54,11 @@ fun main() = application {
         val guestManager = koinInject<GuestManager>()
         val appState = koinInject<AppState>()
         val fileManager = koinInject<FileManager>()
-        val project = koinInject<Atomic<Project>>()
+        val project = koinInject<ProjectHolder>()
         val settings = koinInject<Settings>()
         val tempConfFile = remember { fileManager.getFile("cache/temp.ivrt") }
-        if (!appEnv.installed) appState.currentScreen = Screen.HOME
         LaunchedEffect(Unit) {
+            if (!appEnv.installed) appState.currentScreen = Screen.SETUP
             // Set exception handler
             Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
                 shutdownHandler.crash(thread, throwable)

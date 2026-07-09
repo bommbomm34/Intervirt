@@ -25,7 +25,6 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.openDialog
-import io.github.bommbomm34.intervirt.data.toViewDevice
 import io.github.bommbomm34.intervirt.imagepicker.ImagePicker
 import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
@@ -61,12 +60,11 @@ fun AddDeviceButton() {
                             onInstall = { image ->
                                 close()
                                 scope.launchDialogCatching(appState) {
-                                    val viewDevice = deviceManager.addComputer(
+                                    deviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName,
-                                    ).toViewDevice()
-                                    appState.statefulProject.devices.add(viewDevice)
+                                    )
                                 }
                             },
                         )
@@ -86,11 +84,10 @@ fun AddDeviceButton() {
                     dropdownExpanded = false
                     // Add switch
                     scope.launch {
-                        val device = deviceManager.addSwitch(
+                        deviceManager.addSwitch(
                             x = Random.nextInt(300, 600),
                             y = Random.nextInt(300, 600),
                         )
-                        appState.statefulProject.devices.add(device.toViewDevice())
                     }
                 },
                 text = {

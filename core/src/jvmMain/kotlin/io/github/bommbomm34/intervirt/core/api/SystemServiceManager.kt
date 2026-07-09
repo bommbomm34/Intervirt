@@ -7,7 +7,8 @@ package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.context.Raise
 import arrow.core.raise.context.raise
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus

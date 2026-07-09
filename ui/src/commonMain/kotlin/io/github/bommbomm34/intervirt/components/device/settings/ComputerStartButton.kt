@@ -11,11 +11,11 @@ import intervirt.ui.generated.resources.start
 import intervirt.ui.generated.resources.stop
 import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.buttons.PlayButton
-import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.core.data.Device
 
 @Composable
 fun ComputerStartButton(
-    device: ViewDevice.Computer,
+    device: Device.Computer,
     onStart: () -> Unit,
     onStop: () -> Unit,
 ) {

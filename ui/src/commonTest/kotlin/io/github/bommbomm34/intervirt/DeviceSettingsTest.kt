@@ -6,19 +6,15 @@
 package io.github.bommbomm34.intervirt
 
 import io.github.bommbomm34.intervirt.core.api.*
+import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
-import io.github.bommbomm34.intervirt.core.modify
-import io.github.bommbomm34.intervirt.core.singleProject
-import io.github.bommbomm34.intervirt.core.singleSettings
 import io.github.bommbomm34.intervirt.core.singleTestSettings
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewDevice
-import io.github.bommbomm34.intervirt.data.toViewDevice
 import io.github.bommbomm34.intervirt.model.DeviceSettingsViewModel
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
@@ -34,31 +30,11 @@ import java.net.ServerSocket
 import kotlin.test.*
 
 class DeviceSettingsTest : KoinTest {
-    val testComputer = Device.Computer(
-        id = "computer-22222",
-        image = "debian/13",
-        name = "None",
-        x = 0,
-        y = 0,
-        ipv4 = "0.0.0.0",
-        ipv6 = "::",
-        mac = "ff:ff:ff:ff:ff:ff",
-        internetEnabled = false,
-        portForwardings = mutableListOf<PortForwarding>(),
-    ).toViewDevice() as ViewDevice.Computer
-    val testPortForwarding = PortForwarding(
-        protocol = "tcp",
-        externalPort = 2222,
-        internalPort = 22,
-    )
-
-    val viewModel: DeviceSettingsViewModel by inject { parametersOf(testComputer) }
+    val viewModel: DeviceSettingsViewModel by inject { parametersOf(TEST_COMPUTER) }
     val appState: AppState by inject()
     val deviceManager: DeviceManager by inject()
-    val _project: Atomic<Project> by inject()
-    private var project: Project
-        get() = _project.get()
-        set(value) = _project.set(value)
+    val project: ProjectHolder by inject()
+    val testComputer: Device.Computer get() = project.get().getDevice(TEST_COMPUTER)
 
     @BeforeTest
     fun init() = runIntervirtTest {
@@ -69,7 +45,7 @@ class DeviceSettingsTest : KoinTest {
                     single { getHttpClient() }
                     single<GuestManager> { VirtualGuestManager() }
                     singleTestAppState()
-                    singleProject()
+                    singleProjectHolder()
                     singleTestSettings()
                     singleAppEnvHolder()
                     single<FileManager>()
@@ -80,7 +56,7 @@ class DeviceSettingsTest : KoinTest {
                 },
             )
         }
-        deviceManager.addComputer(testComputer.device)
+        deviceManager.addComputer(TEST_COMPUTER)
     }
 
     @Test
@@ -105,8 +81,11 @@ class DeviceSettingsTest : KoinTest {
 
     @Test
     fun shouldStop() = runTest {
+        println(testComputer)
         viewModel.start().join()
+        println(testComputer)
         viewModel.stop().join()
+        println(testComputer)
         assertEquals(false, testComputer.running)
     }
 
@@ -130,50 +109,71 @@ class DeviceSettingsTest : KoinTest {
 
     @Test
     fun shouldAddPortForwarding() = runTest {
-        viewModel.addPortForwarding(testPortForwarding).join()
-        assertContains(testComputer.portForwardings, testPortForwarding)
+        viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
+        assertContains(testComputer.portForwardings, TEST_PORT_FORWARDING)
     }
 
     @Test
     fun shouldRemovePortForwarding() = runTest {
-        viewModel.addPortForwarding(testPortForwarding).join()
-        viewModel.removePortForwarding(testPortForwarding).join()
-        assertFalse { testComputer.portForwardings.contains(testPortForwarding) }
+        viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
+        viewModel.removePortForwarding(TEST_PORT_FORWARDING).join()
+        assertFalse { testComputer.portForwardings.contains(TEST_PORT_FORWARDING) }
     }
 
     @Ignore
     @Test
     fun shouldLintPortForwardingThatIsAlreadyInternallyExposed() = runTest {
-        viewModel.addPortForwarding(testPortForwarding).join()
-        assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isRight())
+        viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
+        assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
     }
 
     @Ignore
     @Test
     fun shouldLintPortForwardingThatIsAlreadyExternallyExposed() = runTest {
-        val secondTestComputer = Device.Computer.portForwardings.modify(testComputer.device) {
-            it + testPortForwarding
+        val secondTestComputer = Device.Computer.portForwardings.modify(testComputer) {
+            it + TEST_PORT_FORWARDING
         }
-        Project.devices.modify(_project) { it + secondTestComputer }
-        assertEquals(false, viewModel.lintPortForwarding(testPortForwarding).isRight())
+        Project.devices.modify(project.get()) { it + secondTestComputer }
+        assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
     }
 
     @Test
     fun shouldLintPortForwardingThatIsAlreadyBound() = runTest {
         ServerSocket(0).use {
-            val fwd = testPortForwarding.copy(externalPort = it.localPort)
+            val fwd = TEST_PORT_FORWARDING.copy(externalPort = it.localPort)
             assertEquals(false, viewModel.lintPortForwarding(fwd).isRight())
         }
     }
 
     @Test
     fun shouldLintPortForwardingSuccessfully() = runTest {
-        assertEquals(true, viewModel.lintPortForwarding(testPortForwarding).isRight())
+        assertEquals(true, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
     }
 
     @AfterTest
     fun stop() {
         stopKoin()
+    }
+
+    companion object {
+        val TEST_COMPUTER = Device.Computer(
+            id = "computer-22222",
+            image = "debian/13",
+            name = "None",
+            x = 0,
+            y = 0,
+            ipv4 = "0.0.0.0",
+            ipv6 = "::",
+            mac = "ff:ff:ff:ff:ff:ff",
+            internetEnabled = false,
+            portForwardings = emptyList(),
+        )
+
+        val TEST_PORT_FORWARDING = PortForwarding(
+            protocol = "tcp",
+            externalPort = 2222,
+            internalPort = 22,
+        )
     }
 }
 

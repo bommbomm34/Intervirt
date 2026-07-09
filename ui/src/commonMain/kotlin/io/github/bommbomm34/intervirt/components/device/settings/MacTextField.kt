@@ -10,11 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.mac_address
-import io.github.bommbomm34.intervirt.data.ViewDevice
+import io.github.bommbomm34.intervirt.core.data.Device
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun MacTextField(device: ViewDevice.Computer) {
+fun MacTextField(device: Device.Computer) {
     OutlinedTextField(
         value = device.mac,
         onValueChange = {}, // MAC address can't be changed once set

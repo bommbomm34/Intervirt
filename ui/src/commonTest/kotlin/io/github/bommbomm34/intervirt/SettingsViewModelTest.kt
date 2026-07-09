@@ -6,9 +6,6 @@
 package io.github.bommbomm34.intervirt
 
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.core.getTestAppEnv
-import io.github.bommbomm34.intervirt.core.singleProject
-import io.github.bommbomm34.intervirt.core.singleSettings
 import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
@@ -35,7 +32,7 @@ class SettingsViewModelTest : KoinTest {
         startKoin {
             modules(
                 module {
-                    singleProject()
+                    singleProjectHolder()
                     singleTestSettings()
                     singleAppEnvHolder()
                     singleTestAppState()

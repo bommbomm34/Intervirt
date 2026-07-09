@@ -7,6 +7,8 @@ package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
+import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
@@ -14,7 +16,7 @@ import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
-import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
@@ -44,7 +46,7 @@ class DeviceManagerTest : KoinTest {
         single<DefaultExecutor>() bind Executor::class
         single<FileManager>()
         singleAppEnvHolder()
-        singleProject()
+        singleProjectHolder()
         single { getHttpClient() }
     }
     lateinit var mockComputer: Device.Computer
@@ -58,7 +60,7 @@ class DeviceManagerTest : KoinTest {
 
     private val deviceManager: DeviceManager by inject()
     private val guestManager: GuestManager by inject()
-    private val _project: Atomic<Project> by inject()
+    private val _project: ProjectHolder by inject()
     private var project: Project
         get() = _project.get()
         set(value) = _project.set(value)

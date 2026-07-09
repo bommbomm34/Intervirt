@@ -6,14 +6,13 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.getHttpClient
-import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
-import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.bommbomm34.intervirt.secret.SecretService
@@ -52,7 +51,7 @@ class ShutdownHandlerTest : KoinTest {
                     }
                     singleAppEnvHolder()
                     single { getHttpClient() }
-                    singleProject()
+                    singleProjectHolder()
                 }
             )
         }

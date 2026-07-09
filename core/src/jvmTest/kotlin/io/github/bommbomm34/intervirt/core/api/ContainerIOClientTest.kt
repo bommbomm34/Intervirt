@@ -14,7 +14,8 @@ import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
-import io.github.bommbomm34.intervirt.core.singleProject
+import io.github.bommbomm34.intervirt.core.singleProjectHolder
+import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.ignoreFailure
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import org.koin.core.context.startKoin
@@ -58,7 +59,7 @@ class ContainerIOClientTest : KoinTest {
                     single<DefaultExecutor>() bind Executor::class
                     single<FileManager>()
                     singleAppEnvHolder()
-                    singleProject()
+                    singleProjectHolder()
                     single { getHttpClient() }
                 },
             )

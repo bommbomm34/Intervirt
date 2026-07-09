@@ -13,20 +13,20 @@ import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.intervirtos.home.AppInfo
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun Main(computer: ViewDevice.Computer) {
+fun Main(computer: Device.Computer) {
     val appState = koinInject<AppState>()
     val deviceManager = koinInject<DeviceManager>()
     var osClient: IntervirtOSClient? by remember { mutableStateOf(null) }
     var appInfo: AppInfo? by remember { mutableStateOf(null) }
     CatchingLaunchedEffect(deviceManager) {
-        osClient = deviceManager.getIntervirtOSClient(computer.device)
+        osClient = deviceManager.getIntervirtOSClient(computer)
     }
     osClient?.let { osClient ->
         AnimatedVisibility(appInfo == null) {

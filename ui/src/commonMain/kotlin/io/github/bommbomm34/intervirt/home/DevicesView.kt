@@ -20,6 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Hub
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -34,13 +38,16 @@ import io.github.bommbomm34.intervirt.components.device.settings.DeviceSettings
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
+import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
-import io.github.bommbomm34.intervirt.core.util.Atomic
+import io.github.bommbomm34.intervirt.core.data.connect
+import io.github.bommbomm34.intervirt.core.data.getDevice
+import io.github.bommbomm34.intervirt.core.data.getDeviceById
+import io.github.bommbomm34.intervirt.core.data.getDeviceOrNull
 import io.github.bommbomm34.intervirt.currentAppEnv
+import io.github.bommbomm34.intervirt.currentProject
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
-import io.github.bommbomm34.intervirt.data.ViewDevice
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.jetbrains.compose.resources.getString
@@ -50,13 +57,12 @@ import kotlin.math.sqrt
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DevicesView() {
-    var selectedDevice: ViewDevice? by remember { mutableStateOf(null) }
+    var selectedDeviceId: String? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
     val appEnv = currentAppEnv
     val appState = koinInject<AppState>()
-    val project by koinInject<Atomic<Project>>()
-    val statefulProject = appState.statefulProject
+    val project by currentProject
     var zoom by appState::devicesViewZoom
     val connectionStrokeWidth = appEnv.connectionStrokeWidth
     Box {
@@ -70,9 +76,11 @@ fun DevicesView() {
                 .onClick(matcher = PointerMatcher.Primary) { appState.drawingConnectionSource = null }
                 .onClick(matcher = PointerMatcher.Secondary) { appState.drawingConnectionSource = null }
                 .onPointerEvent(PointerEventType.Press) { event ->
-                    if (event.button?.equals(PointerButton.Secondary) ?: false && appState.drawingConnectionSource == null) {
+                    if (event.button == PointerButton.Secondary && appState.drawingConnectionSource == null) {
                         val position = event.changes.first().position
-                        statefulProject.connections.firstOrNull { (device1, device2) ->
+                        project.connections.firstOrNull {
+                            val (device1, device2) = it.getDevices(project.devices)
+
                             isPointOnLine(
                                 point = position,
                                 start = device1.fittingOffset(appEnv.deviceScale),
@@ -80,18 +88,15 @@ fun DevicesView() {
                                 strokeWidth = connectionStrokeWidth,
                             )
                         }?.let {
+                            val (device1, device2) = it.getDevices(project.devices)
                             appState.openAcceptDialog(
                                 Res.string.are_you_sure_to_remove_connection,
-                                it.device1.name,
-                                it.device2.name,
+                                device1.name,
+                                device2.name,
                             ) {
                                 close()
-                                statefulProject.connections.remove(it)
                                 scope.launchDialogCatching(appState) {
-                                    deviceManager.disconnectDevice(
-                                        it.device1.device,
-                                        it.device2.device,
-                                    )
+                                    deviceManager.disconnectDevice(device1, device2)
                                 }
                             }
                         }
@@ -99,40 +104,45 @@ fun DevicesView() {
                 },
         ) {
             appState.drawingConnectionSource?.let {
+                val device = project.getDeviceById(it) ?: return@let
+
                 drawConnection(
-                    offset1 = it.fittingOffset(appEnv.deviceScale),
+                    offset1 = device.fittingOffset(appEnv.deviceScale),
                     offset2 = appState.mousePosition,
                     color = appEnv.deviceConnectionColor,
                     strokeWidth = connectionStrokeWidth,
                 )
             }
-            statefulProject.connections.forEach {
+            project.connections.forEach {
+                val (device1, device2) = it.getDevices(project.devices)
+
                 drawConnection(
-                    offset1 = it.device1.fittingOffset(appEnv.deviceScale),
-                    offset2 = it.device2.fittingOffset(appEnv.deviceScale),
+                    offset1 = device1.fittingOffset(appEnv.deviceScale),
+                    offset2 = device2.fittingOffset(appEnv.deviceScale),
                     color = appEnv.deviceConnectionColor,
                     strokeWidth = connectionStrokeWidth,
                 )
             }
         }
 
-        statefulProject.devices.forEach { device ->
+        project.devices.forEach { device ->
             DeviceView(
                 device = device,
                 onClickDevice = {
-                    if (selectedDevice != it || !appState.deviceSettingsVisible) {
-                        selectedDevice = it
+                    if (selectedDeviceId != it.id || !appState.deviceSettingsVisible) {
+                        selectedDeviceId = it.id
                         appState.deviceSettingsVisible = true
                     } else appState.deviceSettingsVisible = false
                 },
                 onSecondaryClick = {
                     val copy = appState.drawingConnectionSource
                     if (copy != null) {
-                        if (copy.id != it.id) {
+                        val device = project.getDeviceById(copy) ?: return@DeviceView
+
+                        if (device.id != it.id) {
                             scope.launchDialogCatching(appState) {
-                                if (copy.canConnect(project) && it.canConnect(project)) {
-                                    statefulProject.connections.add(copy connect it)
-                                    deviceManager.connectDevice(copy.device, it.device)
+                                if (device.canConnect(project) && it.canConnect(project)) {
+                                    deviceManager.connectDevice(device, it)
                                 } else appState.openDialog(
                                     severity = Severity.WARNING,
                                     message = getString(Res.string.too_many_devices_connected),
@@ -140,25 +150,27 @@ fun DevicesView() {
                             }
                         }
                         appState.drawingConnectionSource = null
-                    } else appState.drawingConnectionSource = it
+                    } else appState.drawingConnectionSource = it.id
                 },
             )
         }
     }
-    LaunchedEffect(statefulProject) {
-        selectedDevice?.let { if (!statefulProject.exists(it)) selectedDevice = null }
+    LaunchedEffect(project) {
+        selectedDeviceId?.let { if (!project.exists(it)) selectedDeviceId = null }
         appState.drawingConnectionSource?.let {
-            if (!statefulProject.exists(it)) appState.drawingConnectionSource = null
+            if (!project.exists(it)) appState.drawingConnectionSource = null
         }
-        if (selectedDevice == null) appState.deviceSettingsVisible = false
+        if (selectedDeviceId == null) appState.deviceSettingsVisible = false
     }
     AnimatedVisibility(appState.deviceSettingsVisible) {
-        selectedDevice?.let {
+        selectedDeviceId?.let {
             AlignedBox(Alignment.BottomStart) {
                 Column {
-                    DeviceSettings(
-                        device = it,
-                    ) { appState.deviceSettingsVisible = false }
+                    project.getDeviceById(it)?.let { device ->
+                        DeviceSettings(
+                            device = device,
+                        ) { appState.deviceSettingsVisible = false }
+                    }
                 }
             }
         }
@@ -209,7 +221,7 @@ private fun isPointOnLine(
     return distance <= strokeWidth / 2f
 }
 
-private fun ViewDevice.fittingOffset(scale: Float): Offset {
+private fun Device.fittingOffset(scale: Float): Offset {
     // TODO: Design more reliable algorithm
     val padding = DEVICE_PADDING.toPx()
     val deviceWidth = vector.defaultWidth.toPx() * scale
@@ -220,7 +232,22 @@ private fun ViewDevice.fittingOffset(scale: Float): Offset {
     return offset + Offset(width / 2f, height / 2f)
 }
 
-// Input: Get IPv6 addresses
-// Expected output: ULA addresses
-// Actual output: Link-local addresses
-// Solution: Only output the IPv6 address which is a ULA (beginning with fdXX) //*
+val Device.vector: ImageVector
+    get() = when (this) {
+        is Device.Computer -> Icons.Default.Computer
+        is Device.Switch -> Icons.Default.Hub
+    }
+
+val Device.offset: Offset
+    get() = Offset(x.toFloat(), y.toFloat())
+
+private fun Device.canConnect(project: Project): Boolean = when (this) {
+    is Device.Computer -> project.connections.count { it.containsDevice(this) } == 0
+    is Device.Switch -> true
+}
+
+private fun Project.exists(deviceId: String): Boolean {
+    return devices.any { it.id == deviceId }
+}
+
+private fun Project.exists(device: Device): Boolean = exists(device.id)
