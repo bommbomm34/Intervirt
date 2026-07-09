@@ -83,7 +83,6 @@ fun main() = application {
                 guestManager,
             )
         }
-        density = LocalDensity.current
         // Main Window
         Window(
             onCloseRequest = {

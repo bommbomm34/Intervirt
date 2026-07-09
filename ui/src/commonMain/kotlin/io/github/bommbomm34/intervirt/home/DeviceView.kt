@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -32,7 +34,6 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.util.ext.dpToPx
 import io.github.bommbomm34.intervirt.util.ext.toPx
 import org.koin.compose.koinInject
 
@@ -51,8 +52,9 @@ fun DeviceView(
     val appEnv = currentAppEnv
     var offset by remember { mutableStateOf(Offset(device.x.toFloat(), device.y.toFloat())) }
     var overlay by remember { mutableStateOf(false) }
-    val deviceWidth = dpToPx(device.vector.defaultWidth) * appEnv.deviceScale
-    val deviceHeight = dpToPx(device.vector.defaultHeight) * appEnv.deviceScale
+    val deviceWidth = device.vector.defaultWidth.toPx() * appEnv.deviceScale
+    val deviceHeight = device.vector.defaultHeight.toPx() * appEnv.deviceScale
+    val density = LocalDensity.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -70,6 +72,7 @@ fun DeviceView(
                         dpSize = appState.windowState.size,
                         imageSize = Offset(deviceWidth, deviceHeight),
                         minimumPadding = MINIMUM_PADDING,
+                        density = density,
                     )
                 ) {
                     offset = newOffset
@@ -107,8 +110,13 @@ fun DeviceView(
     }
 }
 
-private fun Offset.isOn(dpSize: DpSize, imageSize: Offset, minimumPadding: Float): Boolean {
-    val offsetSize = Offset(dpSize.width.toPx(), dpSize.height.toPx())
+private fun Offset.isOn(
+    dpSize: DpSize,
+    imageSize: Offset,
+    minimumPadding: Float,
+    density: Density,
+): Boolean {
+    val offsetSize = Offset(dpSize.width.toPx(density), dpSize.height.toPx(density))
     return x <= offsetSize.x - imageSize.x - minimumPadding && y < offsetSize.y - imageSize.y * 2f - minimumPadding &&
             x >= minimumPadding && y >= minimumPadding
 }

@@ -27,6 +27,8 @@ import androidx.compose.material.icons.filled.Hub
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.are_you_sure_to_remove_connection
@@ -65,6 +67,7 @@ fun DevicesView() {
     val project by currentProject
     var zoom by appState::devicesViewZoom
     val connectionStrokeWidth = appEnv.connectionStrokeWidth
+    val density = LocalDensity.current
     Box {
         Canvas(
             Modifier
@@ -83,8 +86,8 @@ fun DevicesView() {
 
                             isPointOnLine(
                                 point = position,
-                                start = device1.fittingOffset(appEnv.deviceScale),
-                                end = device2.fittingOffset(appEnv.deviceScale),
+                                start = device1.fittingOffset(appEnv.deviceScale, density),
+                                end = device2.fittingOffset(appEnv.deviceScale, density),
                                 strokeWidth = connectionStrokeWidth,
                             )
                         }?.let {
@@ -107,7 +110,7 @@ fun DevicesView() {
                 val device = project.getDeviceById(it) ?: return@let
 
                 drawConnection(
-                    offset1 = device.fittingOffset(appEnv.deviceScale),
+                    offset1 = device.fittingOffset(appEnv.deviceScale, density),
                     offset2 = appState.mousePosition,
                     color = appEnv.deviceConnectionColor,
                     strokeWidth = connectionStrokeWidth,
@@ -117,8 +120,8 @@ fun DevicesView() {
                 val (device1, device2) = it.getDevices(project.devices)
 
                 drawConnection(
-                    offset1 = device1.fittingOffset(appEnv.deviceScale),
-                    offset2 = device2.fittingOffset(appEnv.deviceScale),
+                    offset1 = device1.fittingOffset(appEnv.deviceScale, density),
+                    offset2 = device2.fittingOffset(appEnv.deviceScale, density),
                     color = appEnv.deviceConnectionColor,
                     strokeWidth = connectionStrokeWidth,
                 )
@@ -221,13 +224,13 @@ private fun isPointOnLine(
     return distance <= strokeWidth / 2f
 }
 
-private fun Device.fittingOffset(scale: Float): Offset {
+private fun Device.fittingOffset(scale: Float, density: Density): Offset {
     // TODO: Design more reliable algorithm
-    val padding = DEVICE_PADDING.toPx()
-    val deviceWidth = vector.defaultWidth.toPx() * scale
-    val deviceHeight = vector.defaultHeight.toPx() * scale
+    val padding = DEVICE_PADDING.toPx(density)
+    val deviceWidth = vector.defaultWidth.toPx(density) * scale
+    val deviceHeight = vector.defaultHeight.toPx(density) * scale
     val width = deviceWidth + padding * 2f
-    val height = deviceHeight + padding * 2f + 4.dp.toPx()
+    val height = deviceHeight + padding * 2f + 4.dp.toPx(density)
 
     return offset + Offset(width / 2f, height / 2f)
 }

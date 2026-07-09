@@ -47,5 +47,3 @@ val intervirtOSViewModelsModule = module {
     viewModel<SystemServiceViewModel>()
     viewModel<MailServerViewModel>()
 }
-
-lateinit var density: Density

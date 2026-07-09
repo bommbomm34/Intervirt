@@ -7,14 +7,14 @@ package io.github.bommbomm34.intervirt.util.ext
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import io.github.bommbomm34.intervirt.density
 import java.net.ServerSocket
 
 @Composable
-fun dpToPx(dp: Dp) = with(LocalDensity.current) { dp.toPx() }
+fun Dp.toPx() = toPx(LocalDensity.current)
 
-fun Dp.toPx() = density.run { toPx() }
+fun Dp.toPx(density: Density) = density.run { toPx() }
 
 fun Int.canPortBind(): Result<Unit> {
     try {
