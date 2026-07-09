@@ -34,7 +34,7 @@ fun GeneralDeviceSettings(
     val appState = koinInject<AppState>()
     val scope = rememberCoroutineScope()
     OutlinedTextField(
-        value = device.id,
+        value = device.id.value,
         onValueChange = {}, // ID can't be changed once set
         enabled = false,
         label = { Text("ID") },

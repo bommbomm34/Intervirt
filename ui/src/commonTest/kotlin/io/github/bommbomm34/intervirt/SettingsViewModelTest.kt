@@ -24,7 +24,7 @@ import kotlin.test.assertNotEquals
 
 class SettingsViewModelTest : KoinTest {
     private val appState: AppState by inject()
-    private val appEnv: AppEnv get() = appState.env
+    private val appEnv: AppEnv get() = appState.env.value
     private val viewModel: SettingsViewModel by inject()
 
     @BeforeTest

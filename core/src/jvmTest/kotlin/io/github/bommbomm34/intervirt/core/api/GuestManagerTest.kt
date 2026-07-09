@@ -33,7 +33,7 @@ import org.koin.test.inject
 import kotlin.test.*
 import kotlin.time.Duration.Companion.seconds
 
-private const val TEST_CONTAINER_ID = "my-id"
+private val TEST_CONTAINER_ID = DeviceId("computer-10001")
 private const val TEST_NETWORK_NAME = "test-network"
 
 class GuestManagerTest : KoinTest {
@@ -177,9 +177,9 @@ class GuestManagerTest : KoinTest {
 
     @Test
     fun shouldGetContainers() = runIntervirtTest {
-        val container1 = addTestContainer("id1")
-        val container2 = addTestContainer("id2")
-        val container3 = addTestContainer("id3")
+        val container1 = addTestContainer(DeviceId("computer-10002"))
+        val container2 = addTestContainer(DeviceId("computer-10003"))
+        val container3 = addTestContainer(DeviceId("computer-10005"))
         val containers = getContainers()
         assertContains(containers, container1)
         assertContains(containers, container2)
@@ -216,7 +216,7 @@ class GuestManagerTest : KoinTest {
     }
 
     context(_: Raise<Failure>)
-    private suspend fun addTestContainer(id: String = TEST_CONTAINER_ID): ContainerInfo {
+    private suspend fun addTestContainer(id: DeviceId = TEST_CONTAINER_ID): ContainerInfo {
         val info = ContainerInfo(
             id = id,
             ipv4 = randomIpv4(getInfo().ipv4Subnet),

@@ -14,6 +14,7 @@ import inet.ipaddr.IPAddressString
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
@@ -31,11 +32,11 @@ import kotlin.time.Duration.Companion.milliseconds
 // Virtual Guest Manager
 class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : GuestManager {
     private val containers = mutableListOf<Container>()
-    private val networks = mutableMapOf<String, MutableList<String>>()
+    private val networks = mutableMapOf<String, MutableList<DeviceId>>()
 
     context(_: Raise<Failure>)
     override suspend fun addContainer(
-        id: String,
+        id: DeviceId,
         ipv4: String,
         ipv6: String,
         mac: String,
@@ -48,33 +49,33 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     }
 
     context(_: Raise<Failure>)
-    override suspend fun removeContainer(id: String) {
+    override suspend fun removeContainer(id: DeviceId) {
         delay()
         val removed = containers.removeAll { it.id == id }
         if (!removed) raise(Failure.NotFound("Container $id not found."))
     }
 
     context(_: Raise<Failure>)
-    override suspend fun setIpv4(id: String, newIP: String) {
+    override suspend fun setIpv4(id: DeviceId, newIP: String) {
         delay()
         containers.first { it.id == id }.ipv4 = newIP
     }
 
     context(_: Raise<Failure>)
-    override suspend fun setIpv6(id: String, newIP: String) {
+    override suspend fun setIpv6(id: DeviceId, newIP: String) {
         delay()
         containers.first { it.id == id }.ipv6 = newIP
     }
 
     context(_: Raise<Failure>)
-    override suspend fun connect(container: String, network: String) {
+    override suspend fun connect(container: DeviceId, network: String) {
         delay()
         if (!container.exists()) raise(Failure.NotFound("Container $container doesn't exist."))
         networks[network]?.add(container) ?: raise(Failure.NotFound("Network $network doesn't exist."))
     }
 
     context(_: Raise<Failure>)
-    override suspend fun disconnect(container: String, network: String) {
+    override suspend fun disconnect(container: DeviceId, network: String) {
         delay()
         if (!container.exists()) raise(Failure.NotFound("Container $container doesn't exist."))
         networks[network]?.remove(container)
@@ -82,14 +83,14 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     }
 
     context(_: Raise<Failure>)
-    override suspend fun setInternetAccess(id: String, enabled: Boolean) {
+    override suspend fun setInternetAccess(id: DeviceId, enabled: Boolean) {
         delay()
         getContainerByID(id).internet = enabled
     }
 
     context(_: Raise<Failure>)
     override suspend fun addPortForwarding(
-        id: String,
+        id: DeviceId,
         internalPort: Int,
         externalPort: Int,
         protocol: String,
@@ -106,7 +107,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
 
     context(_: Raise<Failure>)
     override suspend fun removePortForwarding(
-        id: String,
+        id: DeviceId,
         externalPort: Int,
         protocol: String,
     ) {
@@ -117,13 +118,13 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     }
 
     context(_: Raise<Failure>)
-    override suspend fun startContainer(id: String) {
+    override suspend fun startContainer(id: DeviceId) {
         delay()
         getContainerByID(id).running = true
     }
 
     context(_: Raise<Failure>)
-    override suspend fun stopContainer(id: String) {
+    override suspend fun stopContainer(id: DeviceId) {
         delay()
         getContainerByID(id).running = false
     }
@@ -182,9 +183,9 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     context(_: Raise<Failure>)
     override suspend fun getNetworks(): Map<String, Network> = networks
 
-    private fun getContainerByID(id: String) = containers.first { it.id == id }
+    private fun getContainerByID(id: DeviceId) = containers.first { it.id == id }
 
-    private fun String.exists() = containers.any { it.id == this }
+    private fun DeviceId.exists() = containers.any { it.id == this }
 
     private suspend fun delay() = kotlinx.coroutines.delay(delay)
 
@@ -201,7 +202,7 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
 }
 
 private data class Container(
-    val id: String,
+    val id: DeviceId,
     var ipv4: String,
     var ipv6: String,
     val mac: String,

@@ -19,16 +19,16 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 sealed class DeviceConnection {
-    abstract val id1: String
-    abstract val id2: String
+    abstract val id1: DeviceId
+    abstract val id2: DeviceId
 
     /**
      * Connection between two switches
      */
     @Serializable
     data class Switch(
-        override val id1: String,
-        override val id2: String,
+        override val id1: DeviceId,
+        override val id2: DeviceId,
     ) : DeviceConnection()
 
     /**
@@ -36,12 +36,12 @@ sealed class DeviceConnection {
      */
     @Serializable
     data class Computer(
-        override val id1: String,
-        override val id2: String,
+        override val id1: DeviceId,
+        override val id2: DeviceId,
     ) : DeviceConnection() {
         @Suppress("UNCHECKED_CAST")
         override fun getDevices(devices: List<Device>): Pair<Device.Computer, Device.Computer> {
-            return Pair(id1.toDevice(devices), id2.toDevice(devices)) as Pair<Device.Computer, Device.Computer>
+            return Pair(id1.resolveDevice(devices), id2.resolveDevice(devices)) as Pair<Device.Computer, Device.Computer>
         }
     }
 
@@ -50,12 +50,12 @@ sealed class DeviceConnection {
      */
     @Serializable
     data class SwitchComputer(
-        override val id1: String, // Switch
-        override val id2: String, // Computer
+        override val id1: DeviceId, // Switch
+        override val id2: DeviceId, // Computer
     ) : DeviceConnection() {
         @Suppress("UNCHECKED_CAST")
         override fun getDevices(devices: List<Device>): Pair<Device.Switch, Device.Computer> {
-            return Pair(id1.toDevice(devices), id2.toDevice(devices)) as Pair<Device.Switch, Device.Computer>
+            return Pair(id1.resolveDevice(devices), id2.resolveDevice(devices)) as Pair<Device.Switch, Device.Computer>
         }
     }
 
@@ -65,7 +65,7 @@ sealed class DeviceConnection {
      * @return `true` if device is in the connection and `false` otherwise
      */
     fun containsDevice(device: Device) = containsID(device.id)
-    fun containsID(id: String) = id1 == id || id2 == id
+    fun containsID(id: DeviceId) = id1 == id || id2 == id
 
     override fun equals(other: Any?): Boolean {
         return other is DeviceConnection && ((id1 == other.id1 && id2 == other.id2) ||
@@ -80,11 +80,11 @@ sealed class DeviceConnection {
     }
 
     open fun getDevices(devices: List<Device>): Pair<Device, Device> =
-        Pair(id1.toDevice(devices), id2.toDevice(devices))
+        Pair(id1.resolveDevice(devices), id2.resolveDevice(devices))
 
-    abstract operator fun component1(): String
+    abstract operator fun component1(): DeviceId
 
-    abstract operator fun component2(): String
+    abstract operator fun component2(): DeviceId
 }
 
 infix fun Device.connect(other: Device) = when (this) {

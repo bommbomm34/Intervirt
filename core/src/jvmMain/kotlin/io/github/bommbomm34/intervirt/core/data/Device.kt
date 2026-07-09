@@ -13,7 +13,7 @@ import kotlinx.serialization.Transient
 @optics
 sealed class Device {
 
-    abstract val id: String
+    abstract val id: DeviceId
     abstract val name: String
     abstract val x: Int
     abstract val y: Int
@@ -21,7 +21,7 @@ sealed class Device {
     @Serializable
     @optics
     data class Computer(
-        override val id: String,
+        override val id: DeviceId,
         val image: String,
         override val name: String,
         override val x: Int,
@@ -38,7 +38,7 @@ sealed class Device {
 
     @Serializable
     data class Switch(
-        override val id: String,
+        override val id: DeviceId,
         override val name: String,
         override val x: Int,
         override val y: Int,
@@ -53,7 +53,7 @@ sealed class Device {
     companion object
 }
 
-fun String.toDevice(devices: List<Device>) = devices.first { it.id == this@toDevice }
+fun DeviceId.resolveDevice(devices: List<Device>) = devices.first { it.id == this@resolveDevice }
 
 fun getConnectedComputers(
     device: Device,
@@ -88,10 +88,10 @@ fun <T : Device> Project.getDevice(device: T): T = devices.first { it.id == devi
 @Suppress("UNCHECKED_CAST")
 fun <T : Device> Project.getDeviceOrNull(device: T): T? = devices.firstOrNull { it.id == device.id } as? T
 
-fun Project.getDeviceById(id: String): Device? = devices.firstOrNull { it.id == id }
+fun Project.getDeviceById(id: DeviceId): Device? = devices.firstOrNull { it.id == id }
 
 fun Device.copy(
-    id: String = this.id,
+    id: DeviceId = this.id,
     name: String = this.name,
     x: Int = this.x,
     y: Int = this.y,

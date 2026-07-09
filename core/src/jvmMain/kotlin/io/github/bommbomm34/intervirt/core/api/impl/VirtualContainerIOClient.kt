@@ -16,6 +16,7 @@ import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
 
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.ext.patch
 import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
@@ -28,7 +29,7 @@ import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
 
 class VirtualContainerIOClient(
-    override val id: String,
+    override val id: DeviceId,
     private val wipeOnClose: Boolean,
     private val executor: Executor,
     fileManager: FileManager,

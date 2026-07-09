@@ -9,6 +9,7 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.Flow
 interface GuestManager : AsyncCloseable {
     context(_: Raise<Failure>)
     suspend fun addContainer(
-        id: String,
+        id: DeviceId,
         ipv4: String,
         ipv6: String,
         mac: String,
@@ -38,34 +39,34 @@ interface GuestManager : AsyncCloseable {
     )
 
     context(_: Raise<Failure>)
-    suspend fun removeContainer(id: String)
+    suspend fun removeContainer(id: DeviceId)
 
     context(_: Raise<Failure>)
-    suspend fun setIpv4(id: String, newIP: String)
+    suspend fun setIpv4(id: DeviceId, newIP: String)
 
     context(_: Raise<Failure>)
-    suspend fun setIpv6(id: String, newIP: String)
+    suspend fun setIpv6(id: DeviceId, newIP: String)
 
     context(_: Raise<Failure>)
-    suspend fun connect(container: String, network: String)
+    suspend fun connect(container: DeviceId, network: String)
 
     context(_: Raise<Failure>)
-    suspend fun disconnect(container: String, network: String)
+    suspend fun disconnect(container: DeviceId, network: String)
 
     context(_: Raise<Failure>)
-    suspend fun setInternetAccess(id: String, enabled: Boolean)
+    suspend fun setInternetAccess(id: DeviceId, enabled: Boolean)
 
     context(_: Raise<Failure>)
-    suspend fun addPortForwarding(id: String, internalPort: Int, externalPort: Int, protocol: String)
+    suspend fun addPortForwarding(id: DeviceId, internalPort: Int, externalPort: Int, protocol: String)
 
     context(_: Raise<Failure>)
-    suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String)
+    suspend fun removePortForwarding(id: DeviceId, externalPort: Int, protocol: String)
 
     context(_: Raise<Failure>)
-    suspend fun startContainer(id: String)
+    suspend fun startContainer(id: DeviceId)
 
     context(_: Raise<Failure>)
-    suspend fun stopContainer(id: String)
+    suspend fun stopContainer(id: DeviceId)
 
     context(_: Raise<Failure>)
     fun wipe(): Flow<ResultProgress<Unit>>

@@ -30,7 +30,7 @@ import java.net.ServerSocket
 import kotlin.test.*
 
 class DeviceSettingsTest : KoinTest {
-    val viewModel: DeviceSettingsViewModel by inject { parametersOf(TEST_COMPUTER) }
+    val viewModel: DeviceSettingsViewModel by inject { parametersOf(TEST_COMPUTER.id) }
     val appState: AppState by inject()
     val deviceManager: DeviceManager by inject()
     val project: ProjectHolder by inject()
@@ -157,7 +157,7 @@ class DeviceSettingsTest : KoinTest {
 
     companion object {
         val TEST_COMPUTER = Device.Computer(
-            id = "computer-22222",
+            id = DeviceId("computer-22222"),
             image = "debian/13",
             name = "None",
             x = 0,

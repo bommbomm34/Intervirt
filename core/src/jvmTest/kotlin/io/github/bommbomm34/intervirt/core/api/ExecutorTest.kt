@@ -5,6 +5,8 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.impl.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
@@ -19,7 +21,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ExecutorTest {
-    val executor = DefaultExecutor(AtomicAppEnvHolder(getTestAppEnv()))
+    val executor = DefaultExecutor(AppEnvHolder(getTestAppEnv()))
 
     @Test
     fun shouldRunSuccessfulCommandOnHost() = runIntervirtTest {

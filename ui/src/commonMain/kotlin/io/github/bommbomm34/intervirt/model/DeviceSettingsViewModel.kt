@@ -54,7 +54,7 @@ class DeviceSettingsViewModel(
     private val appState: AppState,
     private val deviceManager: DeviceManager,
     private val guestManager: GuestManager,
-    @InjectedParam val deviceId: String,
+    @InjectedParam val deviceId: DeviceId,
 ) : ViewModel() {
     var project by mutableStateOf(appState.project.value)
     val device get() = project.devices.first { it.id == deviceId }

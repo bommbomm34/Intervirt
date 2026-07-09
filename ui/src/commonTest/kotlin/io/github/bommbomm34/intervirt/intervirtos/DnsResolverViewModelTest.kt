@@ -11,6 +11,7 @@ import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.DnsResolverManager
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
@@ -56,7 +57,7 @@ class DnsResolverViewModelTest : KoinTest {
                     single<FileManager>()
                     single<ContainerIOClient> {
                         VirtualContainerIOClient(
-                            id = "mock-id",
+                            id = DeviceId("computer-20000"),
                             wipeOnClose = true,
                             executor = get(),
                             fileManager = get(),

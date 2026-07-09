@@ -9,6 +9,7 @@ import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
@@ -35,7 +36,7 @@ import kotlin.test.*
 class ContainerIOClientTest : KoinTest {
     val deviceManager: DeviceManager by inject()
     val mockComputer = Device.Computer(
-        id = "mock-computer",
+        id = DeviceId("computer-10000"),
         image = "debian/13",
         name = "Mock Computer",
         x = 0,

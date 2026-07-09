@@ -43,14 +43,14 @@ fun Project.resolveNetworks(vararg connections: DeviceConnection): Map<String, N
     // Add switch networks
     devices.forEach { device ->
         if (device is Device.Switch && connections.any { it.containsDevice(device) }) {
-            val name = networkNameOfSwitch(device.id)
+            val name = networkNameOfSwitch(device.id.value)
             networks[name] = getConnectedComputers(device, devices, this.connections).map { it.id }
         }
     }
     // Add computer networks
     connections.forEach { conn ->
         if (conn is DeviceConnection.Computer) {
-            val name = networkNameOfComputers(conn.id1, conn.id2)
+            val name = networkNameOfComputers(conn.id1.value, conn.id2.value)
             networks[name] = listOf(conn.id1, conn.id2)
         }
     }

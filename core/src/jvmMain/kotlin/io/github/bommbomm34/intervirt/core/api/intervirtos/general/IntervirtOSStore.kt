@@ -28,7 +28,7 @@ class IntervirtOSStore(
     ioClient: ContainerIOClient,
 ) {
     val appEnv by envHolder
-    private val logger = appEnv.getLogger(IntervirtOSStore::class, ioClient.id)
+    private val logger = appEnv.getLogger(IntervirtOSStore::class, ioClient.id.value)
     private val dataPath = ioClient.getPath("/opt/intervirt/data.json")
     private val data = mutableMapOf<String, String>()
 

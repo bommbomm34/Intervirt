@@ -41,6 +41,7 @@ import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.connect
 import io.github.bommbomm34.intervirt.core.data.getDevice
@@ -59,7 +60,7 @@ import kotlin.math.sqrt
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DevicesView() {
-    var selectedDeviceId: String? by remember { mutableStateOf(null) }
+    var selectedDeviceId: DeviceId? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val deviceManager = koinInject<DeviceManager>()
     val appEnv = currentAppEnv
@@ -249,7 +250,7 @@ private fun Device.canConnect(project: Project): Boolean = when (this) {
     is Device.Switch -> true
 }
 
-private fun Project.exists(deviceId: String): Boolean {
+private fun Project.exists(deviceId: DeviceId): Boolean {
     return devices.any { it.id == deviceId }
 }
 

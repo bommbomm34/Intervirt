@@ -38,10 +38,10 @@ class MailServerManager(
         "./docker-data/dms/mail-logs/" to "/var/log/mail/",
         "./docker-data/dms/config/" to "/tmp/docker-mailserver/",
     ),
-    hostName = osClient.getClient().store[IntervirtOSStore.Accessor.HOSTNAME] ?: osClient.getClient().computer.id,
+    hostName = osClient.getClient().store[IntervirtOSStore.Accessor.HOSTNAME] ?: osClient.getClient().computer.id.value,
     env = mapOf(
         "OVERRIDE_HOSTNAME" to (osClient.getClient().store[IntervirtOSStore.Accessor.HOSTNAME]
-            ?: osClient.getClient().computer.id),
+            ?: osClient.getClient().computer.id.value),
         "ACCOUNT_PROVISIONER" to "FILE",
     ),
 ) {

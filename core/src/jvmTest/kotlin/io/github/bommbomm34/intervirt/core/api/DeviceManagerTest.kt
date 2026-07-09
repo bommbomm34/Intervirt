@@ -71,7 +71,7 @@ class DeviceManagerTest : KoinTest {
             modules(testModule)
         }
         mockComputer = Device.Computer(
-            id = "rand-id",
+            id = DeviceId("computer-10001"),
             image = "debian/13",
             name = "hello",
             x = 10,
@@ -83,7 +83,7 @@ class DeviceManagerTest : KoinTest {
             portForwardings = emptyList(),
         )
         mockComputer2 = Device.Computer(
-            id = "rand-id2",
+            id = DeviceId("computer-10002"),
             image = "debian/13",
             name = "hello",
             x = 10,

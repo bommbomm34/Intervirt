@@ -42,9 +42,9 @@ class DeviceManager(
     private val virtualContainerIOPort = appEnv.virtualContainerIOPort
     private val wipeVirtualOnClose = appEnv.wipeVirtualOnClose
     private val dockerHostOverride = appEnv.overrideDockerHost.ifBlank { null }
-    private val containerIOClients = ConcurrentHashMap<String, ContainerIOClient>()
-    private val dockerManagers = ConcurrentHashMap<String, DockerManager>()
-    private val intervirtOSClients = ConcurrentHashMap<String, IntervirtOSClient>()
+    private val containerIOClients = ConcurrentHashMap<DeviceId, ContainerIOClient>()
+    private val dockerManagers = ConcurrentHashMap<DeviceId, DockerManager>()
+    private val intervirtOSClients = ConcurrentHashMap<DeviceId, IntervirtOSClient>()
     private val _project = project
     private val project by _project
 
@@ -54,14 +54,14 @@ class DeviceManager(
         val device = Device.Computer(
             id = id,
             image = image,
-            name = name ?: id,
+            name = name ?: id.value,
             x = x,
             y = y,
             ipv4 = project.generateIpv4(getInfo().ipv4Subnet),
             ipv6 = project.generateIpv6(getInfo().ipv6Subnet),
             mac = project.generateMac(),
             internetEnabled = false,
-            portForwardings = listOf(),
+            portForwardings = emptyList(),
         )
         return addComputer(device)
     }
@@ -87,7 +87,7 @@ class DeviceManager(
         val id = generateID("switch")
         val device = Device.Switch(
             id = id,
-            name = name ?: id,
+            name = name ?: id.value,
             x = x,
             y = y,
         )
@@ -360,10 +360,10 @@ class DeviceManager(
         }
     }
 
-    private fun generateID(prefix: String): String {
+    private fun generateID(prefix: String): DeviceId {
         while (true) {
             val id = prefix + "-" + Random.nextInt(999999)
-            if (project.devices.all { it.id != id }) return id
+            if (project.devices.all { it.id.value != id }) return DeviceId(id)
         }
     }
 

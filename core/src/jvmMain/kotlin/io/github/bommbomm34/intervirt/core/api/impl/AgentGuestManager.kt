@@ -18,6 +18,7 @@ import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.*
@@ -55,59 +56,59 @@ class AgentGuestManager(
 
     context(_: Raise<Failure>)
     override suspend fun addContainer(
-        id: String,
+        id: DeviceId,
         ipv4: String,
         ipv6: String,
         mac: String,
         internet: Boolean,
         image: String,
-    ): Flow<ResultProgress<Unit>> = flowSend(RequestBody.AddContainer(id, ipv4, ipv6, mac, internet, image))
+    ): Flow<ResultProgress<Unit>> = flowSend(RequestBody.AddContainer(id.value, ipv4, ipv6, mac, internet, image))
 
     context(_: Raise<Failure>)
-    override suspend fun removeContainer(id: String) = justSend(RequestBody.RemoveContainer(id))
+    override suspend fun removeContainer(id: DeviceId) = justSend(RequestBody.RemoveContainer(id.value))
 
     context(_: Raise<Failure>)
-    override suspend fun setIpv4(id: String, newIP: String) =
-        justSend(RequestBody.IDWithNewIpv4(id, newIP))
+    override suspend fun setIpv4(id: DeviceId, newIP: String) =
+        justSend(RequestBody.IDWithNewIpv4(id.value, newIP))
 
     context(_: Raise<Failure>)
-    override suspend fun setIpv6(id: String, newIP: String) =
-        justSend(RequestBody.IDWithNewIpv6(id, newIP))
+    override suspend fun setIpv6(id: DeviceId, newIP: String) =
+        justSend(RequestBody.IDWithNewIpv6(id.value, newIP))
 
     context(_: Raise<Failure>)
-    override suspend fun connect(container: String, network: String) {
+    override suspend fun connect(container: DeviceId, network: String) {
         logger.debug { "Connecting $container to $network" }
-        return justSend(RequestBody.Connect(container, network))
+        return justSend(RequestBody.Connect(container.value, network))
     }
 
     context(_: Raise<Failure>)
-    override suspend fun disconnect(container: String, network: String) {
+    override suspend fun disconnect(container: DeviceId, network: String) {
         logger.debug { "Disconnecting $container from $network" }
-        return justSend(RequestBody.Disconnect(container, network))
+        return justSend(RequestBody.Disconnect(container.value, network))
     }
 
     context(_: Raise<Failure>)
-    override suspend fun setInternetAccess(id: String, enabled: Boolean) =
-        justSend(RequestBody.SetInternetAccess(id, enabled))
+    override suspend fun setInternetAccess(id: DeviceId, enabled: Boolean) =
+        justSend(RequestBody.SetInternetAccess(id.value, enabled))
 
     context(_: Raise<Failure>)
     override suspend fun addPortForwarding(
-        id: String,
+        id: DeviceId,
         internalPort: Int,
         externalPort: Int,
         protocol: String,
     ) =
-        justSend(RequestBody.AddPortForwarding(id, internalPort, externalPort, protocol))
+        justSend(RequestBody.AddPortForwarding(id.value, internalPort, externalPort, protocol))
 
     context(_: Raise<Failure>)
-    override suspend fun removePortForwarding(id: String, externalPort: Int, protocol: String) =
+    override suspend fun removePortForwarding(id: DeviceId, externalPort: Int, protocol: String) =
         justSend(RequestBody.RemovePortForwarding(externalPort, protocol))
 
     context(_: Raise<Failure>)
-    override suspend fun startContainer(id: String) = justSend(RequestBody.StartContainer(id))
+    override suspend fun startContainer(id: DeviceId) = justSend(RequestBody.StartContainer(id.value))
 
     context(_: Raise<Failure>)
-    override suspend fun stopContainer(id: String) = justSend(RequestBody.StopContainer(id))
+    override suspend fun stopContainer(id: DeviceId) = justSend(RequestBody.StopContainer(id.value))
 
     context(_: Raise<Failure>)
     override fun wipe(): Flow<ResultProgress<Unit>> {
@@ -162,7 +163,11 @@ class AgentGuestManager(
     context(_: Raise<Failure>)
     override suspend fun getNetworks(): Map<String, Network> {
         logger.debug { "Retrieving networks" }
-        return firstSend<ResponseBody.NetworkList>("networks".commandBody()).networks
+        return firstSend<ResponseBody.NetworkList>("networks".commandBody())
+            .networks
+            .mapValues { (_, rawNetwork) ->
+                rawNetwork.map { DeviceId(it) }
+            }
     }
 
     context(_: Raise<Failure>)

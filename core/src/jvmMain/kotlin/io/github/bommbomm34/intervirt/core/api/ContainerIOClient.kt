@@ -7,13 +7,14 @@ package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
 interface ContainerIOClient : AsyncCloseable {
-    val id: String
+    val id: DeviceId
 
     context(_: Raise<Failure>)
     fun exec(commands: List<String>): Flow<CommandStatus>

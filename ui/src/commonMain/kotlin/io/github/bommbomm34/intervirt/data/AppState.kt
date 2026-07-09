@@ -38,6 +38,7 @@ import intervirt.ui.generated.resources.zip_extraction_failure
 import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.data.Device
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
@@ -65,7 +66,7 @@ class AppState(appEnv: AppEnv) {
     var osWindowTitle: String? by mutableStateOf(null)
     var openComputerShell: Device.Computer? by mutableStateOf(null)
     var windowState = WindowState(size = DpSize(1200.dp, 1000.dp))
-    var drawingConnectionSource: String? by mutableStateOf(null)
+    var drawingConnectionSource: DeviceId? by mutableStateOf(null)
     var deviceSettingsVisible by mutableStateOf(false)
 
     val env = MutableStateFlow(appEnv)

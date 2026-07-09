@@ -23,7 +23,7 @@ class SystemServiceManager(
     private val ioClient: ContainerIOClient,
 ) {
     val appEnv by envHolder
-    private val logger = appEnv.getLogger(SystemServiceManager::class, ioClient.id)
+    private val logger = appEnv.getLogger(SystemServiceManager::class, ioClient.id.value)
 
     context(_: Raise<Failure>)
     suspend fun start(name: String) {

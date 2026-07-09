@@ -34,7 +34,7 @@ fun DeviceSettings(
     device: Device,
     onClose: () -> Unit,
 ) {
-    val viewModel = koinViewModel<DeviceSettingsViewModel>(key = device.id) { parametersOf(device.id) }
+    val viewModel = koinViewModel<DeviceSettingsViewModel>(key = device.id.value) { parametersOf(device.id) }
 
     Surface(modifier = Modifier.background(Color.Black.copy(alpha = 0.5f))) {
         // Device settings

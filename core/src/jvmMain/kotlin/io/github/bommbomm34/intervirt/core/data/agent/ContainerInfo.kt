@@ -5,12 +5,13 @@
 
 package io.github.bommbomm34.intervirt.core.data.agent
 
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ContainerInfo(
-    val id: String,
+    val id: DeviceId,
     val ipv4: String,
     val ipv6: String,
     val mac: String,
@@ -20,4 +21,4 @@ data class ContainerInfo(
     val running: Boolean = true,
 )
 
-typealias Network = List<String>
+typealias Network = List<DeviceId>

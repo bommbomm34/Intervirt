@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.ext.exec
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
@@ -34,7 +35,7 @@ class ContainerSshClient(
     envHolder: AppEnvHolder,
     val port: Int,
     val deviceManager: DeviceManager,
-    override val id: String,
+    override val id: DeviceId,
 ) : ContainerIOClient {
     val appEnv by envHolder
     private val fs: FileSystem = FileSystems.newFileSystem(
@@ -46,7 +47,7 @@ class ContainerSshClient(
     )
     private val sshClient = SshClient.setUpDefaultClient()
     private lateinit var session: ClientSession
-    private val logger = appEnv.getLogger(ContainerSshClient::class, id)
+    private val logger = appEnv.getLogger(ContainerSshClient::class, id.value)
 
     context(_: Raise<Failure>)
     suspend fun init() = withCatchingContext(Dispatchers.IO) {
