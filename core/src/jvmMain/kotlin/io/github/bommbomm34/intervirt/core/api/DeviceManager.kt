@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
+import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.Holder
 import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
@@ -26,6 +27,7 @@ import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.toReadableImage
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Flow
 import kotlin.random.Random
 
 class DeviceManager(
@@ -78,7 +80,7 @@ class DeviceManager(
             mac = device.mac,
             internet = false,
             image = device.image,
-        ).lastResult() // TODO: Propagate flow
+        ).lastResult().bind() // TODO: Propagate flow
         logger.info { "Added device $device" }
         return device
     }
@@ -105,10 +107,6 @@ class DeviceManager(
     suspend fun removeDevice(device: Device) {
         device.requireExists()
         logger.debug { "Removing device $device" }
-        Project.connections.modify(_project) { project ->
-            project.filterNot { it.containsDevice(device) }
-        }
-        Project.devices.modify(_project) { it - device }
         // Close services
         intervirtOSClients[device.id]?.close()
         intervirtOSClients.remove(device.id)
@@ -117,8 +115,12 @@ class DeviceManager(
         containerIOClients[device.id]?.close()
         containerIOClients.remove(device.id)
         if (device is Device.Computer) {
-            guestManager.removeContainer(device.id)
+            guestManager.removeContainer(device.id).lastResult().bind() // TODO: Propagate flow
         }
+        Project.connections.modify(_project) { project ->
+            project.filterNot { it.containsDevice(device) }
+        }
+        Project.devices.modify(_project) { it - device }
         logger.info { "Removed device $device" }
     }
 

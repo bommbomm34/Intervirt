@@ -22,6 +22,8 @@ import io.github.bommbomm34.intervirt.core.util.randomIpv6
 import io.github.bommbomm34.intervirt.core.util.randomMac
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.ktor.client.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.toList
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -73,7 +75,7 @@ class GuestManagerTest : KoinTest {
     @Test
     fun shouldRemoveContainer() = runIntervirtTest {
         val container = addTestContainer()
-        guestManager.removeContainer(TEST_CONTAINER_ID)
+        guestManager.removeContainer(TEST_CONTAINER_ID).lastResult().bind()
         assertFalse { getContainers().contains(container) }
     }
 

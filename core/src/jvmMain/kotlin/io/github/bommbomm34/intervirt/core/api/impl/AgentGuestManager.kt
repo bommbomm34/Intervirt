@@ -14,8 +14,8 @@ import arrow.core.raise.recover
 import arrow.core.right
 import inet.ipaddr.AddressStringException
 import inet.ipaddr.IPAddressString
-import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.GuestManager
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.DeviceId
@@ -27,7 +27,9 @@ import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.takeWhileInclusive
 import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.ext.*
+import io.github.bommbomm34.intervirt.core.util.ext.catchTimeout
+import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -35,10 +37,11 @@ import io.ktor.serialization.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.SerializationException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val LOG_RAW_JSON = false
+private const val LOG_RAW_JSON = true
 
 class AgentGuestManager(
     envHolder: AppEnvHolder,
@@ -65,7 +68,7 @@ class AgentGuestManager(
     ): Flow<ResultProgress<Unit>> = flowSend(RequestBody.AddContainer(id.value, ipv4, ipv6, mac, internet, image))
 
     context(_: Raise<Failure>)
-    override suspend fun removeContainer(id: DeviceId) = justSend(RequestBody.RemoveContainer(id.value))
+    override suspend fun removeContainer(id: DeviceId) = flowSend(RequestBody.RemoveContainer(id.value))
 
     context(_: Raise<Failure>)
     override suspend fun setIpv4(id: DeviceId, newIP: String) =
@@ -304,12 +307,9 @@ class AgentGuestManager(
     ).any { it }
 
     private suspend fun ClientWebSocketSession.receiveLogging(): ResponseBody {
-        val text = when (val frame = incoming.receive()) {
-            is Frame.Text -> frame.readText()
-            is Frame.Binary -> throw WebsocketDeserializeException("Frame should be Frame.text", frame = frame)
-            is Frame.Close -> throw WebsocketDeserializeException("Session is closed", frame = frame)
-            else -> throw WebsocketDeserializeException("Unexpected frame type: $frame", frame = frame)
-        }
+        val frame = incoming.receive()
+        val text = (frame as? Frame.Text)?.readText()
+            ?: throw WebsocketDeserializeException("Expected text, but got ${frame::class.simpleName}", frame = frame)
 
         if (LOG_RAW_JSON) logger.debug { "Received JSON: $text" }
         return defaultJson.decodeFromString(text)
@@ -317,7 +317,7 @@ class AgentGuestManager(
 
     private fun Either<Failure, ResponseBody.General>.failure(): Failure? = fold(
         ifLeft = { it },
-        ifRight = { it.failure() },
+        ifRight = ResponseBody.General::failure,
     )
 
     companion object {

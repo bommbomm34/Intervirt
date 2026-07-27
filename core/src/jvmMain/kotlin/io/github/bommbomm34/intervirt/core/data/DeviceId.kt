@@ -28,7 +28,5 @@ value class DeviceId(val value: String) {
         }
     }
 
-    override fun toString(): String {
-        return value
-    }
+    override fun toString() = value
 }

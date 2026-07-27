@@ -21,6 +21,7 @@ import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.agent.Network
+import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -49,10 +50,11 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     }
 
     context(_: Raise<Failure>)
-    override suspend fun removeContainer(id: DeviceId) {
+    override suspend fun removeContainer(id: DeviceId): Flow<ResultProgress<Unit>> = flowCatching {
         delay()
         val removed = containers.removeAll { it.id == id }
         if (!removed) raise(Failure.NotFound("Container $id not found."))
+        emit(ResultProgress.success(Unit))
     }
 
     context(_: Raise<Failure>)

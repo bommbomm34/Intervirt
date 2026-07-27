@@ -32,7 +32,7 @@ import kotlin.time.Clock
 
 fun getAppEnv(
     settings: Settings = PreferencesSettings(Preferences.userRoot()),
-) = settings.loadEnv { System.getenv("INTERVIRT_$it") }
+) = settings.loadEnv { System.getenv("INTERVIRT_$it") }.also { println(it) }
 
 fun getHttpClient(): HttpClient = HttpClient(CIO) {
     engine {

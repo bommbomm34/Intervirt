@@ -91,25 +91,22 @@ class QemuClient(
         logger.debug { "Booted Alpine Linux" }
     }
 
-    suspend fun shutdownAlpine() {
+    context(_: Raise<Failure>)
+    suspend fun shutdownAlpine() = withCatchingContext(Dispatchers.IO) {
         logger.info { "Shutting down Alpine VM" }
         logger.debug { "Closing QEMU monitor session" }
         qemuMonitorSession?.close()
-        either {
-            if (::currentProcess.isInitialized) {
-                logger.debug { "Alpine VM is already initialized" }
-                return@either
-            }
-            withContext(Dispatchers.IO) {
-                qmpSend("stop")
-                logger.debug { "Waiting for Alpine VM to shutdown" }
-                currentProcess.waitFor(appEnv.vmShutdownTimeout, TimeUnit.MILLISECONDS)
-                if (currentProcess.isAlive) {
-                    logger.debug { "Timeout exceeded, forcing shutdown..." }
-                    currentProcess.destroyForcibly()
-                    currentProcess.waitFor()
-                }
-            }
+        if (!::currentProcess.isInitialized) {
+            logger.debug { "Alpine VM is not initialized" }
+            return@withCatchingContext
+        }
+        qmpSend("stop")
+        logger.debug { "Waiting for Alpine VM to shutdown" }
+        currentProcess.waitFor(appEnv.vmShutdownTimeout, TimeUnit.MILLISECONDS)
+        if (currentProcess.isAlive) {
+            logger.debug { "Timeout exceeded, forcing shutdown..." }
+            currentProcess.destroyForcibly()
+            currentProcess.waitFor()
         }
         isRunningLoopJob?.cancel()
         isRunningLoopJob = null
@@ -173,15 +170,16 @@ class QemuClient(
     @Suppress("UNCHECKED_CAST")
     context(_: Raise<Failure>)
     suspend fun qmpSend(json: JsonElement, session: QemuMonitorSession? = qemuMonitorSession): JsonElement {
+        val log = json.jsonObject["execute"]?.jsonPrimitive?.content != "query-status"
         val payload = defaultJson.encodeToString(json)
         session?.withLock {
-            logger.debug { "Send to QMP: $payload" }
+            if (log) logger.debug { "Send to QMP: $payload" }
             writeLine(payload)
-            logger.debug { "Waiting for answer" }
+            if (log) logger.debug { "Waiting for answer" }
             withTimeoutOrNull(appEnv.qemuMonitorTimeout.milliseconds) {
                 while (true) {
                     readLine()?.let { line ->
-                        logger.debug { "Received answer: $line" }
+                        if (log) logger.debug { "Received answer: $line" }
                         val obj = defaultJson.decodeFromString<JsonObject>(line)
                         val returnObj = obj["return"]
                         val errorObj = obj["error"]
@@ -209,7 +207,6 @@ class QemuClient(
                         recover<Failure, Boolean>(
                             block = {
                                 val result = qmpSend("query-status")
-                                logger.debug { "Result of query-status: $result" }
                                 result.jsonObject["running"]!!.jsonPrimitive.boolean
                             },
                             recover = { false }

@@ -54,9 +54,9 @@ fun GeneralDeviceSettings(
         onClick = {
             appState.openAcceptDialog(Res.string.are_you_sure_to_remove_device, device.name) {
                 scope.launchDialogCatching(appState) {
+                    deviceManager.removeDevice(device)
                     close()
                     onClose()
-                    deviceManager.removeDevice(device)
                 }
             }
         },

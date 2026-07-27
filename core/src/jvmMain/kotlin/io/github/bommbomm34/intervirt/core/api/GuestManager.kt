@@ -39,7 +39,7 @@ interface GuestManager : AsyncCloseable {
     )
 
     context(_: Raise<Failure>)
-    suspend fun removeContainer(id: DeviceId)
+    suspend fun removeContainer(id: DeviceId): Flow<ResultProgress<Unit>>
 
     context(_: Raise<Failure>)
     suspend fun setIpv4(id: DeviceId, newIP: String)
