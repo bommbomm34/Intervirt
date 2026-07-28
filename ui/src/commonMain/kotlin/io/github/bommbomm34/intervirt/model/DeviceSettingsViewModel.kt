@@ -22,6 +22,7 @@ import intervirt.ui.generated.resources.external_port_already_bound
 import intervirt.ui.generated.resources.internal_port_already_exposed
 import intervirt.ui.generated.resources.port_out_of_range
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
+import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
@@ -168,10 +169,19 @@ class DeviceSettingsViewModel(
 
     fun delete(onClose: () -> Unit) {
         appState.openAcceptDialog(Res.string.are_you_sure_to_remove_device, device.name) {
+            close() // Accept dialog
             viewModelScope.launchDialogCatching(appState) {
-                deviceManager.removeDevice(device)
-                close() // Accept dialog
-                onClose() // Device settings
+                val flow = deviceManager.removeDevice(device)
+
+                appState.openDialog {
+                    ProgressDialog(
+                        flow = flow,
+                        onClose = {
+                            close() // Progress dialog
+                            onClose() // Device settings
+                        }
+                    )
+                }
             }
         }
     }

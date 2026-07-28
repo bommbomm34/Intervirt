@@ -25,9 +25,12 @@ import io.github.bommbomm34.intervirt.core.util.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.toReadableImage
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Flow
 import kotlin.random.Random
 
 class DeviceManager(
@@ -51,7 +54,7 @@ class DeviceManager(
     private val project by _project
 
     context(_: Raise<Failure>)
-    suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): Device.Computer {
+    suspend fun addComputer(name: String? = null, x: Int, y: Int, image: String): DeviceCreationResult {
         val id = generateID("computer")
         val device = Device.Computer(
             id = id,
@@ -69,20 +72,20 @@ class DeviceManager(
     }
 
     context(_: Raise<Failure>)
-    suspend fun addComputer(device: Device.Computer): Device.Computer {
+    suspend fun addComputer(device: Device.Computer): DeviceCreationResult {
         validateComputer(device)
         logger.debug { "Adding device $device" }
         Project.devices.modify(_project) { it + device }
-        guestManager.addContainer(
+        val flow = guestManager.addContainer(
             id = device.id,
             ipv4 = device.ipv4,
             ipv6 = device.ipv6,
             mac = device.mac,
             internet = false,
             image = device.image,
-        ).lastResult().bind() // TODO: Propagate flow
+        )
         logger.info { "Added device $device" }
-        return device
+        return DeviceCreationResult(device, flow)
     }
 
     fun addSwitch(name: String? = null, x: Int, y: Int): Device.Switch {
@@ -104,7 +107,7 @@ class DeviceManager(
     }
 
     context(_: Raise<Failure>)
-    suspend fun removeDevice(device: Device) {
+    suspend fun removeDevice(device: Device): Flow<ResultProgress<Unit>> {
         device.requireExists()
         logger.debug { "Removing device $device" }
         // Close services
@@ -114,14 +117,19 @@ class DeviceManager(
         dockerManagers.remove(device.id)
         containerIOClients[device.id]?.close()
         containerIOClients.remove(device.id)
-        if (device is Device.Computer) {
-            guestManager.removeContainer(device.id).lastResult().bind() // TODO: Propagate flow
+
+        val flow = when (device) {
+            is Device.Switch -> flowOf(ResultProgress.success(Unit))
+            is Device.Computer -> guestManager.removeContainer(device.id)
+        }.onCompletion { _ ->
+            Project.connections.modify(_project) { project ->
+                project.filterNot { it.containsDevice(device) }
+            }
+            Project.devices.modify(_project) { it - device }
+            logger.info { "Removed device $device" }
         }
-        Project.connections.modify(_project) { project ->
-            project.filterNot { it.containsDevice(device) }
-        }
-        Project.devices.modify(_project) { it - device }
-        logger.info { "Removed device $device" }
+
+        return flow
     }
 
     context(_: Raise<Failure>)
@@ -402,6 +410,8 @@ class DeviceManager(
         containerIOClients.forEach { (_, client) -> client.close() }
         logger.debug { "Closed DeviceManager" }
     }
+
+    data class DeviceCreationResult(val device: Device.Computer, val flow: Flow<ResultProgress<Unit>>)
 }
 
 fun getFreePort() = ServerSocket(0).use { it.localPort }

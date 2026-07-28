@@ -13,13 +13,17 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
+import androidx.compose.ui.window.WindowPosition.PlatformDefault.y
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.add_device
 import intervirt.ui.generated.resources.computer
 import intervirt.ui.generated.resources.os_is_needed
 import intervirt.ui.generated.resources.switch
 import io.github.bommbomm34.intervirt.components.CenterRow
+import io.github.bommbomm34.intervirt.components.FlowProgressView
 import io.github.bommbomm34.intervirt.components.TooltipArea
+import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
@@ -60,11 +64,15 @@ fun AddDeviceButton() {
                             onInstall = { image ->
                                 close()
                                 scope.launchDialogCatching(appState) {
-                                    deviceManager.addComputer(
+                                    val flow = deviceManager.addComputer(
                                         x = Random.nextInt(300, 600),
                                         y = Random.nextInt(300, 600),
                                         image = image.fullName,
-                                    )
+                                    ).flow
+
+                                    appState.openDialog {
+                                        ProgressDialog(flow, onClose = ::close)
+                                    }
                                 }
                             },
                         )
