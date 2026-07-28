@@ -32,7 +32,10 @@ fun <T> ProgressDialog(
     CenterColumn {
         FlowProgressView(
             flow = flow,
-            onJobChange = { job = it },
+            onJobChange = {
+                job = it
+                if (it == null) onClose()
+            },
             onMessage = {
                 lastMessage = it
                 onMessage?.invoke(it)
@@ -48,10 +51,6 @@ fun <T> ProgressDialog(
                     text = stringResource(Res.string.cancel),
                     color = MaterialTheme.colorScheme.onErrorContainer,
                 )
-            }
-        } else {
-            Button(onClick = onClose) {
-                Text(stringResource(Res.string.close))
             }
         }
     }
