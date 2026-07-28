@@ -17,11 +17,13 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.are_you_sure_to_remove_device
 import intervirt.ui.generated.resources.external_port_already_bound
 import intervirt.ui.generated.resources.internal_port_already_exposed
 import intervirt.ui.generated.resources.port_out_of_range
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
+import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
@@ -158,6 +160,20 @@ class DeviceSettingsViewModel(
 
     fun changeIpv6(ipv6: String) = viewModelScope.launchDialogCatching(appState) {
         deviceManager.setIpv6(computer, ipv6)
+    }
+
+    fun changeName(name: String) = viewModelScope.launchDialogCatching(appState) {
+        deviceManager.setName(device, name)
+    }
+
+    fun delete(onClose: () -> Unit) {
+        appState.openAcceptDialog(Res.string.are_you_sure_to_remove_device, device.name) {
+            viewModelScope.launchDialogCatching(appState) {
+                deviceManager.removeDevice(device)
+                close() // Accept dialog
+                onClose() // Device settings
+            }
+        }
     }
 
     fun enableInternetAccess(enabled: Boolean) = viewModelScope.launchDialogCatching(appState) {

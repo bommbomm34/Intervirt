@@ -28,11 +28,9 @@ import org.koin.compose.koinInject
 @Composable
 fun GeneralDeviceSettings(
     device: Device,
-    onClose: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onDelete: () -> Unit,
 ) {
-    val deviceManager = koinInject<DeviceManager>()
-    val appState = koinInject<AppState>()
-    val scope = rememberCoroutineScope()
     OutlinedTextField(
         value = device.id.value,
         onValueChange = {}, // ID can't be changed once set
@@ -42,24 +40,12 @@ fun GeneralDeviceSettings(
     GeneralSpacer()
     OutlinedTextField(
         value = device.name,
-        onValueChange = { newName ->
-            scope.launchDialogCatching(appState) {
-                deviceManager.setName(device, newName)
-            }
-        },
+        onValueChange = onNameChange,
         label = { Text(stringResource(Res.string.name)) },
     )
     GeneralSpacer()
     Button(
-        onClick = {
-            appState.openAcceptDialog(Res.string.are_you_sure_to_remove_device, device.name) {
-                scope.launchDialogCatching(appState) {
-                    deviceManager.removeDevice(device)
-                    close()
-                    onClose()
-                }
-            }
-        },
+        onClick = onDelete,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
     ) {
         Text(

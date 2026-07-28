@@ -41,7 +41,11 @@ fun DeviceSettings(
         Column {
             CloseButton(onClose)
             GeneralSpacer()
-            GeneralDeviceSettings(device, onClose)
+            GeneralDeviceSettings(
+                device = device,
+                onNameChange = viewModel::changeName,
+                onDelete = { viewModel.delete(onClose) },
+            )
             GeneralSpacer()
             if (device is Device.Computer) {
                 viewModel.info?.let { info ->
