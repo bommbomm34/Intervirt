@@ -14,6 +14,7 @@ import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
+import io.github.bommbomm34.intervirt.core.util.ext.addFirst
 import io.github.bommbomm34.intervirt.core.util.ext.exec
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
@@ -27,9 +28,6 @@ import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Path
-
-private const val HOST = "127.0.0.1"
-private const val USERNAME = "root"
 
 class ContainerSshClient(
     envHolder: AppEnvHolder,
@@ -45,7 +43,7 @@ class ContainerSshClient(
         ),
         emptyMap<String, Any>(),
     )
-    private val sshClient = SshClient.setUpDefaultClient()
+    private val sshClient: SshClient = SshClient.setUpDefaultClient()
     private lateinit var session: ClientSession
     private val logger = appEnv.getLogger(ContainerSshClient::class, id.value)
 
@@ -65,7 +63,7 @@ class ContainerSshClient(
         environment: Map<String, String>,
         workingDirectory: String?,
     ) = withCatchingContext(Dispatchers.IO) {
-        val totalCommand = listOf(command, *arguments.toTypedArray())
+        val totalCommand = arguments.addFirst(command)
         logger.info { "Opening PTY shell '$totalCommand'on container" }
         val sshChannel = session.createShellChannel(null, environment)
         sshChannel.ptyType = "xterm"
@@ -142,4 +140,9 @@ class ContainerSshClient(
     }
 
     override fun getPath(path: String): Path = fs.getPath(path)
+
+    companion object {
+        private const val HOST = "127.0.0.1"
+        private const val USERNAME = "root"
+    }
 }

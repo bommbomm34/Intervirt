@@ -45,9 +45,7 @@ class SettingsViewModelTest : KoinTest {
 
     @Test
     fun shouldDiscardChangesIfNotSaved() {
-        println(appEnv.virtualContainerIOPort)
         performChanges()
-        println(appEnv.virtualContainerIOPort)
         assertNotEquals("MOCK", appEnv.overrideDockerHost)
         assertNotEquals(6767, appEnv.virtualContainerIOPort)
     }

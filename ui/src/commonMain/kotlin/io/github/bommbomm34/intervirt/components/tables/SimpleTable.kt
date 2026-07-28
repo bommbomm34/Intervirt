@@ -19,7 +19,6 @@ fun SimpleTable(
         content = content.mapIndexed { i, row ->
             buildList {
                 addAll(row.map { { Text(it.toString()) } })
-                println("$i with $row: ${customElements.getOrNull(i)}")
                 customElements.getOrNull(i)?.let { element -> add(element) }
             }
         },

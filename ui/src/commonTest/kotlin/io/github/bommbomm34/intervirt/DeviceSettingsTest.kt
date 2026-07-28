@@ -81,11 +81,8 @@ class DeviceSettingsTest : KoinTest {
 
     @Test
     fun shouldStop() = runTest {
-        println(testComputer)
         viewModel.start().join()
-        println(testComputer)
         viewModel.stop().join()
-        println(testComputer)
         assertEquals(false, testComputer.running)
     }
 

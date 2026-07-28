@@ -29,6 +29,7 @@ import io.github.bommbomm34.intervirt.core.takeWhileInclusive
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.catchTimeout
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -41,7 +42,7 @@ import kotlinx.serialization.SerializationException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val LOG_RAW_JSON = true
+private const val LOG_RAW_JSON = false
 
 class AgentGuestManager(
     envHolder: AppEnvHolder,
@@ -296,11 +297,11 @@ class AgentGuestManager(
 
     context(_: Raise<Failure>)
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
+        wipe().lastResult().bind()
         listenJob?.cancel()
         session?.close()
         Unit
     }
-
     private fun Throwable.isMuted(): Boolean = setOf(
         this is TimeoutCancellationException,
         this::class.qualifiedName == "kotlinx.coroutines.flow.internal.AbortFlowException",

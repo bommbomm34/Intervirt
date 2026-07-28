@@ -23,13 +23,13 @@ object DnsResolverInterceptor : ContainerIOClientExecInterceptor("/usr/bin/doggo
     override suspend fun FlowCollector<CommandStatus>.intercept(args: List<String>) {
         if (args.size < 6) {
             emitError("Expected at least six arguments, but got $args")
+            return
         }
 
         val (name, _, type) = args
         val output = DnsResolverOutput(
             responses = listOf(DnsResponse(resolve(name, type, args.getOrNull(6) == "-x")))
         )
-        println("Sending $output")
 
         emitRunning(defaultJson.encodeToString(output))
         emitEnd(0)

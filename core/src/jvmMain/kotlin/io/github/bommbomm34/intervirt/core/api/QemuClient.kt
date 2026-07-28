@@ -95,12 +95,12 @@ class QemuClient(
     suspend fun shutdownAlpine() = withCatchingContext(Dispatchers.IO) {
         logger.info { "Shutting down Alpine VM" }
         logger.debug { "Closing QEMU monitor session" }
-        qemuMonitorSession?.close()
         if (!::currentProcess.isInitialized) {
             logger.debug { "Alpine VM is not initialized" }
             return@withCatchingContext
         }
         qmpSend("stop")
+        qemuMonitorSession?.close()
         logger.debug { "Waiting for Alpine VM to shutdown" }
         currentProcess.waitFor(appEnv.vmShutdownTimeout, TimeUnit.MILLISECONDS)
         if (currentProcess.isAlive) {
@@ -170,7 +170,8 @@ class QemuClient(
     @Suppress("UNCHECKED_CAST")
     context(_: Raise<Failure>)
     suspend fun qmpSend(json: JsonElement, session: QemuMonitorSession? = qemuMonitorSession): JsonElement {
-        val log = json.jsonObject["execute"]?.jsonPrimitive?.content != "query-status"
+        val executeCommandIfAny = json.jsonObject["execute"]?.jsonPrimitive?.content
+        val log = executeCommandIfAny != "query-status"
         val payload = defaultJson.encodeToString(json)
         session?.withLock {
             if (log) logger.debug { "Send to QMP: $payload" }

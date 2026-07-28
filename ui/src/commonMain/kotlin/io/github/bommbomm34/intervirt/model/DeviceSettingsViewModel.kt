@@ -75,7 +75,9 @@ class DeviceSettingsViewModel(
     init {
         if (isComputer) {
             viewModelScope.launchDialogCatching(appState) {
+                logger.debug { "Initializing IO client for $device" }
                 ioClient = deviceManager.getIOClient(computer)
+                logger.debug { "Retrieving AgentInfo for $device" }
                 info = guestManager.getInfo()
             }
         }

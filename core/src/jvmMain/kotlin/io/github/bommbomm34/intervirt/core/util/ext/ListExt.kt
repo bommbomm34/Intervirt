@@ -6,8 +6,11 @@
 package io.github.bommbomm34.intervirt.core.util.ext
 
 fun <T> List<T>.addFirst(element: T): List<T> {
-    val mutableList = toMutableList()
-    mutableList.addFirst(element)
+    val mutableList = ArrayList<T>(size + 1)
+
+    mutableList += element
+    mutableList += this
+
     return mutableList
 }
 
