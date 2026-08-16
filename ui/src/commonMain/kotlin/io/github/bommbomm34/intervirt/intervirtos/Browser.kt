@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.multiplatform.webview.web.WebView
+import com.multiplatform.webview.web.rememberWebViewNavigator
+import com.multiplatform.webview.web.rememberWebViewState
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.browse
 import intervirt.ui.generated.resources.url
@@ -21,14 +24,8 @@ import io.github.bommbomm34.intervirt.components.*
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.currentAppEnvHolder
 import io.github.bommbomm34.intervirt.util.ext.rememberProxyManager
-import io.github.kdroidfilter.webview.setting.ProxyConfig
-import io.github.kdroidfilter.webview.web.WebView
-import io.github.kdroidfilter.webview.web.rememberWebViewNavigator
-import io.github.kdroidfilter.webview.web.rememberWebViewState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -41,6 +38,7 @@ fun Browser(
     var url by remember { mutableStateOf("") } // URL in the search bar
     var proxyUrl: Address? by remember { mutableStateOf(null) }
     val navigator = rememberWebViewNavigator()
+    val state = rememberWebViewState(HOMEPAGE_URL)
     CatchingLaunchedEffect(browser) {
         proxyUrl = browser.getProxyUrl()
     }
@@ -65,14 +63,12 @@ fun Browser(
         GeneralSpacer()
         val url = proxyUrl
         if (url != null) {
-            val state = rememberWebViewState(HOMEPAGE_URL) {
-                desktopWebSettings.proxyConfig = ProxyConfig.Socks5(url.host, url.port)
-            }
             WebView(
                 state = state,
                 navigator = navigator,
                 modifier = Modifier.fillMaxSize(),
             )
+            TODO("Set proxy URL")
         } else Text(stringResource(Res.string.waiting_for_container_proxy))
     }
 }

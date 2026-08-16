@@ -25,6 +25,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven("https://jogamp.org/deployment/maven")
     }
 }
 
@@ -41,9 +42,4 @@ sourceControl {
 include(":ui")
 include(":core")
 include(":secret")
-includeBuild("external/webview") {
-    dependencySubstitution {
-        substitute(module("intervirt.webview:compose")).using(project(":webview-compose"))
-    }
-}
 include(":logging")
