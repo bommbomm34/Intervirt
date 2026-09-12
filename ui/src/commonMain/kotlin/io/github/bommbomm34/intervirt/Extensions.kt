@@ -11,6 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.pointer.PointerButton
@@ -37,7 +38,11 @@ import java.awt.datatransfer.StringSelection
 
 inline val currentAppEnv: AppEnv
     @Composable
-    get() = currentAppState.env.value
+    get() = currentAppEnvState.value
+
+inline val currentAppEnvState: State<AppEnv>
+    @Composable
+    get() = currentAppState.env.collectAsState()
 
 inline val currentAppEnvHolder: AppEnvHolder
     @Composable

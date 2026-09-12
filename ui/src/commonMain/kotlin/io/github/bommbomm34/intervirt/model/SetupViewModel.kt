@@ -22,6 +22,8 @@ import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.currentAppEnv
+import io.github.bommbomm34.intervirt.currentAppEnvState
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.setup.Installation
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.KoinViewModel
+import kotlin.concurrent.thread
 
 @KoinViewModel
 class SetupViewModel(
@@ -40,8 +43,8 @@ class SetupViewModel(
 ) : ViewModel() {
     val appEnv by envHolder
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
-        { VMConfiguration(appEnv) { appState.env.value = it } },
-        { AppConfiguration(appEnv) { appState.env.value = it } },
+        { VMConfiguration(currentAppEnv) { appState.env.value = it } },
+        { AppConfiguration(currentAppEnv) { appState.env.value = it } },
         { Installation(this@SetupViewModel) },
     )
     var allowInstallation by mutableStateOf(false)

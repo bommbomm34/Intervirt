@@ -35,7 +35,7 @@ fun NamedCheckbox(
         GeneralSpacer(2.dp)
         Column {
             Text(name)
-            tooltip?.let { Text(tooltip, fontSize = currentAppEnv.tooltipFontSize.sp, color = Color.Gray) }
+            tooltip?.let { Text(it, fontSize = currentAppEnv.tooltipFontSize.sp, color = Color.Gray) }
         }
     }
 }
