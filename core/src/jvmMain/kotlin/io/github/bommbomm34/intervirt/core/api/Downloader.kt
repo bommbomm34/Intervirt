@@ -8,16 +8,26 @@ package io.github.bommbomm34.intervirt.core.api
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.Raise
+import arrow.core.raise.catch
 import arrow.core.raise.context.bind
+import arrow.core.raise.context.raise
+import arrow.core.raise.recover
 import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.error
+import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
+import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.delete
+import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.list
+import io.github.vinceglb.filekit.parent
+import io.github.vinceglb.filekit.path
+import io.github.vinceglb.filekit.toKotlinxIoPath
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -26,6 +36,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlinx.io.IOException
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.deleteRecursively
 
 class Downloader(
     private val fileManager: FileManager,
@@ -68,92 +82,73 @@ class Downloader(
         return downloadQemuZip(update)
     }
 
-    fun downloadAlpineDisk(update: Boolean = false): Flow<ResultProgress<String>> = flow {
+    fun downloadAlpineDisk(update: Boolean = false): Flow<ResultProgress<String>> = flowCatching {
         logger.debug { "Downloading disk" }
         if (!appEnv.diskInstalled || update) {
+            // Delete previous disk
+            val destination = fileManager.getFile("disk")
+            destination.deleteContentsRecursively()
             // Invalidate previous installation
             envUpdater set appEnv.copy(diskInstalled = false)
-            val hashRes = appEnv.vmDiskHashUrl.fetch()
-            val file = fileManager.downloadFile(appEnv.vmDiskUrl, "alpine-linux.qcow2", fileManager.getFile("disk"))
-            hashRes.fold(
-                ifRight = { hash ->
-                    file.collect { resultProgress ->
-                        if (resultProgress is ResultProgress.Result) {
-                            logger.debug { "Disk download succeeded" }
-                            resultProgress.result.fold(
-                                ifRight = {
-                                    emit(ResultProgress.success("Download succeeded"))
-                                    envUpdater set appEnv.copy(
-                                        diskInstalled = true,
-                                        currentDiskHash = hash,
-                                    )
-                                },
-                                ifLeft = {
-                                    emit(ResultProgress.failure(it))
-                                },
-                            )
-                        } else {
-                            emit(
-                                ResultProgress.proceed(
-                                    resultProgress.percentage,
-                                    "Downloading VM...",
-                                ),
-                            )
-                        }
-                    }
-                },
-                ifLeft = { emit(ResultProgress.failure(it)) },
-            )
+            val hash = appEnv.vmDiskHashUrl.fetch().bind()
+            val file = fileManager.downloadFile(appEnv.vmDiskUrl, "alpine-linux.qcow2", destination)
+            file.collect { resultProgress ->
+                if (resultProgress is ResultProgress.Result) {
+                    logger.debug { "Disk download succeeded" }
+                    resultProgress.result.bind()
+                    emit(ResultProgress.success("Download succeeded"))
+                    envUpdater set appEnv.copy(
+                        diskInstalled = true,
+                        currentDiskHash = hash,
+                    )
+                } else {
+                    emit(
+                        ResultProgress.proceed(
+                            resultProgress.percentage,
+                            "Downloading VM...",
+                        ),
+                    )
+                }
+            }
         } else {
             logger.debug { "Already installed disk" }
             emit(ResultProgress.success("Successfully downloaded VM"))
         }
     }
 
-    private fun downloadQemuZip(update: Boolean = false): Flow<ResultProgress<String>> = flow {
+    private fun downloadQemuZip(update: Boolean = false): Flow<ResultProgress<String>> = flowCatching {
         logger.debug { "Downloading QEMU" }
         if (!appEnv.qemuInstalled || update) {
             withContext(Dispatchers.IO) {
                 // Wipe previous installation if available
-                fileManager.getFile("qemu").list().forEach { it.delete() }
+                fileManager.getFile("qemu").deleteContentsRecursively()
                 // Invalidate previous installation
                 envUpdater set appEnv.copy(qemuInstalled = false)
                 // Install fresh QEMU
-                val hashRes = appEnv.qemuZipHashUrl.fetch()
+                val hash = appEnv.qemuZipHashUrl.fetch().bind()
                 val file = fileManager.downloadFile(appEnv.qemuZipUrl, "qemu-portable.zip")
-                hashRes.fold(
-                    ifRight = { hash ->
-                        file.collect { resultProgress ->
-                            if (resultProgress is ResultProgress.Result) {
-                                logger.debug { "Successfully downloaded QEMU" }
-                                resultProgress.result.fold(
-                                    ifRight = { zipFile ->
-                                        fileManager.extractZip(zipFile, fileManager.getFile("qemu"))
-                                            .onLeft { emit(ResultProgress.failure(it)) }
-                                        envUpdater set appEnv.copy(
-                                            qemuInstalled = true,
-                                            currentQemuHash = hash,
-                                        )
-                                        emit(
-                                            ResultProgress.success("Successfully downloaded QEMU"),
-                                        )
-                                    },
-                                    ifLeft = {
-                                        emit(ResultProgress.failure(Failure.Download(it.message)))
-                                    },
-                                )
-                            } else {
-                                emit(
-                                    ResultProgress.proceed(
-                                        resultProgress.percentage,
-                                        "Downloading QEMU...",
-                                    ),
-                                )
-                            }
-                        }
-                    },
-                    ifLeft = { emit(ResultProgress.failure(it)) },
-                )
+                file.collect { resultProgress ->
+                    if (resultProgress is ResultProgress.Result) {
+                        logger.debug { "Successfully downloaded QEMU" }
+                        val zipFile = resultProgress.result.bind()
+
+                        fileManager.extractZip(zipFile, fileManager.getFile("qemu")).bind()
+                        envUpdater set appEnv.copy(
+                            qemuInstalled = true,
+                            currentQemuHash = hash,
+                        )
+                        emit(
+                            ResultProgress.success("Successfully downloaded QEMU"),
+                        )
+                    } else {
+                        emit(
+                            ResultProgress.proceed(
+                                resultProgress.percentage,
+                                "Downloading QEMU...",
+                            ),
+                        )
+                    }
+                }
             }
         } else {
             logger.debug { "Already installed QEMU" }
@@ -172,6 +167,19 @@ class Downloader(
             val failure = Failure.Download(res.status.description)
             logger.error(failure) { "Failed acquiring hash from url $this" }
             failure.left()
+        }
+    }
+
+    @OptIn(ExperimentalPathApi::class)
+    context(_: Raise<Failure>)
+    private fun PlatformFile.deleteContentsRecursively() {
+        for (file in list()) {
+            try {
+                file.toJavaPath().deleteRecursively()
+            } catch (e: IOException) {
+                val message = e.message.orEmpty()
+                raise(Failure.FailedFileOperation(file, message))
+            }
         }
     }
 

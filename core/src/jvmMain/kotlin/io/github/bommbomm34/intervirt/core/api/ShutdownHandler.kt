@@ -58,7 +58,6 @@ class ShutdownHandler(
     /**
      * Shuts all services down gracefully.
      * This method doesn't exit the application.
-     * @see gracefulShutdown
      */
     suspend fun gracefulShutdown() {
         if (_closed.compareAndSet(expectedValue = false, newValue = true)){
@@ -82,7 +81,14 @@ class ShutdownHandler(
      */
     fun crash(thread: Thread, throwable: Throwable): Nothing = runBlocking {
         gracefulShutdown()
-        val (report, _) = generateCrashReport(throwable, thread.name)
+        // Accessing `appEnv.debugEnabled` may also fail.
+        val isDebugEnabled = try { appEnv.debugEnabled } catch (_: Exception) { false }
+        val (report, _) = generateCrashReport(
+            throwable = throwable,
+            threadName = thread.name,
+            writeToReportFile = isDebugEnabled,
+            writeToLogFile = isDebugEnabled,
+        )
         getDefaultStream().printlnErr(report)
         exitProcess(1)
     }

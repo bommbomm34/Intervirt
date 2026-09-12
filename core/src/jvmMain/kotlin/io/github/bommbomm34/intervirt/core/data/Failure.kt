@@ -6,6 +6,9 @@ import com.sun.beans.TypeResolver.erase
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.data.qemu.QmpErrorBody
 import io.github.bommbomm34.intervirt.core.exceptions.CommandExecutionException
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.path
+import java.io.File
 
 sealed class Failure(val message: String) {
     companion object {
@@ -91,6 +94,11 @@ sealed class Failure(val message: String) {
         val portForwarding: PortForwarding,
         message: String,
     ) : Failure("Port forwarding $portForwarding is invalid: $message")
+
+    class FailedFileOperation(
+        val file: PlatformFile,
+        message: String,
+    ) : Failure(message)
 
     override fun toString(): String {
         return "Failure(\"$message\")"

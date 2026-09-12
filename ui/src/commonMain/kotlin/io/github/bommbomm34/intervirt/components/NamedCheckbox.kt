@@ -24,11 +24,13 @@ fun NamedCheckbox(
     onCheckedChange: (Boolean) -> Unit,
     name: String,
     tooltip: String? = null,
+    enabled: Boolean = true,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            enabled = enabled,
         )
         GeneralSpacer(2.dp)
         Column {

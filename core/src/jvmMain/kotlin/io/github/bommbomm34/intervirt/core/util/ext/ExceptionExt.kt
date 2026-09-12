@@ -32,8 +32,8 @@ suspend fun <R> withCatchingContext(context: CoroutineContext, block: suspend Co
     }
 }
 
-fun <T> flowCatching(
-    block: suspend context(Raise<Failure>) FlowCollector<ResultProgress<T>>.() -> Unit,
+inline fun <T> flowCatching(
+    crossinline block: suspend context(Raise<Failure>) FlowCollector<ResultProgress<T>>.() -> Unit,
 ): Flow<ResultProgress<T>> {
     return flow {
         var failure: Failure? = null
@@ -45,8 +45,8 @@ fun <T> flowCatching(
     }
 }
 
-fun <T> channelFlowCatching(
-    block: suspend context(Raise<Failure>) ProducerScope<ResultProgress<T>>.() -> Unit,
+inline fun <T> channelFlowCatching(
+    crossinline block: suspend context(Raise<Failure>) ProducerScope<ResultProgress<T>>.() -> Unit,
 ): Flow<ResultProgress<T>> {
     return channelFlow {
         var failure: Failure? = null

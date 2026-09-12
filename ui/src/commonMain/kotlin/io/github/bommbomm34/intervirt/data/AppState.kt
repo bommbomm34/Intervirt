@@ -20,6 +20,7 @@ import intervirt.ui.generated.resources.allStringResources
 import intervirt.ui.generated.resources.command_execution_failure
 import intervirt.ui.generated.resources.container_execution_failure
 import intervirt.ui.generated.resources.download_failure
+import intervirt.ui.generated.resources.file_operation_failed
 import intervirt.ui.generated.resources.illegal_agent_response
 import intervirt.ui.generated.resources.illegal_argument
 import intervirt.ui.generated.resources.illegal_state
@@ -46,6 +47,7 @@ import io.github.bommbomm34.intervirt.core.data.env.loadEnv
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.jetbrains.compose.resources.StringResource
@@ -134,6 +136,7 @@ private suspend fun Failure.getLocalizedMessage(): String {
         is Failure.Unexpected -> getString(Res.string.unexpected_failure, message)
         is Failure.VersionMismatch -> getString(Res.string.version_mismatch, CURRENT_VERSION, other)
         is Failure.ZipExtraction -> getString(Res.string.zip_extraction_failure, message)
+        is Failure.FailedFileOperation -> getString(Res.string.file_operation_failed, file.path, message)
         is Failure.PortForwardingValidationFailure -> throw IllegalStateException("This failure shouldn't be exposed: $this")
     }
 }
