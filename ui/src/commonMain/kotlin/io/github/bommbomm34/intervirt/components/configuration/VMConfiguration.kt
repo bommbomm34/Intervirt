@@ -8,6 +8,7 @@ package io.github.bommbomm34.intervirt.components.configuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -23,7 +24,7 @@ fun VMConfiguration(
 ) {
     CenterColumn {
         Text(stringResource(Res.string.vm_setup_introduction))
-        GeneralSpacer()
+        GeneralSpacer(16.dp)
         IntegerTextField(
             value = appEnv.vmRam,
             onValueChange = { onEnvChange(appEnv.copy(vmRam = it)) },
