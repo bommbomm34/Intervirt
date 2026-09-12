@@ -19,6 +19,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun Setup() {
     val viewModel = koinViewModel<SetupViewModel>()
+
     AlignedBox(Alignment.TopCenter) {
         Text(
             text = "Intervirt Setup",

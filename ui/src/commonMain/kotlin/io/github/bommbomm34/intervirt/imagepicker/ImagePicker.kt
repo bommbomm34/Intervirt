@@ -19,6 +19,7 @@ import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.IMAGES
 import io.github.bommbomm34.intervirt.data.Image
+import io.github.bommbomm34.intervirt.data.Images
 import org.koin.compose.koinInject
 
 @Composable
@@ -35,7 +36,7 @@ fun ImagePicker(
         LazyVerticalGrid(
             columns = GridCells.FixedSize(currentAppEnv.osIconSize.dp * 1.5f),
         ) {
-            items(IMAGES) { image ->
+            items(Images.ALL_IMAGES) { image ->
                 ImageItem(image) {
                     showImageInfo = true
                     selectedImage = image
