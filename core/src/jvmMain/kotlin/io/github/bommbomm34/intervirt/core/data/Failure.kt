@@ -100,6 +100,13 @@ sealed class Failure(val message: String) {
         message: String,
     ) : Failure(message)
 
+    class InvalidOperatingSystem(
+        val os: io.github.bommbomm34.intervirt.core.data.OS,
+        val operation: String,
+    ) : Failure("Invalid operating system for operation '$operation': $os")
+
+    class MissingPermissions(val operation: String) : Failure("Missing permissions: $operation")
+
     override fun toString(): String {
         return "Failure(\"$message\")"
     }

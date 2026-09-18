@@ -6,33 +6,36 @@
 package io.github.bommbomm34.intervirt.model
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import arrow.core.raise.Raise
+import arrow.core.raise.context.raise
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.applying_configuration
 import intervirt.ui.generated.resources.creating_intervirt_folder
 import io.github.bommbomm34.intervirt.components.configuration.AppConfiguration
 import io.github.bommbomm34.intervirt.components.configuration.VMConfiguration
-import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
+import io.github.bommbomm34.intervirt.core.api.atomic.setValue
+import io.github.bommbomm34.intervirt.core.data.Failure
+import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.getOS
+import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.currentAppEnv
-import io.github.bommbomm34.intervirt.currentAppEnvState
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
+import io.github.bommbomm34.intervirt.hasGroupMembership
 import io.github.bommbomm34.intervirt.setup.Installation
+import jdk.jfr.internal.OldObjectSample.emit
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.KoinViewModel
-import kotlin.concurrent.thread
 
 @KoinViewModel
 class SetupViewModel(
@@ -41,10 +44,10 @@ class SetupViewModel(
     private val fileManager: FileManager,
     private val appState: AppState,
 ) : ViewModel() {
-    val appEnv by envHolder
+    var appEnv by envHolder
     val setupScreens: List<@Composable (AnimatedVisibilityScope.() -> Unit)> = listOf(
-        { VMConfiguration(currentAppEnv) { appState.env.value = it } },
-        { AppConfiguration(currentAppEnv) { appState.env.value = it } },
+        { VMConfiguration(currentAppEnv) { appEnv = it } },
+        { AppConfiguration(currentAppEnv) { appEnv = it } },
         { Installation(this@SetupViewModel) },
     )
     var allowInstallation by mutableStateOf(false)
@@ -58,7 +61,9 @@ class SetupViewModel(
             job = null
             flow = null
         } else {
-            flow = flow {
+            flow = flowCatching {
+                // Check KVM access
+                if (appEnv.vmEnableKvm) checkKvmAccess()
                 // Creating Intervirt folder
                 emit(
                     ResultProgress.proceed(
@@ -85,9 +90,26 @@ class SetupViewModel(
                     emit(it.clone(percentage = it.percentage * 0.5f + 0.5f))
                     if (it is ResultProgress.Result && it.result.isLeft()) job!!.cancel()
                 }
-                appState.env.value = appEnv.copy(installed = true)
+                appEnv = appEnv.copy(installed = true)
                 appState.currentScreen = Screen.HOME
             }
+        }
+    }
+
+    context(_: Raise<Failure>)
+    private fun checkKvmAccess() {
+        // Check OS
+        if (getOS() != OS.LINUX) raise(
+            Failure.InvalidOperatingSystem(
+                os = OS.CURRENT,
+                operation = "enable KVM",
+            ),
+        )
+        // Check if user is root
+        if (!hasGroupMembership("kvm")) {
+            val username = System.getProperty("user.name")?.let { " '$it'" } ?: ""
+
+            raise(Failure.MissingPermissions("Current user$username is not a member of group 'kvm'."))
         }
     }
 }

@@ -25,6 +25,8 @@ import intervirt.ui.generated.resources.illegal_agent_response
 import intervirt.ui.generated.resources.illegal_argument
 import intervirt.ui.generated.resources.illegal_state
 import intervirt.ui.generated.resources.invalid_mail
+import intervirt.ui.generated.resources.invalid_operating_system_for_operation
+import intervirt.ui.generated.resources.missing_permissions
 import intervirt.ui.generated.resources.not_found
 import intervirt.ui.generated.resources.not_supported_operation
 import intervirt.ui.generated.resources.operation_already_performed
@@ -137,6 +139,8 @@ private suspend fun Failure.getLocalizedMessage(): String {
         is Failure.VersionMismatch -> getString(Res.string.version_mismatch, CURRENT_VERSION, other)
         is Failure.ZipExtraction -> getString(Res.string.zip_extraction_failure, message)
         is Failure.FailedFileOperation -> getString(Res.string.file_operation_failed, file.path, message)
+        is Failure.InvalidOperatingSystem -> getString(Res.string.invalid_operating_system_for_operation, operation, os)
+        is Failure.MissingPermissions -> getString(Res.string.missing_permissions, operation)
         is Failure.PortForwardingValidationFailure -> throw IllegalStateException("This failure shouldn't be exposed: $this")
     }
 }

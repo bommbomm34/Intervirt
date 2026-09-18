@@ -7,11 +7,14 @@ package io.github.bommbomm34.intervirt.core.data
 
 import io.github.bommbomm34.intervirt.core.exceptions.UnsupportedOsException
 
-enum class OS {
-    WINDOWS, LINUX;
+enum class OS(private val asString: String) {
+    WINDOWS("Windows"),
+    LINUX("Linux");
+
+    override fun toString() = asString
 
     companion object {
-        val DEFAULT = System.getProperty("os.name").let {
+        val CURRENT = System.getProperty("os.name").let {
             when {
                 it.startsWith("windows", ignoreCase = true) -> WINDOWS
                 it.startsWith("linux", ignoreCase = true) -> LINUX
@@ -21,12 +24,4 @@ enum class OS {
     }
 }
 
-fun getOS(): OS {
-    val os = System.getProperty("os.name")
-    val ref = os.lowercase()
-    return when {
-        ref.startsWith("windows") -> OS.WINDOWS
-        ref.startsWith("linux") -> OS.LINUX
-        else -> throw UnsupportedOsException()
-    }
-}
+fun getOS() = OS.CURRENT

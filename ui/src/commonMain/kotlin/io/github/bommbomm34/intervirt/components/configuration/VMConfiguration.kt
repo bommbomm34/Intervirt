@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.components.configuration
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +24,9 @@ fun VMConfiguration(
     onEnvChange: (AppEnv) -> Unit,
 ) {
     CenterColumn {
-        Text(stringResource(Res.string.vm_setup_introduction))
+        SelectionContainer {
+            Text(stringResource(Res.string.vm_setup_introduction))
+        }
         GeneralSpacer(16.dp)
         IntegerTextField(
             value = appEnv.vmRam,

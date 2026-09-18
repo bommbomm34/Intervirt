@@ -190,4 +190,6 @@
     <string name="file_operation_failed">File operation failed on file '%1$s': %2$s</string>
     <string name="pick_os">Pick an OS</string>
     <string name="pick_os_description">Choose an operating system for your computer. IntervirtOS is recommended to begin with.</string>
+    <string name="invalid_operating_system_for_operation">Invalid operating system for operation '%1$s': %2$s</string>
+    <string name="missing_permissions">Missing permissions: %1$s</string>
 </resources>
