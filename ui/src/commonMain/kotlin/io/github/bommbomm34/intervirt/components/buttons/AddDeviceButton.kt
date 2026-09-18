@@ -13,24 +13,18 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.x
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.y
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.add_device
 import intervirt.ui.generated.resources.computer
-import intervirt.ui.generated.resources.os_is_needed
 import intervirt.ui.generated.resources.switch
 import io.github.bommbomm34.intervirt.components.CenterRow
-import io.github.bommbomm34.intervirt.components.FlowProgressView
 import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.imagepicker.ImagePicker
-import jdk.internal.net.http.common.Utils.close
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -41,7 +35,6 @@ fun AddDeviceButton() {
     val appState = koinInject<AppState>()
     var dropdownExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val osIsNeededText = stringResource(Res.string.os_is_needed)
     val deviceManager = koinInject<DeviceManager>()
     Column {
         DropdownMenu(
@@ -54,13 +47,6 @@ fun AddDeviceButton() {
                     // Add computer
                     appState.openDialog(width = 1000.dp, height = 800.dp) {
                         ImagePicker(
-                            onDismiss = {
-                                close()
-                                appState.openDialog(
-                                    message = osIsNeededText,
-                                    severity = Severity.ERROR,
-                                )
-                            },
                             onInstall = { image ->
                                 close()
                                 scope.launchDialogCatching(appState) {

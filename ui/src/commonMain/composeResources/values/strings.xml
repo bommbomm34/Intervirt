@@ -73,7 +73,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="are_you_sure_to_remove_device">Are you sure to remove device %1$s?</string>
-    <string name="os_is_needed">An OS is required to create a computer</string>
     <string name="install_os">Install OS</string>
     <string name="options">Options</string>
     <string name="intervirt_settings">Intervirt Settings</string>

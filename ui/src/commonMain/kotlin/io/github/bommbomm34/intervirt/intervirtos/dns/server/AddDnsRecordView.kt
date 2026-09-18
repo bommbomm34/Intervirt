@@ -15,7 +15,6 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.SelectionDropdown
-import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.components.textfields.ReadOnlyTextField
 import io.github.bommbomm34.intervirt.components.textfields.SimpleTextField
@@ -50,17 +49,12 @@ private val DNS_CLASSES = listOf(
 )
 
 @Composable
-fun AddDnsRecordView(
-    onCancel: () -> Unit = {},
-    onAdd: (DnsRecord) -> Unit,
-) {
+fun AddDnsRecordView(onAdd: (DnsRecord) -> Unit) {
     var name by remember { mutableStateOf("example.com.") }
     var ttl by remember { mutableIntStateOf(3600) }
     var dnsClass by remember { mutableStateOf("A") }
     var data by remember { mutableStateOf("104.18.27.120") }
-    AlignedBox(Alignment.TopStart) {
-        CloseButton(onCancel)
-    }
+
     CenterColumn {
         SimpleTextField(
             value = name,

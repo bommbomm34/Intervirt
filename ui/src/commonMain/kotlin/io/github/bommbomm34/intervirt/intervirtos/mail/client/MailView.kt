@@ -30,13 +30,10 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.TooltipArea
-import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.currentAppEnv
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 private val FROM_TO_COLOR = Color.Gray
 
@@ -45,7 +42,6 @@ fun MailView(
     mail: Mail,
     onDelete: () -> Unit,
     onReply: () -> Unit,
-    onClose: () -> Unit,
 ) {
     // Subject, From, To and Content
     SelectionContainer {
@@ -80,9 +76,6 @@ fun MailView(
     // Delete, Reply and Close
     AlignedBox(Alignment.TopEnd) {
         Column {
-            // Close
-            CloseButton(onClose)
-            GeneralSpacer()
             // Reply
             TooltipArea(Res.string.reply) {
                 FloatingActionButton(onReply) {

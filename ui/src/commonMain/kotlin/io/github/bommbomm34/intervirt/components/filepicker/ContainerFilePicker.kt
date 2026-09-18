@@ -16,7 +16,6 @@ import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.BackButton
-import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.FileManager
 import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
@@ -45,11 +44,6 @@ fun ContainerFilePicker(
             .fillMaxWidth(0.9f),
     ) {
         CenterRow {
-            CloseButton {
-                logger.debug { "Selected nothing" }
-                onPick(null)
-            }
-            GeneralSpacer()
             currentPath.parent?.let {
                 if (shouldShowBackButton(it, fileManager, currentAppEnv.virtualContainerIO)) {
                     BackButton {

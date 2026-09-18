@@ -87,7 +87,6 @@ class MailClientViewModel(
                         }
                     }
                 },
-                onClose = ::close,
             )
         }
     }
@@ -132,7 +131,6 @@ class MailClientViewModel(
             MailEditor(
                 sender = client.mailUser!!,
                 mail = mail,
-                onCancel = ::close,
             ) {
                 close()
                 scope.launch {

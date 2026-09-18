@@ -52,7 +52,7 @@ fun DnsServer(
         AlignedBox(Alignment.BottomEnd) {
             AddButton {
                 appState.openDialog {
-                    AddDnsRecordView(::close) {
+                    AddDnsRecordView {
                         scope.launchDialogCatching(appState) {
                             dnsServer.addRecord(it)
                             records.add(it)

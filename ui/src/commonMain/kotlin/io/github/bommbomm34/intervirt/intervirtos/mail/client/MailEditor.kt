@@ -14,7 +14,6 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.components.buttons.SendButton
 import io.github.bommbomm34.intervirt.core.data.Mail
 import io.github.bommbomm34.intervirt.core.data.MailUser
@@ -25,15 +24,12 @@ import org.jetbrains.compose.resources.stringResource
 fun MailEditor(
     sender: MailUser,
     mail: Mail? = null,
-    onCancel: () -> Unit = {},
     onSend: (Mail) -> Unit,
 ) {
     var receiverAddress by remember { mutableStateOf(mail?.receiver?.address ?: "") }
     var subject by remember { mutableStateOf(mail?.subject ?: "") }
     var content by remember { mutableStateOf(mail?.content ?: "") }
-    AlignedBox(Alignment.TopStart) {
-        CloseButton(onCancel)
-    }
+
     CenterColumn {
         OutlinedTextField(
             value = sender.address,
