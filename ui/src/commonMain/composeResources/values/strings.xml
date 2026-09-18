@@ -193,4 +193,6 @@
     <string name="missing_permissions">Missing permissions: %1$s</string>
     <string name="empty_directory">Empty directory</string>
     <string name="upload_some_files">Upload some files to fill the directory up!</string>
+    <!-- We do not use interpolation here because this text must have a seperate bold style -->
+    <string name="current_directory">Current directory: </string>
 </resources>

@@ -12,6 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.copy
+import intervirt.ui.generated.resources.current_directory
+import io.github.bommbomm34.intervirt.appendResource
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
@@ -26,6 +34,8 @@ import org.koin.compose.koinInject
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.isDirectory
+
+private val BOLD_STYLE = SpanStyle(fontWeight = FontWeight.Bold)
 
 @Composable
 fun ContainerFilePicker(
@@ -52,7 +62,15 @@ fun ContainerFilePicker(
                 }
             }
             GeneralSpacer()
-            Text(currentPath.toString())
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(BOLD_STYLE) {
+                        appendResource(Res.string.current_directory)
+                    }
+
+                    append(currentPath.toString())
+                }
+            )
         }
         GeneralSpacer()
         FilesTable(
