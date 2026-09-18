@@ -28,26 +28,32 @@ fun FilesTable(
     files: List<Path>,
     selectable: Boolean,
     onClick: (Path) -> Unit,
-) = ClickableTable(
-    headers = headers,
-    data = files.map { file ->
-        val isFile = file.isRegularFile()
+) {
+    if (files.isEmpty()) {
+        EmptyDirectoryView()
+    } else {
+        ClickableTable(
+            headers = headers,
+            data = files.map { file ->
+                val isFile = file.isRegularFile()
 
-        listOf(
-            {
-                // Icon
-                GeneralIcon(
-                    imageVector = if (isFile) Icons.Default.FilePresent else Icons.Default.Folder,
-                    contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder),
+                listOf(
+                    {
+                        // Icon
+                        GeneralIcon(
+                            imageVector = if (isFile) Icons.Default.FilePresent else Icons.Default.Folder,
+                            contentDescription = stringResource(if (isFile) Res.string.file else Res.string.folder),
+                        )
+                    },
+                    {
+                        // Filename
+                        Text(file.name)
+                    },
                 )
             },
-            {
-                // Filename
-                Text(file.name)
-            },
-        )
-    },
-) {
-    val file = files[it]
-    if (selectable || file.isDirectory()) onClick(files[it])
+        ) {
+            val file = files[it]
+            if (selectable || file.isDirectory()) onClick(files[it])
+        }
+    }
 }
