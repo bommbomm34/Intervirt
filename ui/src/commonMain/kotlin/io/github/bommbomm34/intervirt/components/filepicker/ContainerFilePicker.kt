@@ -16,6 +16,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.copy
 import intervirt.ui.generated.resources.current_directory
@@ -32,6 +33,7 @@ import io.github.bommbomm34.intervirt.listFiles
 import io.github.bommbomm34.intervirt.rememberLogger
 import org.koin.compose.koinInject
 import java.nio.file.Path
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.isDirectory
 
@@ -82,10 +84,11 @@ fun ContainerFilePicker(
                 onPick(it)
             }
         }
-        saveFilename?.let { default ->
-            AlignedBox(Alignment.BottomCenter) {
-                FileSaveView(default) { onPick(currentPath.resolve(it)) }
-            }
+    }
+
+    saveFilename?.let { default ->
+        AlignedBox(Alignment.BottomCenter) {
+            FileSaveView(default) { onPick(currentPath.resolve(it)) }
         }
     }
 }

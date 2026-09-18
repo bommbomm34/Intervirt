@@ -14,6 +14,7 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
 import io.github.bommbomm34.intervirt.components.GeneralIcon
+import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
 import org.jetbrains.compose.resources.stringResource
 import java.nio.file.Path
@@ -21,7 +22,7 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
 
-private val headers = listOf("", "Filename")
+private val HEADERS = listOf("", "Filename", "")
 
 @Composable
 fun FilesTable(
@@ -33,7 +34,7 @@ fun FilesTable(
         EmptyDirectoryView()
     } else {
         ClickableTable(
-            headers = headers,
+            headers = HEADERS,
             data = files.map { file ->
                 val isFile = file.isRegularFile()
 
