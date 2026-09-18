@@ -32,6 +32,7 @@ fun FilesTable(
     headers = headers,
     data = files.map { file ->
         val isFile = file.isRegularFile()
+
         listOf(
             {
                 // Icon

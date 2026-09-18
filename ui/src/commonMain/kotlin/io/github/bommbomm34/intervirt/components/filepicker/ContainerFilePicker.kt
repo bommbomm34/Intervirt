@@ -8,6 +8,7 @@ package io.github.bommbomm34.intervirt.components.filepicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,8 +18,12 @@ import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.BackButton
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
+import io.github.bommbomm34.intervirt.core.api.FileManager
+import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
+import io.github.bommbomm34.intervirt.currentAppEnv
+import io.github.bommbomm34.intervirt.listFiles
 import io.github.bommbomm34.intervirt.rememberLogger
-import io.github.vinceglb.filekit.PlatformFile
+import org.koin.compose.koinInject
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.isDirectory
@@ -30,10 +35,10 @@ fun ContainerFilePicker(
     onPick: (Path?) -> Unit,
 ) {
     var currentPath by remember { mutableStateOf(ioClient.getPath("/")) }
-    val files = currentPath.toFile()
-        .listFiles()
-        .map { it.toPath() }
+    val files = currentPath.listFiles()
     val logger = rememberLogger("ContainerFilePicker")
+    val fileManager = koinInject<FileManager>()
+
     Column(
         modifier = Modifier
             .fillMaxHeight(0.8f)
@@ -46,10 +51,14 @@ fun ContainerFilePicker(
             }
             GeneralSpacer()
             currentPath.parent?.let {
-                BackButton {
-                    currentPath = it
+                if (shouldShowBackButton(it, fileManager, currentAppEnv.virtualContainerIO)) {
+                    BackButton {
+                        currentPath = it
+                    }
                 }
             }
+            GeneralSpacer()
+            Text(currentPath.toString())
         }
         GeneralSpacer()
         FilesTable(
@@ -67,4 +76,24 @@ fun ContainerFilePicker(
             }
         }
     }
+}
+
+// It doesn't need to be highly secure because INTERVIRT_VIRTUAL_CONTAINER_IO
+// should only be enabled during testing and not in production mode.
+private fun shouldShowBackButton(
+    parent: Path,
+    fileManager: FileManager,
+    virtualContainerIO: Boolean,
+): Boolean {
+    if (!virtualContainerIO) return true
+    val virtualDir = fileManager.getFile("virtual").toJavaPath()
+    if (parent == virtualDir) return false
+    var parent: Path? = parent.parent
+
+    while (parent != null) {
+        if (parent == virtualDir) return true
+        parent = parent.parent
+    }
+
+    return false
 }

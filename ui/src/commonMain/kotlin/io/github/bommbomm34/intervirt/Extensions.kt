@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
@@ -40,8 +39,11 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.plugin.module.dsl.single
 import java.awt.datatransfer.StringSelection
+import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.readText
+import kotlin.streams.asSequence
 
 inline val currentAppEnv: AppEnv
     @Composable
@@ -94,7 +96,7 @@ fun Appendable.appendResource(res: StringResource): Appendable = append(stringRe
 @Composable
 fun Appendable.appendResourceLine(res: StringResource): Appendable = appendLine(stringResource(res))
 
-
+fun Path.listFiles(): List<Path> = Files.list(this).toList()
 
 fun hasGroupMembership(group: String): Boolean {
     return GroupMembershipChecker.checkGroupMembership(group)
