@@ -30,6 +30,8 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.impl.AppEnvHolderImpl
 import io.github.bommbomm34.intervirt.impl.ProjectHolderImpl
 import io.github.bommbomm34.intervirt.logging.KLogger
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -80,3 +82,9 @@ fun Module.singleProjectHolder() = single { ProjectHolder(ProjectHolderImpl(get(
 fun Module.singleAppState() = single { AppState(get<Settings>()) }
 
 fun Module.singleTestAppState() = single { AppState(getTestAppEnv()) }
+
+@Composable
+fun Appendable.appendResource(res: StringResource): Appendable = append(stringResource(res))
+
+@Composable
+fun Appendable.appendResourceLine(res: StringResource): Appendable = appendLine(stringResource(res))

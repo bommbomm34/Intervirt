@@ -188,4 +188,6 @@
     <string name="version_mismatch">Version mismatch between current version %1$s and other version %2$s (perform updates if necessary)</string>
     <string name="port_out_of_range">Port out of range (1-65535): %1$s</string>
     <string name="file_operation_failed">File operation failed on file '%1$s': %2$s</string>
+    <string name="pick_os">Pick an OS</string>
+    <string name="pick_os_description">Choose an operating system for your computer. IntervirtOS is recommended to begin with.</string>
 </resources>

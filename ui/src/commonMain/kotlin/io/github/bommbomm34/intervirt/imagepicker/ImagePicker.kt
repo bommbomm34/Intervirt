@@ -6,21 +6,38 @@
 package io.github.bommbomm34.intervirt.imagepicker
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import intervirt.ui.generated.resources.Res
+import intervirt.ui.generated.resources.pick_os
+import intervirt.ui.generated.resources.pick_os_description
+import io.github.bommbomm34.intervirt.appendResource
+import io.github.bommbomm34.intervirt.appendResourceLine
 import io.github.bommbomm34.intervirt.components.AlignedBox
+import io.github.bommbomm34.intervirt.components.CenterColumn
+import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.buttons.CloseButton
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.currentAppEnv
-import io.github.bommbomm34.intervirt.data.AppState
-import io.github.bommbomm34.intervirt.data.IMAGES
 import io.github.bommbomm34.intervirt.data.Image
 import io.github.bommbomm34.intervirt.data.Images
-import org.koin.compose.koinInject
+
+private val HEADLINE_STYLE = SpanStyle(
+    fontSize = 32.sp,
+    fontWeight = FontWeight.Bold,
+)
 
 @Composable
 fun ImagePicker(
@@ -29,11 +46,22 @@ fun ImagePicker(
 ) {
     var showImageInfo by remember { mutableStateOf(false) }
     var selectedImage: Image? by remember { mutableStateOf(null) }
+
     AlignedBox(Alignment.TopStart) {
         CloseButton(onDismiss)
     }
-    AlignedBox(Alignment.Center, 64.dp) {
+    CenterColumn(Modifier.padding(top = 32.dp)) {
+        Text(
+            text = buildAnnotatedString {
+                withStyle(HEADLINE_STYLE) {
+                    appendResourceLine(Res.string.pick_os)
+                }
+
+                appendResource(Res.string.pick_os_description)
+            },
+        )
         LazyVerticalGrid(
+            modifier = Modifier.padding(8.dp),
             columns = GridCells.FixedSize(currentAppEnv.osIconSize.dp * 1.5f),
         ) {
             items(Images.ALL_IMAGES) { image ->
