@@ -39,14 +39,14 @@ class SettingsViewModelTest : KoinTest {
     }
 
     @Test
-    fun shouldDiscardChangesIfNotSaved() {
+    fun `should discard changes if not saved`() {
         performChanges()
         assertNotEquals("MOCK", appEnv.overrideDockerHost)
         assertNotEquals(6767, appEnv.virtualContainerIOPort)
     }
 
     @Test
-    fun shouldSaveChanges() {
+    fun `should save changes`() {
         performChanges()
         viewModel.saveChanges()
         assertEquals("MOCK", appEnv.overrideDockerHost)

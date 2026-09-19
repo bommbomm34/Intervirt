@@ -16,7 +16,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-@OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
 class AppEnvTest {
     private val map = mutableMapOf<String, Any>()
     private val settings = MapSettings(map)
@@ -24,20 +23,20 @@ class AppEnvTest {
     private val appEnv by _appEnv
 
     @Test
-    fun shouldNotSaveReallyPersistent() {
+    fun `should not save really persistent`() {
         _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
         val realAppEnv = getAppEnv()
         assertNotEquals("MOCK", realAppEnv.overrideDockerHost)
     }
 
     @Test
-    fun shouldSaveTemporarily() {
+    fun `should save temporarily`() {
         _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
         assertEquals("MOCK", appEnv.overrideDockerHost)
     }
 
     @Test
-    fun shouldSavePersistent() {
+    fun `should save persistent`() {
         _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
         settings.storeEnv(appEnv)
         val otherAppEnv = getTestAppEnv(settings)
@@ -46,7 +45,7 @@ class AppEnvTest {
     }
 
     @Test
-    fun shouldGetDefault() {
+    fun `should get default`() {
         assertEquals(true, appEnv.debugEnabled)
     }
 }

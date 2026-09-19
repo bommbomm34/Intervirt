@@ -23,7 +23,7 @@ class ExecutorTest {
     val executor = DefaultExecutor(AppEnvHolder(getTestAppEnv()))
 
     @Test
-    fun shouldRunSuccessfulCommandOnHost() = runIntervirtTest {
+    fun `should run successful command on host`() = runIntervirtTest {
         val (output, status) = executor
             .runCommand(null, listOf(*getEchoPath(), "Hello World"))
             .getCommandResult()
@@ -32,7 +32,7 @@ class ExecutorTest {
     }
 
     @Test
-    fun shouldRunSuccessfulCommandOnHostWithWorkingFolder() = runIntervirtTest {
+    fun `should run successful command on host with working folder`() = runIntervirtTest {
         val testFolder = when (getOS()) {
             OS.WINDOWS -> PlatformFile("C:\\Windows\\System32\\drivers\\etc\\")
             OS.LINUX -> PlatformFile("/etc/")
@@ -45,9 +45,9 @@ class ExecutorTest {
     }
 
     @Test
-    fun shouldRunNotExistingCommandOnHost() = runIntervirtTest {
+    fun `should run non-existing command on host`() = runIntervirtTest {
         val (_, status) = executor
-            .runCommand(null, listOf("invalid_command_intervirt_${UUID.randomUUID().hashCode()}"))
+            .runCommand(null, listOf("invalid_command_intervirt_312932031"))
             .getCommandResult()
         assertNotEquals(0, status)
     }

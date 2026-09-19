@@ -42,7 +42,7 @@ class FileManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldInitSuccessfully() = runIntervirtTest {
+    fun `should initialize successfully`() = runIntervirtTest {
         fileManager.init()
         val files = appEnv.actualDataDir.list().map { it.name }
         assertContains(files, "qemu")
@@ -51,7 +51,7 @@ class FileManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDownloadFile() = runIntervirtTest {
+    fun `should download file`() = runIntervirtTest {
         fileManager.init()
         var finishedSuccessfully = false
         fileManager.downloadFile(DOWNLOAD_URL, "license").collect {
@@ -72,7 +72,7 @@ class FileManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldExtractZip() = runIntervirtTest {
+    fun `should extract ZIP`() = runIntervirtTest {
         val tempFolder = fileManager.getFile("cache/temp-folder")
         val file = PlatformFile(File(javaClass.getResource("/hello.zip")!!.file))
         fileManager.extractZip(file, tempFolder)

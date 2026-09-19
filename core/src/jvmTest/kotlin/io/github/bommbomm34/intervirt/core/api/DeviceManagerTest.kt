@@ -94,20 +94,20 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldAddComputer() = runIntervirtTest {
+    fun `should add computer`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         assertContains(project.devices, computer)
     }
 
     @Test
-    fun shouldRemoveDevice() = runIntervirtTest {
+    fun `should remove device`() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
         deviceManager.removeDevice(mockComputer).lastResult().bind()
         assertFalse { project.devices.contains(mockComputer) }
     }
 
     @Test
-    fun shouldAddSwitch() = runIntervirtTest {
+    fun `should add switch`() = runIntervirtTest {
         val switch = deviceManager.addSwitch(
             x = 20,
             y = 20,
@@ -116,7 +116,7 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldConnectComputer() = runIntervirtTest {
+    fun `should connect computer`() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
         deviceManager.addComputer(mockComputer2)
         deviceManager.connectDevice(mockComputer, mockComputer2)
@@ -127,7 +127,7 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDisconnectComputer() = runIntervirtTest {
+    fun `should disconnect computer`() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
         deviceManager.addComputer(mockComputer2)
         deviceManager.connectDevice(mockComputer, mockComputer2)
@@ -138,7 +138,7 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldConnectComputerSwitch() = runIntervirtTest {
+    fun `should connect computer to switch`() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
         val switch = deviceManager.addSwitch(x = 20, y = 20)
         deviceManager.connectDevice(mockComputer, switch)
@@ -149,7 +149,7 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDisconnectComputerSwitch() = runIntervirtTest {
+    fun `should disconnect computer from switch`() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
         val switch = deviceManager.addSwitch(x = 20, y = 20)
         deviceManager.connectDevice(mockComputer, switch)
@@ -160,7 +160,7 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldSetIpv4() = runIntervirtTest {
+    fun `should set IPv4 of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         val ipv4 = randomIpv4(getInfo().ipv4Subnet)
         deviceManager.setIpv4(mockComputer, ipv4)
@@ -168,7 +168,7 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldSetIpv6() = runIntervirtTest {
+    fun `should set IPv6 of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         val ipv6 = randomIpv6(getInfo().ipv6Subnet)
         deviceManager.setIpv6(mockComputer, ipv6)
@@ -176,41 +176,41 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldSetName() = runIntervirtTest {
+    fun `should set name of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.setName(computer, "COMPUTER")
-        assertEquals(project.getDevice(computer).name, "COMPUTER")
+        assertEquals("COMPUTER", project.getDevice(computer).name)
     }
 
     @Test
-    fun shouldSetInternetEnabled() = runIntervirtTest {
+    fun `should enable internet of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.setInternetEnabled(computer, true)
-        assertEquals(project.getDevice(computer).internetEnabled, true)
+        assertEquals(true, project.getDevice(computer).internetEnabled)
     }
 
     @Test
-    fun shouldStartComputer() = runIntervirtTest {
+    fun `should start computer`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.stop(computer) // Computers are running by default
         deviceManager.start(computer)
     }
 
     @Test
-    fun shouldStopComputer() = runIntervirtTest {
+    fun `should stop computer`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.stop(computer)
     }
 
     @Test
-    fun shouldAddPortForwarding() = runIntervirtTest {
+    fun `should add port forwarding`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.addPortForwarding(computer, mockPortForwarding)
         assertContains(project.getDevice(computer).portForwardings, mockPortForwarding)
     }
 
     @Test
-    fun shouldRemovePortForwarding() = runIntervirtTest {
+    fun `should remove port forwarding`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.addPortForwarding(computer, mockPortForwarding)
         deviceManager.removePortForwarding(mockPortForwarding.externalPort, mockPortForwarding.protocol)
@@ -218,13 +218,13 @@ class DeviceManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldGetIOClient() = runIntervirtTest {
+    fun `should get IO client of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.getIOClient(computer)
     }
 
     @Test
-    fun shouldCloseDeviceManager() = runIntervirtTest {
+    fun `should close DeviceManager`() = runIntervirtTest {
         deviceManager.close()
     }
 

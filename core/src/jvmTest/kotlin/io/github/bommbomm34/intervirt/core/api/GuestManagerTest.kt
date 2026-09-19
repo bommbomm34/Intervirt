@@ -64,20 +64,20 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldAddContainer() = runIntervirtTest {
+    fun `should add container`() = runIntervirtTest {
         val container = addTestContainer()
         assertContains(getContainers(), container)
     }
 
     @Test
-    fun shouldRemoveContainer() = runIntervirtTest {
+    fun `should remove container`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.removeContainer(TEST_CONTAINER_ID).lastResult().bind()
         assertFalse { getContainers().contains(container) }
     }
 
     @Test
-    fun shouldSetIpv4() = runIntervirtTest {
+    fun `should set IPv4 of container`() = runIntervirtTest {
         val container = addTestContainer()
         val newIP = randomIpv4(getInfo().ipv4Subnet)
         guestManager.setIpv4(
@@ -88,7 +88,7 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldSetIpv6() = runIntervirtTest {
+    fun `should set IPv6 of container`() = runIntervirtTest {
         val container = addTestContainer()
         val newIP = randomIpv6(getInfo().ipv6Subnet)
         guestManager.setIpv6(
@@ -99,7 +99,7 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldConnect() = runIntervirtTest {
+    fun `should connect container with network`() = runIntervirtTest {
         addTestContainer()
         addTestNetwork()
         guestManager.connect(TEST_CONTAINER_ID, TEST_NETWORK_NAME)
@@ -107,7 +107,7 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldDisconnect() = runIntervirtTest {
+    fun `should disconnect container from network`() = runIntervirtTest {
         addTestContainer()
         addTestNetwork()
         guestManager.connect(TEST_CONTAINER_ID, TEST_NETWORK_NAME)
@@ -116,21 +116,21 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldSetInternetAccess() = runIntervirtTest {
+    fun `should enable internet access`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.setInternetAccess(TEST_CONTAINER_ID, true)
         assertTrue { container.getContainer().internet }
     }
 
     @Test
-    fun shouldAddPortForwarding() = runIntervirtTest {
+    fun `should add port forwarding`() = runIntervirtTest {
         val container = addTestContainer()
         addTestPortForwarding()
         assertContains(container.getContainer().portForwardings, fwd)
     }
 
     @Test
-    fun shouldRemovePortForwarding() = runIntervirtTest {
+    fun `should remove port forwarding`() = runIntervirtTest {
         val container = addTestContainer()
         addTestPortForwarding()
         guestManager.removePortForwarding(TEST_CONTAINER_ID, fwd.externalPort, fwd.protocol)
@@ -138,7 +138,7 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldStartContainer() = runIntervirtTest {
+    fun `should start container`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.stopContainer(TEST_CONTAINER_ID) // Containers start by default
         guestManager.startContainer(TEST_CONTAINER_ID)
@@ -146,14 +146,14 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldStopContainer() = runIntervirtTest {
+    fun `should stop container`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.stopContainer(TEST_CONTAINER_ID)
         assertFalse { container.getContainer().running }
     }
 
     @Test
-    fun shouldWipe() = runIntervirtTest {
+    fun `should wipe`() = runIntervirtTest {
         val container = addTestContainer()
         addTestNetwork()
         val progress = guestManager.wipe().toList()
@@ -163,19 +163,19 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldUpdate() = runIntervirtTest {
+    fun `should update`() = runIntervirtTest {
         val progress = guestManager.update().toList()
         assertContains(progress, ResultProgress.success(Unit))
     }
 
     @Test
-    fun shouldGetInfo() = runIntervirtTest {
+    fun `should get info`() = runIntervirtTest {
         val info = getInfo()
         if (guestManager is VirtualGuestManager) assertEquals(CURRENT_VERSION, info.version)
     }
 
     @Test
-    fun shouldGetContainers() = runIntervirtTest {
+    fun `should get containers`() = runIntervirtTest {
         val container1 = addTestContainer(DeviceId("computer-10002"))
         val container2 = addTestContainer(DeviceId("computer-10003"))
         val container3 = addTestContainer(DeviceId("computer-10005"))
@@ -186,20 +186,20 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldAddNetwork() = runIntervirtTest {
+    fun `should add network`() = runIntervirtTest {
         addTestNetwork()
         assertContains(getNetworks(), TEST_NETWORK_NAME)
     }
 
     @Test
-    fun shouldRemoveNetwork() = runIntervirtTest {
+    fun `should remove networks`() = runIntervirtTest {
         addTestNetwork()
         guestManager.removeNetwork(TEST_NETWORK_NAME)
         assertFalse { getNetworks().contains(TEST_NETWORK_NAME) }
     }
 
     @Test
-    fun shouldGetNetworks() = runIntervirtTest {
+    fun `should get networks`() = runIntervirtTest {
         addTestNetwork("test-network1")
         addTestNetwork("test-network2")
         addTestNetwork("test-network3")
@@ -210,7 +210,7 @@ class GuestManagerTest : KoinTest {
     }
 
     @Test
-    fun shouldClose() = runIntervirtTest {
+    fun `should close GuestManager`() = runIntervirtTest {
         guestManager.close()
     }
 

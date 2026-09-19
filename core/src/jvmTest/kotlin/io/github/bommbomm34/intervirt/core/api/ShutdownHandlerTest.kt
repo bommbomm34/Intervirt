@@ -58,13 +58,13 @@ class ShutdownHandlerTest : KoinTest {
     }
 
     @Test
-    fun shouldGracefulShutdown() = runIntervirtTest {
+    fun `should graceful shutdown`() = runIntervirtTest {
         shutdownHandler.gracefulShutdown()
         assertEquals(true, shutdownHandler.closed)
     }
 
     @Test
-    fun shouldNotDoubleClose() = runIntervirtTest {
+    fun `should not close twice`() = runIntervirtTest {
         shutdownHandler.gracefulShutdown()
         assertEquals(1, guestManager.closed)
         shutdownHandler.gracefulShutdown() // Close a second time
@@ -72,7 +72,7 @@ class ShutdownHandlerTest : KoinTest {
     }
 
     @Test
-    fun shouldGenerateReport() = runIntervirtTest {
+    fun `should generate valid report`() = runIntervirtTest {
         val thread = Thread.currentThread()
         val throwable = IllegalStateException("Just some random exception by tests")
         val (report, log) = shutdownHandler.generateCrashReport(

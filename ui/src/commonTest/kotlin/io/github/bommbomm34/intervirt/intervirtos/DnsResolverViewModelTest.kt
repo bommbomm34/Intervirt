@@ -72,7 +72,7 @@ class DnsResolverViewModelTest : KoinTest {
     }
 
     @Test
-    fun shouldLookupARecord() = runTest {
+    fun `should lookup A record`() = runTest {
         viewModel.domain = "one.one.one.one"
         viewModel.dnsRecordType = "A"
         viewModel.lookup().join()
@@ -84,7 +84,7 @@ class DnsResolverViewModelTest : KoinTest {
     }
 
     @Test
-    fun shouldLookupAAAARecord() = runTest {
+    fun `should lookup AAAA record`() = runTest {
         viewModel.domain = "google.com"
         viewModel.dnsRecordType = "AAAA"
         viewModel.lookup().join()
@@ -96,7 +96,7 @@ class DnsResolverViewModelTest : KoinTest {
     }
 
     @Test
-    fun shouldLookupPTRRecordReverse() = runTest {
+    fun `should reverse lookup PTR record`() = runTest {
         viewModel.domain = "1.1.1.1"
         viewModel.dnsRecordType = "PTR"
         viewModel.reverseLookup = true

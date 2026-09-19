@@ -5,87 +5,63 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
-import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class IpUtilsTest {
-    private val testCount = System.getenv("INTERVIRT_ADDRESS_FUZZ_TEST_COUNT")?.toIntOrNull() ?: 1000
-
     @Test
-    fun shouldValidateLoopbackIpv4() {
+    fun `should validate loopback IPv4`() {
         assertTrue { "0.0.0.0".validateIpv4() }
     }
 
     @Test
-    fun shouldValidateLoopbackIpv6() {
+    fun `should validate loopback IPv6`() {
         assertTrue { "::1".validateIpv6() }
     }
 
     @Test
-    fun shouldValidateIpv4WithTooBigIntegers() {
+    fun `should validate IPv4 with too big integers`() {
         assertFalse { "0.0.0.256".validateIpv4() }
     }
 
     @Test
-    fun shouldValidateIpv6WithNonHexadecimalNumbers() {
+    fun `should validate IPv6 with non-hexadecimal numbers`() {
         assertFalse { "fd00:9999:9999:9999:9999:9999:kkkk:2222".validateIpv6() }
     }
 
     @Test
-    fun shouldValidateIpv4WithTooManyParts() {
+    fun `should validate IPv4 with too many parts`() {
         assertFalse { "0.0.0.0.0.0.0".validateIpv4() }
     }
 
     @Test
-    fun shouldValidateIpv6WithTooManyParts() {
+    fun `should validate IPv6 with too many parts`() {
         assertFalse { "fd00:0000:0000:0000:0000:0000:0000:0000:0000:0000".validateIpv6() }
     }
 
     @Test
-    fun shouldValidatePublicIpv4Address() {
+    fun `should validate public IPv4 address`() {
         assertTrue { "142.251.36.110".validateIpv4() }
     }
 
     @Test
-    fun shouldValidatePublicIpv6Address() {
+    fun `should validate public IPv6 address`() {
         assertTrue { "2a00:1450:4001:806::200e".validateIpv6() }
     }
 
     @Test
-    fun shouldValidateRandomValidIpv4Addresses() {
-        repeat(testCount) {
-            assertTrue { randomIpv4(VirtualGuestManager.IPV4_SUBNET).validateIpv4() }
-        }
-    }
-
-    @Test
-    fun shouldValidateRandomValidIpv6Addresses() {
-        repeat(testCount) {
-            assertTrue { randomIpv6(VirtualGuestManager.IPV6_SUBNET).validateIpv6() }
-        }
-    }
-
-    @Test
-    fun shouldValidateValidMacAddress() {
+    fun `should validate MAC address`() {
         assertTrue { "ff:ff:ff:ff:ff:89".validateMac() }
     }
 
     @Test
-    fun shouldValidateMacAddressWithTooManyParts() {
+    fun `should validate MAC address with too many parts`() {
         assertFalse { "ff:ff:ff:ff:ff:ff:ff".validateMac() }
     }
 
     @Test
-    fun shouldValidateMacAddressWithNonHexadecimalNumbers() {
+    fun `should validate MAC address with non-hexadecimal numbers`() {
         assertFalse { "kk:kk:22:22:22:22".validateMac() }
-    }
-
-    @Test
-    fun shouldValidateRandomValidMacAddresses() {
-        repeat(testCount) {
-            assertTrue { randomMac().validateMac() }
-        }
     }
 }

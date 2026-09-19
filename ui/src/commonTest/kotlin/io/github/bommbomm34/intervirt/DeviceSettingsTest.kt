@@ -59,13 +59,13 @@ class DeviceSettingsTest : KoinTest {
     }
 
     @Test
-    fun shouldOpenShell() {
+    fun `should open shell`() {
         viewModel.openShell()
         assertEquals(testComputer, appState.openComputerShell)
     }
 
     @Test
-    fun shouldTogglePortForwardings() {
+    fun `should toggle port forwardings`() {
         viewModel.togglePortForwardings()
         assertEquals(true, viewModel.showPortForwardings)
         viewModel.togglePortForwardings()
@@ -73,44 +73,44 @@ class DeviceSettingsTest : KoinTest {
     }
 
     @Test
-    fun shouldStart() = runTest {
+    fun `should start device`() = runTest {
         viewModel.start().join()
         assertEquals(true, testComputer.running)
     }
 
     @Test
-    fun shouldStop() = runTest {
+    fun `should stop device`() = runTest {
         viewModel.start().join()
         viewModel.stop().join()
         assertEquals(false, testComputer.running)
     }
 
     @Test
-    fun shouldChangeIpv4() = runTest {
+    fun `should change IPv4 of device`() = runTest {
         viewModel.changeIpv4("0.0.0.1").join()
         assertEquals("0.0.0.1", testComputer.ipv4)
     }
 
     @Test
-    fun shouldChangeIpv6() = runTest {
+    fun `should change IPv6 of device`() = runTest {
         viewModel.changeIpv6("::1").join()
         assertEquals("::1", testComputer.ipv6)
     }
 
     @Test
-    fun shouldEnableInternetAccess() = runTest {
+    fun `should enable internet access`() = runTest {
         viewModel.enableInternetAccess(true).join()
         assertEquals(true, testComputer.internetEnabled)
     }
 
     @Test
-    fun shouldAddPortForwarding() = runTest {
+    fun `should add port forwarding`() = runTest {
         viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
         assertContains(testComputer.portForwardings, TEST_PORT_FORWARDING)
     }
 
     @Test
-    fun shouldRemovePortForwarding() = runTest {
+    fun `should remove port forwarding`() = runTest {
         viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
         viewModel.removePortForwarding(TEST_PORT_FORWARDING).join()
         assertFalse { testComputer.portForwardings.contains(TEST_PORT_FORWARDING) }
@@ -118,14 +118,14 @@ class DeviceSettingsTest : KoinTest {
 
     @Ignore
     @Test
-    fun shouldLintPortForwardingThatIsAlreadyInternallyExposed() = runTest {
+    fun `should lint port forwarding which is already internally exposed`() = runTest {
         viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
         assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
     }
 
     @Ignore
     @Test
-    fun shouldLintPortForwardingThatIsAlreadyExternallyExposed() = runTest {
+    fun `should lint port forwarding which is already externally exposed`() = runTest {
         val secondTestComputer = Device.Computer.portForwardings.modify(testComputer) {
             it + TEST_PORT_FORWARDING
         }
@@ -134,7 +134,7 @@ class DeviceSettingsTest : KoinTest {
     }
 
     @Test
-    fun shouldLintPortForwardingThatIsAlreadyBound() = runTest {
+    fun `should lint port forwarding which is already bound`() = runTest {
         ServerSocket(0).use {
             val fwd = TEST_PORT_FORWARDING.copy(externalPort = it.localPort)
             assertEquals(false, viewModel.lintPortForwarding(fwd).isRight())
@@ -142,7 +142,7 @@ class DeviceSettingsTest : KoinTest {
     }
 
     @Test
-    fun shouldLintPortForwardingSuccessfully() = runTest {
+    fun `should lint port forwarding successfully`() = runTest {
         assertEquals(true, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
     }
 
