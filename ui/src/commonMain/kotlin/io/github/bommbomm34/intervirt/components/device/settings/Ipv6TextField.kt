@@ -5,16 +5,20 @@
 
 package io.github.bommbomm34.intervirt.components.device.settings
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.invalid_ipv6_address
+import intervirt.ui.generated.resources.ipv4_address
 import intervirt.ui.generated.resources.ipv6_address
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.util.isIPWithinSubnet
+import io.github.bommbomm34.intervirt.core.util.validateIpv4
 import io.github.bommbomm34.intervirt.core.util.validateIpv6
+import io.github.bommbomm34.intervirt.data.IPErrorReason
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -23,20 +27,29 @@ fun Ipv6TextField(
     ipv6: String,
     onIpv6Change: (String) -> Unit,
 ) {
-    var validIpv6 by remember { mutableStateOf(true) }
+    var errorReason: IPErrorReason? by remember { mutableStateOf(null) }
+
     OutlinedTextField(
         value = ipv6,
         onValueChange = {
-            validIpv6 = validateIpv6(it) && it isIPWithinSubnet info.ipv6Subnet
-            if (validIpv6) onIpv6Change(it)
+            errorReason = when {
+                !validateIpv6(it) -> IPErrorReason.Invalid
+                !it.isIPWithinSubnet(info.ipv6Subnet) -> IPErrorReason.NotWithinSubnet
+                else -> {
+                    onIpv6Change(it)
+                    null
+                }
+            }
         },
         label = {
-            if (validIpv6) {
+            val errorReason = errorReason
+
+            if (errorReason == null) {
                 Text(stringResource(Res.string.ipv6_address))
             } else {
                 Text(
-                    text = stringResource(Res.string.invalid_ipv6_address),
-                    color = Color.Red,
+                    text = errorReason.getErrorMessage(info.ipv6Subnet, isIpv6 = true),
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         },

@@ -62,6 +62,8 @@
     <string name="mac_address">MAC address</string>
     <string name="invalid_ipv4_address">Invalid IPv4 address</string>
     <string name="invalid_ipv6_address">Invalid IPv6 address</string>
+    <string name="ipv4_address_not_within_subnet">IPv4 address not within subnet: %1$s</string>
+    <string name="ipv6_address_not_within_subnet">IPv6 address not within subnet: %1$s</string>
     <string name="internet_access">Internet Access</string>
     <string name="show_port_forwardings">Show port forwardings</string>
     <string name="hide_port_forwardings">Hide port forwardings</string>

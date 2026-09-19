@@ -5,6 +5,7 @@
 
 package io.github.bommbomm34.intervirt.components.device.settings
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -15,7 +16,10 @@ import intervirt.ui.generated.resources.ipv4_address
 import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.util.isIPWithinSubnet
 import io.github.bommbomm34.intervirt.core.util.validateIpv4
+import io.github.bommbomm34.intervirt.data.IPErrorReason
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import sun.security.krb5.KrbException.errorMessage
 
 @Composable
 fun Ipv4TextField(
@@ -23,20 +27,29 @@ fun Ipv4TextField(
     ipv4: String,
     onIpv4Change: (String) -> Unit,
 ) {
-    var validIpv4 by remember { mutableStateOf(true) }
+    var errorReason: IPErrorReason? by remember { mutableStateOf(null) }
+
     OutlinedTextField(
         value = ipv4,
         onValueChange = {
-            validIpv4 = validateIpv4(it) && it isIPWithinSubnet info.ipv4Subnet
-            if (validIpv4) onIpv4Change(it)
+            errorReason = when {
+                !validateIpv4(it) -> IPErrorReason.Invalid
+                !it.isIPWithinSubnet(info.ipv4Subnet) -> IPErrorReason.NotWithinSubnet
+                else -> {
+                    onIpv4Change(it)
+                    null
+                }
+            }
         },
         label = {
-            if (validIpv4) {
+            val errorReason = errorReason
+
+            if (errorReason == null) {
                 Text(stringResource(Res.string.ipv4_address))
             } else {
                 Text(
-                    text = stringResource(Res.string.invalid_ipv4_address),
-                    color = Color.Red,
+                    text = errorReason.getErrorMessage(info.ipv4Subnet, isIpv6 = false),
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         },
