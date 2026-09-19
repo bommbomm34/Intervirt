@@ -15,6 +15,7 @@ import io.github.bommbomm34.intervirt.core.data.SystemServiceStatus
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.util.ext.addFirst
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.logging.debug
 
 
 // Simple wrapper for systemd

@@ -19,6 +19,7 @@ import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
+import io.github.bommbomm34.intervirt.logging.debug
 import io.github.bommbomm34.intervirt.secret.SecretService
 import jakarta.mail.*
 import kotlinx.coroutines.Dispatchers

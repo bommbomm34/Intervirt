@@ -11,6 +11,8 @@ import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.logging.debug
+import io.github.bommbomm34.intervirt.logging.info
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.exists

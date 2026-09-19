@@ -31,6 +31,7 @@ import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.openDialog
+import io.github.bommbomm34.intervirt.logging.debug
 import io.github.bommbomm34.intervirt.util.ext.canPortBind
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.openFilePicker

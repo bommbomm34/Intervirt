@@ -17,6 +17,7 @@ import io.github.bommbomm34.intervirt.core.data.dns.DnsResolverOutput
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.logging.debug
 
 
 class DnsResolverManager(

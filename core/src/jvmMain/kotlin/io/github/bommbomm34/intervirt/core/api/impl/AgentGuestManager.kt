@@ -31,6 +31,8 @@ import io.github.bommbomm34.intervirt.core.util.ext.catchTimeout
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
+import io.github.bommbomm34.intervirt.logging.debug
+import io.github.bommbomm34.intervirt.logging.error
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*

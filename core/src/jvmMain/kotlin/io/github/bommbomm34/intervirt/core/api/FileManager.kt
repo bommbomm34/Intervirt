@@ -15,6 +15,9 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.util.ext.createFile
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
+import io.github.bommbomm34.intervirt.logging.debug
+import io.github.bommbomm34.intervirt.logging.error
+import io.github.bommbomm34.intervirt.logging.info
 import io.github.vinceglb.filekit.*
 import io.ktor.client.*
 import io.ktor.client.call.*

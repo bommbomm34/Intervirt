@@ -19,6 +19,7 @@ import io.github.bommbomm34.intervirt.core.getOrNull
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.openDialog
+import io.github.bommbomm34.intervirt.logging.debug
 import io.github.bommbomm34.intervirt.rememberLogger
 import org.koin.compose.koinInject
 

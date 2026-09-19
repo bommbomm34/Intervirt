@@ -41,58 +41,56 @@ class KLogger(
         vararg streams: OutputStream,
     ) : this(name.simpleName ?: "", level, *streams)
 
-    inline fun trace(block: Output) {
-        if (level.priority == LogLevel.TRACE.priority) {
-            block().log("TRACE")
-        }
-    }
-
-    inline fun debug(block: Output) {
-        if (level.priority <= LogLevel.DEBUG.priority) {
-            block().log("DEBUG", LogColor.GREEN)
-        }
-    }
-
-    inline fun info(block: Output) {
-        if (level.priority <= LogLevel.INFO.priority) {
-            block().log("INFO", LogColor.BLUE)
-        }
-    }
-
-    inline fun warn(block: Output) {
-        if (level.priority <= LogLevel.WARN.priority) {
-            block().log("WARN", LogColor.YELLOW)
-        }
-    }
-
-    inline fun error(throwable: Throwable? = null, block: Output = { "" }) {
-        if (level.priority <= LogLevel.ERROR.priority) {
-            block().log("ERROR", LogColor.RED, err = true)
-            throwable?.printStackTrace()
-        }
-    }
-
-    @PublishedApi
-    internal fun Any?.log(
-        prefix: String,
-        color: String = LogColor.DEFAULT,
-        err: Boolean = false,
-    ) {
+    fun log(text: Any?, level: LogLevel) {
         val time = Clock.System.now()
             .toLocalDateTime(TimeZone.currentSystemDefault())
             .format(ISO_8601_FORMAT)
-        val output = "$time [$prefix] $name - ${toString()}"
-        if (err) output.printlnErr(color) else output.println(color)
+        val output = "$time [${level.name}] $name - $text"
+        if (level == LogLevel.ERROR) output.printlnErr(level.color) else output.println(level.color)
     }
 
-    private fun String.println(color: String) =
+    private fun String.println(color: LogColor) =
         streams.forEach { it.println(this.tryColor(color, it.colorSupported)) }
 
-    private fun String.printlnErr(color: String) =
+    private fun String.printlnErr(color: LogColor) =
         streams.forEach { it.printlnErr(this.tryColor(color, it.colorSupported)) }
 
-    private fun String.tryColor(color: String, colorSupported: Boolean) =
+    private fun String.tryColor(color: LogColor, colorSupported: Boolean) =
         if (colorSupported) "$color$this$ANSI_RESET" else this
+}
+
+inline fun KLogger.error(throwable: Throwable? = null, block: Output = { "" }) {
+    log(LogLevel.ERROR, block) {
+        throwable?.printStackTrace()
+    }
+}
+
+inline fun KLogger.warn(block: Output) {
+    log(LogLevel.WARN, block)
+}
+
+inline fun KLogger.info(block: Output) {
+    log(LogLevel.INFO, block)
+}
+
+inline fun KLogger.debug(block: Output) {
+    log(LogLevel.DEBUG, block)
+}
+
+inline fun KLogger.trace(block: Output) {
+    log(LogLevel.TRACE, block)
+}
+
+@PublishedApi
+internal inline fun KLogger.log(
+    level: LogLevel,
+    block: Output,
+    postLog: () -> Unit = {},
+) {
+    if (this.level <= level) {
+        log(block(), level)
+        postLog()
+    }
 }
 
 private typealias Output = () -> Any?

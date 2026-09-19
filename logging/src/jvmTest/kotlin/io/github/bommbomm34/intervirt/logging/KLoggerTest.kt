@@ -8,7 +8,11 @@ package io.github.bommbomm34.intervirt.io.github.bommbomm34.intervirt.logging
 import io.github.bommbomm34.intervirt.logging.KLogger
 import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.bommbomm34.intervirt.logging.OutputStream
+import io.github.bommbomm34.intervirt.logging.debug
+import io.github.bommbomm34.intervirt.logging.error
 import io.github.bommbomm34.intervirt.logging.getDefaultStream
+import io.github.bommbomm34.intervirt.logging.info
+import io.github.bommbomm34.intervirt.logging.trace
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertTrue

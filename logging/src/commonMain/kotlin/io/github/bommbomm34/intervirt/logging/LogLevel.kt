@@ -5,10 +5,10 @@
 
 package io.github.bommbomm34.intervirt.logging
 
-enum class LogLevel(val priority: Int) {
-    TRACE(0),
-    DEBUG(1),
-    INFO(2),
-    WARN(3),
-    ERROR(4),
+enum class LogLevel(internal val color: LogColor) {
+    TRACE(LogColor.DEFAULT),
+    DEBUG(LogColor.GREEN),
+    INFO(LogColor.BLUE),
+    WARN(LogColor.YELLOW),
+    ERROR(LogColor.RED),
 }
