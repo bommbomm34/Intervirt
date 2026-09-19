@@ -53,6 +53,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.koin.test)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.kotest)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
