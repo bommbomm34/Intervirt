@@ -7,6 +7,7 @@ package io.github.bommbomm34.intervirt.components.device.settings
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +40,7 @@ fun GeneralDeviceSettings(
     GeneralSpacer()
     Button(
         onClick = onDelete,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
     ) {
         Text(
             text = stringResource(Res.string.delete),

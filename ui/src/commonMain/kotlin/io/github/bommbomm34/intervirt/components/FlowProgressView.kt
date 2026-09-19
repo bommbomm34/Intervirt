@@ -19,6 +19,7 @@ fun <T> FlowProgressView(
     onJobChange: ((Job?) -> Unit),
     onMessage: ((ResultProgress<T>) -> Unit)? = null,
 ) {
+    val errorColor = MaterialTheme.colorScheme.error
     val defaultMessageColor = MaterialTheme.colorScheme.onBackground
     var message by remember { mutableStateOf("") }
     var progress by remember { mutableFloatStateOf(0f) }
@@ -28,7 +29,7 @@ fun <T> FlowProgressView(
         onJobChange(coroutineContext.job)
         flow.collect { resultProgress ->
             messageColor =
-                if (resultProgress is ResultProgress.Result) if (resultProgress.result.isRight()) Color.Green else Color.Red else defaultMessageColor
+                if (resultProgress is ResultProgress.Result) if (resultProgress.result.isRight()) Color.Green else errorColor else defaultMessageColor
             message = resultProgress.message() ?: ""
             progress = resultProgress.percentage
             onMessage?.invoke(resultProgress)

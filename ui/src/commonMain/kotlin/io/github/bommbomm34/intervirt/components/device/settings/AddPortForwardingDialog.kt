@@ -8,6 +8,7 @@ package io.github.bommbomm34.intervirt.components.device.settings
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -43,14 +44,14 @@ fun AddPortForwardingDialog(
             GeneralSpacer()
             Text(
                 text = it.message,
-                color = Color.Red,
+                color = MaterialTheme.colorScheme.error,
             )
         }
         GeneralSpacer()
         Row {
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
             ) {
                 Text(
                     text = stringResource(Res.string.cancel),
