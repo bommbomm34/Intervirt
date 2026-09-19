@@ -18,13 +18,17 @@
     <string name="amount_of_cpu_cores">Amount of CPU cores</string>
     <string name="enable_kvm">Enable KVM</string>
     <string name="enable_kvm_tooltip">Requires Linux and a KVM group membership</string>
-    <string name="vm_setup_introduction">Intervirt needs to set up a virtual machine to run the container secure and rootless.</string>
+    <string name="vm_setup_introduction">Intervirt needs to set up a virtual machine to run the container secure and
+        rootless.
+    </string>
     <string name="vm_shutdown_timeout">VM Shutdown Timeout in ms</string>
     <string name="intervirt_folder">Intervirt Folder Path</string>
     <string name="agent_port">Agent Port</string>
     <string name="pick_file">Pick file</string>
     <string name="pick_directory">Pick directory</string>
-    <string name="allow_to_install_intervirt">I allow to install Intervirt on my computer with the configuration I selected.</string>
+    <string name="allow_to_install_intervirt">I allow to install Intervirt on my computer with the configuration I
+        selected.
+    </string>
     <string name="creating_intervirt_folder">Creating Intervirt folder structure...</string>
     <string name="applying_configuration">Applying configuration...</string>
     <string name="show_logs">Show logs</string>
@@ -84,7 +88,8 @@
     <string name="save_as">Save As</string>
     <string name="open">Open</string>
     <string name="dark_mode">Dark Mode</string>
-    <string name="are_you_sure_to_remove_connection">Are you sure to remove the connection between %1$s and %2$s?</string>
+    <string name="are_you_sure_to_remove_connection">Are you sure to remove the connection between %1$s and %2$s?
+    </string>
     <string name="too_many_devices_connected">You cannot connect a computer with more than one device.</string>
     <string name="help">Help</string>
     <string name="error_during_device_creation">Error during device creation: %1$s</string>
@@ -151,7 +156,8 @@
     <string name="sure_to_delete_user">Are you sure to delete this user?</string>
     <string name="content">Content</string>
     <string name="send">Send</string>
-    <string name="mail_server_description">Simple mail server with SMTP, IMAP, antivirus and spam protection included</string>
+    <string name="mail_server_description">Simple mail server with SMTP, IMAP, antivirus and spam protection included
+    </string>
     <string name="dns_server_description">Simple DNS server based on CoreDNS</string>
     <string name="update">Update</string>
     <string name="cancel">Cancel</string>
@@ -164,8 +170,8 @@
     <string name="internal_error_occurred">An internal error occurred (a restart might fix it): %1$s</string>
     <string name="undefined_error_occurred">An undefined error occurred: %1$s</string>
     <string name="failure_loading_image">Failed to load image: %1$s</string>
-    <string name="source_of_description">Source of description: </string>
-    <string name="source_of_icon">Source of icon: </string>
+    <string name="source_of_description">Source of description:</string>
+    <string name="source_of_icon">Source of icon:</string>
     <string name="operation_already_performed">Operation already performed: %1$s</string>
     <string name="undefined_failure">Undefined failure: %1$s</string>
     <string name="unknown_failure">Unknown failure</string>
@@ -184,15 +190,19 @@
     <string name="zip_extraction_failure">ZIP extraction failure: %1$s</string>
     <string name="command_execution_failure">Command execution failure: %1$s</string>
     <string name="invalid_mail">Invalid mail: %1$s</string>
-    <string name="version_mismatch">Version mismatch between current version %1$s and other version %2$s (perform updates if necessary)</string>
+    <string name="version_mismatch">Version mismatch between current version %1$s and other version %2$s (perform
+        updates if necessary)
+    </string>
     <string name="port_out_of_range">Port out of range (1-65535): %1$s</string>
     <string name="file_operation_failed">File operation failed on file '%1$s': %2$s</string>
     <string name="pick_os">Pick an OS</string>
-    <string name="pick_os_description">Choose an operating system for your computer. IntervirtOS is recommended to begin with.</string>
+    <string name="pick_os_description">Choose an operating system for your computer. IntervirtOS is recommended to begin
+        with.
+    </string>
     <string name="invalid_operating_system_for_operation">Invalid operating system for operation '%1$s': %2$s</string>
     <string name="missing_permissions">Missing permissions: %1$s</string>
     <string name="empty_directory">Empty directory</string>
     <string name="upload_some_files">Upload some files to fill the directory up!</string>
     <!-- We do not use interpolation here because this text must have a seperate bold style -->
-    <string name="current_directory">Current directory: </string>
+    <string name="current_directory">Current directory:</string>
 </resources>

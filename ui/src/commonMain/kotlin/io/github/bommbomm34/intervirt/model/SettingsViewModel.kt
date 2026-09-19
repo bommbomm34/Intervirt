@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.russhwolf.settings.Settings
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.data.env.storeEnv
 import io.github.bommbomm34.intervirt.data.AppState
 import org.koin.core.annotation.KoinViewModel

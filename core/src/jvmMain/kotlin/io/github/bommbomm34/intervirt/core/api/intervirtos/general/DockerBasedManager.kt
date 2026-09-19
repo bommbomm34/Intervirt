@@ -10,16 +10,13 @@ import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.Failure
-
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
-
 import kotlinx.coroutines.flow.Flow
-import kotlin.collections.mapKeys
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 
@@ -48,30 +45,31 @@ abstract class DockerBasedManager(
     private val logger = appEnv.getLogger(DockerBasedManager::class)
 
     fun init(): Flow<ResultProgress<String>> = flowCatching {
-            logger.debug { "Initializing manager of $containerName" }
-            val potentialId = client.docker.getContainer(containerName)
-            potentialId?.let {
-                client.docker.startContainer(it)
-                internalId = it
-                emit(ResultProgress.success(it))
-            }
-            // Create new container
-            val hostPath = client.ioClient.getPath("/opt/intervirt/$containerName/")
-                .createDirectories()
-                .absolutePathString()
-            val newId = client.docker.addContainer(
-                name = containerName,
-                image = containerImage,
-                portForwardings = portForwardings,
-                volumes = volumes.mapKeys { it.key.replace("./", hostPath) },
-                env = env,
-                hostName = hostName,
-            ).lastResult().bind()
-            client.docker.startContainer(newId)
-            internalId = newId
-            emit(ResultProgress.success(newId))
+        logger.debug { "Initializing manager of $containerName" }
+        val potentialId = client.docker.getContainer(containerName)
+        potentialId?.let {
+            client.docker.startContainer(it)
+            internalId = it
+            emit(ResultProgress.success(it))
+        }
+        // Create new container
+        val hostPath = client.ioClient.getPath("/opt/intervirt/$containerName/")
+            .createDirectories()
+            .absolutePathString()
+        val newId = client.docker.addContainer(
+            name = containerName,
+            image = containerImage,
+            portForwardings = portForwardings,
+            volumes = volumes.mapKeys { it.key.replace("./", hostPath) },
+            env = env,
+            hostName = hostName,
+        ).lastResult().bind()
+        client.docker.startContainer(newId)
+        internalId = newId
+        emit(ResultProgress.success(newId))
     }
 
     context(_: Raise<Failure>)
-    override suspend fun close() {}
+    override suspend fun close() {
+    }
 }

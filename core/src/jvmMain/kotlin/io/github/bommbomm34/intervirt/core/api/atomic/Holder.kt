@@ -4,8 +4,6 @@ import arrow.optics.Lens
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.devices
-import io.github.bommbomm34.intervirt.core.modify
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import kotlin.reflect.KProperty
 
 interface Holder<T> {

@@ -1,6 +1,5 @@
 package io.github.bommbomm34.intervirt.impl
 
-import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.Holder
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.data.AppState

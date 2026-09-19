@@ -5,20 +5,15 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
-import arrow.optics.copy
 import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
 import inet.ipaddr.ipv4.IPv4Address
 import inet.ipaddr.ipv6.IPv6Address
-import io.github.bommbomm34.intervirt.core.data.AgentInfo
 import io.github.bommbomm34.intervirt.core.data.Device
 import io.github.bommbomm34.intervirt.core.data.Project
 import org.jetbrains.annotations.VisibleForTesting
-import java.math.BigInteger
-import java.nio.ByteBuffer
 import java.util.*
 import kotlin.random.Random
-import kotlin.random.nextULong
 
 private val IPV4_REGEX = Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")
 private val DIGITS_PATTERN = Regex("\\d{1,3}")
@@ -50,6 +45,7 @@ fun randomMac(): String {
     fun rand() = Random.nextInt(256)
         .toString(16)
         .padZero(2)
+
     fun randFirst(): String = ((Random.nextInt(256) and 0b1111_1100) or 0b0000_0010)
         .toString(16)
         .padZero(2)

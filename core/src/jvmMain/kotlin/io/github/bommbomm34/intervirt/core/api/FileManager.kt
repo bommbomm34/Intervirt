@@ -50,7 +50,11 @@ class FileManager(
     fun getFile(name: String) = dataDir / name
 
     // Based on: https://ktor.io/docs/client-responses.html#streaming
-    fun downloadFile(url: String, name: String, destination: PlatformFile = getFile("cache")): Flow<ResultProgress<PlatformFile>> =
+    fun downloadFile(
+        url: String,
+        name: String,
+        destination: PlatformFile = getFile("cache"),
+    ): Flow<ResultProgress<PlatformFile>> =
         flow {
             logger.debug { "Downloading file $url as $name" }
             val bufferSize: Long = 1024 * 1024

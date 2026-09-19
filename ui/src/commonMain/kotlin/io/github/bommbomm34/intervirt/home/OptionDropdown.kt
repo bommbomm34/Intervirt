@@ -16,8 +16,6 @@ import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.buttons.IconText
 import io.github.bommbomm34.intervirt.model.HomeViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun OptionDropdown(

@@ -7,13 +7,8 @@ package io.github.bommbomm34.intervirt.intervirtos.mail.server
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.add_user
-import intervirt.ui.generated.resources.delete
-import intervirt.ui.generated.resources.email_address
-import intervirt.ui.generated.resources.username
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.AlignedBox
-import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.TooltipArea
 import io.github.bommbomm34.intervirt.components.buttons.AddButton
 import io.github.bommbomm34.intervirt.components.buttons.RemoveButton

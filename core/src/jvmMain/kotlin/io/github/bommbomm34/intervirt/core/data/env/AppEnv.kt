@@ -4,11 +4,8 @@ package io.github.bommbomm34.intervirt.core.data.env
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
-import com.russhwolf.settings.get
-import com.russhwolf.settings.serialization.decodeValue
 import com.russhwolf.settings.serialization.decodeValueOrNull
 import com.russhwolf.settings.serialization.encodeValue
-import com.russhwolf.settings.set
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv.Companion.PRIMARY_CONSTRUCTOR
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv.Companion.PRIMARY_CONSTRUCTOR_VALUE_PARAMETERS
@@ -148,12 +145,14 @@ fun Settings.loadEnv(override: (String) -> String? = { null }): AppEnv {
                 // decodeValueOrNull can't return null because of the precondition hasKey
                 map[param] = decodeValueOrNull(serializer(param.type), name)
             }
+
             is NoEnv -> {
                 val name = param.name!!
                 if (!hasKey(name)) continue
                 // decodeValueOrNull can't return null because of the precondition hasKey
                 map[param] = decodeValueOrNull(serializer(param.type), name)
             }
+
             else -> error("Expected either Env or NoEnv annotation on AppEnv parameter '$param'")
         }
     }

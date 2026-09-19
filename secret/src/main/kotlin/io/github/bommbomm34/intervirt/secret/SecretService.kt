@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.secret
 
 import io.github.bommbomm34.intervirt.logging.KLogger
-import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.bommbomm34.intervirt.logging.logOnFailure
 import uniffi.secret.SecretServiceException
 import uniffi.secret.SecretServiceInterface

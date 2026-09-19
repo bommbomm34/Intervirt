@@ -41,7 +41,7 @@ val coreModule = module {
     single {
         SecretService(
             serviceName = "io.github.bommbomm34.intervirt",
-            logger = get<AppEnvHolder>().get().getLogger(SecretService::class)
+            logger = get<AppEnvHolder>().get().getLogger(SecretService::class),
         )
     }
     single { getHttpClient() }

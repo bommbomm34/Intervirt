@@ -15,8 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import org.koin.compose.koinInject
 
 @Composable
 fun LogsView(logs: List<String>) {

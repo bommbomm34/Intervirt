@@ -11,20 +11,15 @@ import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.Address
-import io.github.bommbomm34.intervirt.core.data.Failure
-
-import io.github.bommbomm34.intervirt.core.data.Mail
-import io.github.bommbomm34.intervirt.core.data.MailUser
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionDetails
 import io.github.bommbomm34.intervirt.core.data.mail.MailConnectionSafety
-import io.github.bommbomm34.intervirt.core.data.toMail
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.bommbomm34.intervirt.secret.SecretService
-
 import jakarta.mail.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -155,7 +150,8 @@ class MailClientManager(
     context(_: Raise<Failure>)
     suspend fun saveCredentials(details: MailConnectionDetails) {
         store.set(IntervirtOSStore.Accessor.MAIL_USERNAME, details.username)
-        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray()).onFailure { raise(Failure.Unexpected(it)) }
+        secretService.setEntry(mailPasswordKey, details.password.encodeToByteArray())
+            .onFailure { raise(Failure.Unexpected(it)) }
         store.set(IntervirtOSStore.Accessor.SMTP_SERVER_ADDRESS, details.smtpAddress)
         store.set(IntervirtOSStore.Accessor.IMAP_SERVER_ADDRESS, details.imapAddress)
         store.set(IntervirtOSStore.Accessor.SMTP_SAFETY, details.smtpSafety)

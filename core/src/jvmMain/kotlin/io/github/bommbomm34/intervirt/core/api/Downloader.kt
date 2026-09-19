@@ -5,14 +5,9 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import arrow.core.Either
-import arrow.core.left
 import arrow.core.raise.Raise
-import arrow.core.raise.catch
 import arrow.core.raise.context.bind
 import arrow.core.raise.context.raise
-import arrow.core.raise.recover
-import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -22,12 +17,7 @@ import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.toJavaPath
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.delete
-import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.list
-import io.github.vinceglb.filekit.parent
-import io.github.vinceglb.filekit.path
-import io.github.vinceglb.filekit.toKotlinxIoPath
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -38,7 +28,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.deleteIfExists
 import kotlin.io.path.deleteRecursively
 
 class Downloader(

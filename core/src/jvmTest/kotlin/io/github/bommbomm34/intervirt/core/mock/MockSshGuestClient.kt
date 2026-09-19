@@ -9,12 +9,8 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.ensure
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.SshGuestClient
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.data.Failure
-import io.github.bommbomm34.intervirt.core.data.bind
-import io.github.bommbomm34.intervirt.core.data.getCommandResult
-import io.github.bommbomm34.intervirt.core.data.toCommandStatus
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.test.fails
 import io.github.vinceglb.filekit.PlatformFile
@@ -38,7 +34,8 @@ class MockSshGuestClient(appEnv: AppEnv) : SshGuestClient {
     }
 
     context(_: Raise<Failure>)
-    override suspend fun close() {}
+    override suspend fun close() {
+    }
 
     context(_: Raise<Failure>)
     private suspend fun exec(vararg commands: String): String = executor.runCommand(null, commands.toList())
@@ -67,12 +64,14 @@ private class MockExecutor(appEnv: AppEnv) : Executor {
                 emit("Updated package indices".toCommandStatus())
                 emit(0.toCommandStatus())
             }
+
             "upgrade" -> {
                 emit("Upgrading SSH...".toCommandStatus())
                 emit("Upgrading Intervirt Agent...".toCommandStatus())
                 emit("Successfully upgraded".toCommandStatus())
                 emit(0.toCommandStatus())
             }
+
             else -> invalidCommand()
         }
     }
@@ -82,15 +81,19 @@ private class MockExecutor(appEnv: AppEnv) : Executor {
             "config" -> {
 
             }
+
             "list" -> {
 
             }
+
             "network" -> {
 
             }
+
             "start" -> {
 
             }
+
             "stop" -> {
 
             }

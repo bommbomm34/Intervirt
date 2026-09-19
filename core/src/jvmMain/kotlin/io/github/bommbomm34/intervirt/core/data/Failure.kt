@@ -1,14 +1,9 @@
 package io.github.bommbomm34.intervirt.core.data
 
 import arrow.core.Either
-import arrow.core.raise.either
-import com.sun.beans.TypeResolver.erase
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.data.qemu.QmpErrorBody
-import io.github.bommbomm34.intervirt.core.exceptions.CommandExecutionException
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.path
-import java.io.File
 
 sealed class Failure(val message: String) {
     companion object {

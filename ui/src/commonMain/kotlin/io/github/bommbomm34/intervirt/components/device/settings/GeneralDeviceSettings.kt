@@ -10,20 +10,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.are_you_sure_to_remove_device
 import intervirt.ui.generated.resources.delete
 import intervirt.ui.generated.resources.name
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
-import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.data.Device
-import io.github.bommbomm34.intervirt.data.AppState
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun GeneralDeviceSettings(

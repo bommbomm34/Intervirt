@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt
 
 import io.github.bommbomm34.intervirt.core.api.*
-import io.github.bommbomm34.intervirt.core.api.atomic.Holder
 import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager

@@ -5,7 +5,6 @@
 
 package io.github.bommbomm34.intervirt.model
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -16,22 +15,16 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.are_you_sure_to_remove_device
-import intervirt.ui.generated.resources.external_port_already_bound
-import intervirt.ui.generated.resources.internal_port_already_exposed
-import intervirt.ui.generated.resources.port_out_of_range
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.device.settings.AddPortForwardingDialog
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.components.dialogs.openAcceptDialog
 import io.github.bommbomm34.intervirt.components.filepicker.ContainerFilePicker
-import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.DeviceManager
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.api.atomic.Holder
-import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.api.isValidPort
 import io.github.bommbomm34.intervirt.core.data.*
@@ -179,7 +172,7 @@ class DeviceSettingsViewModel(
                         onClose = {
                             close() // Progress dialog
                             onClose() // Device settings
-                        }
+                        },
                     )
                 }
             }
@@ -220,7 +213,7 @@ class DeviceSettingsViewModel(
             !portForwarding.externalPort.isValidPort() ->
                 Failure.PortForwardingValidationFailure(
                     portForwarding,
-                    getString(Res.string.port_out_of_range, portForwarding.externalPort.toString())
+                    getString(Res.string.port_out_of_range, portForwarding.externalPort.toString()),
                 ).left()
 
             computer.portForwardings.any { it.internalPort == portForwarding.internalPort } ->

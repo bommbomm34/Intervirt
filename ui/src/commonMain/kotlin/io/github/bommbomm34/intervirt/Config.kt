@@ -5,8 +5,6 @@
 
 package io.github.bommbomm34.intervirt
 
-import androidx.compose.ui.unit.Density
-import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.MailClientViewModel
 import io.github.bommbomm34.intervirt.intervirtos.model.MailServerViewModel
@@ -17,7 +15,6 @@ import io.github.bommbomm34.intervirt.model.HomeViewModel
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
 import io.github.bommbomm34.intervirt.model.SetupViewModel
 import org.koin.dsl.module
-import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
 import java.util.*
 

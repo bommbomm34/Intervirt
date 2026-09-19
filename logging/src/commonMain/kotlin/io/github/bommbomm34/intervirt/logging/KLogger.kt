@@ -91,7 +91,8 @@ class KLogger(
     private fun String.printlnErr(color: String) =
         streams.forEach { it.printlnErr(this.tryColor(color, it.colorSupported)) }
 
-    private fun String.tryColor(color: String, colorSupported: Boolean) = if (colorSupported) "$color$this$ANSI_RESET" else this
+    private fun String.tryColor(color: String, colorSupported: Boolean) =
+        if (colorSupported) "$color$this$ANSI_RESET" else this
 }
 
 private typealias Output = () -> Any?

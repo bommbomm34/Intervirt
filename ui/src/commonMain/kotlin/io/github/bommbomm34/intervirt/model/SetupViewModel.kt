@@ -30,10 +30,8 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.hasGroupMembership
 import io.github.bommbomm34.intervirt.setup.Installation
-import jdk.jfr.internal.OldObjectSample.emit
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.KoinViewModel
 

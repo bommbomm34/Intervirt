@@ -8,7 +8,6 @@ package io.github.bommbomm34.intervirt.components.configuration
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterColumn

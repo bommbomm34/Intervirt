@@ -38,7 +38,6 @@ import io.ktor.serialization.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.SerializationException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -302,6 +301,7 @@ class AgentGuestManager(
         session?.close()
         Unit
     }
+
     private fun Throwable.isMuted(): Boolean = setOf(
         this is TimeoutCancellationException,
         this::class.qualifiedName == "kotlinx.coroutines.flow.internal.AbortFlowException",

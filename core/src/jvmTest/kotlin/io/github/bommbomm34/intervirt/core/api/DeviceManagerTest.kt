@@ -7,7 +7,6 @@ package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
-import io.github.bommbomm34.intervirt.core.api.atomic.Holder
 import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
 import io.github.bommbomm34.intervirt.core.api.impl.AgentGuestManager
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
@@ -17,7 +16,6 @@ import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.singleProjectHolder
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
@@ -29,7 +27,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
 import org.koin.test.KoinTest
-import org.koin.test.get
 import org.koin.test.inject
 import kotlin.test.*
 

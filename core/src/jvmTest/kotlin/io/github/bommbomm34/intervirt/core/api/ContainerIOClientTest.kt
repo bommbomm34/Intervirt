@@ -13,9 +13,7 @@ import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
 import io.github.bommbomm34.intervirt.core.getHttpClient
-import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
-import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.ignoreFailure
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest

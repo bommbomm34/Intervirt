@@ -2,12 +2,9 @@ package io.github.bommbomm34.intervirt.core.api.intervirtos.general.impl
 
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
-import io.github.bommbomm34.intervirt.core.data.dns.DnsRecord
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlin.io.path.readText
 
 sealed class VirtualContainer(val imageName: String) {
     val mapping = buildMapping { buildMapping() }

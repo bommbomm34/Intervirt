@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.internet_access
 import io.github.bommbomm34.intervirt.components.NamedCheckbox
-import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

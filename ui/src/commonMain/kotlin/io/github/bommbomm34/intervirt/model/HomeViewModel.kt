@@ -14,14 +14,12 @@ import androidx.lifecycle.viewModelScope
 import io.github.bommbomm34.intervirt.HELP_URL
 import io.github.bommbomm34.intervirt.components.dialogs.ProgressDialog
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
-import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.core.api.GuestManager
 import io.github.bommbomm34.intervirt.core.api.QemuClient
-import io.github.bommbomm34.intervirt.core.api.atomic.Holder
+import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
-import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.syncProject
 import io.github.bommbomm34.intervirt.core.util.ext.roundBy
@@ -29,7 +27,6 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.data.UpdaterState
 import io.github.bommbomm34.intervirt.data.openDialog
-import io.github.bommbomm34.intervirt.data.runDialogCatching
 import io.github.bommbomm34.intervirt.home.Updater
 import io.github.bommbomm34.intervirt.util.ext.loadConf
 import io.github.bommbomm34.intervirt.util.ext.writeConf

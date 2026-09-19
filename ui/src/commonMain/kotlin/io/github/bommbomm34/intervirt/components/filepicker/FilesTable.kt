@@ -14,7 +14,6 @@ import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.file
 import intervirt.ui.generated.resources.folder
 import io.github.bommbomm34.intervirt.components.GeneralIcon
-import io.github.bommbomm34.intervirt.components.buttons.RemoveButton
 import io.github.bommbomm34.intervirt.components.tables.ClickableTable
 import org.jetbrains.compose.resources.stringResource
 import java.nio.file.Path

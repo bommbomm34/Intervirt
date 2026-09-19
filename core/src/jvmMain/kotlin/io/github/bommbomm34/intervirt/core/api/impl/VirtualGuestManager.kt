@@ -5,7 +5,6 @@
 
 package io.github.bommbomm34.intervirt.core.api.impl
 
-import arrow.core.left
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import arrow.core.right
@@ -13,12 +12,7 @@ import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.api.GuestManager
-import io.github.bommbomm34.intervirt.core.data.AgentInfo
-import io.github.bommbomm34.intervirt.core.data.DeviceId
-
-import io.github.bommbomm34.intervirt.core.data.Failure
-import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.data.ResultProgress
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.data.agent.ContainerInfo
 import io.github.bommbomm34.intervirt.core.data.agent.Network
 import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
@@ -192,7 +186,8 @@ class VirtualGuestManager(private val delay: Duration = 500.milliseconds) : Gues
     private suspend fun delay() = kotlinx.coroutines.delay(delay)
 
     context(_: Raise<Failure>)
-    override suspend fun close() {} // Nothing to close
+    override suspend fun close() {
+    } // Nothing to close
 
     companion object {
         @VisibleForTesting

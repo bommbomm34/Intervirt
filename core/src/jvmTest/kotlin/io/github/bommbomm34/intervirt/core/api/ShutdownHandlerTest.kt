@@ -32,7 +32,7 @@ class ShutdownHandlerTest : KoinTest {
     private val shutdownHandler: ShutdownHandler by inject()
 
     @BeforeTest
-    fun start(){
+    fun start() {
         startKoin {
             modules(
                 module {
@@ -46,13 +46,13 @@ class ShutdownHandlerTest : KoinTest {
                     single {
                         SecretService(
                             serviceName = "io.github.bommbomm34.intervirt",
-                            logger = get<AppEnvHolder>().get().getLogger(SecretService::class)
+                            logger = get<AppEnvHolder>().get().getLogger(SecretService::class),
                         )
                     }
                     singleAppEnvHolder()
                     single { getHttpClient() }
                     singleProjectHolder()
-                }
+                },
             )
         }
     }
@@ -79,7 +79,7 @@ class ShutdownHandlerTest : KoinTest {
             throwable = throwable,
             threadName = thread.name,
             writeToReportFile = false,
-            writeToLogFile = false
+            writeToLogFile = false,
         )
         assertContains(report, "Timestamp")
         assertContains(report, "IllegalStateException")
@@ -89,7 +89,7 @@ class ShutdownHandlerTest : KoinTest {
 
 
     @AfterTest
-    fun stop(){
+    fun stop() {
         stopKoin()
     }
 }

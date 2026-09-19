@@ -96,6 +96,6 @@ suspend fun GuestManager.addNetworkIfNotExists(name: String) {
         block = { addNetwork(name) },
         recover = { failure ->
             if (failure is Failure.OperationAlreadyPerformed) Unit else raise(failure)
-        }
+        },
     )
 }

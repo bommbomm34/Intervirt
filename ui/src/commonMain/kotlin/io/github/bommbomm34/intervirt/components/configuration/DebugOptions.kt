@@ -10,19 +10,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.dialogs.launchDialogCatching
 import io.github.bommbomm34.intervirt.core.api.QemuClient
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.getOrNull
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Severity
 import io.github.bommbomm34.intervirt.data.openDialog
 import io.github.bommbomm34.intervirt.rememberLogger
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -93,8 +90,8 @@ fun DebugOptions() {
     Button(
         onClick = {
             throw IllegalStateException("Someone has thrown an exception!")
-        }
-    ){
+        },
+    ) {
         Text("Throw exception")
     }
 }

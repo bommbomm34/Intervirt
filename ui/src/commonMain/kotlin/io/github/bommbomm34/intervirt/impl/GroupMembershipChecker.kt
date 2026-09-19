@@ -8,7 +8,6 @@ package io.github.bommbomm34.intervirt.impl
 import io.github.bommbomm34.intervirt.core.data.OS
 import kotlin.io.path.Path
 import kotlin.io.path.bufferedReader
-import kotlin.io.path.readText
 
 object GroupMembershipChecker {
     private val CURRENT_USER = System.getProperty("user.name")

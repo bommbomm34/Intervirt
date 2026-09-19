@@ -6,18 +6,15 @@
 package io.github.bommbomm34.intervirt.components.configuration
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.*
 import io.github.bommbomm34.intervirt.components.textfields.IntegerTextField
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.isDarkMode
 import io.github.vinceglb.filekit.absolutePath
 import org.jetbrains.compose.resources.stringResource
-import java.util.Locale
+import java.util.*
 
 @Composable
 fun AppConfiguration(

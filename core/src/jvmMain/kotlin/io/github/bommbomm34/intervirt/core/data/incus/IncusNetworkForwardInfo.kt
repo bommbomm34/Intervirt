@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IncusNetworkForwardInfo(
-    val ports: List<IncusNetworkPortInfo>
+    val ports: List<IncusNetworkPortInfo>,
 )
 
 @Serializable

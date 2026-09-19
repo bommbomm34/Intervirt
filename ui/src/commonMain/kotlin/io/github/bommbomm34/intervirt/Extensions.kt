@@ -11,7 +11,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.pointer.PointerButton
@@ -19,10 +18,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
-import io.github.bommbomm34.intervirt.core.api.atomic.Holder
 import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
-import io.github.bommbomm34.intervirt.core.api.atomic.impl.AppEnvHolder
-import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
@@ -36,14 +32,9 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.module.Module
-import org.koin.dsl.bind
-import org.koin.plugin.module.dsl.single
 import java.awt.datatransfer.StringSelection
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.readText
-import kotlin.streams.asSequence
 
 inline val currentAppEnv: AppEnv
     @Composable

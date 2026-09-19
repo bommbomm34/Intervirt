@@ -22,11 +22,7 @@ import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
-import io.github.bommbomm34.intervirt.core.util.ext.channelFlowCatching
-import io.github.bommbomm34.intervirt.core.util.ext.flowCatching
-import io.github.bommbomm34.intervirt.core.util.ext.getLogger
-import io.github.bommbomm34.intervirt.core.util.ext.readablePercentage
-import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
+import io.github.bommbomm34.intervirt.core.util.ext.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -241,8 +237,7 @@ class ActualDockerManager(
         private val image: String,
         private val emit: suspend (ResultProgress<Unit>) -> Unit,
         private val onFailure: (Failure) -> Unit,
-    ) : PullImageResultCallback()
-    {
+    ) : PullImageResultCallback() {
         override fun onStart(stream: Closeable) {
             runBlocking {
                 logger.info { "Starting $image image pull" }

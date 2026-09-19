@@ -10,12 +10,7 @@ import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSStore
-import io.github.bommbomm34.intervirt.core.data.Failure
-
-import io.github.bommbomm34.intervirt.core.data.MailUser
-import io.github.bommbomm34.intervirt.core.data.PortForwarding
-import io.github.bommbomm34.intervirt.core.data.bind
-import io.github.bommbomm34.intervirt.core.data.getCommandResult
+import io.github.bommbomm34.intervirt.core.data.*
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.parseMailAddress
 
@@ -53,7 +48,7 @@ class MailServerManager(
         logger.debug { "Listing mail users" }
         val flow = docker.exec(id, listOf("setup", "email", "list"))
         val output = flow.getCommandResult().bind()
-            
+
         // Parse output
         return output
             .lines()
@@ -73,7 +68,7 @@ class MailServerManager(
         logger.debug { "Remove mail user $user" }
         docker
             .exec(id, listOf("setup", "email", "del", user.address))
-            
+
             .getCommandResult()
             .bind()
     }

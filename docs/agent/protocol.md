@@ -455,6 +455,7 @@ Message from server:
 ```
 
 ### Get networks
+
 Message from client:
 
 ```json
@@ -475,6 +476,7 @@ Message from server:
 	}
 }
 ```
+
 ### Add network
 
 Message from client:
@@ -551,4 +553,5 @@ Intervirt has its own error codes:
 - If no status code is sent, the client will default to the status code ```0```.
 - The example responses don't include ```refID```. Please include it in production. It should contain the ```uuid``` of
   the request which the response refers to.
-- Always return a ```type``` field in the JSON responses. It should be ```General``` unless it is declared otherwise explicitly.
+- Always return a ```type``` field in the JSON responses. It should be ```General``` unless it is declared otherwise
+  explicitly.

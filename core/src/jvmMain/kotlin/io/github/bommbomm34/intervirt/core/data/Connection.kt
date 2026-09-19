@@ -41,7 +41,10 @@ sealed class DeviceConnection {
     ) : DeviceConnection() {
         @Suppress("UNCHECKED_CAST")
         override fun getDevices(devices: List<Device>): Pair<Device.Computer, Device.Computer> {
-            return Pair(id1.resolveDevice(devices), id2.resolveDevice(devices)) as Pair<Device.Computer, Device.Computer>
+            return Pair(
+                id1.resolveDevice(devices),
+                id2.resolveDevice(devices),
+            ) as Pair<Device.Computer, Device.Computer>
         }
     }
 

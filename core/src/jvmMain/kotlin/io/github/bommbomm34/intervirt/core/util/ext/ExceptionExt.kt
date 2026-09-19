@@ -11,11 +11,6 @@ import arrow.core.raise.context.raise
 import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
-import io.github.bommbomm34.intervirt.logging.OutputStream
-import io.github.bommbomm34.intervirt.logging.getDefaultStream
-import io.github.bommbomm34.intervirt.logging.printlnErr
-import jakarta.mail.Transport.send
-import jdk.jfr.internal.OldObjectSample.emit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.ProducerScope

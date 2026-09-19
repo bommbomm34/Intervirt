@@ -14,30 +14,7 @@ import androidx.compose.ui.window.WindowState
 import arrow.core.raise.Raise
 import arrow.core.raise.recover
 import com.russhwolf.settings.Settings
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.agent_timeout
-import intervirt.ui.generated.resources.allStringResources
-import intervirt.ui.generated.resources.command_execution_failure
-import intervirt.ui.generated.resources.container_execution_failure
-import intervirt.ui.generated.resources.download_failure
-import intervirt.ui.generated.resources.file_operation_failed
-import intervirt.ui.generated.resources.illegal_agent_response
-import intervirt.ui.generated.resources.illegal_argument
-import intervirt.ui.generated.resources.illegal_state
-import intervirt.ui.generated.resources.invalid_mail
-import intervirt.ui.generated.resources.invalid_operating_system_for_operation
-import intervirt.ui.generated.resources.missing_permissions
-import intervirt.ui.generated.resources.not_found
-import intervirt.ui.generated.resources.not_supported_operation
-import intervirt.ui.generated.resources.operation_already_performed
-import intervirt.ui.generated.resources.os_failure
-import intervirt.ui.generated.resources.qmp_failure
-import intervirt.ui.generated.resources.serialization_failure
-import intervirt.ui.generated.resources.undefined_failure
-import intervirt.ui.generated.resources.unexpected_failure
-import intervirt.ui.generated.resources.unknown_failure
-import intervirt.ui.generated.resources.version_mismatch
-import intervirt.ui.generated.resources.zip_extraction_failure
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.dialogs.DefaultDialog
 import io.github.bommbomm34.intervirt.core.CURRENT_VERSION
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -45,14 +22,10 @@ import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
-import io.github.bommbomm34.intervirt.core.data.env.loadEnv
 import io.github.bommbomm34.intervirt.core.getAppEnv
-import io.github.bommbomm34.intervirt.core.util.Atomic
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
 class AppState(appEnv: AppEnv) {
@@ -113,7 +86,7 @@ suspend fun AppState.showFailureDialog(failure: Failure) {
 suspend inline fun AppState.runDialogCatching(block: context(Raise<Failure>) () -> Unit) {
     recover(
         block = block,
-        recover = { showFailureDialog(it) }
+        recover = { showFailureDialog(it) },
     )
 }
 

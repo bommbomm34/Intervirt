@@ -16,11 +16,9 @@ import androidx.compose.ui.unit.sp
 import io.github.bommbomm34.intervirt.components.AlignedBox
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.intervirtos.home.AppItem
 import io.github.bommbomm34.intervirt.intervirtos.home.INTERVIRTOS_APPS
-import org.koin.compose.koinInject
 
 @Composable
 fun Home(

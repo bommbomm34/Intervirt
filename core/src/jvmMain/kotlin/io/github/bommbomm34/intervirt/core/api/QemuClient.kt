@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.context.Raise
-import arrow.core.raise.context.either
 import arrow.core.raise.context.raise
 import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
@@ -192,7 +191,8 @@ class QemuClient(
                     }
                 }
             }?.let { anyValue ->
-                return anyValue as? JsonObject ?: raise(Failure.IllegalState("Expected answer from QMP, but nothing received."))
+                return anyValue as? JsonObject
+                    ?: raise(Failure.IllegalState("Expected answer from QMP, but nothing received."))
             }
         }
         raise(Failure.IllegalState("No QEMU Monitor session is available."))
@@ -210,7 +210,7 @@ class QemuClient(
                                 val result = qmpSend("query-status")
                                 result.jsonObject["running"]!!.jsonPrimitive.boolean
                             },
-                            recover = { false }
+                            recover = { false },
                         )
                     } ?: false
                     delay(2500.milliseconds)

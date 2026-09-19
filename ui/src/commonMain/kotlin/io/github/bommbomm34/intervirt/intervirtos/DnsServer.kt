@@ -23,7 +23,6 @@ import io.github.bommbomm34.intervirt.intervirtos.dns.DnsRecordsTable
 import io.github.bommbomm34.intervirt.intervirtos.dns.server.AddDnsRecordView
 import io.github.bommbomm34.intervirt.util.ext.initialize
 import io.github.bommbomm34.intervirt.util.ext.rememberManager
-import jdk.internal.net.http.common.Utils.close
 import org.koin.compose.koinInject
 
 @Composable

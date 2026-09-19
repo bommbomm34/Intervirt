@@ -17,7 +17,8 @@ class VirtualDockerManager : DockerManager {
     private val containers = mutableListOf<Container>()
 
     context(_: Raise<Failure>)
-    override suspend fun init() {}
+    override suspend fun init() {
+    }
 
     override fun addContainer(
         name: String,
@@ -103,10 +104,12 @@ class VirtualDockerManager : DockerManager {
     }
 
     context(_: Raise<Failure>)
-    override suspend fun checkHealth(id: String) {}
+    override suspend fun checkHealth(id: String) {
+    }
 
     context(_: Raise<Failure>)
-    override suspend fun close() {}
+    override suspend fun close() {
+    }
 
     context(_: Raise<Failure>)
     private fun container(name: String) =

@@ -12,10 +12,8 @@ import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import io.github.bommbomm34.intervirt.core.data.Failure
-import io.github.bommbomm34.intervirt.core.data.Project
 import io.github.bommbomm34.intervirt.core.data.env.loadEnv
 import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.toAtomic
 import io.github.bommbomm34.intervirt.logging.KLogger
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*

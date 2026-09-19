@@ -11,8 +11,6 @@ import androidx.compose.runtime.remember
 import io.github.bommbomm34.intervirt.components.CatchingLaunchedEffect
 import io.github.bommbomm34.intervirt.core.api.intervirtos.HttpServerManager
 import io.github.bommbomm34.intervirt.core.data.VirtualHost
-import io.github.bommbomm34.intervirt.data.AppState
-import org.koin.compose.koinInject
 
 @Composable
 fun VirtualHostsManager(httpServer: HttpServerManager) {

@@ -11,11 +11,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializer
-import kotlin.concurrent.atomics.AtomicReference
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.fetchAndUpdate
-import kotlin.concurrent.atomics.update
-import kotlin.concurrent.atomics.updateAndFetch
+import kotlin.concurrent.atomics.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

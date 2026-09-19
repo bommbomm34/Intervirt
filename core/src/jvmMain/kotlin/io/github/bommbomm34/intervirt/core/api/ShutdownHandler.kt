@@ -17,7 +17,7 @@ import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.writeString
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -34,7 +34,7 @@ class ShutdownHandler(
     private val qemuClient: QemuClient,
     private val httpClient: HttpClient,
     private val secretService: SecretService,
-){
+) {
     val appEnv by envHolder
     private var _closed = AtomicBoolean(false)
     val closed get() = _closed.load()
@@ -60,7 +60,7 @@ class ShutdownHandler(
      * This method doesn't exit the application.
      */
     suspend fun gracefulShutdown() {
-        if (_closed.compareAndSet(expectedValue = false, newValue = true)){
+        if (_closed.compareAndSet(expectedValue = false, newValue = true)) {
             recover(
                 block = {
                     deviceManager.close()
@@ -69,7 +69,7 @@ class ShutdownHandler(
                 },
                 recover = {
                     getDefaultStream().printlnErr("Error occurred during closing Intervirt services: $it")
-                }
+                },
             )
             httpClient.close()
             secretService.close()
@@ -82,7 +82,11 @@ class ShutdownHandler(
     fun crash(thread: Thread, throwable: Throwable): Nothing = runBlocking {
         gracefulShutdown()
         // Accessing `appEnv.debugEnabled` may also fail.
-        val isDebugEnabled = try { appEnv.debugEnabled } catch (_: Exception) { false }
+        val isDebugEnabled = try {
+            appEnv.debugEnabled
+        } catch (_: Exception) {
+            false
+        }
         val (report, _) = generateCrashReport(
             throwable = throwable,
             threadName = thread.name,

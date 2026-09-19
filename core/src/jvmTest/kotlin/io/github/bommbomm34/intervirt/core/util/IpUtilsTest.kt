@@ -5,12 +5,8 @@
 
 package io.github.bommbomm34.intervirt.core.util
 
-import inet.ipaddr.ipv4.IPv4Address
-import inet.ipaddr.ipv6.IPv6Address
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
-import kotlin.random.Random
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 

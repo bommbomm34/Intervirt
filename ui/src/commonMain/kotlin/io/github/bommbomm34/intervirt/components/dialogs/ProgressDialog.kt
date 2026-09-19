@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.cancel
-import intervirt.ui.generated.resources.close
 import io.github.bommbomm34.intervirt.components.CenterColumn
 import io.github.bommbomm34.intervirt.components.FlowProgressView
 import io.github.bommbomm34.intervirt.components.GeneralSpacer

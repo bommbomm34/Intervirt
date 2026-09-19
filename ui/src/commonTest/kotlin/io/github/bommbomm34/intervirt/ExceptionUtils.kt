@@ -4,14 +4,13 @@ import arrow.core.raise.Raise
 import arrow.core.raise.recover
 import io.github.bommbomm34.intervirt.core.data.Failure
 import kotlinx.coroutines.test.runTest
-import org.jetbrains.annotations.VisibleForTesting
 
 fun runIntervirtTest(block: suspend context(Raise<Failure>) () -> Unit) = runTest {
     recover(
         block = { block(this) },
         recover = {
             throw AssertionError("Expected successful result, but got $it instead")
-        }
+        },
     )
 }
 

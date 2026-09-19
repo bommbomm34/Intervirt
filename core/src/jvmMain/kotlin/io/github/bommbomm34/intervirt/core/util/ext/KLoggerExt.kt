@@ -22,7 +22,7 @@ fun AppEnv.getLogger(clazz: KClass<*>, vararg suffix: String): KLogger {
 fun AppEnv.getLogger(name: String) = KLogger(
     name = name,
     level = actualLogLevel,
-    streams = getDefaultStreams()
+    streams = getDefaultStreams(),
 )
 
 fun getDefaultStreams() = arrayOf(ListOutputStream.DEFAULT, getDefaultStream())

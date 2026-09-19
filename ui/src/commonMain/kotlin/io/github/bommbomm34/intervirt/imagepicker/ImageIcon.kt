@@ -6,15 +6,13 @@
 package io.github.bommbomm34.intervirt.imagepicker
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.Image as ComposeImage
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.currentAppEnv
 import io.github.bommbomm34.intervirt.data.Image
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
+import androidx.compose.foundation.Image as ComposeImage
 
 @Composable
 fun ImageIcon(image: Image) {

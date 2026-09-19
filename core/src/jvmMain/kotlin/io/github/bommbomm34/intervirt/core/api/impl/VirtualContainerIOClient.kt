@@ -7,14 +7,11 @@ package io.github.bommbomm34.intervirt.core.api.impl
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
-import arrow.core.right
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClient
 import io.github.bommbomm34.intervirt.core.api.ContainerIOClientExecInterceptor
-import io.github.bommbomm34.intervirt.core.api.DnsResolverInterceptor.command
 import io.github.bommbomm34.intervirt.core.api.DnsResolverInterceptor.intercept
 import io.github.bommbomm34.intervirt.core.api.Executor
 import io.github.bommbomm34.intervirt.core.api.FileManager
-
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
 import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure

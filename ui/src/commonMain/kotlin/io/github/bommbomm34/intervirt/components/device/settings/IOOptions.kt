@@ -11,11 +11,7 @@ import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import intervirt.ui.generated.resources.Res
-import intervirt.ui.generated.resources.download_file
-import intervirt.ui.generated.resources.os
-import intervirt.ui.generated.resources.terminal
-import intervirt.ui.generated.resources.upload_file
+import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.GeneralIcon
 import io.github.bommbomm34.intervirt.components.GeneralSpacer
 import io.github.bommbomm34.intervirt.components.TooltipArea
