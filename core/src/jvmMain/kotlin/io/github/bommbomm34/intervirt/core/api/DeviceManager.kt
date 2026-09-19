@@ -379,8 +379,8 @@ class DeviceManager(
         // Validate IP
         require(validateIpv4(computer.ipv4)) { "IPv4 address is invalid: ${computer.ipv4}" }
         require(validateIpv6(computer.ipv6)) { "IPv6 address is invalid: ${computer.ipv6}" }
-//        require(computer.ipv4 isIPWithinSubnet info.ipv4Subnet) { "IPv4 address '${computer.ipv4}' is not within subnet '${info.ipv4Subnet}'" }
-//        require(computer.ipv6 isIPWithinSubnet info.ipv6Subnet) { "IPv6 address '${computer.ipv6}' is not within subnet '${info.ipv6Subnet}'" }
+        require(computer.ipv4 isIPWithinSubnet info.ipv4Subnet) { "IPv4 address '${computer.ipv4}' is not within subnet '${info.ipv4Subnet}'" }
+        require(computer.ipv6 isIPWithinSubnet info.ipv6Subnet) { "IPv6 address '${computer.ipv6}' is not within subnet '${info.ipv6Subnet}'" }
         // Validate MAC
         require(validateMac(computer.mac)) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings
@@ -399,9 +399,9 @@ class DeviceManager(
     context(_: Raise<Failure>)
     override suspend fun close() {
         logger.debug { "Closing DeviceManager" }
-        intervirtOSClients.forEach { (_, client) -> client.close() }
-        dockerManagers.forEach { (_, manager) -> manager.close() }
-        containerIOClients.forEach { (_, client) -> client.close() }
+        intervirtOSClients.values.forEach { it.close() }
+        dockerManagers.values.forEach { it.close() }
+        containerIOClients.values.forEach { it.close() }
         logger.debug { "Closed DeviceManager" }
     }
 
