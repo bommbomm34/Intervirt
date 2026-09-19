@@ -7,6 +7,7 @@ package io.github.bommbomm34.intervirt
 
 import io.github.bommbomm34.intervirt.core.api.*
 import io.github.bommbomm34.intervirt.core.api.atomic.ProjectHolder
+import io.github.bommbomm34.intervirt.core.api.atomic.modify
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.*
@@ -130,7 +131,7 @@ class DeviceSettingsTest : KoinTest {
             val secondTestComputer = Device.Computer.portForwardings.modify(testComputer) {
                 it + TEST_PORT_FORWARDING
             }
-            Project.devices.modify(project.get()) { it + secondTestComputer }
+            Project.devices.modify(project) { it + secondTestComputer }
             assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
         }
     }
