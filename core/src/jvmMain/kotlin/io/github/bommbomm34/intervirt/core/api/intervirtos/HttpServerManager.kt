@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api.intervirtos
 
 import arrow.core.raise.context.Raise
+import arrow.core.raise.context.raise
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerBasedManager
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.IntervirtOSClient
@@ -13,7 +14,6 @@ import io.github.bommbomm34.intervirt.core.data.Failure
 
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.getCommandResult
-import io.github.bommbomm34.intervirt.core.exceptions.ContainerExecutionException
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.bommbomm34.intervirt.logging.debug
@@ -47,7 +47,7 @@ class HttpServerManager(
         val (output, statusCode) = flow.getCommandResult()
         if (statusCode != 0) {
             logger.error { "Failed to enable Apache2 configuration: $output" }
-            throw ContainerExecutionException(output)
+            raise(Failure.ContainerExecution("Failed to enable Apache2 configuration: $output"))
         } else {
             logger.debug { "Reloading Apache2 configuration" }
             docker.restartContainer(id)

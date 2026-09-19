@@ -14,7 +14,7 @@ import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.data.PortForwarding
 import io.github.bommbomm34.intervirt.core.data.qemu.QemuMonitorSession
 import io.github.bommbomm34.intervirt.core.defaultJson
-import io.github.bommbomm34.intervirt.core.exceptions.QemuException
+import io.github.bommbomm34.intervirt.core.error
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import io.github.bommbomm34.intervirt.core.util.atomic
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
@@ -70,26 +70,24 @@ class QemuClient(
         builder.directory(fileManager.getFile("qemu").file)
         builder.redirectErrorStream(true)
         currentProcess = builder.start()
-        BufferedReader(InputStreamReader(currentProcess.inputStream)).use { tempReader ->
-            logger.debug { "Started VM process" }
+        logger.debug { "Started VM process" }
 //        logger.debug { "Output: " + currentProcess.inputStream.bufferedReader().readText() }
-            if (currentProcess.isAlive) {
-                logger.debug { "Waiting for availability" }
-                delay(2000.milliseconds) // Wait for QEMU to start QMP
-                qemuMonitorSession = initMonitorSocket()
-                isRunningLoop() // Runs in background
-                while (!running) {
-                    if (!currentProcess.isAlive) {
-                        // QEMU start process failed
-                        val error = QemuException("QEMU start process failed")
-                        logger.error(error) { "Process exited unexpectedly" }
-                        throw error
-                    }
-                    delay(1000.milliseconds)
+        if (currentProcess.isAlive) {
+            logger.debug { "Waiting for availability" }
+            delay(2000.milliseconds) // Wait for QEMU to start QMP
+            qemuMonitorSession = initMonitorSocket()
+            isRunningLoop() // Runs in background
+            while (!running) {
+                if (!currentProcess.isAlive) {
+                    // QEMU start process failed
+                    val error = Failure.IllegalState("QEMU start process failed")
+                    logger.error(error) { "Process exited unexpectedly" }
+                    raise(error)
                 }
+                delay(1000.milliseconds)
             }
-            if (!currentProcess.isAlive) throw IllegalStateException()
         }
+        if (!currentProcess.isAlive) throw IllegalStateException()
         logger.debug { "Booted Alpine Linux" }
     }
 

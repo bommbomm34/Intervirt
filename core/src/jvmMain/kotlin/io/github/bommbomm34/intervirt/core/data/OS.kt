@@ -5,8 +5,6 @@
 
 package io.github.bommbomm34.intervirt.core.data
 
-import io.github.bommbomm34.intervirt.core.exceptions.UnsupportedOsException
-
 enum class OS(private val asString: String) {
     WINDOWS("Windows"),
     LINUX("Linux");
@@ -23,5 +21,7 @@ enum class OS(private val asString: String) {
         }
     }
 }
+
+class UnsupportedOsException : Throwable("Only Windows and Linux are supported, but got: ${System.getProperty("os.name")}")
 
 fun getOS() = OS.CURRENT
