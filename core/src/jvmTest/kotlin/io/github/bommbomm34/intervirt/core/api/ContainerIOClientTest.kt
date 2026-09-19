@@ -6,6 +6,7 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
+import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -17,6 +18,8 @@ import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.ignoreFailure
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -104,7 +107,11 @@ class ContainerIOClientTest : KoinTest {
     }
 
     context(_: Raise<Failure>)
-    private suspend fun createDevice(): Device.Computer = deviceManager.addComputer(mockComputer)
+    private suspend fun createDevice(): Device.Computer =
+        deviceManager.addComputer(mockComputer).let { result ->
+            result.flow.collect()
+            result.device
+        }
 
     private fun ContainerIOClient.getTestPath(): Path {
         path = getPath("/tmp/test.txt")

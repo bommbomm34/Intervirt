@@ -10,7 +10,6 @@ import io.github.bommbomm34.intervirt.logging.LogLevel
 import io.github.bommbomm34.intervirt.logging.OutputStream
 import io.github.bommbomm34.intervirt.logging.debug
 import io.github.bommbomm34.intervirt.logging.error
-import io.github.bommbomm34.intervirt.logging.getDefaultStream
 import io.github.bommbomm34.intervirt.logging.info
 import io.github.bommbomm34.intervirt.logging.trace
 import kotlin.test.Test
@@ -75,7 +74,7 @@ class KLoggerTest {
 }
 
 private class MockStream : OutputStream {
-    private val defaultStream = getDefaultStream()
+    private val defaultStream get() = OutputStream.DEFAULT
     override val colorSupported = defaultStream.colorSupported
 
     val stdout = mutableListOf<String>()
