@@ -6,7 +6,6 @@
 package io.github.bommbomm34.intervirt.core.api
 
 import arrow.core.raise.Raise
-import arrow.core.raise.context.bind
 import io.github.bommbomm34.intervirt.core.api.impl.DefaultExecutor
 import io.github.bommbomm34.intervirt.core.api.impl.VirtualGuestManager
 import io.github.bommbomm34.intervirt.core.data.Device
@@ -18,8 +17,10 @@ import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.ignoreFailure
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.string.shouldContain
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -36,18 +37,6 @@ import kotlin.test.*
 
 class ContainerIOClientTest : KoinTest {
     val deviceManager: DeviceManager by inject()
-    val mockComputer = Device.Computer(
-        id = DeviceId("computer-10000"),
-        image = "debian/13",
-        name = "Mock Computer",
-        x = 0,
-        y = 0,
-        ipv4 = "0.0.0.0",
-        ipv6 = "::1",
-        mac = "ff:ff:ff:ff:ff:ff",
-        internetEnabled = false,
-        portForwardings = listOf(),
-    )
     var path: Path? = null
 
     @BeforeTest
@@ -71,7 +60,7 @@ class ContainerIOClientTest : KoinTest {
     @Test
     fun `should get IO client`() = runIntervirtTest {
         val device = createDevice()
-        ignoreFailure { deviceManager.getIOClient(device) }
+        deviceManager.getIOClient(device)
     }
 
     @Test
@@ -79,8 +68,8 @@ class ContainerIOClientTest : KoinTest {
         val device = createDevice()
         val ioClient = deviceManager.getIOClient(device)
         val res = ioClient.exec(listOf("echo", "Hello World")).getCommandResult()
-        assertEquals(0, res.statusCode)
-        assertContains(res.output, "Hello World")
+        res.statusCode shouldBeEqual 0
+        res.output shouldContain "Hello World"
     }
 
     @Test
@@ -96,7 +85,7 @@ class ContainerIOClientTest : KoinTest {
         val ioClient = deviceManager.getIOClient(device)
         val path = ioClient.getTestPath()
         path.writeText("Hello")
-        assertEquals("Hello", path.readText())
+        path.readText() shouldBeEqual "Hello"
     }
 
     @Test
@@ -108,7 +97,7 @@ class ContainerIOClientTest : KoinTest {
 
     context(_: Raise<Failure>)
     private suspend fun createDevice(): Device.Computer =
-        deviceManager.addComputer(mockComputer).let { result ->
+        deviceManager.addComputer(MOCK_COMPUTER).let { result ->
             result.flow.collect()
             result.device
         }
@@ -123,5 +112,20 @@ class ContainerIOClientTest : KoinTest {
     fun stopTest() {
         path?.deleteIfExists()
         stopKoin()
+    }
+
+    companion object {
+        val MOCK_COMPUTER = Device.Computer(
+            id = DeviceId("computer-10000"),
+            image = "debian/13",
+            name = "Mock Computer",
+            x = 0,
+            y = 0,
+            ipv4 = "0.0.0.0",
+            ipv6 = "::1",
+            mac = "ff:ff:ff:ff:ff:ff",
+            internetEnabled = false,
+            portForwardings = emptyList(),
+        )
     }
 }

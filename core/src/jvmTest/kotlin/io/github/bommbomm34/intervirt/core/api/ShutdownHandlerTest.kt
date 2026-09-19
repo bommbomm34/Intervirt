@@ -16,6 +16,9 @@ import io.github.bommbomm34.intervirt.core.singleProjectHolder
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.bommbomm34.intervirt.secret.SecretService
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.string.shouldContain
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -60,15 +63,15 @@ class ShutdownHandlerTest : KoinTest {
     @Test
     fun `should graceful shutdown`() = runIntervirtTest {
         shutdownHandler.gracefulShutdown()
-        assertEquals(true, shutdownHandler.closed)
+        shutdownHandler.closed.shouldBeTrue()
     }
 
     @Test
     fun `should not close twice`() = runIntervirtTest {
         shutdownHandler.gracefulShutdown()
-        assertEquals(1, guestManager.closed)
+        guestManager.closed shouldBeExactly 1
         shutdownHandler.gracefulShutdown() // Close a second time
-        assertEquals(1, guestManager.closed)
+        guestManager.closed shouldBeExactly 1
     }
 
     @Test
@@ -81,10 +84,10 @@ class ShutdownHandlerTest : KoinTest {
             writeToReportFile = false,
             writeToLogFile = false,
         )
-        assertContains(report, "Timestamp")
-        assertContains(report, "IllegalStateException")
-        assertContains(log, "stdout")
-        assertContains(log, "stderr")
+        report shouldContain "Timestamp"
+        report shouldContain "IllegalStateException"
+        log shouldContain "stdout"
+        log shouldContain "stderr"
     }
 
 

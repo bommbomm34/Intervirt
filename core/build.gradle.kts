@@ -34,6 +34,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotest)
+            implementation(libs.kotest.arrow)
         }
         jvmMain.dependencies {
             implementation(libs.docker.java.core)

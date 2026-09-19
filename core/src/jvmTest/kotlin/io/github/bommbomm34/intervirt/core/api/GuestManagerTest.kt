@@ -20,6 +20,14 @@ import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
 import io.github.bommbomm34.intervirt.core.util.randomMac
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.maps.shouldContain
+import io.kotest.matchers.maps.shouldContainKey
+import io.kotest.matchers.maps.shouldNotContainKey
 import io.ktor.client.*
 import kotlinx.coroutines.flow.toList
 import org.koin.core.context.startKoin
@@ -32,15 +40,7 @@ import org.koin.test.inject
 import kotlin.test.*
 import kotlin.time.Duration.Companion.seconds
 
-private val TEST_CONTAINER_ID = DeviceId("computer-10001")
-private const val TEST_NETWORK_NAME = "test-network"
-
 class GuestManagerTest : KoinTest {
-    val fwd = PortForwarding(
-        protocol = "tcp",
-        internalPort = 22,
-        externalPort = 2222,
-    )
     val guestManager: GuestManager by inject()
     var isVirtual: Boolean = true
 
@@ -66,14 +66,14 @@ class GuestManagerTest : KoinTest {
     @Test
     fun `should add container`() = runIntervirtTest {
         val container = addTestContainer()
-        assertContains(getContainers(), container)
+        getContainers() shouldContain container
     }
 
     @Test
     fun `should remove container`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.removeContainer(TEST_CONTAINER_ID).lastResult().bind()
-        assertFalse { getContainers().contains(container) }
+        getContainers() shouldNotContain container
     }
 
     @Test
@@ -84,7 +84,7 @@ class GuestManagerTest : KoinTest {
             id = TEST_CONTAINER_ID,
             newIP = newIP,
         )
-        assertEquals(newIP, container.getContainer().ipv4)
+        newIP shouldBeEqual container.getContainer().ipv4
     }
 
     @Test
@@ -95,7 +95,7 @@ class GuestManagerTest : KoinTest {
             id = TEST_CONTAINER_ID,
             newIP = newIP,
         )
-        assertEquals(newIP, container.getContainer().ipv6)
+        newIP shouldBeEqual container.getContainer().ipv6
     }
 
     @Test
@@ -103,7 +103,7 @@ class GuestManagerTest : KoinTest {
         addTestContainer()
         addTestNetwork()
         guestManager.connect(TEST_CONTAINER_ID, TEST_NETWORK_NAME)
-        assertContains(getNetworks()[TEST_NETWORK_NAME]!!, TEST_CONTAINER_ID)
+        getNetworks()[TEST_NETWORK_NAME]!! shouldContain TEST_CONTAINER_ID
     }
 
     @Test
@@ -112,29 +112,29 @@ class GuestManagerTest : KoinTest {
         addTestNetwork()
         guestManager.connect(TEST_CONTAINER_ID, TEST_NETWORK_NAME)
         guestManager.disconnect(TEST_CONTAINER_ID, TEST_NETWORK_NAME)
-        assertFalse { getNetworks()[TEST_NETWORK_NAME]!!.contains(TEST_CONTAINER_ID) }
+        getNetworks()[TEST_NETWORK_NAME]!! shouldNotContain TEST_CONTAINER_ID
     }
 
     @Test
     fun `should enable internet access`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.setInternetAccess(TEST_CONTAINER_ID, true)
-        assertTrue { container.getContainer().internet }
+        container.getContainer().internet.shouldBeTrue()
     }
 
     @Test
     fun `should add port forwarding`() = runIntervirtTest {
         val container = addTestContainer()
         addTestPortForwarding()
-        assertContains(container.getContainer().portForwardings, fwd)
+        container.getContainer().portForwardings shouldContain FWD
     }
 
     @Test
     fun `should remove port forwarding`() = runIntervirtTest {
         val container = addTestContainer()
         addTestPortForwarding()
-        guestManager.removePortForwarding(TEST_CONTAINER_ID, fwd.externalPort, fwd.protocol)
-        assertFalse { container.getContainer().portForwardings.contains(fwd) }
+        guestManager.removePortForwarding(TEST_CONTAINER_ID, FWD.externalPort, FWD.protocol)
+        container.getContainer().portForwardings shouldNotContain FWD
     }
 
     @Test
@@ -142,14 +142,14 @@ class GuestManagerTest : KoinTest {
         val container = addTestContainer()
         guestManager.stopContainer(TEST_CONTAINER_ID) // Containers start by default
         guestManager.startContainer(TEST_CONTAINER_ID)
-        assertTrue { container.getContainer().running }
+        container.getContainer().running.shouldBeTrue()
     }
 
     @Test
     fun `should stop container`() = runIntervirtTest {
         val container = addTestContainer()
         guestManager.stopContainer(TEST_CONTAINER_ID)
-        assertFalse { container.getContainer().running }
+        container.getContainer().running.shouldBeFalse()
     }
 
     @Test
@@ -157,21 +157,21 @@ class GuestManagerTest : KoinTest {
         val container = addTestContainer()
         addTestNetwork()
         val progress = guestManager.wipe().toList()
-        assertContains(progress, ResultProgress.success(Unit))
-        assertFalse { getContainers().contains(container) }
-        assertFalse { getNetworks().containsKey(TEST_NETWORK_NAME) }
+        progress shouldContain ResultProgress.success(Unit)
+        getContainers() shouldNotContain container
+        getNetworks() shouldNotContainKey TEST_NETWORK_NAME
     }
 
     @Test
     fun `should update`() = runIntervirtTest {
         val progress = guestManager.update().toList()
-        assertContains(progress, ResultProgress.success(Unit))
+        progress shouldContain ResultProgress.success(Unit)
     }
 
     @Test
     fun `should get info`() = runIntervirtTest {
         val info = getInfo()
-        if (guestManager is VirtualGuestManager) assertEquals(CURRENT_VERSION, info.version)
+        if (guestManager is VirtualGuestManager) info.version shouldBeEqual CURRENT_VERSION
     }
 
     @Test
@@ -180,22 +180,22 @@ class GuestManagerTest : KoinTest {
         val container2 = addTestContainer(DeviceId("computer-10003"))
         val container3 = addTestContainer(DeviceId("computer-10005"))
         val containers = getContainers()
-        assertContains(containers, container1)
-        assertContains(containers, container2)
-        assertContains(containers, container3)
+        containers shouldContain container1
+        containers shouldContain container2
+        containers shouldContain container3
     }
 
     @Test
     fun `should add network`() = runIntervirtTest {
         addTestNetwork()
-        assertContains(getNetworks(), TEST_NETWORK_NAME)
+        getNetworks() shouldContainKey TEST_NETWORK_NAME
     }
 
     @Test
     fun `should remove networks`() = runIntervirtTest {
         addTestNetwork()
         guestManager.removeNetwork(TEST_NETWORK_NAME)
-        assertFalse { getNetworks().contains(TEST_NETWORK_NAME) }
+        getNetworks() shouldNotContainKey TEST_NETWORK_NAME
     }
 
     @Test
@@ -204,9 +204,9 @@ class GuestManagerTest : KoinTest {
         addTestNetwork("test-network2")
         addTestNetwork("test-network3")
         val networks = getNetworks()
-        assertContains(networks, "test-network1")
-        assertContains(networks, "test-network2")
-        assertContains(networks, "test-network3")
+        networks shouldContainKey "test-network1"
+        networks shouldContainKey "test-network2"
+        networks shouldContainKey "test-network3"
     }
 
     @Test
@@ -237,9 +237,9 @@ class GuestManagerTest : KoinTest {
     context(_: Raise<Failure>)
     private suspend fun addTestPortForwarding() = guestManager.addPortForwarding(
         id = TEST_CONTAINER_ID,
-        internalPort = fwd.internalPort,
-        externalPort = fwd.externalPort,
-        protocol = fwd.protocol,
+        internalPort = FWD.internalPort,
+        externalPort = FWD.externalPort,
+        protocol = FWD.protocol,
     )
 
     context(_: Raise<Failure>)
@@ -256,5 +256,17 @@ class GuestManagerTest : KoinTest {
         guestManager.wipe().lastResult().bind()
         guestManager.close()
         stopKoin()
+    }
+
+    companion object {
+        val FWD = PortForwarding(
+            protocol = "tcp",
+            internalPort = 22,
+            externalPort = 2222,
+        )
+
+        val TEST_CONTAINER_ID = DeviceId("computer-10001")
+
+        const val TEST_NETWORK_NAME = "test-network"
     }
 }

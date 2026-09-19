@@ -11,6 +11,9 @@ import io.github.bommbomm34.intervirt.core.data.env.storeEnv
 import io.github.bommbomm34.intervirt.core.getAppEnv
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.util.toAtomic
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.equals.shouldEqual
+import io.kotest.matchers.equals.shouldNotBeEqual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,13 +29,13 @@ class AppEnvTest {
     fun `should not save really persistent`() {
         _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
         val realAppEnv = getAppEnv()
-        assertNotEquals("MOCK", realAppEnv.overrideDockerHost)
+        realAppEnv.overrideDockerHost shouldNotBeEqual "MOCK"
     }
 
     @Test
     fun `should save temporarily`() {
         _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
-        assertEquals("MOCK", appEnv.overrideDockerHost)
+        appEnv.overrideDockerHost shouldBeEqual "MOCK"
     }
 
     @Test
@@ -40,8 +43,8 @@ class AppEnvTest {
         _appEnv.update { it.copy(overrideDockerHost = "MOCK") }
         settings.storeEnv(appEnv)
         val otherAppEnv = getTestAppEnv(settings)
-        assertEquals("MOCK", otherAppEnv.overrideDockerHost)
-        assertEquals("MOCK", map["overrideDockerHost"])
+        otherAppEnv.overrideDockerHost shouldBeEqual "MOCK"
+        map["overrideDockerHost"] shouldEqual "MOCK"
     }
 
     @Test

@@ -21,6 +21,11 @@ import io.github.bommbomm34.intervirt.core.util.randomIpv4
 import io.github.bommbomm34.intervirt.core.util.randomIpv6
 import io.github.bommbomm34.intervirt.core.util.randomMac
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.equals.shouldBeEqual
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
@@ -49,18 +54,13 @@ class DeviceManagerTest : KoinTest {
     lateinit var mockComputer: Device.Computer
     lateinit var mockComputer2: Device.Computer
 
-    val mockPortForwarding = PortForwarding(
-        protocol = "tcp",
-        externalPort = 2222,
-        internalPort = 22,
-    )
-
     private val deviceManager: DeviceManager by inject()
     private val guestManager: GuestManager by inject()
     private val _project: ProjectHolder by inject()
     private var project: Project
         get() = _project.get()
         set(value) = _project.set(value)
+    private val currentComputer get() = project.getDevice(mockComputer)
 
     @BeforeTest
     fun setup() = runIntervirtTest {
@@ -96,14 +96,14 @@ class DeviceManagerTest : KoinTest {
     @Test
     fun `should add computer`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
-        assertContains(project.devices, computer)
+        project.devices shouldContain computer
     }
 
     @Test
     fun `should remove device`() = runIntervirtTest {
         deviceManager.addComputer(mockComputer)
         deviceManager.removeDevice(mockComputer).lastResult().bind()
-        assertFalse { project.devices.contains(mockComputer) }
+        project.devices shouldNotContain mockComputer
     }
 
     @Test
@@ -112,7 +112,7 @@ class DeviceManagerTest : KoinTest {
             x = 20,
             y = 20,
         )
-        assertContains(project.devices, switch)
+        project.devices shouldContain switch
     }
 
     @Test
@@ -120,10 +120,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.addComputer(mockComputer)
         deviceManager.addComputer(mockComputer2)
         deviceManager.connectDevice(mockComputer, mockComputer2)
-        assertContains(
-            iterable = project.connections,
-            element = mockComputer connect mockComputer2,
-        )
+        project.connections shouldContain (mockComputer connect mockComputer2)
     }
 
     @Test
@@ -132,9 +129,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.addComputer(mockComputer2)
         deviceManager.connectDevice(mockComputer, mockComputer2)
         deviceManager.disconnectDevice(mockComputer, mockComputer2)
-        assertFalse {
-            project.connections.contains(mockComputer connect mockComputer2)
-        }
+        project.connections shouldNotContain (mockComputer connect mockComputer2)
     }
 
     @Test
@@ -142,10 +137,7 @@ class DeviceManagerTest : KoinTest {
         deviceManager.addComputer(mockComputer)
         val switch = deviceManager.addSwitch(x = 20, y = 20)
         deviceManager.connectDevice(mockComputer, switch)
-        assertContains(
-            iterable = project.connections,
-            element = mockComputer connect switch,
-        )
+        project.connections shouldContain (mockComputer connect switch)
     }
 
     @Test
@@ -154,39 +146,37 @@ class DeviceManagerTest : KoinTest {
         val switch = deviceManager.addSwitch(x = 20, y = 20)
         deviceManager.connectDevice(mockComputer, switch)
         deviceManager.disconnectDevice(mockComputer, switch)
-        assertFalse {
-            project.connections.contains(mockComputer connect switch)
-        }
+        project.connections shouldNotContain (mockComputer connect switch)
     }
 
     @Test
     fun `should set IPv4 of device`() = runIntervirtTest {
-        val computer = deviceManager.addComputer(mockComputer).device
+        deviceManager.addComputer(mockComputer).device
         val ipv4 = randomIpv4(getInfo().ipv4Subnet)
         deviceManager.setIpv4(mockComputer, ipv4)
-        assertEquals(project.getDevice(computer).ipv4, ipv4)
+        currentComputer.ipv4 shouldBeEqual ipv4
     }
 
     @Test
     fun `should set IPv6 of device`() = runIntervirtTest {
-        val computer = deviceManager.addComputer(mockComputer).device
+        deviceManager.addComputer(mockComputer).device
         val ipv6 = randomIpv6(getInfo().ipv6Subnet)
         deviceManager.setIpv6(mockComputer, ipv6)
-        assertEquals(project.getDevice(computer).ipv6, ipv6)
+        currentComputer.ipv6 shouldBeEqual ipv6
     }
 
     @Test
     fun `should set name of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.setName(computer, "COMPUTER")
-        assertEquals("COMPUTER", project.getDevice(computer).name)
+        currentComputer.name shouldBeEqual "COMPUTER"
     }
 
     @Test
     fun `should enable internet of device`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.setInternetEnabled(computer, true)
-        assertEquals(true, project.getDevice(computer).internetEnabled)
+        currentComputer.internetEnabled.shouldBeTrue()
     }
 
     @Test
@@ -194,27 +184,30 @@ class DeviceManagerTest : KoinTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.stop(computer) // Computers are running by default
         deviceManager.start(computer)
+        currentComputer.running.shouldBeTrue()
     }
 
     @Test
     fun `should stop computer`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
         deviceManager.stop(computer)
+        currentComputer.running.shouldBeFalse()
     }
 
     @Test
     fun `should add port forwarding`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
-        deviceManager.addPortForwarding(computer, mockPortForwarding)
-        assertContains(project.getDevice(computer).portForwardings, mockPortForwarding)
+        deviceManager.addPortForwarding(computer, MOCK_PORT_FORWARDING)
+        currentComputer.portForwardings shouldContain MOCK_PORT_FORWARDING
     }
 
     @Test
     fun `should remove port forwarding`() = runIntervirtTest {
         val computer = deviceManager.addComputer(mockComputer).device
-        deviceManager.addPortForwarding(computer, mockPortForwarding)
-        deviceManager.removePortForwarding(mockPortForwarding.externalPort, mockPortForwarding.protocol)
-        assertFalse { computer.portForwardings.contains(mockPortForwarding) }
+        deviceManager.addPortForwarding(computer, MOCK_PORT_FORWARDING)
+        deviceManager.removePortForwarding(MOCK_PORT_FORWARDING.externalPort, MOCK_PORT_FORWARDING.protocol)
+
+        currentComputer.portForwardings shouldNotContain MOCK_PORT_FORWARDING
     }
 
     @Test
@@ -243,4 +236,12 @@ class DeviceManagerTest : KoinTest {
 
     context(_: Raise<Failure>)
     private suspend fun randomIpv6(): String = randomIpv6(getInfo().ipv6Subnet)
+
+    companion object {
+        val MOCK_PORT_FORWARDING = PortForwarding(
+            protocol = "tcp",
+            externalPort = 2222,
+            internalPort = 22,
+        )
+    }
 }

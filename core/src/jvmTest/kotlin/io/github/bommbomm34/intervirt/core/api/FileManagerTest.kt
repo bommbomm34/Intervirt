@@ -5,7 +5,6 @@
 
 package io.github.bommbomm34.intervirt.core.api
 
-import arrow.core.Either
 import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.getHttpClient
@@ -13,6 +12,11 @@ import io.github.bommbomm34.intervirt.core.injectAppEnv
 import io.github.bommbomm34.intervirt.core.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.vinceglb.filekit.*
+import io.kotest.assertions.arrow.core.shouldBeRight
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.string.shouldContain
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -21,8 +25,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import java.io.File
 import kotlin.test.*
-
-const val DOWNLOAD_URL = "https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/LICENSE"
 
 class FileManagerTest : KoinTest {
     private val appEnv: AppEnv by injectAppEnv()
@@ -45,9 +47,9 @@ class FileManagerTest : KoinTest {
     fun `should initialize successfully`() = runIntervirtTest {
         fileManager.init()
         val files = appEnv.actualDataDir.list().map { it.name }
-        assertContains(files, "qemu")
-        assertContains(files, "disk")
-        assertContains(files, "cache")
+        files shouldContain "qemu"
+        files shouldContain "disk"
+        files shouldContain "cache"
     }
 
     @Test
@@ -58,17 +60,17 @@ class FileManagerTest : KoinTest {
             when (it) {
                 is ResultProgress.Result<PlatformFile> -> {
                     val res = it.result
-                    assertIs<Either.Right<PlatformFile>>(res)
+                    res.shouldBeRight()
                     val file = res.value
-                    assertTrue(file.exists())
-                    assertContains(file.readString(), "GNU")
+                    file.exists().shouldBeTrue()
+                    file.readString() shouldContain "GNU"
                     finishedSuccessfully = true
                 }
 
                 else -> {}
             }
         }
-        assertTrue(finishedSuccessfully)
+        finishedSuccessfully.shouldBeTrue()
     }
 
     @Test
@@ -78,12 +80,16 @@ class FileManagerTest : KoinTest {
         fileManager.extractZip(file, tempFolder)
         val files = tempFolder.list()
         val hello: PlatformFile? = files.firstOrNull { it.name == "hello.txt" }
-        assertNotNull(hello)
-        assertContains(hello.readString(), "Hello World")
+        hello.shouldNotBeNull()
+        hello.readString() shouldContain "Hello World"
     }
 
     @AfterTest
     fun tearDown() {
         stopKoin()
+    }
+
+    companion object {
+        const val DOWNLOAD_URL = "https://raw.githubusercontent.com/bommbomm34/Intervirt/refs/heads/main/LICENSE"
     }
 }

@@ -13,6 +13,9 @@ import io.github.bommbomm34.intervirt.core.data.getOS
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.util.runIntervirtTest
 import io.github.vinceglb.filekit.PlatformFile
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.equals.shouldNotBeEqual
+import io.kotest.matchers.string.shouldContain
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -27,8 +30,8 @@ class ExecutorTest {
         val (output, status) = executor
             .runCommand(null, listOf(*getEchoPath(), "Hello World"))
             .getCommandResult()
-        assertEquals(0, status)
-        assertContains(output, "Hello World")
+        status shouldBeEqual 0
+        output shouldContain "Hello World"
     }
 
     @Test
@@ -41,7 +44,7 @@ class ExecutorTest {
         val (_, status) = executor
             .runCommand(testFolder, listOf(*getCatPath(), "hosts"))
             .getCommandResult()
-        assertEquals(0, status)
+        status shouldBeEqual 0
     }
 
     @Test
@@ -49,7 +52,7 @@ class ExecutorTest {
         val (_, status) = executor
             .runCommand(null, listOf("invalid_command_intervirt_312932031"))
             .getCommandResult()
-        assertNotEquals(0, status)
+        status shouldNotBeEqual 0
     }
 
     private fun getCatPath(): Array<String> = when (getOS()) {
