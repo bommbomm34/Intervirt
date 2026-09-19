@@ -27,7 +27,7 @@ fun Ipv6TextField(
     OutlinedTextField(
         value = ipv6,
         onValueChange = {
-            validIpv6 = it.validateIpv6() && it isIPWithinSubnet info.ipv6Subnet
+            validIpv6 = validateIpv6(it) && it isIPWithinSubnet info.ipv6Subnet
             if (validIpv6) onIpv6Change(it)
         },
         label = {

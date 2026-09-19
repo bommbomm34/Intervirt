@@ -14,56 +14,56 @@ import kotlin.test.assertTrue
 class IpUtilsTest {
     @Test
     fun `should validate loopback IPv4`() {
-        "0.0.0.0".validateIpv4().shouldBeTrue()
-    }
-
-    @Test
-    fun `should validate loopback IPv6`() {
-        "::1".validateIpv6().shouldBeTrue()
+        validateIpv4("0.0.0.0").shouldBeTrue()
     }
 
     @Test
     fun `should validate IPv4 with too big integers`() {
-        "0.0.0.256".validateIpv4().shouldBeFalse()
-    }
-
-    @Test
-    fun `should validate IPv6 with non-hexadecimal numbers`() {
-        "fd00:9999:9999:9999:9999:9999:kkkk:2222".validateIpv6().shouldBeFalse()
+        validateIpv4("0.0.0.256").shouldBeFalse()
     }
 
     @Test
     fun `should validate IPv4 with too many parts`() {
-        "0.0.0.0.0.0.0".validateIpv4().shouldBeFalse()
-    }
-
-    @Test
-    fun `should validate IPv6 with too many parts`() {
-        "fd00:0000:0000:0000:0000:0000:0000:0000:0000:0000".validateIpv6().shouldBeFalse()
+        validateIpv4("0.0.0.0.0.0.0").shouldBeFalse()
     }
 
     @Test
     fun `should validate public IPv4 address`() {
-        "142.251.36.110".validateIpv4().shouldBeTrue()
+        validateIpv4("142.251.36.110").shouldBeTrue()
+    }
+
+    @Test
+    fun `should validate loopback IPv6`() {
+        validateIpv6("::1").shouldBeTrue()
+    }
+
+    @Test
+    fun `should validate IPv6 with non-hexadecimal numbers`() {
+        validateIpv6("fd00:9999:9999:9999:9999:9999:kkkk:2222").shouldBeFalse()
+    }
+
+    @Test
+    fun `should validate IPv6 with too many parts`() {
+        validateIpv6("fd00:0000:0000:0000:0000:0000:0000:0000:0000:0000").shouldBeFalse()
     }
 
     @Test
     fun `should validate public IPv6 address`() {
-        "2a00:1450:4001:806::200e".validateIpv6().shouldBeTrue()
+        validateIpv6("2a00:1450:4001:806::200e").shouldBeTrue()
     }
 
     @Test
     fun `should validate MAC address`() {
-        "ff:ff:ff:ff:ff:89".validateMac().shouldBeTrue()
+        validateMac("ff:ff:ff:ff:ff:89").shouldBeTrue()
     }
 
     @Test
     fun `should validate MAC address with too many parts`() {
-        "ff:ff:ff:ff:ff:ff:ff".validateMac().shouldBeFalse()
+        validateMac("ff:ff:ff:ff:ff:ff:ff").shouldBeFalse()
     }
 
     @Test
     fun `should validate MAC address with non-hexadecimal numbers`() {
-        "kk:kk:22:22:22:22".validateMac().shouldBeFalse()
+        validateMac("kk:kk:22:22:22:22").shouldBeFalse()
     }
 }

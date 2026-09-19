@@ -27,7 +27,7 @@ fun Ipv4TextField(
     OutlinedTextField(
         value = ipv4,
         onValueChange = {
-            validIpv4 = it.validateIpv4() && it isIPWithinSubnet info.ipv4Subnet
+            validIpv4 = validateIpv4(it) && it isIPWithinSubnet info.ipv4Subnet
             if (validIpv4) onIpv4Change(it)
         },
         label = {

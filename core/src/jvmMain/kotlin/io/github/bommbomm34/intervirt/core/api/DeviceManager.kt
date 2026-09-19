@@ -377,12 +377,12 @@ class DeviceManager(
         // Validate image
         requireNotNull(computer.image.toReadableImage()) { "Invalid image: ${computer.image}" }
         // Validate IP
-        require(computer.ipv4.validateIpv4()) { "IPv4 address is invalid: ${computer.ipv4}" }
-        require(computer.ipv6.validateIpv6()) { "IPv6 address is invalid: ${computer.ipv6}" }
+        require(validateIpv4(computer.ipv4)) { "IPv4 address is invalid: ${computer.ipv4}" }
+        require(validateIpv6(computer.ipv6)) { "IPv6 address is invalid: ${computer.ipv6}" }
 //        require(computer.ipv4 isIPWithinSubnet info.ipv4Subnet) { "IPv4 address '${computer.ipv4}' is not within subnet '${info.ipv4Subnet}'" }
 //        require(computer.ipv6 isIPWithinSubnet info.ipv6Subnet) { "IPv6 address '${computer.ipv6}' is not within subnet '${info.ipv6Subnet}'" }
         // Validate MAC
-        require(computer.mac.validateMac()) { "MAC address is invalid: ${computer.mac}" }
+        require(validateMac(computer.mac)) { "MAC address is invalid: ${computer.mac}" }
         // Validate port forwardings
         computer.portForwardings.forEach { it.requireValid() }
     }

@@ -23,21 +23,21 @@ private val MAC_REGEX = Regex("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")
 fun Project.generateMac(): String {
     while (true) {
         val mac = randomMac()
-        if (devices.all { if (it is Device.Computer) it.mac != mac else true }) return mac
+        if (devices.all { it !is Device.Computer || it.mac != mac }) return mac
     }
 }
 
 fun Project.generateIpv4(subnet: IPAddress): String {
     while (true) {
         val ipv4 = randomIpv4(subnet)
-        if (devices.all { if (it is Device.Computer) it.ipv4 != ipv4 else true }) return ipv4
+        if (devices.all { it !is Device.Computer || it.ipv4 != ipv4 }) return ipv4
     }
 }
 
 fun Project.generateIpv6(subnet: IPAddress): String {
     while (true) {
         val ipv6 = randomIpv6(subnet)
-        if (devices.all { if (it is Device.Computer) it.ipv6 != ipv6 else true }) return ipv6
+        if (devices.all { it !is Device.Computer || it.ipv6 != ipv6 }) return ipv6
     }
 }
 
@@ -104,17 +104,16 @@ fun randomIpv6(subnet: IPAddress): String {
 }
 
 // Based on InetAddressValidator.isValidInet4Address() of Apache Commons
-fun String.validateIpv4(): Boolean {
-    val groups = IPV4_REGEX.matchEntire(this)
+fun validateIpv4(address: String): Boolean {
+    val groups = IPV4_REGEX.matchEntire(address)
         ?.groups
         ?.drop(1)
         ?.filterNotNull() ?: return false
-    for (ipSegmentResult in groups) {
-        val ipSegment = ipSegmentResult.value
+    for ((ipSegment) in groups) {
         if (ipSegment.isEmpty() || ipSegment.trim { it <= ' ' }.isEmpty()) {
             return false
         }
-        val iIpSegment: Int = ipSegment.toIntOrNull() ?: return false
+        val iIpSegment = ipSegment.toIntOrNull() ?: return false
         if (iIpSegment > 255 || ipSegment.length > 1 && ipSegment.startsWith("0")) {
             return false
         }
@@ -123,31 +122,31 @@ fun String.validateIpv4(): Boolean {
 }
 
 // Based on InetAddressValidator.isValidInet6Address() of Apache Commons
-fun String.validateIpv6(): Boolean {
-    var inet6Address = this
+fun validateIpv6(address: String): Boolean {
+    var inet6Address = address
     // remove prefix size. This will appear after the zone id (if any)
-    var parts: Array<String?> = inet6Address.split("/".toRegex()).toTypedArray()
+    var parts = inet6Address.split("/".toRegex())
     if (parts.size > 2) {
         return false // can only have one prefix specifier
     }
     if (parts.size == 2) {
-        if (!DIGITS_PATTERN.matches(parts[1] ?: return false)) {
+        if (!DIGITS_PATTERN.matches(parts.getOrNull(1) ?: return false)) {
             return false // not a valid number
         }
-        val bits = parts[1]!!.toInt() // cannot fail because of RE check
+        val bits = parts[1].toInt() // cannot fail because of RE check
         if (bits !in 0..128) {
             return false // out of range
         }
     }
     // remove zone-id
-    parts = parts[0]!!.split("%".toRegex()).toTypedArray()
+    parts = parts[0].split("%".toRegex())
     // The id syntax is implementation independent, but it presumably cannot allow:
     // whitespace, '/' or '%'
-    if (parts.size > 2 || parts.size == 2 && !ID_CHECK_PATTERN.matches(parts[1] ?: return false)) {
+    if (parts.size > 2 || parts.size == 2 && !ID_CHECK_PATTERN.matches(parts.getOrNull(1) ?: return false)) {
         return false // invalid id
     }
-    inet6Address = parts[0]!!
-    val containsCompressedZeroes = inet6Address.contains("::")
+    inet6Address = parts[0]
+    val containsCompressedZeroes = "::" in inet6Address
     if (containsCompressedZeroes && inet6Address.indexOf("::") != inet6Address.lastIndexOf("::")) {
         return false
     }
@@ -157,16 +156,16 @@ fun String.validateIpv6(): Boolean {
     if (inet6Address.startsWith(":") && !startsWithCompressed || endsWithSep && !endsWithCompressed) {
         return false
     }
-    var octets: Array<String?> = inet6Address.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    var octets = inet6Address.split(":".toRegex()).dropLastWhile { it.isEmpty() }
     if (containsCompressedZeroes) {
-        val octetList: MutableList<String?> = ArrayList<String?>(Arrays.asList<String?>(*octets))
+        val octetList = octets.toMutableList()
         if (endsWithCompressed) {
             // String.split() drops ending empty segments
-            octetList.add("")
-        } else if (startsWithCompressed && !octetList.isEmpty()) {
+            octetList += ""
+        } else if (startsWithCompressed && octetList.isNotEmpty()) {
             octetList.removeAt(0)
         }
-        octets = octetList.toTypedArray<String?>()
+        octets = octetList
     }
     if (octets.size > 8) {
         return false
@@ -174,7 +173,7 @@ fun String.validateIpv6(): Boolean {
     var validOctets = 0
     var emptyOctets = 0 // consecutive empty chunks
     for (index in octets.indices) {
-        val octet = octets[index]
+        val octet = octets.getOrNull(index)
         if (octet?.isBlank() ?: true) {
             emptyOctets++
             if (emptyOctets > 1) {
@@ -183,8 +182,8 @@ fun String.validateIpv6(): Boolean {
         } else {
             emptyOctets = 0
             // Is last chunk an IPv4 address?
-            if (index == octets.size - 1 && octet.contains(".")) {
-                if (!octet.validateIpv4()) {
+            if (index == octets.size - 1 && "." in octet) {
+                if (!validateIpv4(octet)) {
                     return false
                 }
                 validOctets += 2
@@ -205,13 +204,11 @@ fun String.validateIpv6(): Boolean {
         }
         validOctets++
     }
-    if (validOctets > 8 || validOctets < 8 && !containsCompressedZeroes) {
-        return false
-    }
-    return true
+
+    return !(validOctets > 8 || validOctets < 8 && !containsCompressedZeroes)
 }
 
-fun String.validateMac(): Boolean = MAC_REGEX.matches(this)
+fun validateMac(address: String): Boolean = MAC_REGEX.matches(address)
 
 infix fun String.isIPWithinSubnet(subnet: IPAddress): Boolean {
     val address = IPAddressString(this).getAddress() ?: throw IllegalArgumentException("Invalid IP address: $this")
@@ -220,8 +217,6 @@ infix fun String.isIPWithinSubnet(subnet: IPAddress): Boolean {
 }
 
 fun String.padZero(len: Int) = padStart(len, '0')
-
-fun Int.toHex(): String = toString(16)
 
 @VisibleForTesting
 internal fun Random.nextBytesByBitCount(bitCount: Int): ByteArray {
