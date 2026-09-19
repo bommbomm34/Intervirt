@@ -34,10 +34,10 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
       - name: Test Core
-        run: ./gradlew :core:allTests
+        run: INTERVIRT_TEST_CI=true ./gradlew :core:allTests
       - name: Test UI
-        run: ./gradlew :ui:allTests
+        run: INTERVIRT_TEST_CI=true ./gradlew :ui:allTests
       - name: Test Secret
-        run: ./gradlew :secret:test
+        run: INTERVIRT_TEST_CI=true ./gradlew :secret:test
       - name: Test Logging
-        run: ./gradlew :logging:allTests
+        run: INTERVIRT_TEST_CI=true ./gradlew :logging:allTests

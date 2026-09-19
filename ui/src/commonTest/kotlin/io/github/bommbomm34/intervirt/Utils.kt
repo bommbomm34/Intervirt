@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Intervirt Contributors
+ * Licensed under the GNU General Public License 3.
+ */
+
 package io.github.bommbomm34.intervirt
 
 import arrow.core.raise.Raise
@@ -14,6 +19,8 @@ fun runIntervirtTest(block: suspend context(Raise<Failure>) () -> Unit) = runTes
     )
 }
 
-inline fun ignoreFailure(block: context(Raise<Failure>) () -> Unit) {
-    recover(block = block, recover = {})
+private val runningOnCi: Boolean by lazy {
+    System.getenv("INTERVIRT_TEST_CI")?.toBoolean() ?: false
 }
+
+fun isRunningOnCi(): Boolean = runningOnCi

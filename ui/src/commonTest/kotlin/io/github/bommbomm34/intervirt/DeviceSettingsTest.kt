@@ -116,21 +116,23 @@ class DeviceSettingsTest : KoinTest {
         assertFalse { testComputer.portForwardings.contains(TEST_PORT_FORWARDING) }
     }
 
-    @Ignore
     @Test
     fun `should lint port forwarding which is already internally exposed`() = runTest {
-        viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
-        assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
+        if (!isRunningOnCi()) {
+            viewModel.addPortForwarding(TEST_PORT_FORWARDING).join()
+            assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
+        }
     }
 
-    @Ignore
     @Test
     fun `should lint port forwarding which is already externally exposed`() = runTest {
-        val secondTestComputer = Device.Computer.portForwardings.modify(testComputer) {
-            it + TEST_PORT_FORWARDING
+        if (!isRunningOnCi()) {
+            val secondTestComputer = Device.Computer.portForwardings.modify(testComputer) {
+                it + TEST_PORT_FORWARDING
+            }
+            Project.devices.modify(project.get()) { it + secondTestComputer }
+            assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
         }
-        Project.devices.modify(project.get()) { it + secondTestComputer }
-        assertEquals(false, viewModel.lintPortForwarding(TEST_PORT_FORWARDING).isRight())
     }
 
     @Test
