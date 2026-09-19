@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.text.style.TextAlign
 import intervirt.ui.generated.resources.*
 import io.github.bommbomm34.intervirt.components.CenterRow
 import io.github.bommbomm34.intervirt.components.GeneralIcon
@@ -43,6 +44,7 @@ fun DefaultDialog(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.verticalScroll(rememberScrollState()),
     ) {
+
         Text(
             text = when (severity) {
                 Severity.INFO -> stringResource(Res.string.info)
@@ -57,7 +59,7 @@ fun DefaultDialog(
         )
         GeneralSpacer()
         SelectionContainer {
-            Text(message)
+            Text(message, textAlign = TextAlign.Center)
         }
         GeneralSpacer()
         CenterRow {

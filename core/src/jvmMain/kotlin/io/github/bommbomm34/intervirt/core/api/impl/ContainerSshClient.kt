@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.ContainerSshConfiguration
 import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.ext.addFirst
@@ -33,15 +34,17 @@ import java.nio.file.Path
 
 class ContainerSshClient(
     envHolder: AppEnvHolder,
-    val port: Int,
-    private val deviceManager: DeviceManager,
+    val conf: ContainerSshConfiguration,
     override val id: DeviceId,
+    private val onRemovePortForwarding: suspend context(Raise<Failure>) () -> Unit,
 ) : ContainerIOClient {
     val appEnv by envHolder
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
-            HOST, port,
-            USERNAME, null,
+            /* host = */ conf.host,
+            /* port = */ conf.port,
+            /* username = */ conf.username,
+            /* password = */ conf.password,
         ),
         emptyMap<String, Any>(),
     )
@@ -53,7 +56,8 @@ class ContainerSshClient(
     suspend fun init() = withCatchingContext(Dispatchers.IO) {
         logger.debug { "Initializing ContainerSshClient" }
         sshClient.start()
-        session = sshClient.connect(USERNAME, HOST, port).verify().session
+        session = sshClient.connect(conf.username, conf.host, conf.port).verify().session
+        conf.password?.let(session::addPasswordIdentity)
         session.auth().verify()
         logger.debug { "Initialized ContainerSshClient" }
     }
@@ -132,10 +136,7 @@ class ContainerSshClient(
         session.close()
         sshClient.stop()
         fs.close()
-        deviceManager.removePortForwarding(
-            externalPort = port,
-            protocol = "tcp",
-        )
+        onRemovePortForwarding()
         logger.debug { "Closed ContainerSshClient" }
     }
 
@@ -147,9 +148,4 @@ class ContainerSshClient(
     }
 
     override fun getPath(path: String): Path = fs.getPath(path)
-
-    companion object {
-        private const val HOST = "127.0.0.1"
-        private const val USERNAME = "root"
-    }
 }

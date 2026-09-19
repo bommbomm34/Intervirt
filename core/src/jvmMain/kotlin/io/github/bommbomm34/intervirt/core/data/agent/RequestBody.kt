@@ -113,5 +113,3 @@ sealed class RequestBody {
         val name: String,
     ) : RequestBody()
 }
-
-fun String.commandBody() = RequestBody.Command(this)

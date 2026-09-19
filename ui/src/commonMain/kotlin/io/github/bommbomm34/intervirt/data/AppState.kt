@@ -108,7 +108,7 @@ private suspend fun Failure.getLocalizedMessage(): String {
         is Failure.InvalidMail -> getString(Res.string.invalid_mail, message)
         is Failure.Qmp -> getString(Res.string.qmp_failure, message)
         is Failure.Serialization -> getString(Res.string.serialization_failure, message)
-        is Failure.Unexpected -> getString(Res.string.unexpected_failure, message)
+        is Failure.Unexpected -> getString(Res.string.unexpected_failure, message, exception::class.simpleName ?: "Unknown exception")
         is Failure.VersionMismatch -> getString(Res.string.version_mismatch, CURRENT_VERSION, other)
         is Failure.ZipExtraction -> getString(Res.string.zip_extraction_failure, message)
         is Failure.FailedFileOperation -> getString(Res.string.file_operation_failed, file.path, message)

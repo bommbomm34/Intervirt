@@ -37,10 +37,8 @@ class DeviceManager(
 ) : AsyncCloseable {
     val appEnv by envHolder
     private val logger = appEnv.getLogger(DeviceManager::class)
-    private val virtualContainerIO = appEnv.virtualContainerIO
-    private val virtualContainerIOPort = appEnv.virtualContainerIOPort
-    private val wipeVirtualOnClose = appEnv.wipeVirtualOnClose
-    private val dockerHostOverride = appEnv.overrideDockerHost.ifBlank { null }
+    private val virtualContainerIO get() = appEnv.virtualContainerIO
+    private val dockerHostOverride get() = appEnv.overrideDockerHost.ifBlank { null }
     private val containerIOClients = ConcurrentHashMap<DeviceId, ContainerIOClient>()
     private val dockerManagers = ConcurrentHashMap<DeviceId, DockerManager>()
     private val intervirtOSClients = ConcurrentHashMap<DeviceId, IntervirtOSClient>()
@@ -273,38 +271,54 @@ class DeviceManager(
     suspend fun getIOClient(computer: Device.Computer): ContainerIOClient {
         computer.requireExists()
         logger.debug { "Retrieving IO client of ${computer.id}" }
-        val cached = containerIOClients[computer.id]
-        if (cached != null) return cached
-        return if (virtualContainerIO) initVirtualIOClient(computer) else initSshClient(computer)
+        containerIOClients[computer.id]?.let { return it }
+
+        val useVirtual = virtualContainerIO && appEnv.globalSshPort == null
+        return if (useVirtual) initVirtualIOClient(computer) else initSshClient(computer)
     }
 
 
     context(_: Raise<Failure>)
     suspend fun initSshClient(computer: Device.Computer): ContainerSshClient {
         computer.requireExists()
-        val port = getFreePort()
-        logger.debug { "Initializing SSH client for ${computer.id} on port $port" }
-        return addPortForwarding(
-            device = computer,
-            portForwarding = PortForwarding(
-                protocol = "tcp",
-                internalPort = 22,
-                externalPort = port,
-                hidden = true,
-            ),
-        ).let {
-            val sshClient = ContainerSshClient(envHolder, port, this, computer.id)
-            sshClient.init()
-            containerIOClients[computer.id] = sshClient
-            logger.info { "Initialized SSH client for ${computer.id}" }
-            sshClient
+        val port = appEnv.globalSshPort ?: run {
+            val freePort = getFreePort()
+
+            addPortForwarding(
+                device = computer,
+                portForwarding = PortForwarding(
+                    protocol = "tcp",
+                    internalPort = 22,
+                    externalPort = freePort,
+                    hidden = true,
+                ),
+            )
+
+            freePort
         }
+        val conf = appEnv.globalSshConfiguration
+            ?: ContainerSshConfiguration.default(port)
+        logger.debug { "Initializing SSH client for ${computer.id} on port $port" }
+
+        val sshClient = ContainerSshClient(envHolder, conf, computer.id) {
+            // Remove port forwarding
+            if (!virtualContainerIO) {
+                removePortForwarding(
+                    externalPort = port,
+                    protocol = "tcp",
+                )
+            }
+        }
+        sshClient.init()
+        containerIOClients[computer.id] = sshClient
+        logger.info { "Initialized SSH client for ${computer.id}" }
+        return sshClient
     }
 
     fun initVirtualIOClient(computer: Device.Computer): VirtualContainerIOClient {
         computer.requireExists()
         logger.debug { "Initializing virtual container IO client for ${computer.id}" }
-        val client = VirtualContainerIOClient(computer.id, wipeVirtualOnClose, executor, fileManager)
+        val client = VirtualContainerIOClient(computer.id, appEnv.wipeVirtualOnClose, executor, fileManager)
         containerIOClients[computer.id] = client
         logger.debug { "Initialized virtual container IO client for ${computer.id}" }
         return client
@@ -343,7 +357,7 @@ class DeviceManager(
             true -> VirtualDockerManager()
             false -> ActualDockerManager(
                 envHolder,
-                dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.port ?: virtualContainerIOPort}",
+                dockerHostOverride ?: "ssh://127.0.0.1:${sshClient?.conf?.port ?: appEnv.virtualContainerIOPort}",
             )
         }
         dockerManagers[computer.id] = dockerManager

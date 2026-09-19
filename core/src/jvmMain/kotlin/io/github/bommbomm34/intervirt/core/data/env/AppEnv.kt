@@ -6,6 +6,7 @@ import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.serialization.decodeValueOrNull
 import com.russhwolf.settings.serialization.encodeValue
+import io.github.bommbomm34.intervirt.core.data.ContainerSshConfiguration
 import io.github.bommbomm34.intervirt.core.data.OS
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv.Companion.PRIMARY_CONSTRUCTOR
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv.Companion.PRIMARY_CONSTRUCTOR_VALUE_PARAMETERS
@@ -21,11 +22,6 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
-
-private val defaultQemuZipUrl = when (getOS()) {
-    OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
-    OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
-}
 
 data class AppEnv(
     @Env("DEBUG_ENABLED")
@@ -91,9 +87,9 @@ data class AppEnv(
     @Env("VM_DISK_HASH_URL")
     val vmDiskHashUrl: String = "https://cdn.perhof.org/bommbomm34/intervirt/alpine-disk.qcow2.sha256",
     @Env("QEMU_ZIP_URL")
-    val qemuZipUrl: String = defaultQemuZipUrl,
+    val qemuZipUrl: String = DEFAULT_QEMU_ZIP_URL,
     @Env("QEMU_ZIP_HASH_URL")
-    val qemuZipHashUrl: String = "$defaultQemuZipUrl.sha256",
+    val qemuZipHashUrl: String = "$DEFAULT_QEMU_ZIP_URL.sha256",
     @Env("AGENT_WEBSOCKET_TIMEOUT")
     val agentWebsocketTimeout: Long = 10_000L,
     @Env("MAIL_TITLE_FONT_SIZE")
@@ -106,6 +102,14 @@ data class AppEnv(
     val smallFabSize: Int = 32,
     @Env("LOG_LEVEL")
     val logLevel: String = if (debugEnabled) "DEBUG" else "ERROR",
+    @Env("GLOBAL_SSH_HOST")
+    val globalSshHost: String = "127.0.0.1",
+    @Env("GLOBAL_SSH_PORT")
+    val globalSshPort: Int? = null,
+    @Env("GLOBAL_SSH_USERNAME")
+    val globalSshUsername: String = "root",
+    @Env("GLOBAL_SSH_PASSWORD")
+    val globalSshPassword: String? = null,
     @NoEnv
     val diskInstalled: Boolean = false,
     @NoEnv
@@ -115,18 +119,31 @@ data class AppEnv(
     @NoEnv
     val currentQemuHash: String = "",
 ) {
+    val actualLogLevel: LogLevel = LogLevel.valueOf(logLevel)
+
+    val actualDataDir: PlatformFile = PlatformFile(dataDir)
+
+    val globalSshConfiguration = globalSshPort?.let { port ->
+        ContainerSshConfiguration(
+            host = globalSshHost,
+            port = port,
+            username = globalSshUsername,
+            password = globalSshPassword,
+        )
+    }
     companion object {
         internal val PRIMARY_CONSTRUCTOR = AppEnv::class.primaryConstructor!!
         internal val PRIMARY_CONSTRUCTOR_VALUE_PARAMETERS = PRIMARY_CONSTRUCTOR.valueParameters
         private val PROPERTIES = AppEnv::class.declaredMemberProperties
-        val PRIMARY_CONSTRUCTOR_PROPERTIES = PROPERTIES.filter { property ->
+        internal val PRIMARY_CONSTRUCTOR_PROPERTIES = PROPERTIES.filter { property ->
             PRIMARY_CONSTRUCTOR_VALUE_PARAMETERS.any { it.name == property.name }
         }
+
+        private val DEFAULT_QEMU_ZIP_URL = when (OS.CURRENT) {
+            OS.WINDOWS -> "https://cdn.perhof.org/bommbomm34/qemu/windows-portable.zip"
+            OS.LINUX -> "https://cdn.perhof.org/bommbomm34/qemu/linux-portable.zip"
+        }
     }
-
-    val actualLogLevel: LogLevel = LogLevel.valueOf(logLevel)
-
-    val actualDataDir: PlatformFile = PlatformFile(dataDir)
 }
 
 fun Settings.loadEnv(override: (String) -> String? = { null }): AppEnv {

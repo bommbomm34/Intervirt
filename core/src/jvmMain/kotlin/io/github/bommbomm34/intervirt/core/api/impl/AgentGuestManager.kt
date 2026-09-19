@@ -338,6 +338,8 @@ class AgentGuestManager(
         ifRight = ResponseBody.General::failure,
     )
 
+    private fun String.commandBody() = RequestBody.Command(this)
+
     companion object {
         val SPECIAL_NETWORKS = listOf("incusbr0", "lo")
 
