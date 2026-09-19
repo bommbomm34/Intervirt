@@ -53,19 +53,15 @@ class Downloader(
     context(_: Raise<Failure>)
     suspend fun checkUpdates(): List<Component> {
         return buildList {
-            if (appEnv.qemuZipHashUrl.fetch().bind()
-                     != appEnv.currentQemuHash
-            ) add(Component.QEMU)
-            if (appEnv.vmDiskHashUrl.fetch().bind()
-                     != appEnv.currentDiskHash
-            ) add(Component.VM_DISK)
+            if (appEnv.qemuZipHashUrl.fetch() != appEnv.currentQemuHash) add(Component.QEMU)
+            if (appEnv.vmDiskHashUrl.fetch() != appEnv.currentDiskHash) add(Component.VM_DISK)
         }
     }
 
     fun upgrade(components: List<Component>): Flow<ResultProgress<String>> = flow {
         val proportion = 1f / components.size
         components.forEachIndexed { i, component ->
-            downloadComponent(component).collect {
+            downloadComponent(component, update = true).collect {
                 emit(it.clone(percentage = proportion * it.percentage + i * proportion))
             }
         }
@@ -90,7 +86,7 @@ class Downloader(
             destination.deleteContentsRecursively()
             // Invalidate previous installation
             envUpdater set appEnv.copy(diskInstalled = false)
-            val hash = appEnv.vmDiskHashUrl.fetch().bind()
+            val hash = appEnv.vmDiskHashUrl.fetch()
             val file = fileManager.downloadFile(appEnv.vmDiskUrl, "alpine-linux.qcow2", destination)
             file.collect { resultProgress ->
                 if (resultProgress is ResultProgress.Result) {
@@ -125,7 +121,7 @@ class Downloader(
                 // Invalidate previous installation
                 envUpdater set appEnv.copy(qemuInstalled = false)
                 // Install fresh QEMU
-                val hash = appEnv.qemuZipHashUrl.fetch().bind()
+                val hash = appEnv.qemuZipHashUrl.fetch()
                 val file = fileManager.downloadFile(appEnv.qemuZipUrl, "qemu-portable.zip")
                 file.collect { resultProgress ->
                     if (resultProgress is ResultProgress.Result) {
@@ -156,17 +152,18 @@ class Downloader(
         }
     }
 
-    private suspend fun String.fetch(): Either<Failure, String> {
+    context(_: Raise<Failure>)
+    private suspend fun String.fetch(): String {
         logger.debug { "Fetching has from url $this" }
         val res = client.get(this)
         return if (res.status == HttpStatusCode.OK) {
             val hash = res.bodyAsText()
             logger.debug { "Successfully fetched hash: $hash" }
-            hash.right()
+            hash
         } else {
             val failure = Failure.Download(res.status.description)
             logger.error(failure) { "Failed acquiring hash from url $this" }
-            failure.left()
+            raise(failure)
         }
     }
 

@@ -16,8 +16,6 @@ import io.github.bommbomm34.intervirt.components.NamedCheckbox
 import io.github.bommbomm34.intervirt.core.api.Downloader
 import io.github.bommbomm34.intervirt.data.UpdaterState
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun Updater(
@@ -25,15 +23,19 @@ fun Updater(
     onUpdate: () -> Unit,
 ) {
     CenterColumn {
-        state.updates.forEach { component ->
+        Downloader.Component.entries.forEach { component ->
             NamedCheckbox(
-                checked = state.applyUpdates.contains(component),
+                checked = component in state.applyUpdates,
                 onCheckedChange = {
-                    if (it) state.applyUpdates.add(component) else state.applyUpdates.remove(component)
+                    if (it) {
+                        state.applyUpdates += component
+                    } else {
+                        state.applyUpdates -= component
+                    }
                 },
                 name = component.readableName,
+                enabled = component in state.updates,
             )
-            GeneralSpacer()
         }
     }
     GeneralSpacer()

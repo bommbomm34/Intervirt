@@ -6,9 +6,10 @@
 package io.github.bommbomm34.intervirt.data
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateSetOf
 import io.github.bommbomm34.intervirt.core.api.Downloader
 
 class UpdaterState {
-    val updates = mutableStateListOf<Downloader.Component>()
+    val updates = mutableStateSetOf<Downloader.Component>()
     val applyUpdates = mutableStateListOf<Downloader.Component>()
 }

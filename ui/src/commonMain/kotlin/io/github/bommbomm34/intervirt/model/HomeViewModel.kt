@@ -29,6 +29,7 @@ import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.data.UpdaterState
 import io.github.bommbomm34.intervirt.data.openDialog
+import io.github.bommbomm34.intervirt.data.runDialogCatching
 import io.github.bommbomm34.intervirt.home.Updater
 import io.github.bommbomm34.intervirt.util.ext.loadConf
 import io.github.bommbomm34.intervirt.util.ext.writeConf
@@ -105,11 +106,14 @@ class HomeViewModel(
     }
 
     fun update() {
-        appState.openDialog {
-            Updater(
-                state = updaterState,
-                onUpdate = ::onUpdate,
-            )
+        viewModelScope.launchDialogCatching(appState) {
+            updaterState.updates += downloader.checkUpdates()
+            appState.openDialog {
+                Updater(
+                    state = updaterState,
+                    onUpdate = ::onUpdate,
+                )
+            }
         }
         onDismiss()
     }
