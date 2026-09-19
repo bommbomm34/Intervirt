@@ -53,10 +53,6 @@ inline fun <T> channelFlowCatching(
     }
 }
 
-fun <T> Flow<T>.catchTimeout(action: suspend FlowCollector<T>.() -> Unit) = catch {
-    if (it is TimeoutCancellationException) action() else throw it
-}
-
 suspend fun <T> Flow<ResultProgress<T>>.lastResult() = (last() as ResultProgress.Result).result
 
 context(_: Raise<Failure>)

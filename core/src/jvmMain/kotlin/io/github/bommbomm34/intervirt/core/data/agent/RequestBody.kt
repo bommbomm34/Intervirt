@@ -8,10 +8,12 @@ package io.github.bommbomm34.intervirt.core.data.agent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.*
+import kotlin.time.Clock
 
 @Serializable
 sealed class RequestBody {
     val uuid = UUID.randomUUID().toString()
+    val creationTime = Clock.System.now()
 
     @SerialName("AddContainer")
     @Serializable

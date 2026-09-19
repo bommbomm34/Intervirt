@@ -24,10 +24,8 @@ import io.github.bommbomm34.intervirt.core.data.ResultProgress
 import io.github.bommbomm34.intervirt.core.data.agent.*
 import io.github.bommbomm34.intervirt.core.defaultJson
 import io.github.bommbomm34.intervirt.core.error
-import io.github.bommbomm34.intervirt.core.exceptions.AgentTimeoutException
 import io.github.bommbomm34.intervirt.core.takeWhileInclusive
 import io.github.bommbomm34.intervirt.core.util.Atomic
-import io.github.bommbomm34.intervirt.core.util.ext.catchTimeout
 import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.lastResult
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
@@ -41,9 +39,9 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
-
-private const val LOG_RAW_JSON = false
+import kotlin.time.Duration.Companion.seconds
 
 class AgentGuestManager(
     envHolder: AppEnvHolder,
@@ -52,12 +50,19 @@ class AgentGuestManager(
     val appEnv by envHolder
     private val logger = appEnv.getLogger(AgentGuestManager::class)
     private var session: DefaultClientWebSocketSession? = null
-    private var listenJob: Job? = null
-    private val requests = ConcurrentHashMap<String, MutableSharedFlow<Either<Failure, ResponseBody>>>()
-    private val agentPort = appEnv.agentPort
-    private val timeout = appEnv.agentWebsocketTimeout.milliseconds
-    private val host = appEnv.agentHost
+
+    private val requests = ConcurrentHashMap<String, ActiveRequest>()
+
+    private val scope = CoroutineScope(Dispatchers.IO)
     private var agentInfo: Atomic<AgentInfo?> = Atomic(null)
+
+    private val agentPort get() = appEnv.agentPort
+    private val timeout get() = appEnv.agentWebsocketTimeout.milliseconds
+    private val host get() = appEnv.agentHost
+
+    init {
+        launchTimeoutJob()
+    }
 
     context(_: Raise<Failure>)
     override suspend fun addContainer(
@@ -179,7 +184,6 @@ class AgentGuestManager(
     private suspend fun justSend(body: RequestBody) {
         val response = send<ResponseBody.General>(body)
         response
-            .catchTimeout { throw AgentTimeoutException(body.uuid) }
             .firstOrNull()
             ?.failure()
             ?.let { raise(it) }
@@ -188,13 +192,9 @@ class AgentGuestManager(
     context(_: Raise<Failure>)
     private suspend inline fun <reified T : ResponseBody> firstSend(body: RequestBody): T {
         val response = send<T>(body)
-        var timeoutExceeded = false
-        val result = response
-            .catchTimeout { timeoutExceeded = true }
-            .firstOrNull()
+        val result = response.first()
 
-        // TODO: Check
-        return if (timeoutExceeded) raise(Failure.AgentTimeout(body.uuid)) else result!!.bind()
+        return result.bind()
     }
 
     context(_: Raise<Failure>)
@@ -204,9 +204,6 @@ class AgentGuestManager(
             block = {
                 val flow = send<ResponseBody.General>(body)
                 flow
-                    .catchTimeout {
-                        this@flow.emit(ResultProgress.failure(Failure.AgentTimeout(body.uuid)))
-                    }
                     .collect { result ->
                         val failure = result.fold(
                             ifLeft = { it },
@@ -232,15 +229,14 @@ class AgentGuestManager(
         if (!failed) emit(ResultProgress.success(Unit))
     }
 
-    @OptIn(FlowPreview::class)
     @Suppress("UNCHECKED_CAST")
     context(_: Raise<Failure>)
     private suspend inline fun <reified T : ResponseBody> send(body: RequestBody): Flow<Either<Failure, T>> {
         logger.debug { "Sending request $body with UUID ${body.uuid}" }
         return listen().let {
-            requests[body.uuid] = MutableSharedFlow()
+            requests[body.uuid] = ActiveRequest(body)
             session!!.sendSerialized(body)
-            requests[body.uuid]!!
+            requests[body.uuid]!!.flow
                 .map { result ->
                     result.fold(
                         ifLeft = { it.left() },
@@ -259,9 +255,8 @@ class AgentGuestManager(
                     throwable?.let {
                         if (!it.isMuted()) logger.error(it) { "Failed request: ${body.uuid}" }
                     } ?: logger.debug { "Completed request ${body.uuid}" }
-                    requests.remove(body.uuid)
+                    requests -= body.uuid
                 }
-//                .timeout(timeout) // TODO: Fix timeout bug
         }
     }
 
@@ -278,13 +273,13 @@ class AgentGuestManager(
                 session!!
             }
             result.onRight { session ->
-                listenJob = CoroutineScope(Dispatchers.IO).launch {
+                scope.launch {
                     while (true) {
                         try {
                             val response = session.receiveLogging()
 
                             requests[response.refID]?.let {
-                                it.emit(response.right())
+                                it.flow.emit(response.right())
                                 logger.debug { "Received response successfully: $response" }
                             } ?: logger.error { "Received response without corresponding request: $response" }
                         } catch (e: WebsocketDeserializeException) {
@@ -296,10 +291,30 @@ class AgentGuestManager(
         }
     }
 
+    private fun launchTimeoutJob() {
+        scope.launch {
+            while (true) {
+                if (requests.isNotEmpty()) {
+                    val now = Clock.System.now()
+
+                    for ((body, flow) in requests.values) {
+                        val time = now - body.creationTime
+
+                        if (time > timeout) {
+                            flow.emit(Failure.AgentTimeout(body.uuid).left())
+                        }
+                    }
+                }
+
+                delay(1.seconds)
+            }
+        }
+    }
+
     context(_: Raise<Failure>)
     override suspend fun close() = withCatchingContext(Dispatchers.IO) {
         wipe().lastResult().bind()
-        listenJob?.cancel()
+        scope.cancel()
         session?.close()
         Unit
     }
@@ -325,5 +340,7 @@ class AgentGuestManager(
 
     companion object {
         val SPECIAL_NETWORKS = listOf("incusbr0", "lo")
+
+        private const val LOG_RAW_JSON = false
     }
 }
