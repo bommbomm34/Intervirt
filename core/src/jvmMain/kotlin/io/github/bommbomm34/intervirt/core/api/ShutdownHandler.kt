@@ -12,7 +12,7 @@ import io.github.bommbomm34.intervirt.core.totalDiskSpace
 import io.github.bommbomm34.intervirt.core.unixTimestamp
 import io.github.bommbomm34.intervirt.core.usableDiskSpace
 import io.github.bommbomm34.intervirt.core.util.ListOutputStream
-import io.github.bommbomm34.intervirt.logging.getDefaultStream
+import io.github.bommbomm34.intervirt.logging.OutputStream
 import io.github.bommbomm34.intervirt.secret.SecretService
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
@@ -68,7 +68,7 @@ class ShutdownHandler(
                     qemuClient.close()
                 },
                 recover = {
-                    getDefaultStream().printlnErr("Error occurred during closing Intervirt services: $it")
+                    OutputStream.DEFAULT.printlnErr("Error occurred during closing Intervirt services: $it")
                 },
             )
             httpClient.close()
@@ -93,7 +93,7 @@ class ShutdownHandler(
             writeToReportFile = isDebugEnabled,
             writeToLogFile = isDebugEnabled,
         )
-        getDefaultStream().printlnErr(report)
+        OutputStream.DEFAULT.printlnErr(report)
         exitProcess(1)
     }
 

@@ -8,8 +8,10 @@ package io.github.bommbomm34.intervirt.core.util.ext
 import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.util.ListOutputStream
 import io.github.bommbomm34.intervirt.logging.KLogger
-import io.github.bommbomm34.intervirt.logging.getDefaultStream
+import io.github.bommbomm34.intervirt.logging.OutputStream
 import kotlin.reflect.KClass
+
+val DEFAULT_STREAMS = arrayOf(ListOutputStream.DEFAULT, OutputStream.DEFAULT)
 
 fun AppEnv.getLogger(clazz: KClass<*>, vararg suffix: String): KLogger {
     val clazzName = clazz.simpleName ?: ""
@@ -22,7 +24,5 @@ fun AppEnv.getLogger(clazz: KClass<*>, vararg suffix: String): KLogger {
 fun AppEnv.getLogger(name: String) = KLogger(
     name = name,
     level = actualLogLevel,
-    streams = getDefaultStreams(),
+    streams = DEFAULT_STREAMS,
 )
-
-fun getDefaultStreams() = arrayOf(ListOutputStream.DEFAULT, getDefaultStream())

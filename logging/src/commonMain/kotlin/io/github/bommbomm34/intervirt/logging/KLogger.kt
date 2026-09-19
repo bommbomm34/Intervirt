@@ -33,7 +33,7 @@ class KLogger(
     val level: LogLevel,
     vararg streams: OutputStream,
 ) {
-    private val streams = streams.ifEmpty { arrayOf(getDefaultStream()) }
+    private val streams = streams.ifEmpty { arrayOf(OutputStream.DEFAULT) }
 
     constructor(
         name: KClass<*>,

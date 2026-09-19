@@ -6,14 +6,12 @@
 package io.github.bommbomm34.intervirt.core.util
 
 import io.github.bommbomm34.intervirt.logging.OutputStream
-import io.github.bommbomm34.intervirt.logging.getDefaultStream
 
 class ListOutputStream : OutputStream {
     companion object {
         val DEFAULT = ListOutputStream()
     }
 
-    private val default = getDefaultStream()
     private var readingLog by atomic(false)
     private val stdout = mutableListOf<String>()
     private val stderr = mutableListOf<String>()

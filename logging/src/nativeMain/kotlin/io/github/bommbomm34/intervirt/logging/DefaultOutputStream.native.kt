@@ -9,11 +9,12 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import platform.posix.fprintf
 import platform.posix.stderr
 
-@OptIn(ExperimentalForeignApi::class)
-actual fun getDefaultStream() = object : OutputStream {
-    override val colorSupported = true
+internal actual object DefaultOutputStream : OutputStream {
+    actual override val colorSupported: Boolean
+        get() = true
 
-    override fun printlnErr(line: String) {
+    actual override fun printlnErr(line: String) {
+        @OptIn(ExperimentalForeignApi::class)
         fprintf(stderr, "$line\n")
     }
 }

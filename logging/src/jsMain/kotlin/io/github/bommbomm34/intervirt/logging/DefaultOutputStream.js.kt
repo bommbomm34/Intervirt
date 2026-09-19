@@ -5,10 +5,11 @@
 
 package io.github.bommbomm34.intervirt.logging
 
-actual fun getDefaultStream() = object : OutputStream {
-    override val colorSupported = false
+internal actual object DefaultOutputStream : OutputStream {
+    actual override val colorSupported: Boolean
+        get() = false
 
-    override fun printlnErr(line: String) {
+    actual override fun printlnErr(line: String) {
         console.error(line)
     }
 }
