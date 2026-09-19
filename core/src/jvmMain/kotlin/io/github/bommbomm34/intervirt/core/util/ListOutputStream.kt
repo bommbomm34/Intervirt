@@ -12,30 +12,25 @@ class ListOutputStream : OutputStream {
         val DEFAULT = ListOutputStream()
     }
 
-    private var readingLog by atomic(false)
     private val stdout = mutableListOf<String>()
     private val stderr = mutableListOf<String>()
-    override val colorSupported = false
+    private val lock = Any()
 
-    override fun println(line: String) {
-        if (!readingLog) stdout.add(line)
+    override val colorSupported get() = false
+
+    override fun println(line: String) = synchronized(lock) {
+        stdout += line
     }
 
-    override fun printlnErr(line: String) {
-        if (!readingLog) stderr.add(line)
+    override fun printlnErr(line: String) = synchronized(lock) {
+        stderr += line
     }
 
-    fun getStdout(): List<String> {
-        readingLog = true
-        val stdout: List<String> = this.stdout
-        readingLog = false
-        return stdout
+    fun getStdout(): List<String> = synchronized(lock) {
+        stdout.toList()
     }
 
-    fun getStderr(): List<String> {
-        readingLog = true
-        val stderr: List<String> = this.stderr
-        readingLog = false
-        return stderr
+    fun getStderr(): List<String> = synchronized(lock) {
+        stderr.toList()
     }
 }
