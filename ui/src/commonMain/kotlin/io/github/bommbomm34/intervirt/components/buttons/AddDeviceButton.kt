@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import intervirt.ui.generated.resources.Res
 import intervirt.ui.generated.resources.add_device
@@ -65,12 +66,10 @@ fun AddDeviceButton() {
                     }
                 },
                 text = {
-                    CenterRow {
-                        IconText(
-                            imageVector = Icons.Default.Computer,
-                            text = stringResource(Res.string.computer),
-                        )
-                    }
+                    IconText(
+                        imageVector = Icons.Default.Computer,
+                        text = stringResource(Res.string.computer),
+                    )
                 },
             )
             DropdownMenuItem(

@@ -23,7 +23,7 @@ fun IconText(
             imageVector = imageVector,
             contentDescription = text,
         )
-        GeneralSpacer(2.dp)
+        GeneralSpacer(4.dp)
         Text(text)
     }
 }
