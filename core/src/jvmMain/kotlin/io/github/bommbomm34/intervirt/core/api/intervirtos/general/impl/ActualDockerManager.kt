@@ -21,7 +21,6 @@ import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.api.intervirtos.general.DockerManager
 import io.github.bommbomm34.intervirt.core.data.*
-import io.github.bommbomm34.intervirt.core.exceptions.UnhealthyDockerContainerException
 import io.github.bommbomm34.intervirt.core.util.ext.*
 import io.github.bommbomm34.intervirt.logging.debug
 import io.github.bommbomm34.intervirt.logging.error
@@ -166,13 +165,19 @@ class ActualDockerManager(
                     output.flush()
                 }
 
-                override fun onError(throwable: Throwable) = throw throwable // withCatchingContext will catch it
+                override fun onError(throwable: Throwable) {
+                    val message = "${throwable.message ?: "Unknown error"}\n"
+
+                    output.write(message.encodeToByteArray())
+                    output.flush()
+                }
 
                 override fun onComplete() = output.close()
             }
             client
                 .execStartCmd(exec.id)
                 .exec(callback)
+
             flow {
                 reader.useLines { lines ->
                     lines.forEach {
@@ -210,7 +215,9 @@ class ActualDockerManager(
     context(_: Raise<Failure>)
     override suspend fun checkHealth(id: String) = catch {
         val res = getClient().inspectContainerCmd(id).exec()
-        if (res.state.exitCodeLong != 0L) throw UnhealthyDockerContainerException(res.state.error ?: "Unknown error")
+        if (res.state.exitCodeLong != 0L) {
+            raise(Failure.IllegalState("Unhealthy container '$id': ${res.state.error ?: "Unknown error"}"))
+        }
     }
 
     context(_: Raise<Failure>)
