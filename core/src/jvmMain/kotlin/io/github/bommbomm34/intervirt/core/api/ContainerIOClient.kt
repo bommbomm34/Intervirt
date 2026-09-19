@@ -11,6 +11,8 @@ import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
 import io.github.bommbomm34.intervirt.core.util.AsyncCloseable
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.nio.file.Path
 
 interface ContainerIOClient : AsyncCloseable {
@@ -24,7 +26,21 @@ interface ContainerIOClient : AsyncCloseable {
 
 sealed class ShellControlMessage {
     class ByteData(val bytes: ByteArray) : ShellControlMessage()
-    class Kill : ShellControlMessage()
-    class End(val statusCode: Int) : ShellControlMessage()
+    class End private constructor(val statusCode: Int) : ShellControlMessage() {
+        companion object {
+            private val SUCCESSFUL_END = End(0)
+
+            fun of(statusCode: Int): End {
+                if (statusCode == 0) return SUCCESSFUL_END
+
+                return End(statusCode)
+            }
+        }
+    }
     class Resize(val columns: Int, val rows: Int) : ShellControlMessage()
+    object Kill : ShellControlMessage()
+
+    companion object {
+        fun end(statusCode: Int) = End.of(statusCode)
+    }
 }

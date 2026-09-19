@@ -17,8 +17,7 @@ class VirtualDockerManager : DockerManager {
     private val containers = mutableListOf<Container>()
 
     context(_: Raise<Failure>)
-    override suspend fun init() {
-    }
+    override suspend fun init() {}
 
     override fun addContainer(
         name: String,

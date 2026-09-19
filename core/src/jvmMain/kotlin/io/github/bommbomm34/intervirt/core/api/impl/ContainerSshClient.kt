@@ -34,14 +34,14 @@ import java.nio.file.Path
 class ContainerSshClient(
     envHolder: AppEnvHolder,
     val port: Int,
-    val deviceManager: DeviceManager,
+    private val deviceManager: DeviceManager,
     override val id: DeviceId,
 ) : ContainerIOClient {
     val appEnv by envHolder
     private val fs: FileSystem = FileSystems.newFileSystem(
         SftpFileSystemProvider.createFileSystemURI(
             HOST, port,
-            USERNAME, "",
+            USERNAME, null,
         ),
         emptyMap<String, Any>(),
     )
@@ -81,7 +81,7 @@ class ContainerSshClient(
                     channel.send(ShellControlMessage.ByteData(bytes))
                 }
             }
-            channel.send(ShellControlMessage.End(sshChannel.exitStatus))
+            channel.send(ShellControlMessage.end(sshChannel.exitStatus))
             channel.close()
         }
 
@@ -99,7 +99,7 @@ class ContainerSshClient(
                                 channel.close()
                                 inputStream.close()
                                 outputStream.close()
-                                sshClient.close(true)
+                                sshClient.close()
                             }
 
                             is ShellControlMessage.Resize -> {
@@ -107,14 +107,19 @@ class ContainerSshClient(
                                 sshChannel.ptyLines = msg.rows
                             }
 
-                            else -> error("Invalid: $msg")
+                            is ShellControlMessage.End -> throw IllegalStateException(
+                                "End message must not be sent through the channel " +
+                                        "created by 'ContainerSshClient.pty'",
+                            )
                         }
                     }
                 }
             }
         }
-        // Switch to working directory
-        channel.send(ShellControlMessage.ByteData("cd $workingDirectory\n".encodeToByteArray()))
+        if (workingDirectory != null) {
+            // Switch to working directory
+            channel.send(ShellControlMessage.ByteData("cd $workingDirectory\n".encodeToByteArray()))
+        }
         // Run command with arguments
         channel.send(ShellControlMessage.ByteData("$totalCommand\n".encodeToByteArray()))
 
