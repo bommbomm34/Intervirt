@@ -9,6 +9,8 @@ import io.github.bommbomm34.intervirt.core.data.env.AppEnv
 import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.model.SettingsViewModel
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.equals.shouldNotBeEqual
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -41,16 +43,16 @@ class SettingsViewModelTest : KoinTest {
     @Test
     fun `should discard changes if not saved`() {
         performChanges()
-        assertNotEquals("MOCK", appEnv.overrideDockerHost)
-        assertNotEquals(6767, appEnv.virtualContainerIOPort)
+        appEnv.overrideDockerHost shouldNotBeEqual "MOCK"
+        appEnv.virtualContainerIOPort shouldNotBeEqual 6767
     }
 
     @Test
     fun `should save changes`() {
         performChanges()
         viewModel.saveChanges()
-        assertEquals("MOCK", appEnv.overrideDockerHost)
-        assertEquals(6767, appEnv.virtualContainerIOPort)
+        appEnv.overrideDockerHost shouldBeEqual "MOCK"
+        appEnv.virtualContainerIOPort shouldBeEqual 6767
     }
 
     private fun performChanges() {

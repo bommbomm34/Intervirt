@@ -15,6 +15,8 @@ import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.data.AppState
 import io.github.bommbomm34.intervirt.data.Screen
 import io.github.bommbomm34.intervirt.model.HomeViewModel
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.equals.shouldBeEqual
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -55,30 +57,30 @@ class HomeTest : KoinTest {
     fun `should change device render key`() {
         viewModel.devicesViewRenderKey = 0
         viewModel.onConfChange()
-        assertEquals(1, viewModel.devicesViewRenderKey)
+        viewModel.devicesViewRenderKey shouldBeEqual 1
     }
 
     @Test
     fun `should get zoom successfully`() {
-        assertEquals("1.0x", viewModel.getZoom())
+        viewModel.getZoom() shouldBeEqual "1.0x"
     }
 
     @Test
     fun `should open Settings`() {
         viewModel.openSettings()
-        assertEquals(Screen.SETTINGS, appState.currentScreen)
+        appState.currentScreen shouldBeEqual Screen.SETTINGS
     }
 
     @Test
     fun `should open About`() {
         viewModel.openAbout()
-        assertEquals(Screen.ABOUT, appState.currentScreen)
+        appState.currentScreen shouldBeEqual Screen.ABOUT
     }
 
     @Test
     fun `should dismiss options`() {
         viewModel.onDismiss()
-        assertEquals(false, viewModel.showOptions)
+        viewModel.showOptions.shouldBeFalse()
     }
 
     @AfterTest

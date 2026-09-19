@@ -17,10 +17,12 @@ import io.github.bommbomm34.intervirt.core.getHttpClient
 import io.github.bommbomm34.intervirt.core.getTestAppEnv
 import io.github.bommbomm34.intervirt.core.singleTestSettings
 import io.github.bommbomm34.intervirt.intervirtos.model.DnsResolverViewModel
+import io.github.bommbomm34.intervirt.shouldMatchAny
 import io.github.bommbomm34.intervirt.singleAppEnvHolder
 import io.github.bommbomm34.intervirt.singleProjectHolder
 import io.github.bommbomm34.intervirt.singleTestAppState
 import io.github.vinceglb.filekit.PlatformFile
+import io.kotest.matchers.collections.shouldContain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -76,10 +78,8 @@ class DnsResolverViewModelTest : KoinTest {
         viewModel.domain = "one.one.one.one"
         viewModel.dnsRecordType = "A"
         viewModel.lookup().join()
-        assertTrue {
-            viewModel.records.any {
-                it.name == "one.one.one.one." && it.type == "A" && it.dnsClass == "IN" && it.data == "1.1.1.1"
-            }
+        viewModel.records shouldMatchAny {
+            it.name == "one.one.one.one." && it.type == "A" && it.dnsClass == "IN" && it.data == "1.1.1.1"
         }
     }
 
@@ -88,10 +88,8 @@ class DnsResolverViewModelTest : KoinTest {
         viewModel.domain = "google.com"
         viewModel.dnsRecordType = "AAAA"
         viewModel.lookup().join()
-        assertTrue {
-            viewModel.records.any {
-                it.name == "google.com." && it.type == "AAAA" && it.dnsClass == "IN" && it.data == "2a00:1450:4001:80d::200e"
-            }
+        viewModel.records shouldMatchAny {
+            it.name == "google.com." && it.type == "AAAA" && it.dnsClass == "IN" && it.data == "2a00:1450:4001:80d::200e"
         }
     }
 
@@ -101,10 +99,8 @@ class DnsResolverViewModelTest : KoinTest {
         viewModel.dnsRecordType = "PTR"
         viewModel.reverseLookup = true
         viewModel.lookup().join()
-        assertTrue {
-            viewModel.records.any {
-                it.name == "1.1.1.1.in-addr.arpa." && it.type == "PTR" && it.dnsClass == "IN" && it.data == "one.one.one.one."
-            }
+        viewModel.records shouldMatchAny {
+            it.name == "1.1.1.1.in-addr.arpa." && it.type == "PTR" && it.dnsClass == "IN" && it.data == "one.one.one.one."
         }
     }
 

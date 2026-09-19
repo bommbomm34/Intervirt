@@ -91,6 +91,7 @@ arrow-optics-ksp = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref
 ipaddress = { module = "com.github.seancfoley:ipaddress", version.ref = "ipaddress" }
 webview-compose = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "webview" }
 kotest = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-arrow = { module = "io.kotest:kotest-assertions-arrow", version.ref = "kotest" }
 
 [plugins]
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
