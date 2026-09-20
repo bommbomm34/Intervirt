@@ -29,7 +29,7 @@ sealed interface ShellControlMessage {
     sealed interface Incoming : ShellControlMessage
     sealed interface Outgoing : ShellControlMessage
 
-    data class Byte(val byte: Int) : Outgoing
+    data class Character(val char: Int) : Outgoing
     class Bytes(val bytes: ByteArray) : Incoming {
         override fun toString(): String = "Bytes(bytes=${bytes.contentToString()})"
     }

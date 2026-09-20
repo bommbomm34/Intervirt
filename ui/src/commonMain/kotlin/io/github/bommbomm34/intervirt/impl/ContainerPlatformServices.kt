@@ -32,6 +32,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Async
 import java.io.ByteArrayOutputStream
+import java.io.CharArrayWriter
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
@@ -117,7 +118,7 @@ class ContainerPlatformServices(
     ) : PlatformServices.ProcessService.ProcessHandle, AsyncCloseable {
         private val outgoing get() = shell.incoming
 
-        private val buffer = ByteArrayOutputStream()
+        private val buffer = CharArrayWriter()
 
         private val bufferMutex = Mutex()
         private val statusCodeFlow: MutableStateFlow<Int?> = MutableStateFlow(null)
@@ -212,9 +213,9 @@ class ContainerPlatformServices(
             for (message in incoming) {
                 logger.trace { "Received message from server: $message" }
                 when (message) {
-                    is ShellControlMessage.Byte -> {
+                    is ShellControlMessage.Character -> {
                         bufferMutex.withLock {
-                            buffer.write(message.byte)
+                            buffer.write(message.char)
                         }
                     }
                     is ShellControlMessage.End -> {

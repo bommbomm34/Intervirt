@@ -91,14 +91,14 @@ class ContainerSshClient(
         }
         val inputStream = requireNotNull(sshChannel.invertedOut) {
             "Expected ChannelShell.invertedOut to be non-null"
-        }
+        }.reader()
 
         scope.launch {
             inputStream.use { _ ->
                 while (!sshChannel.isClosed) {
-                    val byteInt = inputStream.read()
-                    if (byteInt == -1) break
-                    channel.outgoing.send(ShellControlMessage.Byte(byteInt))
+                    val charInt = inputStream.read()
+                    if (charInt == -1) break
+                    channel.outgoing.send(ShellControlMessage.Character(charInt))
                 }
             }
             val statusCode = sshChannel.exitStatus ?: 0
