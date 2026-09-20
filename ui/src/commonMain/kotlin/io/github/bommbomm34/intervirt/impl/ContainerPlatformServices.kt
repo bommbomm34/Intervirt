@@ -145,9 +145,9 @@ class ContainerPlatformServices(
         }
 
         override suspend fun read(): String? {
-            logger.trace { "Waiting for string from container..." }
-            return readBuffer().also {
-                logger.trace { "Received string '$it' from container" }
+            logger.trace { "Waiting for text from container..." }
+            return readBuffer()?.also {
+                logger.debug { "Received text '$it' from container" }
             }
         }
 
@@ -218,6 +218,13 @@ class ContainerPlatformServices(
                             buffer.write(message.char)
                         }
                     }
+
+                    is ShellControlMessage.Characters -> {
+                        bufferMutex.withLock {
+                            buffer.write(message.chars)
+                        }
+                    }
+
                     is ShellControlMessage.End -> {
                         logger.debug { "Received end status code '${message.statusCode}'" }
                         statusCode = message.statusCode

@@ -30,6 +30,9 @@ sealed interface ShellControlMessage {
     sealed interface Outgoing : ShellControlMessage
 
     data class Character(val char: Int) : Outgoing
+    class Characters(val chars: CharArray) : Outgoing {
+        override fun toString(): String = "Characters(chars=${chars.contentToString()})"
+    }
     class Bytes(val bytes: ByteArray) : Incoming {
         override fun toString(): String = "Bytes(bytes=${bytes.contentToString()})"
     }

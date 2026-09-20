@@ -98,7 +98,19 @@ class ContainerSshClient(
                 while (!sshChannel.isClosed) {
                     val charInt = inputStream.read()
                     if (charInt == -1) break
-                    channel.outgoing.send(ShellControlMessage.Character(charInt))
+                    val char = charInt.toChar()
+
+                    if (char.isHighSurrogate()) {
+                        // Get low surrogate
+                        val lowSurrogateInt = inputStream.read()
+                        if (lowSurrogateInt == -1) break
+                        val lowSurrogate = lowSurrogateInt.toChar()
+                        // Send high and low surrogate
+                        val arr = charArrayOf(char, lowSurrogate)
+                        channel.outgoing.send(ShellControlMessage.Characters(arr))
+                    } else {
+                        channel.outgoing.send(ShellControlMessage.Character(charInt))
+                    }
                 }
             }
             val statusCode = sshChannel.exitStatus ?: 0
