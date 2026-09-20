@@ -17,13 +17,18 @@ import org.koin.compose.koinInject
 @Composable
 fun ShellViewWindow(computer: Device.Computer) {
     val deviceManager = koinInject<DeviceManager>()
+    val appState = currentAppState
     var ioClient: ContainerIOClient? by remember { mutableStateOf(null) }
+
     CatchingLaunchedEffect(computer) {
         ioClient = deviceManager.getIOClient(computer)
     }
     CenterColumn {
         ioClient?.let {
-            ShellView(it)
+            ShellView(it) {
+                // Close window
+                appState.openComputerShell = null
+            }
         }
     }
 }

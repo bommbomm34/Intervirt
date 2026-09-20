@@ -12,6 +12,7 @@ import io.github.bommbomm34.intervirt.core.api.ShellControlMessage
 import io.github.bommbomm34.intervirt.core.api.atomic.AppEnvHolder
 import io.github.bommbomm34.intervirt.core.api.atomic.getValue
 import io.github.bommbomm34.intervirt.core.data.CommandStatus
+import io.github.bommbomm34.intervirt.core.data.ContainerSshChannel
 import io.github.bommbomm34.intervirt.core.data.ContainerSshConfiguration
 import io.github.bommbomm34.intervirt.core.data.DeviceId
 import io.github.bommbomm34.intervirt.core.data.Failure
@@ -21,16 +22,25 @@ import io.github.bommbomm34.intervirt.core.util.ext.getLogger
 import io.github.bommbomm34.intervirt.core.util.ext.withCatchingContext
 import io.github.bommbomm34.intervirt.logging.debug
 import io.github.bommbomm34.intervirt.logging.info
+import io.github.bommbomm34.intervirt.logging.warn
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.apache.sshd.client.SshClient
+import org.apache.sshd.client.channel.ClientChannelEvent
 import org.apache.sshd.client.session.ClientSession
+import org.apache.sshd.common.channel.ChannelOutputStream
 import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider
+import java.io.FileDescriptor
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Path
+import java.util.Arrays
+import java.util.EnumSet
 
 class ContainerSshClient(
     envHolder: AppEnvHolder,
@@ -68,64 +78,76 @@ class ContainerSshClient(
         arguments: List<String>,
         environment: Map<String, String>,
         workingDirectory: String?,
-    ) = withCatchingContext(Dispatchers.IO) {
-        val totalCommand = arguments.addFirst(command)
-        logger.info { "Opening PTY shell '$totalCommand'on container" }
+        scope: CoroutineScope,
+    ): ContainerSshChannel = withCatchingContext(Dispatchers.IO) {
+        val totalCommand = "$command ${arguments.joinToString()}"
+        logger.info { "Opening PTY shell for command '$totalCommand' on container" }
         val sshChannel = session.createShellChannel(null, environment)
         sshChannel.ptyType = "xterm"
         sshChannel.open().verify()
-        val channel = Channel<ShellControlMessage>()
-        val inputStream = sshChannel.`in`
-        val outputStream = sshChannel.out
-
-        launch {
-            inputStream.use { _ ->
-                while (!sshChannel.isClosed) {
-                    val bytes = inputStream.readBytes()
-                    channel.send(ShellControlMessage.ByteData(bytes))
-                }
-            }
-            channel.send(ShellControlMessage.end(sshChannel.exitStatus))
-            channel.close()
+        val channel = ContainerSshChannel(isClosedSupplier = sshChannel::isClosed)
+        val outputStream = requireNotNull(sshChannel.invertedIn) {
+            "Expected ChannelShell.invertedIn to be non-null"
+        }
+        val inputStream = requireNotNull(sshChannel.invertedOut) {
+            "Expected ChannelShell.invertedOut to be non-null"
         }
 
-        launch {
-            outputStream.use { _ ->
+        scope.launch {
+            inputStream.use { _ ->
                 while (!sshChannel.isClosed) {
-                    for (msg in channel) {
-                        when (msg) {
-                            is ShellControlMessage.ByteData -> {
+                    val byteInt = inputStream.read()
+                    if (byteInt == -1) break
+                    channel.outgoing.send(ShellControlMessage.Byte(byteInt))
+                }
+            }
+            val statusCode = sshChannel.exitStatus ?: 0
+            logger.debug { "Sending end with status code '$statusCode'" }
+            sshChannel.waitFor(CLOSED_SET, 0L)
+            channel.outgoing.send(ShellControlMessage.end(statusCode))
+            channel.close()
+            sshChannel.close()
+        }
+
+        scope.launch {
+            outputStream.use { _ ->
+                for (msg in channel.incoming) {
+                    when (msg) {
+                        is ShellControlMessage.Bytes -> {
+                            if (!sshChannel.isClosed) {
                                 outputStream.write(msg.bytes)
                                 outputStream.flush()
+                            } else {
+                                logger.warn { "Tried to write but the channel is closed: $msg" }
                             }
+                        }
 
-                            is ShellControlMessage.Kill -> {
-                                channel.close()
-                                inputStream.close()
-                                outputStream.close()
-                                sshClient.close()
-                            }
+                        ShellControlMessage.Kill -> {
+                            channel.outgoing.send(ShellControlMessage.end(0))
+                            channel.close()
+                            sshChannel.close()
+                        }
 
-                            is ShellControlMessage.Resize -> {
-                                sshChannel.ptyColumns = msg.columns
-                                sshChannel.ptyLines = msg.rows
-                            }
-
-                            is ShellControlMessage.End -> throw IllegalStateException(
-                                "End message must not be sent through the channel " +
-                                        "created by 'ContainerSshClient.pty'",
-                            )
+                        is ShellControlMessage.Resize -> {
+                            sshChannel.sendWindowChange(msg.columns, msg.rows)
                         }
                     }
                 }
             }
         }
+
         if (workingDirectory != null) {
+            logger.debug { "Setting working directory of command '$command'" }
             // Switch to working directory
-            channel.send(ShellControlMessage.ByteData("cd $workingDirectory\n".encodeToByteArray()))
+            channel.incoming.send(ShellControlMessage.Bytes("cd $workingDirectory\n".encodeToByteArray()))
+            logger.debug { "Set working directory of command '$command'" }
         }
-        // Run command with arguments
-        channel.send(ShellControlMessage.ByteData("$totalCommand\n".encodeToByteArray()))
+        if (command != DEFAULT_SHELL) {
+            logger.debug { "Running command on PTY shell of '$command'" }
+            // Run command with arguments
+            channel.incoming.send(ShellControlMessage.Bytes("$totalCommand\n".encodeToByteArray()))
+            logger.debug { "Ran command on PTY shell of '$command'" }
+        }
 
         channel
     }
@@ -148,4 +170,9 @@ class ContainerSshClient(
     }
 
     override fun getPath(path: String): Path = fs.getPath(path)
+
+    companion object {
+        val CLOSED_SET = setOf(ClientChannelEvent.CLOSED)
+        const val DEFAULT_SHELL = "/bin/bash"
+    }
 }
